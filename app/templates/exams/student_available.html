@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Minhas Provas</h1>
+</div>
+
+<div class="row">
+    {% for exam in exams %}
+    <div class="col-md-4 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <h5 class="card-title">{{ exam.title }}</h5>
+                <p class="card-text text-muted">
+                    <i class="bi bi-calendar-event"></i> Aplicação: {{ exam.application_date.strftime('%d/%m/%Y') }}<br>
+                    <i class="bi bi-card-list"></i> Questões: {{ exam.items.count() }}
+                </p>
+                <div class="d-grid">
+                    {% set result = exam.results.filter_by(student_id=student.id).first() %}
+                    {% if result %}
+                    {% if result.finished_at %}
+                    <button class="btn btn-secondary disabled" disabled>
+                        <i class="bi bi-check-circle"></i> Finalizado
+                        {% if result.score_points is not none %}
+                        ({{ result.score_points|round(1) }} / {{ exam.total_value|round(1) }} - {{
+                        (result.score_percentage or 0)|round(1) }}%)
+                        {% else %}
+                        ({{ (result.score_percentage or 0)|round(1) }}%)
+                        {% endif %}
+                    </button>
+                    {% else %}
+                    <a href="{{ url_for('exams.take_exam', id=exam.id) }}" class="btn btn-warning">
+                        <i class="bi bi-play-circle"></i> Continuar Prova
+                    </a>
+                    {% endif %}
+                    {% else %}
+                    <a href="{{ url_for('exams.take_exam', id=exam.id) }}" class="btn btn-primary">
+                        <i class="bi bi-pencil-square"></i> Responder Agora
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-12 text-center py-5">
+        <div class="p-5 bg-light rounded-3">
+            <i class="bi bi-journal-x display-1 text-muted"></i>
+            <h3 class="mt-3">Nenhuma prova disponível</h3>
+            <p class="text-muted">No momento não há provas agendadas para o seu perfil.</p>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

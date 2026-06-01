@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @page {
+            size: A4 portrait;
+            margin: 2cm;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 11pt;
+            line-height: 1.5;
+            color: #333;
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #000;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+        }
+
+        .section-title {
+            background-color: #f0f0f0;
+            padding: 5px 10px;
+            font-weight: bold;
+            border-left: 5px solid #333;
+            margin: 20px 0 10px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f8f8f8;
+        }
+
+        .critical {
+            color: #d9534f;
+            font-weight: bold;
+        }
+
+        .footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 9pt;
+            color: #777;
+        }
+
+        .suggestion-box {
+            border: 1px dashed #666;
+            padding: 15px;
+            background-color: #fff9e6;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <h2 style="margin:0;">PLANO DE INTERVENÇÃO PEDAGÓGICA</h2>
+        <p style="margin:5px 0;"><strong>PROVA:</strong> {{ exam.title }}</p>
+        <p style="margin:0; font-size: 10pt;">Data de Aplicação: {{ exam.application_date.strftime('%d/%m/%Y') }} |
+            Unidade: {{ exam.teaching_unit.name if exam.teaching_unit else 'Rede' }}</p>
+    </div>
+
+    <div class="section-title">RESUMO DO DESEMPENHO</div>
+    <p>Com base nos <strong>{{ results_count }}</strong> resultados processados, identificamos os descritores que
+        demandam atenção imediata para a próxima semana de aula.</p>
+
+    <div class="section-title">DESCRITORES COM MAIOR ÍNDICE DE ERRO</div>
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 15%;">Código</th>
+                <th>Descrição do Descritor</th>
+                <th style="width: 20%; text-align: center;">Taxa de Erro</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for d in critical_descriptors %}
+            <tr>
+                <td class="critical">{{ d.code }}</td>
+                <td>{{ d.description }}</td>
+                <td style="text-align: center;" class="critical">{{ "%.1f"|format(d.error_rate) }}%</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="section-title">PLANO DE AÇÃO SUGERIDO</div>
+    {% for d in critical_descriptors %}
+    <div class="suggestion-box">
+        <strong>Foco em {{ d.code }}:</strong>
+        <p style="margin-top: 10px;">{{ d.suggestion }}</p>
+    </div>
+    {% endfor %}
+
+    <div class="section-title">DISTRIBUIÇÃO GERAL POR QUESTÃO</div>
+    <table>
+        <thead>
+            <tr>
+                <th style="text-align: center;">Questão</th>
+                <th>Descritor</th>
+                <th style="text-align: center;">Acertos (%)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in item_stats %}
+            <tr>
+                <td style="text-align: center;">{{ loop.index }}</td>
+                <td>{% for desc in item.question.descriptors %}{{ desc.code }}{% if not loop.last %}, {% endif %}{%
+                    endfor %}</td>
+                <td style="text-align: center;">{{ "%.1f"|format(item.correct_rate) }}%</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="footer">
+        Documento gerado automaticamente pelo Sistema IdebMais em {{ now.strftime('%d/%m/%Y %H:%M') }}
+    </div>
+</body>
+
+</html>

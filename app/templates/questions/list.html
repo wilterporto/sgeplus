@@ -1,0 +1,375 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Banco de Questões</h1>
+    <div class="btn-toolbar mb-2 mb-md-0 gap-2">
+        <button type="button" class="btn btn-outline-success" data-bs-toggle="modal"
+            data-bs-target="#importQuestionModal">
+            <i class="bi bi-file-earmark-spreadsheet"></i> Importar Excel
+        </button>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newQuestionModal">
+            <i class="bi bi-plus-lg"></i> Nova Questão
+        </button>
+    </div>
+</div>
+
+{% if active_job %}
+<div class="row mb-4" id="active-import-card">
+    <div class="col-12">
+        <div class="card border-primary bg-primary bg-opacity-10 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h6 class="mb-0 text-primary">
+                        <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                        Importação de Questões em Andamento...
+                    </h6>
+                    <span class="badge bg-primary px-3 py-2" id="active-pct">{{ active_job.progress_percentage
+                        }}%</span>
+                </div>
+                <div class="progress" style="height: 12px;">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
+                        id="active-bar" style="width: {{ active_job.progress_percentage }}%;"
+                        aria-valuenow="{{ active_job.progress_percentage }}" aria-valuemin="0" aria-valuemax="100">
+                    </div>
+                </div>
+                <div class="mt-2 small text-muted d-flex justify-content-between">
+                    <span id="active-count">{{ active_job.processed_rows }} / {{ active_job.total_rows }} registros
+                        processados</span>
+                    <span><a href="{{ url_for('admin.list_imports') }}" class="text-decoration-none">Ver detalhes em
+                            Administração</a></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const activePoll = setInterval(() => {
+        fetch(`/admin/imports/status/{{ active_job.id }}`)
+            .then(r => r.json())
+            .then(data => {
+                const bar = document.getElementById('active-bar');
+                const pct = document.getElementById('active-pct');
+                const count = document.getElementById('active-count');
+
+                if (bar) {
+                    bar.style.width = data.progress + '%';
+                    bar.setAttribute('aria-valuenow', data.progress);
+                }
+                if (pct) pct.innerText = data.progress + '%';
+                if (count) count.innerText = `${data.processed} / ${data.total} registros processados`;
+
+                if (data.status !== 'running') {
+                    clearInterval(activePoll);
+                    setTimeout(() => window.location.reload(), 2000);
+                }
+            })
+            .catch(err => {
+                console.error('Error polling:', err);
+                clearInterval(activePoll);
+            });
+    }, 3000);
+</script>
+{% endif %}
+
+<!-- Status Summary Cards -->
+<div class="row mb-4">
+    <div class="col-md">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body text-center py-2 h-100 d-flex flex-column justify-content-center">
+                <div class="text-muted small fw-bold text-uppercase">Total</div>
+                <div class="h4 mb-0 fw-bold">{{ stats.total }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md">
+        <div class="card shadow-sm border-0 border-start border-primary border-4 h-100">
+            <div class="card-body text-center py-2 h-100 d-flex flex-column justify-content-center">
+                <div class="text-muted small fw-bold text-uppercase text-primary">Aprovadas</div>
+                <div class="h4 mb-0 fw-bold">{{ stats.aprovada }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md">
+        <div class="card shadow-sm border-0 border-start border-warning border-4 h-100">
+            <div class="card-body text-center py-2 h-100 d-flex flex-column justify-content-center">
+                <div class="text-muted small fw-bold text-uppercase text-warning">Pendentes</div>
+                <div class="h4 mb-0 fw-bold">{{ stats.pendente }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md">
+        <div class="card shadow-sm border-0 border-start border-secondary border-4 h-100">
+            <div class="card-body text-center py-2 h-100 d-flex flex-column justify-content-center">
+                <div class="text-muted small fw-bold text-uppercase text-secondary">Rascunhos</div>
+                <div class="h4 mb-0 fw-bold">{{ stats.rascunho }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md">
+        <div class="card shadow-sm border-0 border-start border-danger border-4 h-100">
+            <div class="card-body text-center py-2 h-100 d-flex flex-column justify-content-center">
+                <div class="text-muted small fw-bold text-uppercase text-danger">Inativas</div>
+                <div class="h4 mb-0 fw-bold">{{ stats.inativa }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quill Theme -->
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+
+<!-- Wizard Modal -->
+<div class="modal fade" id="newQuestionModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content h-100">
+            <div class="modal-header">
+                <h5 class="modal-title">Nova Questão</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0">
+                <form method="POST" id="wizardForm" class="h-100 d-flex flex-column">
+                    {{ form.hidden_tag() }}
+                    {% include "questions/_wizard.html" %}
+
+                    {% if form.errors %}
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function () {
+                            var myModal = new bootstrap.Modal(document.getElementById('newQuestionModal'));
+                            myModal.show();
+                        });
+                    </script>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .type-card {
+        transition: all 0.2s;
+        border: 2px solid transparent;
+    }
+
+    .type-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15);
+    }
+
+    .type-card input:checked+.card-body {
+        background-color: #e8f0fe;
+    }
+
+    .type-card:has(input:checked) {
+        border-color: #0d6efd;
+        background-color: #e8f0fe;
+    }
+
+    .cursor-pointer {
+        cursor: pointer;
+    }
+
+    /* Fix Quill Toolbar on Bootstrap Modal */
+    .ql-toolbar.ql-snow {
+        border-top-left-radius: 4px;
+        border-top-right-radius: 4px;
+    }
+
+    .ql-container.ql-snow {
+        border-bottom-left-radius: 4px;
+        border-bottom-right-radius: 4px;
+    }
+</style>
+
+<!-- Quill JS -->
+<script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+
+
+
+<div class="card">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4">Descritor</th>
+                        <th>Enunciado</th>
+                        <th>Dificuldade</th>
+                        <th>Situação</th>
+                        <th>Criado por</th>
+                        <th class="text-end pe-4">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for question in questions.items %}
+                    <tr>
+                        <td class="ps-4">
+                            {% for desc in question.descriptors %}
+                            <span class="badge rounded-pill bg-light text-dark border">{{ desc.code }}</span>
+                            {% else %}
+                            <span class="text-muted small">N/A</span>
+                            {% endfor %}
+                        </td>
+                        <td class="text-wrap" style="max-width: 400px;">
+                            {% if question.approved_by_secretaria %}
+                            <i class="bi bi-star-fill text-warning me-1"
+                                title="Oficial da Rede (Aprovada pela Secretaria)"></i>
+                            {% endif %}
+                            {{ question.statement|safe|striptags|truncate(60) }}
+                        </td>
+                        <td>
+                            {% set diff = question.difficulty|lower %}
+                            {% if diff == 'facil' %}
+                            <span class="badge bg-success-subtle text-success border border-success-subtle">Fácil</span>
+                            {% elif diff == 'medio' %}
+                            <span
+                                class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle">Médio</span>
+                            {% else %}
+                            <span class="badge bg-danger-subtle text-danger border border-danger-subtle">Difícil</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if question.status == 'rascunho' %}
+                            <span class="badge bg-secondary-subtle text-secondary border">Rascunho</span>
+                            {% elif question.status == 'aprovada' %}
+                            <span class="badge bg-primary-subtle text-primary border">Aprovada</span>
+                            {% else %}
+                            <span class="badge bg-light text-dark border">{{ question.status|capitalize }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="d-flex flex-column">
+                                <span class="small fw-semibold">{{ question.creator.username if question.creator else
+                                    'N/A' }}</span>
+                                <span class="text-muted" style="font-size: 0.75rem;">{{
+                                    question.created_at.strftime('%d/%m/%Y') }}</span>
+                            </div>
+                        </td>
+                        <td class="text-end pe-4">
+                            {% if session.get('active_role') == 'unidade' %}
+                            {% set active_school_id = session.get('active_school_id')|int %}
+                            {% set isValidated = active_school_id in question.validated_units|map(attribute='id') %}
+                            <form action="{{ url_for('questions.toggle_unit_validation', id=question.id) }}" method="POST"
+                                class="d-inline me-1">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                                {% if isValidated %}
+                                <button type="submit" class="btn btn-sm btn-success px-2 py-1"
+                                    title="Remover Validação da Unidade">
+                                    <i class="bi bi-shield-check"></i> Validada
+                                </button>
+                                {% else %}
+                                <button type="submit" class="btn btn-sm btn-outline-secondary px-2 py-1 text-muted"
+                                    title="Validar para minha Unidade">
+                                    <i class="bi bi-shield"></i> Validar
+                                </button>
+                                {% endif %}
+                            </form>
+                            {% endif %}
+                            {% if current_user.is_admin and not question.approved_by_secretaria %}
+                            <form action="{{ url_for('questions.approve_question', id=question.id) }}" method="POST"
+                                class="d-inline">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                                <button type="submit" class="btn btn-sm btn-light text-warning"
+                                    title="Aprovar pela Secretaria">
+                                    <i class="bi bi-patch-check"></i>
+                                </button>
+                            </form>
+                            {% endif %}
+                            <a href="{{ url_for('questions.edit_question', id=question.id) }}"
+                                class="btn btn-sm btn-light text-primary" title="Editar">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <form action="{{ url_for('questions.delete_question', id=question.id) }}" method="POST"
+                                class="d-inline" onsubmit="return confirm('Tem certeza?');">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                                <button type="submit" class="btn btn-sm btn-light text-danger" title="Excluir">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center py-5 text-muted">
+                            <i class="bi bi-inbox fs-1 d-block mb-3"></i>
+                            Nenhuma questão cadastrada.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% if questions.pages > 1 %}
+    <div class="card-footer bg-transparent border-top-0 py-3">
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center mb-0">
+                {% if questions.has_prev %}
+                <li class="page-item">
+                    <a class="page-link shadow-none"
+                        href="{{ url_for('questions.list_questions', page=questions.prev_num) }}">Anterior</a>
+                </li>
+                {% else %}
+                <li class="page-item disabled"><span class="page-link shadow-none">Anterior</span></li>
+                {% endif %}
+
+                <li class="page-item active"><span class="page-link shadow-none">{{ questions.page }}</span></li>
+
+                {% if questions.has_next %}
+                <li class="page-item">
+                    <a class="page-link shadow-none"
+                        href="{{ url_for('questions.list_questions', page=questions.next_num) }}">Próxima</a>
+                </li>
+                {% else %}
+                <li class="page-item disabled"><span class="page-link shadow-none">Próxima</span></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+    {% endif %}
+</div>
+<!-- Import Question Modal -->
+<div class="modal fade" id="importQuestionModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Importar Questões (Excel)</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="importQuestionsForm" action="{{ url_for('questions.import_questions') }}" method="POST"
+                enctype="multipart/form-data">
+                {{ import_form.hidden_tag() }}
+                <div class="modal-body">
+                    <div class="mb-3">
+                        {{ import_form.file.label(class="form-label") }}
+                        {{ import_form.file(class="form-control", accept=".xlsx") }}
+                    </div>
+                    <div class="alert alert-info small">
+                        <strong>Colunas Obrigatórias:</strong><br>
+                        - <strong>Enunciado</strong> (Texto da questão)<br>
+                        - <strong>Descritor</strong> (Código exato, ex: D10)<br>
+                        - <strong>Dificuldade</strong> (Facil, Medio, Dificil)<br>
+                        - <strong>A, B, C, D, E</strong> (Conteúdo das alternativas)<br>
+                        - <strong>Correta</strong> (Letra A, B, C, D ou E)
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    {{ import_form.submit(class="btn btn-success") }}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        if (typeof setupImportProgress === "function") {
+            setupImportProgress('importQuestionsForm');
+        }
+    });
+</script>
+{% endblock %}
+{% endblock %}

@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3><i class="bi bi-shield-check me-2"></i> Auditoria de Ações</h3>
+    <div>
+        <a href="{{ url_for('audit.list_access') }}" class="btn btn-outline-primary btn-sm me-2">
+            <i class="bi bi-clock-history me-1"></i> Histórico de Acesso
+        </a>
+        <a href="{{ url_for('audit.no_access_report') }}" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-person-x me-1"></i> Nunca Acessaram
+        </a>
+    </div>
+</div>
+
+{% if tenants %}
+<div class="card shadow-sm mb-3">
+    <div class="card-body py-2">
+        <form method="GET" class="row g-2 align-items-center">
+            <div class="col-auto">
+                <label for="tenant_id" class="col-form-label small fw-bold">Filtrar por Cliente:</label>
+            </div>
+            <div class="col-md-4">
+                <select name="tenant_id" id="tenant_id" class="form-select form-select-sm" onchange="this.form.submit()">
+                    <option value="">Todos os Clientes</option>
+                    {% for tenant in tenants %}
+                    <option value="{{ tenant.id }}" {% if tenant.id == selected_tenant_id %}selected{% endif %}>{{ tenant.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            {% if selected_tenant_id %}
+            <div class="col-auto">
+                <a href="{{ url_for('audit.list_logs') }}" class="btn btn-sm btn-outline-danger"><i class="bi bi-x-lg"></i> Limpar</a>
+            </div>
+            {% endif %}
+        </form>
+    </div>
+</div>
+{% endif %}
+
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>Data/Hora</th>
+                    <th>Usuário</th>
+                    <th>Ação</th>
+                    <th>Alvo</th>
+                    <th>ID</th>
+                    <th>Detalhes</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs.items %}
+                <tr>
+                    <td>{{ log.timestamp.strftime('%d/%m/%Y %H:%M:%S') }}</td>
+                    <td>
+                        {% if log.user %}
+                        {{ log.user.username }}
+                        {% else %}
+                        <span class="text-muted">Desconhecido (ID: {{ log.user_id }})</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% set action_map = {'CREATE': 'CRIAR', 'UPDATE': 'ATUALIZAR', 'DELETE': 'EXCLUIR', 'IMPORT':
+                        'IMPORTAR', 'LOGIN': 'LOGIN', 'LOGOUT': 'LOGOUT'} %}
+                        <span
+                            class="badge {% if log.action == 'DELETE' %}bg-danger{% elif log.action == 'CREATE' %}bg-success{% elif log.action == 'IMPORT' %}bg-info{% else %}bg-primary{% endif %}">
+                            {{ action_map.get(log.action, log.action) }}
+                        </span>
+                    </td>
+                    <td>
+                        {% set table_map = {
+                        'User': 'Usuário',
+                        'Student': 'Aluno',
+                        'Professor': 'Professor',
+                        'TeachingUnit': 'Unidade de Ensino',
+                        'SchoolYear': 'Ano Escolar',
+                        'Subject': 'Componente',
+                        'Class': 'Turma',
+                        'Enrollment': 'Matrícula',
+                        'TeachingAssignment': 'Modulação',
+                        'CurriculumStructure': 'Estrutura Curricular',
+                        'Question': 'Questão',
+                        'Descriptor': 'Descritor',
+                        'Exam': 'Prova'
+                        } %}
+                        {{ table_map.get(log.target_table, log.target_table) }}
+                    </td>
+                    <td>{{ log.target_id }}</td>
+                    <td class="text-muted small">{{ log.details or '-' }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" class="text-center py-4 text-muted">
+                        Nenhuma ação registrada.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% if logs.pages > 1 %}
+    <div class="card-footer bg-light">
+        <nav aria-label="Page navigation">
+            <ul class="pagination pagination-sm justify-content-center mb-0">
+                {% if logs.has_prev %}
+                <li class="page-item"><a class="page-link"
+                        href="{{ url_for('audit.list_logs', page=logs.prev_num, tenant_id=selected_tenant_id) }}">Anterior</a></li>
+                {% endif %}
+                <li class="page-item disabled"><span class="page-link">{{ logs.page }} de {{ logs.pages }}</span></li>
+                {% if logs.has_next %}
+                <li class="page-item"><a class="page-link"
+                        href="{{ url_for('audit.list_logs', page=logs.next_num, tenant_id=selected_tenant_id) }}">Próxima</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

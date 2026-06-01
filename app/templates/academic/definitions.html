@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Definições Acadêmicas</h1>
+</div>
+
+<div class="row">
+    <!-- Years -->
+    <div class="col-md-6 mb-4">
+        <div class="card shadow h-100">
+            <div class="card-header py-3 bg-light d-flex justify-content-between align-items-center">
+                <h6 class="m-0 font-weight-bold text-dark">Anos Escolares</h6>
+                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                    data-bs-target="#newYearModal">
+                    <i class="bi bi-plus-lg"></i> Novo
+                </button>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    {% for year in years %}
+                    <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
+                        {{ year.name }}
+                        <div>
+                            <a href="{{ url_for('academic.edit_year', id=year.id) }}"
+                                class="btn btn-sm btn-outline-primary border-0" title="Editar">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <form id="delete-year-form-{{ year.id }}"
+                                action="{{ url_for('academic.delete_year', id=year.id) }}" method="POST"
+                                class="d-inline">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                                <button type="button" class="btn btn-sm btn-outline-danger border-0" title="Excluir"
+                                    onclick="handleDelete('delete-year-form-{{ year.id }}', 'Tem certeza que deseja excluir o ano escolar {{ year.name }}?')">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </li>
+                    {% else %}
+                    <li class="list-group-item text-muted">Nenhum ano escolar cadastrado.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Subjects -->
+    <div class="col-md-6 mb-4">
+        <div class="card shadow h-100">
+            <div class="card-header py-3 bg-light d-flex justify-content-between align-items-center">
+                <h6 class="m-0 font-weight-bold text-dark">Componentes</h6>
+                <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal"
+                    data-bs-target="#newSubjectModal">
+                    <i class="bi bi-plus-lg"></i> Novo
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="d-flex flex-wrap gap-2">
+                    {% for sub in subjects %}
+                    <div class="badge bg-secondary p-2 fs-6 d-flex align-items-center gap-2">
+                        {{ sub.name }}
+                        <div class="ms-1 border-start ps-1 d-flex gap-1">
+                            <a href="{{ url_for('academic.edit_subject', id=sub.id) }}"
+                                class="text-white opacity-75 hover-opacity-100" title="Editar">
+                                <i class="bi bi-pencil" style="font-size: 0.8rem;"></i>
+                            </a>
+                            <form id="delete-subject-form-{{ sub.id }}"
+                                action="{{ url_for('academic.delete_subject', id=sub.id) }}" method="POST"
+                                class="d-inline">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                                <button type="button"
+                                    class="border-0 bg-transparent p-0 text-white opacity-75 hover-opacity-100"
+                                    title="Excluir"
+                                    onclick="handleDelete('delete-subject-form-{{ sub.id }}', 'Tem certeza que deseja excluir o componente {{ sub.name }}?')">
+                                    <i class="bi bi-trash" style="font-size: 0.8rem;"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    {% else %}
+                    <span class="text-muted">Nenhum componente cadastrado.</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- New Year Modal -->
+<div class="modal fade" id="newYearModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Novo Ano Escolar</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST">
+                <div class="modal-body">
+                    {{ year_form.hidden_tag() }}
+                    <div class="mb-3">
+                        {{ year_form.name.label(class="form-label required") }}
+                        {{ year_form.name(class="form-control", placeholder="Ex: 5º Ano") }}
+                        {% for error in year_form.name.errors %}
+                        <span class="text-danger small">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <!-- Check if year_form has submit button or we need generic submit -->
+                    <!-- In original template, year_form.submit was used. We can replicate or use generic button if form handling allows. 
+                     Assuming generic button 'submit' works if no specific submit field name is required by logic. 
+                     Checking original: {{ year_form.submit(class="btn btn-primary mb-3") }}
+                     If logic checks for submit button name, we should respect it. But usually form.validate_on_submit() checks method=POST.
+                     Let's use year_form.submit for safety if it exists in definition, otherwise standard button.
+                     Wait, standard button inside form submits it. -->
+                    {{ year_form.submit(class="btn btn-primary") }}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- New Subject Modal -->
+<div class="modal fade" id="newSubjectModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Novo Componente</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST">
+                <div class="modal-body">
+                    {{ subject_form.hidden_tag() }}
+                    <div class="mb-3">
+                        {{ subject_form.name.label(class="form-label required") }}
+                        {{ subject_form.name(class="form-control", placeholder="Ex: Matemática") }}
+                        {% for error in subject_form.name.errors %}
+                        <span class="text-danger small">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    {{ subject_form.submit(class="btn btn-success") }}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div id="form-errors" data-year-errors="{{ 'true' if year_form.errors else 'false' }}"
+    data-subject-errors="{{ 'true' if subject_form.errors else 'false' }}">
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const errorContainer = document.getElementById('form-errors');
+
+        if (errorContainer.dataset.yearErrors === 'true') {
+            var myModal = new bootstrap.Modal(document.getElementById('newYearModal'));
+            myModal.show();
+        }
+
+        if (errorContainer.dataset.subjectErrors === 'true') {
+            var myModal = new bootstrap.Modal(document.getElementById('newSubjectModal'));
+            myModal.show();
+        }
+    });
+</script>
+{% endblock %}

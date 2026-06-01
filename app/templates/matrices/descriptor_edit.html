@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Editar Descritor</h1>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-body">
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    <div class="mb-3">
+                        {{ form.type.label(class="form-label") }}
+                        {{ form.type(class="form-select", onchange="toggleThemeField(this.value)") }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.code.label(class="form-label") }}
+                        {{ form.code(class="form-control") }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.matrix_id.label(class="form-label") }}
+                        {{ form.matrix_id(class="form-select", onchange="loadThemes(this.value, 'theme_id')") }}
+                    </div>
+                    <div class="mb-3" id="themeFieldWrapper">
+                        {{ form.theme_id.label(class="form-label") }}
+                        {{ form.theme_id(class="form-select") }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.description.label(class="form-label") }}
+                        {{ form.description(class="form-control", rows=3) }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.school_year_id.label(class="form-label") }}
+                        {{ form.school_year_id(class="form-select") }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.subject_id.label(class="form-label") }}
+                        {{ form.subject_id(class="form-select") }}
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('matrices.list_descriptors', matrix_id=descriptor.matrix_id) }}"
+                            class="btn btn-secondary">Cancelar</a>
+                        <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function loadThemes(matrixId, targetId) {
+        const target = document.getElementById(targetId);
+
+        // Clear existing options except the first one (if we want to keep placeholder, but edit might just reload)
+        while (target.options.length > 0) {
+            target.remove(0);
+        }
+
+        // Add placeholder
+        target.add(new Option('Selecione um item...', 0));
+
+        if (!matrixId || matrixId == 0) return;
+
+        fetch(`/matrices/api/themes/${matrixId}`)
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(theme => {
+                    const option = new Option(theme.name, theme.id);
+                    target.add(option);
+                });
+            })
+            .catch(error => console.error('Error loading themes:', error));
+    }
+
+    function toggleThemeField(type) {
+        const wrapper = document.getElementById('themeFieldWrapper');
+        if (type === 'Habilidade') {
+            wrapper.style.display = 'none';
+        } else {
+            wrapper.style.display = 'block';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const typeField = document.querySelector('select[name="type"]');
+        if (typeField) {
+            toggleThemeField(typeField.value);
+        }
+    });
+</script>
+{% endblock %}

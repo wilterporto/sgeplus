@@ -1,0 +1,248 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Alunos</h1>
+    <div class="btn-toolbar mb-2 mb-md-0 gap-2">
+        <button type="button" class="btn btn-sm btn-outline-success" data-bs-toggle="modal"
+            data-bs-target="#importModal">
+            <i class="bi bi-file-earmark-spreadsheet"></i> Importar Excel
+        </button>
+        <a class="btn btn-sm btn-primary" href="{{ url_for('students.new_student') }}">
+            <i class="bi bi-person-plus"></i> Novo Aluno
+        </a>
+    </div>
+</div>
+
+<!-- Import Modal -->
+<div class="modal fade" id="importModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Importar Alunos</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="importStudentForm" action="{{ url_for('students.import_students') }}" method="POST"
+                enctype="multipart/form-data">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                <div class="modal-body">
+                    <p class="small text-muted mb-3">
+                        <strong>Campos Obrigatórios:</strong> Unidade de Ensino, Nome da Turma, Nome Completo, Sexo, Data de Nascimento, CPF, Cor/Raça, Nacionalidade, País nascimento, Deficiência<br><br>
+                        <strong>Campos Opcionais:</strong> Código INEP, Cartão SUS, UF Naturalidade, Município Naturalidade, Zona Residencial, Localização Diferenciada de Residência, Bolsa Família, Renda Familiar, E-mail, Restrições Alimentares
+                        <br><br>
+                        <span class="text-danger fw-bold"><i class="bi bi-exclamation-triangle-fill"></i> Siga a formatação correta para evitar erros de importação.</span>
+                    </p>
+                    <div class="mb-3">
+                        <label for="file" class="form-label">Arquivo Excel (.xlsx)</label>
+                        <input type="file" class="form-control" id="file" name="file" accept=".xlsx, .xls" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-success">Importar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Search -->
+<form method="GET" class="row g-3 mb-4">
+    <div class="col-md-6">
+        <div class="input-group">
+            <input type="text" name="search" class="form-control" placeholder="Buscar por nome..."
+                value="{{ search or '' }}">
+            <button class="btn btn-outline-secondary" type="submit"><i class="bi bi-search"></i></button>
+            {% if search %}
+            <a href="{{ url_for('students.list_students') }}" class="btn btn-outline-danger"><i class="bi bi-x"></i></a>
+            {% endif %}
+        </div>
+    </div>
+</form>
+
+<div class="table-responsive bg-white shadow-sm">
+    <table class="table table-hover mb-0">
+        <thead class="table-light">
+            <tr>
+                <th>Matrícula</th>
+                <th>Nome</th>
+                <th>Data Nasc.</th>
+                <th>Sexo</th>
+                <th>CPF</th>
+                <th>Turma Atual</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in students.items %}
+            <tr>
+                <td>{{ student.registration_number }}</td>
+                <td>
+                    {{ student.name }}
+                    {% if student.user_id %}
+                    <i class="bi bi-key-fill text-success ms-2" title="Usuário/Senha Criados"></i>
+                    {% else %}
+                    <i class="bi bi-key text-muted ms-2 opacity-25" title="Sem acesso ao sistema"></i>
+                    {% endif %}
+                </td>
+                <td>{{ student.birth_date.strftime('%d/%m/%Y') if student.birth_date else '-' }}</td>
+                <td>{{ student.sex or '-' }}</td>
+                <td>{{ student.formatted_cpf }}</td>
+                <td>
+                    {% set active_enrollment = student.enrollments.filter_by(active=True).first() %}
+                    {% if active_enrollment %}
+                    <span class="badge bg-success">{{ active_enrollment.enrolled_class.name }}</span>
+                    <small class="text-muted d-block">{{ active_enrollment.enrolled_class.school_year.name }}</small>
+                    {% else %}
+                    <span class="badge bg-secondary">Não enturmado</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <div class="btn-group">
+                        <a href="{{ url_for('students.edit_student', id=student.id) }}"
+                            class="btn btn-sm btn-outline-secondary" title="Editar">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        <a href="{{ url_for('students.enroll_student', id=student.id) }}"
+                            class="btn btn-sm btn-outline-primary" title="Enturmar">
+                            <i class="bi bi-journal-text"></i>
+                        </a>
+                        <form id="delete-form-{{ student.registration_number }}"
+                            action="{{ url_for('students.delete_student', id=student.id) }}" method="POST"
+                            class="d-inline">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="button" class="btn btn-sm btn-outline-danger" title="Excluir"
+                                onclick="handleDelete('delete-form-{{ student.registration_number }}', 'Tem certeza que deseja excluir o aluno {{ student.name }}?')">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5" class="text-center py-4 text-muted">Nenhum aluno encontrado.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Pagination -->
+{% if students.pages > 1 %}
+<nav aria-label="Page navigation" class="mt-4">
+    <ul class="pagination justify-content-center">
+        <!-- First Page -->
+        <li class="page-item {{ 'disabled' if students.page == 1 }}">
+            <a class="page-link" href="{{ url_for('students.list_students', page=1, search=search) }}"
+                title="Primeira Página">
+                <i class="bi bi-chevron-double-left"></i>
+            </a>
+        </li>
+
+        {% if students.has_prev %}
+        <li class="page-item">
+            <a class="page-link"
+                href="{{ url_for('students.list_students', page=students.prev_num, search=search) }}">Anterior</a>
+        </li>
+        {% endif %}
+
+        <li class="page-item disabled d-none d-md-block">
+            <span class="page-link">Página {{ students.page }} de {{ students.pages }}</span>
+        </li>
+
+        {% if students.has_next %}
+        <li class="page-item">
+            <a class="page-link"
+                href="{{ url_for('students.list_students', page=students.next_num, search=search) }}">Próxima</a>
+        </li>
+        {% endif %}
+
+        <!-- Last Page -->
+        <li class="page-item {{ 'disabled' if students.page == students.pages }}">
+            <a class="page-link" href="{{ url_for('students.list_students', page=students.pages, search=search) }}"
+                title="Última Página">
+                <i class="bi bi-chevron-double-right"></i>
+            </a>
+        </li>
+    </ul>
+
+    <!-- Page Selector -->
+    <div class="d-flex justify-content-center align-items-center mt-2 gap-2">
+        <label for="pageSelect" class="small text-muted">Ir para página:</label>
+        <select id="pageSelect" class="form-select form-select-sm w-auto" onchange="window.location.href=this.value">
+            {% for p in range(1, students.pages + 1) %}
+            <option value="{{ url_for('students.list_students', page=p, search=search) }}" {{ 'selected' if
+                p==students.page }}>
+                {{ p }}
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+</nav>
+{% endif %}
+
+<script>
+    function maskCPF(input) {
+        let v = input.value.replace(/\D/g, '');
+        v = v.replace(/(\d{3})(\d)/, '$1.$2');
+        v = v.replace(/(\d{3})(\d)/, '$1.$2');
+        v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+        input.value = v;
+    }
+
+    async function loadClasses(unitId) {
+        const classSelect = document.getElementById('class_id');
+        classSelect.innerHTML = '<option value="">Carregando...</option>';
+
+        if (!unitId) {
+            classSelect.innerHTML = '<option value="">Selecione uma escola</option>';
+            return;
+        }
+
+        try {
+            const response = await fetch(`/students/api/classes/${unitId}`);
+            const data = await response.json();
+
+            classSelect.innerHTML = '';
+            data.classes.forEach(c => {
+                const option = document.createElement('option');
+                option.value = c.id;
+                option.textContent = c.name;
+                classSelect.appendChild(option);
+            });
+
+            if (data.classes.length === 0) {
+                classSelect.innerHTML = '<option value="">Nenhuma turma encontrada</option>';
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            classSelect.innerHTML = '<option value="">Erro ao carregar turmas</option>';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        
+
+        const hasFlashErrors = "{{ 'true' if get_flashed_messages(category_filter=['danger']) else 'false' }}" === 'true';
+        if (hasFlashErrors) {
+            var importModal = new bootstrap.Modal(document.getElementById('importModal'));
+            importModal.show();
+        }
+
+        setupImportProgress('importStudentForm');
+    });
+</script>
+
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/i18n/pt-BR.js"></script>
+<script>
+    $(document).ready(function() {
+        
+    });
+</script>
+
+{% endblock %}

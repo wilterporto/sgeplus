@@ -1,0 +1,1 @@
+"Script para buscar 'class ReferenceMatrix' em todos os arquivos de logs e extrair os modelos"

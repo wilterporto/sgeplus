@@ -1,0 +1,329 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Unidades de Ensino</h1>
+    <div class="btn-toolbar mb-2 mb-md-0 gap-2">
+        <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#importUnitModal">
+            <i class="bi bi-file-earmark-spreadsheet"></i> Importar Excel
+        </button>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newUnitModal">
+            <i class="bi bi-plus-lg"></i> Nova Unidade
+        </button>
+    </div>
+</div>
+
+{% if active_job %}
+<div class="row mb-4" id="active-import-card">
+    <div class="col-12">
+        <div class="card border-primary bg-primary bg-opacity-10 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h6 class="mb-0 text-primary">
+                        <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                        Importação de Unidades em Andamento...
+                    </h6>
+                    <span class="badge bg-primary px-3 py-2" id="active-pct">{{ active_job.progress_percentage
+                        }}%</span>
+                </div>
+                <div class="progress" style="height: 12px;">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
+                        id="active-bar" style="width: {{ active_job.progress_percentage }}%;"
+                        aria-valuenow="{{ active_job.progress_percentage }}" aria-valuemin="0" aria-valuemax="100">
+                    </div>
+                </div>
+                <div class="mt-2 small text-muted d-flex justify-content-between">
+                    <span id="active-count">{{ active_job.processed_rows }} / {{ active_job.total_rows }} registros
+                        processados</span>
+                    <span><a href="{{ url_for('admin.list_imports') }}" class="text-decoration-none">Ver detalhes em
+                            Administração</a></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const activePoll = setInterval(() => {
+        fetch(`/admin/imports/status/{{ active_job.id }}`)
+            .then(r => r.json())
+            .then(data => {
+                const bar = document.getElementById('active-bar');
+                const pct = document.getElementById('active-pct');
+                const count = document.getElementById('active-count');
+
+                if (bar) {
+                    bar.style.width = data.progress + '%';
+                    bar.setAttribute('aria-valuenow', data.progress);
+                }
+                if (pct) pct.innerText = data.progress + '%';
+                if (count) count.innerText = `${data.processed} / ${data.total} registros processados`;
+
+                if (data.status !== 'running') {
+                    clearInterval(activePoll);
+                    // Show a message or just reload
+                    setTimeout(() => window.location.reload(), 2000);
+                }
+            })
+            .catch(err => {
+                console.error('Error polling:', err);
+                clearInterval(activePoll);
+            });
+    }, 3000);
+</script>
+{% endif %}
+
+<!-- Search -->
+<form method="GET" class="row g-3 mb-4">
+    <div class="col-md-6">
+        <div class="input-group">
+            <input type="text" name="search" class="form-control" placeholder="Buscar por nome ou regional..."
+                value="{{ search or '' }}">
+            <button class="btn btn-outline-secondary" type="submit"><i class="bi bi-search"></i></button>
+            {% if search %}
+            <a href="{{ url_for('academic.list_units') }}" class="btn btn-outline-danger"><i class="bi bi-x"></i></a>
+            {% endif %}
+        </div>
+    </div>
+</form>
+
+<!-- New Unit Modal -->
+<div class="modal fade" id="newUnitModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Nova Unidade</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST">
+                <div class="modal-body">
+                    {{ form.hidden_tag() }}
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            {{ form.type.label(class="form-label required") }}
+                            {{ form.type(class="form-select") }}
+                            {% for error in form.type.errors %}
+                            <span class="text-danger small">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            {{ form.name.label(class="form-label required") }}
+                            {{ form.name(class="form-control") }}
+                            {% for error in form.name.errors %}
+                            <span class="text-danger small">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            {{ form.parent_id.label(class="form-label") }}
+                            {{ form.parent_id(class="form-select") }}
+                            <div class="form-text">Apenas para Escolas vinculadas a uma Regional.</div>
+                            {% for error in form.parent_id.errors %}
+                            <span class="text-danger small">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.inep_code.label(class="form-label") }}
+                            {{ form.inep_code(class="form-control") }}
+                            {% for error in form.inep_code.errors %}
+                            <span class="text-danger small">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            {{ form.uf.label(class="form-label") }}
+                            {{ form.uf(class="form-select", id="new_unit_uf") }}
+                            {% for error in form.uf.errors %}
+                            <span class="text-danger small">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            {{ form.municipio.label(class="form-label") }}
+                            {{ form.municipio(class="form-select", id="new_unit_municipio") }}
+                            {% for error in form.municipio.errors %}
+                            <span class="text-danger small">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.residential_zone.label(class="form-label") }}
+                            {{ form.residential_zone(class="form-select") }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.differentiated_location.label(class="form-label") }}
+                            {{ form.differentiated_location(class="form-select") }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.latitude.label(class="form-label") }}
+                            {{ form.latitude(class="form-control") }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.longitude.label(class="form-label") }}
+                            {{ form.longitude(class="form-control") }}
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- List -->
+    <div class="col-12">
+        <div class="card shadow mb-4">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0 align-middle">
+                        <thead class="table-light small">
+                            <tr>
+                                <th>Nome</th>
+                                <th>Tipo</th>
+                                <th>Regional</th>
+                                <th class="text-center">Turmas</th>
+                                <th class="text-center">Alunos</th>
+                                <th class="text-end">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for unit in units.items %}
+                            <tr class="small">
+                                <td class="fw-bold">{{ unit.name }}</td>
+                                <td>
+                                    {% if unit.type == 'Regional' %}
+                                    <span class="badge bg-primary">Regional</span>
+                                    {% else %}
+                                    <span class="badge bg-secondary">Escola</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ unit.parent.name if unit.parent else '-' }}</td>
+                                <td class="text-center">
+                                    <span class="badge bg-light text-dark border rounded-pill">{{ unit.classes_count
+                                        }}</span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-light text-dark border rounded-pill">{{ unit.students_count
+                                        }}</span>
+                                </td>
+                                <td class="text-end">
+                                    <div class="btn-group">
+                                        <a href="{{ url_for('academic.edit_unit', id=unit.id) }}"
+                                            class="btn btn-sm btn-outline-primary" title="Editar">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <form id="delete-form-{{ unit.id }}"
+                                            action="{{ url_for('academic.delete_unit', id=unit.id) }}" method="POST"
+                                            class="d-inline">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                                            <button type="button"
+                                                onclick="handleDelete('delete-form-{{ unit.id }}', 'Tem certeza que deseja excluir esta unidade?')"
+                                                class="btn btn-sm btn-outline-danger" title="Excluir">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="6" class="text-center text-muted p-4">Nenhuma unidade cadastrada.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                {% if units.pages > 1 %}
+                <nav aria-label="Page navigation" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        {% if units.has_prev %}
+                        <li class="page-item">
+                            <a class="page-link"
+                                href="{{ url_for('academic.list_units', page=units.prev_num, search=search) }}">Anterior</a>
+                        </li>
+                        {% endif %}
+                        <li class="page-item disabled"><span class="page-link">{{ units.page }} / {{ units.pages
+                                }}</span></li>
+                        {% if units.has_next %}
+                        <li class="page-item">
+                            <a class="page-link"
+                                href="{{ url_for('academic.list_units', page=units.next_num, search=search) }}">Próxima</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Import Unit Modal -->
+<div class="modal fade" id="importUnitModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Importar Unidades</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="importUnitForm" action="{{ url_for('academic.import_units') }}" method="POST"
+                enctype="multipart/form-data">
+                {{ import_form.hidden_tag() }}
+                <div class="modal-body">
+                    <p class="small text-muted mb-3">
+                        <strong>Campos Obrigatórios:</strong> Nome, Tipo, Regional Superior (se Escola)<br>
+                        <strong>Campos Opcionais:</strong> Código INEP, UF, Município, Localização, Localização Diferenciada, Latitude, Longitude
+                    </p>
+                    <a href="{{ url_for('academic.download_units_template') }}" class="btn btn-sm btn-outline-info mb-3">
+                        <i class="bi bi-download"></i> Baixar Layout de Importação (.xlsx)
+                    </a>
+                    <div class="mb-3">
+                        {{ import_form.file.label(class="form-label") }}
+                        {{ import_form.file(class="form-control", accept=".xlsx") }}
+                        {% for error in import_form.file.errors %}
+                        <span class="text-danger small">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    {{ import_form.submit(class="btn btn-success") }}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        setupImportProgress('importUnitForm');
+
+        $('#new_unit_uf').change(function() {
+            var uf = $(this).val();
+            var citySelect = $('#new_unit_municipio');
+            citySelect.empty();
+            citySelect.append('<option value="">Selecione o Município</option>');
+            
+            if(uf) {
+                $.ajax({
+                    url: '/students/api/cities/' + uf,
+                    type: 'GET',
+                    success: function(data) {
+                        data.forEach(function(city) {
+                            citySelect.append('<option value="' + city.name + '">' + city.name + '</option>');
+                        });
+                    }
+                });
+            }
+        });
+
+        {% if form.errors %}
+        var myModal = new bootstrap.Modal(document.getElementById('newUnitModal'));
+        myModal.show();
+        {% endif %}
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,282 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Restrições Alimentares</h1>
+    <div class="btn-toolbar mb-2 mb-md-0 gap-2">
+        <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#importRestrictionModal">
+            <i class="bi bi-file-earmark-spreadsheet"></i> Importar Excel
+        </button>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newRestrictionModal">
+            <i class="bi bi-plus-lg"></i> Nova Restrição
+        </button>
+    </div>
+</div>
+
+{% if active_job %}
+<div class="row mb-4" id="active-import-card">
+    <div class="col-12">
+        <div class="card border-primary bg-primary bg-opacity-10 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h6 class="mb-0 text-primary">
+                        <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                        Importação em Andamento...
+                    </h6>
+                    <span class="badge bg-primary px-3 py-2" id="active-pct">{{ active_job.progress_percentage
+                        }}%</span>
+                </div>
+                <div class="progress" style="height: 12px;">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
+                        id="active-bar" style="width: {{ active_job.progress_percentage }}%;"
+                        aria-valuenow="{{ active_job.progress_percentage }}" aria-valuemin="0" aria-valuemax="100">
+                    </div>
+                </div>
+                <div class="mt-2 small text-muted d-flex justify-content-between">
+                    <span id="active-count">{{ active_job.processed_rows }} / {{ active_job.total_rows }} registros processados</span>
+                    <span><a href="{{ url_for('admin.list_imports') }}" class="text-decoration-none">Ver detalhes em Administração</a></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const activePoll = setInterval(() => {
+        fetch(`/admin/imports/status/{{ active_job.id }}`)
+            .then(r => r.json())
+            .then(data => {
+                const bar = document.getElementById('active-bar');
+                const pct = document.getElementById('active-pct');
+                const count = document.getElementById('active-count');
+
+                if (bar) {
+                    bar.style.width = data.progress + '%';
+                    bar.setAttribute('aria-valuenow', data.progress);
+                }
+                if (pct) pct.innerText = data.progress + '%';
+                if (count) count.innerText = `${data.processed} / ${data.total} registros processados`;
+
+                if (data.status !== 'running') {
+                    clearInterval(activePoll);
+                    setTimeout(() => window.location.reload(), 2000);
+                }
+            })
+            .catch(err => {
+                console.error('Error polling:', err);
+                clearInterval(activePoll);
+            });
+    }, 3000);
+</script>
+{% endif %}
+
+<!-- Search -->
+<form method="GET" class="row g-3 mb-4">
+    <div class="col-md-6">
+        <div class="input-group">
+            <input type="text" name="search" class="form-control" placeholder="Buscar por restrição..."
+                value="{{ search or '' }}">
+            <button class="btn btn-outline-secondary" type="submit"><i class="bi bi-search"></i></button>
+            {% if search %}
+            <a href="{{ url_for('admin.list_dietary_restrictions') }}" class="btn btn-outline-danger"><i class="bi bi-x"></i></a>
+            {% endif %}
+        </div>
+    </div>
+</form>
+
+<!-- New Restriction Modal -->
+<div class="modal fade" id="newRestrictionModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Nova Restrição Alimentar</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST">
+                <div class="modal-body">
+                    {{ form.hidden_tag() }}
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            {{ form.name.label(class="form-label required") }}
+                            {{ form.name(class="form-control") }}
+                            {% for error in form.name.errors %}
+                            <span class="text-danger small">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        <div class="col-md-12 mb-3 form-check ms-2">
+                            {{ form.active(class="form-check-input") }}
+                            {{ form.active.label(class="form-check-label") }}
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- List -->
+    <div class="col-12">
+        <div class="card shadow mb-4">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0 align-middle">
+                        <thead class="table-light small">
+                            <tr>
+                                <th>Nome da Restrição</th>
+                                <th class="text-center">Alunos Vinculados</th>
+                                <th class="text-end">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for restriction in restrictions.items %}
+                            <tr class="small">
+                                <td class="fw-bold">
+                                    {{ restriction.name }}
+                                    {% if restriction.active %}
+                                    <span class="badge bg-success ms-2">Ativa</span>
+                                    {% else %}
+                                    <span class="badge bg-secondary ms-2">Inativa</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-light text-dark border rounded-pill">{{ restriction.students|length }}</span>
+                                </td>
+                                <td class="text-end">
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-sm btn-outline-primary" title="Editar"
+                                            data-bs-toggle="modal" data-bs-target="#editRestrictionModal-{{ restriction.id }}">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <form id="delete-form-{{ restriction.id }}"
+                                            action="{{ url_for('admin.delete_dietary_restriction', id=restriction.id) }}" method="POST"
+                                            class="d-inline">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                                            <button type="button"
+                                                onclick="handleDelete('delete-form-{{ restriction.id }}', 'Tem certeza que deseja excluir esta restrição alimentar?')"
+                                                class="btn btn-sm btn-outline-danger" title="Excluir">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            <!-- Edit Modal -->
+                            <div class="modal fade" id="editRestrictionModal-{{ restriction.id }}" tabindex="-1" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Editar Restrição Alimentar</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <form method="POST" action="{{ url_for('admin.edit_dietary_restriction', id=restriction.id) }}">
+                                            <div class="modal-body text-start">
+                                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                                                <div class="row">
+                                                    <div class="col-md-12 mb-3">
+                                                        <label class="form-label required">Nome da Restrição Alimentar</label>
+                                                        <input type="text" name="name" class="form-control" value="{{ restriction.name }}" required>
+                                                    </div>
+                                                    <div class="col-md-12 mb-3 form-check ms-2">
+                                                        <input class="form-check-input" type="checkbox" name="active" id="active-{{ restriction.id }}" {% if restriction.active %}checked{% endif %}>
+                                                        <label class="form-check-label" for="active-{{ restriction.id }}">Ativo</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                                <button type="submit" class="btn btn-primary">Salvar</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            {% else %}
+                            <tr>
+                                <td colspan="3" class="text-center text-muted p-4">Nenhuma restrição alimentar cadastrada.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                {% if restrictions.pages > 1 %}
+                <nav aria-label="Page navigation" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        {% if restrictions.has_prev %}
+                        <li class="page-item">
+                            <a class="page-link"
+                                href="{{ url_for('admin.list_dietary_restrictions', page=restrictions.prev_num, search=search) }}">Anterior</a>
+                        </li>
+                        {% endif %}
+                        <li class="page-item disabled"><span class="page-link">{{ restrictions.page }} / {{ restrictions.pages
+                                }}</span></li>
+                        {% if restrictions.has_next %}
+                        <li class="page-item">
+                            <a class="page-link"
+                                href="{{ url_for('admin.list_dietary_restrictions', page=restrictions.next_num, search=search) }}">Próxima</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Import Modal -->
+<div class="modal fade" id="importRestrictionModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Importar Restrições Alimentares</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="importRestrictionForm" action="{{ url_for('admin.import_dietary_restrictions') }}" method="POST"
+                enctype="multipart/form-data">
+                {{ import_form.hidden_tag() }}
+                <div class="modal-body text-start">
+                    <p class="small text-muted mb-3">
+                        O arquivo Excel deve conter as colunas: <br>
+                        <strong>Nome</strong>
+                    </p>
+                    <div class="mb-3">
+                        {{ import_form.file.label(class="form-label") }}
+                        {{ import_form.file(class="form-control", accept=".xlsx") }}
+                        {% for error in import_form.file.errors %}
+                        <span class="text-danger small">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    {{ import_form.submit(class="btn btn-success") }}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Setup importing interaction - defined globally in base.html if it exists.
+        // If not, form submits normally.
+        if (typeof setupImportProgress === "function") {
+            setupImportProgress('importRestrictionForm');
+        }
+
+        {% if form.errors %}
+        var myModal = new bootstrap.Modal(document.getElementById('newRestrictionModal'));
+        myModal.show();
+        {% endif %}
+    });
+</script>
+{% endblock %}

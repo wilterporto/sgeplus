@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Matrizes de Referência</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newMatrixModal">
+            <i class="bi bi-plus-lg"></i> Nova Matriz
+        </button>
+    </div>
+</div>
+
+<!-- New Matrix Modal -->
+<div class="modal fade" id="newMatrixModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Nova Matriz</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST">
+                <div class="modal-body">
+                    {{ form.hidden_tag() }}
+                    <div class="row">
+                        <div class="col-12 mb-3">
+                            {{ form.name.label(class="form-label required") }}
+                            {{ form.name(class="form-control") }}
+                            {% for error in form.name.errors %}
+                            <span class="text-danger small">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        <div class="col-12 mb-3">
+                            {{ form.description.label(class="form-label") }}
+                            {{ form.description(class="form-control", rows=3) }}
+                            {% for error in form.description.errors %}
+                            <span class="text-danger small">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
+    {% for matrix in matrices %}
+    <div class="col">
+        <div class="card h-100 shadow-sm border-start border-4 border-primary">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h5 class="card-title mb-1">{{ matrix.name }}</h5>
+                        <p class="card-text text-muted small">{{ matrix.description or 'Sem descrição' }}</p>
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-link link-dark " type="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-three-dots-vertical"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item"
+                                    href="{{ url_for('matrices.edit_matrix', id=matrix.id) }}">Editar</a></li>
+                            <li><a class="dropdown-item"
+                                    href="{{ url_for('matrices.list_descriptors', matrix_id=matrix.id) }}">Gerenciar
+                                    Descritores</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li>
+                                <form id="delete-form-{{ matrix.id }}"
+                                    action="{{ url_for('matrices.delete_theme', id=matrix.id) }}" method="POST">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                                    <button type="button" class="dropdown-item text-danger"
+                                        onclick="handleDelete('delete-form-{{ matrix.id }}', 'Tem certeza que deseja excluir esta matriz?')">
+                                        Excluir Matriz
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <span class="badge bg-secondary">{{ matrix.descriptors.count() }} Descritores</span>
+                    <span class="badge bg-info text-dark ms-1">{{ matrix.questions_count }} Questões</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-12">
+        <div class="alert alert-info">Nenhuma matriz cadastrada.</div>
+    </div>
+    {% endfor %}
+</div>
+
+<script>
+    // Auto-open modal if there are errors
+    {% if form.errors %}
+    document.addEventListener('DOMContentLoaded', function () {
+        var myModal = new bootstrap.Modal(document.getElementById('newMatrixModal'));
+        myModal.show();
+    });
+    {% endif %}
+</script>
+{% endblock %}

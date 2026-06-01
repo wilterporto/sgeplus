@@ -1,0 +1,416 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Gerar Nova Prova</h1>
+    <a href="{{ url_for('exams.list_exams') }}" class="btn btn-sm btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Voltar para Lista
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card p-4">
+            {% if form.errors %}
+                <div class="alert alert-danger">
+                    <h5 class="alert-heading">Corrija os erros abaixo:</h5>
+                    <ul class="mb-0">
+                    {% for field, errors in form.errors.items() %}
+                        {% for error in errors %}
+                            <li><strong>{{ form[field].label.text if field in form else field }}:</strong> {{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+            <form method="POST" id="generate-form">
+                {{ form.hidden_tag() }}
+
+                {% if not is_teacher and not is_unidade %}
+                <div class="mb-3">
+                    {{ form.evaluation_id.label(class="form-label required") }}
+                    {{ form.evaluation_id(class="form-select") }}
+                    <div class="form-text">
+                        Não encontrou a avaliação? <a href="{{ url_for('academic.list_evaluations') }}"
+                            class="text-decoration-none">Cadastre aqui</a>.
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        {{ form.application_date.label(class="form-label required") }}
+                        {{ form.application_date(class="form-control", type="date") }}
+                    </div>
+                </div>
+
+                <div class="row mb-3 bg-light p-3 border rounded" {% if is_teacher or is_unidade %}style="display:none;" {% endif %}>
+                    <div class="col-md-4">
+                        {{ form.scope_type.label(class="form-label required") }}
+                        {{ form.scope_type(class="form-select", id="scope_type") }}
+                    </div>
+                    <div class="col-md-8" id="div_regional" style="display:none;">
+                        {{ form.regional_id.label(class="form-label") }}
+                        {{ form.regional_id(class="form-select", multiple=True, style="height: 100px;") }}
+                        <div class="form-text text-primary small">
+                            <i class="bi bi-info-circle me-1"></i> Segure CTRL para selecionar múltiplas regionais.
+                        </div>
+                    </div>
+                    <div class="col-md-8" id="div_school" style="display:none;">
+                        {{ form.teaching_unit_id.label(class="form-label") }}
+                        {{ form.teaching_unit_id(class="form-select", multiple=True, style="height: 100px;") }}
+                        <div class="form-text text-primary small">
+                            <i class="bi bi-info-circle me-1"></i> Segure CTRL para selecionar múltiplas unidades.
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="row mb-3">
+                    <div class="col-md-12 mb-3">
+                        {{ form.matrix_id.label(class="form-label required") }}
+                        {{ form.matrix_id(class="form-select") }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        {{ form.school_year_id.label(class="form-label required") }}
+                        {{ form.school_year_id(class="form-select", id="school_year_id") }}
+                    </div>
+                    <div class="col-md-6 mb-3" id="div_subject_id">
+                        {{ form.subject_id.label(class="form-label required") }}
+                        {{ form.subject_id(class="form-select", id="subject_id") }}
+                    </div>
+                    <div class="col-md-6 mb-3" id="div_subject_ids" style="display:none;">
+                        {{ form.subject_ids.label(class="form-label required") }}
+                        {{ form.subject_ids(class="form-select", id="subject_ids", multiple=True, style="height: 100px;") }}
+                        <div class="form-text text-primary small">
+                            <i class="bi bi-info-circle me-1"></i> Segure CTRL para selecionar múltiplos componentes.
+                        </div>
+                    </div>
+                </div>
+
+                {% if is_teacher or is_unidade %}
+                <div class="mb-3" id="div_professor_classes">
+                    {{ form.class_ids.label(class="form-label required") }}
+                    {{ form.class_ids(class="form-select", multiple=True, style="height: 100px;",
+                    id="class_ids_selector") }}
+                    <div class="form-text text-primary small">
+                        <i class="bi bi-info-circle me-1"></i> Selecione as turmas para as quais a prova será válida.
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        {{ form.difficulty.label(class="form-label required") }}
+                        {{ form.difficulty(class="form-select") }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form.quantity.label(class="form-label required") }}
+                        {{ form.quantity(class="form-select") }}
+                    </div>
+                </div>
+
+                <div class="row mb-3 p-3 border rounded bg-light">
+                    <div class="col-md-6">
+                        {{ form.scoring_type.label(class="form-label required") }}
+                        {{ form.scoring_type(class="form-select", id="scoring_type") }}
+                    </div>
+                    <div class="col-md-6" id="div_total_value" style="display:none;">
+                        {{ form.total_value.label(class="form-label", id="label_total_value") }}
+                        {{ form.total_value(class="form-control", placeholder="Ex: 10.0") }}
+                        <div class="form-text small text-muted" id="help_total_value"></div>
+                    </div>
+                </div>
+
+                <div class="row mb-3 p-3 border rounded bg-white">
+                    <div class="col-md-6 mb-2">
+                        {{ form.target_nationality.label(class="form-label") }}
+                        {{ form.target_nationality(class="form-select") }}
+                        <div class="form-text small">Define se a prova aparecerá para estrangeiros.</div>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        {{ form.special_needs_filter.label(class="form-label") }}
+                        {{ form.special_needs_filter(class="form-select") }}
+                        <div class="form-text small">Filtra a prova por situação de deficiência.</div>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    {{ form.descriptor_ids.label(class="form-label") }}
+                    {{ form.descriptor_ids(class="form-select", id="descriptor_ids", style="height: 150px;") }}
+                    <div class="form-text">
+                        <i class="bi bi-info-circle me-1"></i> Selecione um ou mais descritores. Segure CTRL para
+                        múltiplas.
+                    </div>
+                </div>
+
+                {% if not is_teacher and not is_unidade %}
+                <div class="mb-4 form-check">
+                    {{ form.allow_teacher_entry(class="form-check-input") }}
+                    {{ form.allow_teacher_entry.label(class="form-check-label") }}
+                </div>
+                {% endif %}
+
+                <button type="submit" class="btn btn-primary d-flex align-items-center justify-content-center">
+                    <i class="bi bi-shuffle me-2"></i>
+                    Gerar Prova (Randomização)
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% block scripts %}
+<script>
+    document.getElementById('scope_type').addEventListener('change', function () {
+        const val = this.value;
+        const divRegional = document.getElementById('div_regional');
+        const divSchool = document.getElementById('div_school');
+
+        divRegional.style.display = (val === 'regional') ? 'block' : 'none';
+        divSchool.style.display = (val === 'school') ? 'block' : 'none';
+    });
+
+    // Trigger once on load
+    document.getElementById('scope_type').dispatchEvent(new Event('change'));
+
+    // Map evaluations with multiple components
+    const evaluationsMultipleComponents = {
+        {% if evaluations %}
+        {% for e in evaluations %}
+        "{{ e.id }}": {{ 'true' if e.multiple_components else 'false' }},
+        {% endfor %}
+        {% endif %}
+    };
+
+    function checkMultipleComponents() {
+        const evalSelect = document.getElementById('evaluation_id');
+        if (!evalSelect) return false;
+        const evalId = evalSelect.value;
+        return !!evaluationsMultipleComponents[evalId];
+    }
+
+    // Toggle subjects view based on evaluation config
+    function toggleSubjectFields() {
+        const isMultiple = checkMultipleComponents();
+        const divSubjectId = document.getElementById('div_subject_id');
+        const divSubjectIds = document.getElementById('div_subject_ids');
+        
+        if (isMultiple) {
+            if (divSubjectId) divSubjectId.style.display = 'none';
+            if (divSubjectIds) divSubjectIds.style.display = 'block';
+        } else {
+            if (divSubjectId) divSubjectId.style.display = 'block';
+            if (divSubjectIds) divSubjectIds.style.display = 'none';
+        }
+    }
+
+    // Dynamic curriculum subjects loader for multiple components mode
+    function updateCurriculumSubjects() {
+        const isMultiple = checkMultipleComponents();
+        if (!isMultiple) {
+            updateDescriptors();
+            return;
+        }
+
+        const yearId = yearSelect.value;
+        const subjectIdsSelect = document.getElementById('subject_ids');
+        
+        if (!yearId || yearId == '0') {
+            if (subjectIdsSelect) subjectIdsSelect.innerHTML = '';
+            descriptorSelect.innerHTML = '';
+            return;
+        }
+        
+        const url = `{{ url_for('exams.get_curriculum_subjects', year_id=0) }}`.replace('0', yearId);
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                const currentSelection = Array.from(subjectIdsSelect.selectedOptions).map(opt => opt.value);
+                subjectIdsSelect.innerHTML = '';
+                data.forEach(s => {
+                    const option = document.createElement('option');
+                    option.value = s.id;
+                    option.textContent = s.name;
+                    if (currentSelection.includes(s.id.toString())) {
+                        option.selected = true;
+                    }
+                    subjectIdsSelect.appendChild(option);
+                });
+                updateDescriptors();
+            })
+            .catch(error => console.error('Error fetching curriculum subjects:', error));
+    }
+
+    // Dynamic Descriptors logic
+    const matrixSelect = document.getElementById('matrix_id');
+    const yearSelect = document.getElementById('school_year_id');
+    const subjectSelect = document.getElementById('subject_id');
+    const descriptorSelect = document.getElementById('descriptor_ids');
+
+    function updateDescriptors() {
+        const matrixId = matrixSelect.value;
+        const yearId = yearSelect.value;
+        const isMultiple = checkMultipleComponents();
+        
+        let queryParams = `matrix_id=${matrixId}&year_id=${yearId}`;
+        
+        if (isMultiple) {
+            const subjectIdsSelect = document.getElementById('subject_ids');
+            if (!subjectIdsSelect) return;
+            const selectedSubjects = Array.from(subjectIdsSelect.selectedOptions).map(opt => opt.value);
+            if (!matrixId || matrixId == '0' || !yearId || yearId == '0' || selectedSubjects.length === 0) {
+                descriptorSelect.innerHTML = '';
+                return;
+            }
+            queryParams += `&subject_ids=${selectedSubjects.join(',')}`;
+        } else {
+            const subjectId = subjectSelect.value;
+            if (!matrixId || matrixId == '0' || !yearId || yearId == '0' || !subjectId || subjectId == '0') {
+                descriptorSelect.innerHTML = '';
+                return;
+            }
+            queryParams += `&subject_id=${subjectId}`;
+        }
+
+        const url = `{{ url_for('exams.search_descriptors_api') }}?${queryParams}`;
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                const urlParams = new URLSearchParams(window.location.search);
+                const preSelectedIds = urlParams.get('descriptor_ids') ? urlParams.get('descriptor_ids').split(',') : [];
+                const currentSelection = Array.from(descriptorSelect.selectedOptions).map(opt => opt.value);
+
+                descriptorSelect.innerHTML = '';
+
+                data.forEach(d => {
+                    const option = document.createElement('option');
+                    option.value = d.id;
+                    if (d.subject_name) {
+                        option.textContent = `[${d.subject_name}] ${d.code}: ${d.description}`;
+                    } else {
+                        option.textContent = `${d.code}: ${d.description}`;
+                    }
+
+                    // Priority: URL params (only on first load) then current selection
+                    if (preSelectedIds.includes(d.id.toString()) || currentSelection.includes(d.id.toString())) {
+                        option.selected = true;
+                    }
+                    descriptorSelect.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error fetching descriptors:', error));
+    }
+
+    // Set up listeners
+    const evalSelect = document.getElementById('evaluation_id');
+    if (evalSelect) {
+        evalSelect.addEventListener('change', function() {
+            toggleSubjectFields();
+            updateCurriculumSubjects();
+        });
+    }
+
+    yearSelect.addEventListener('change', function() {
+        updateCurriculumSubjects();
+    });
+
+    if (subjectSelect) {
+        subjectSelect.addEventListener('change', updateDescriptors);
+    }
+
+    const subjectIdsSelect = document.getElementById('subject_ids');
+    if (subjectIdsSelect) {
+        subjectIdsSelect.addEventListener('change', updateDescriptors);
+    }
+
+    matrixSelect.addEventListener('change', updateDescriptors);
+
+    // Initial load configurations
+    toggleSubjectFields();
+    if (checkMultipleComponents()) {
+        updateCurriculumSubjects();
+    } else {
+        if (matrixSelect.value != '0') {
+            updateDescriptors();
+        }
+    }
+
+    // Scoring dynamic fields
+    const scoringTypeSelect = document.getElementById('scoring_type');
+    const divTotalValue = document.getElementById('div_total_value');
+    const labelTotalValue = document.getElementById('label_total_value');
+    const helpTotalValue = document.getElementById('help_total_value');
+
+    scoringTypeSelect.addEventListener('change', function () {
+        const val = this.value;
+        if (val === 'none') {
+            divTotalValue.style.display = 'none';
+        } else {
+            divTotalValue.style.display = 'block';
+            if (val === 'fixed') {
+                labelTotalValue.textContent = 'Valor por Questão';
+                helpTotalValue.textContent = 'Este valor será atribuído a cada questão da prova.';
+            } else if (val === 'total') {
+                labelTotalValue.textContent = 'Valor Total da Prova';
+                helpTotalValue.textContent = 'O valor será distribuído proporcionalmente à dificuldade (Dificil > Medio > Facil).';
+            } else if (val === 'per_question') {
+                labelTotalValue.textContent = 'Valor por Questão';
+                helpTotalValue.textContent = 'Você poderá informar o valor de cada questão individualmente na próxima tela (caso seja uma Avaliação vinculada).';
+            }
+        }
+    });
+
+    // Trigger once
+    scoringTypeSelect.dispatchEvent(new Event('change'));
+
+    // Professor dynamic classes logic
+    const isTeacher = {{ 'true' if is_teacher else 'false' }};
+    const classSelect = document.getElementById('class_ids_selector') || document.querySelector('select[name="class_ids"]');
+
+    if (isTeacher && classSelect) {
+        function updateProfessorClasses() {
+            const yearId = yearSelect.value;
+            const subjectId = subjectSelect.value;
+
+            if (!yearId || yearId == '0' || !subjectId || subjectId == '0') {
+                classSelect.innerHTML = '';
+                return;
+            }
+
+            const url = `{{ url_for('exams.api_professor_classes') }}?school_year_id=${yearId}&subject_id=${subjectId}`;
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    const currentSelection = Array.from(classSelect.selectedOptions).map(opt => opt.value);
+                    classSelect.innerHTML = '';
+                    data.forEach(c => {
+                        const option = document.createElement('option');
+                        option.value = c.id;
+                        option.textContent = c.name;
+                        if (currentSelection.includes(c.id.toString())) {
+                            option.selected = true;
+                        }
+                        classSelect.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error fetching professor classes:', error));
+        }
+
+        yearSelect.addEventListener('change', updateProfessorClasses);
+        subjectSelect.addEventListener('change', updateProfessorClasses);
+
+        // Trigger once on load if both are selected
+        if (yearSelect.value != '0' && subjectSelect.value != '0') {
+            updateProfessorClasses();
+        }
+    }
+</script>
+<style>
+    .form-label.required:after {
+        content: " *";
+        color: red;
+    }
+</style>
+{% endblock %}
+{% endblock %}

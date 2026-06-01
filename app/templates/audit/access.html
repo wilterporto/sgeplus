@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3><i class="bi bi-clock-history me-2"></i> Histórico de Acesso</h3>
+    <a href="{{ url_for('audit.list_logs') }}" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left me-1"></i> Voltar
+    </a>
+</div>
+
+{% if tenants %}
+<div class="card shadow-sm mb-3">
+    <div class="card-body py-2">
+        <form method="GET" class="row g-2 align-items-center">
+            <div class="col-auto">
+                <label for="tenant_id" class="col-form-label small fw-bold">Filtrar por Cliente:</label>
+            </div>
+            <div class="col-md-4">
+                <select name="tenant_id" id="tenant_id" class="form-select form-select-sm" onchange="this.form.submit()">
+                    <option value="">Todos os Clientes</option>
+                    {% for tenant in tenants %}
+                    <option value="{{ tenant.id }}" {% if tenant.id == selected_tenant_id %}selected{% endif %}>{{ tenant.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            {% if selected_tenant_id %}
+            <div class="col-auto">
+                <a href="{{ url_for('audit.list_access') }}" class="btn btn-sm btn-outline-danger"><i class="bi bi-x-lg"></i> Limpar</a>
+            </div>
+            {% endif %}
+        </form>
+    </div>
+</div>
+{% endif %}
+
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>Data Login</th>
+                    <th>Data Logout</th>
+                    <th>Tipo Logout</th>
+                    <th>Usuário</th>
+                    <th>IP</th>
+                    <th>Navegador/OS</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in access_logs.items %}
+                <tr>
+                    <td>{{ log.login_time.strftime('%d/%m/%Y %H:%M:%S') }}</td>
+                    <td>
+                        {% if log.logout_time %}
+                        {{ log.logout_time.strftime('%d/%m/%Y %H:%M:%S') }}
+                        {% else %}
+                        <span class="text-success small"><i class="bi bi-circle-fill me-1" style="font-size: 8px;"></i>
+                            Ativo / Desconhecido</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if log.logout_type == 'MANUAL' %}
+                        <span class="badge bg-secondary">Manual</span>
+                        {% elif log.logout_type == 'TIMEOUT' %}
+                        <span class="badge bg-warning">Timeout</span>
+                        {% else %}
+                        -
+                        {% endif %}
+                    </td>
+                    <td>
+                        {{ log.user.username if log.user else log.user_id }}
+                    </td>
+                    <td>{{ log.ip_address }}</td>
+                    <td class="small text-muted">
+                        {{ log.browser }} / {{ log.platform }}
+                        <div class="text-truncate" style="max-width: 200px;" title="{{ log.user_agent }}">{{
+                            log.user_agent }}</div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" class="text-center py-4 text-muted">
+                        Nenhum acesso registrado.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% if access_logs.pages > 1 %}
+    <div class="card-footer bg-light">
+        <nav aria-label="Page navigation">
+            <ul class="pagination pagination-sm justify-content-center mb-0">
+                {% if access_logs.has_prev %}
+                <li class="page-item"><a class="page-link"
+                        href="{{ url_for('audit.list_access', page=access_logs.prev_num, tenant_id=selected_tenant_id) }}">Anterior</a></li>
+                {% endif %}
+                <li class="page-item disabled"><span class="page-link">{{ access_logs.page }} de {{ access_logs.pages }}</span></li>
+                {% if access_logs.has_next %}
+                <li class="page-item"><a class="page-link"
+                        href="{{ url_for('audit.list_access', page=access_logs.next_num, tenant_id=selected_tenant_id) }}">Próxima</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

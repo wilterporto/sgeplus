@@ -1,0 +1,999 @@
+<!doctype html>
+<html lang="pt-br" data-bs-theme="light">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ system_config.system_name }}</title>
+    
+    <!-- PWA Meta Tags & Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#0d6efd">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="SGE+">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <link rel="apple-touch-icon" href="/static/images/icon-192.png">
+
+    <!-- Bootstrap & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Evitar flashing de tema claro durante o load -->
+    <script>
+        (function () {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-bs-theme', savedTheme);
+        })();
+    </script>
+
+    <style>
+        body {
+            background-color: #f4f6f9;
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* Estilos e Cores para o Tema Escuro Customizado */
+        [data-bs-theme="dark"] body {
+            background-color: #121212;
+            color: #f8f9fa;
+        }
+
+        [data-bs-theme="dark"] .card {
+            background-color: #1e1e1e;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.3);
+        }
+
+        [data-bs-theme="dark"] .card-header {
+            color: #e3e3e3;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        [data-bs-theme="dark"] .navbar {
+            background-color: #1e1e1e !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+        }
+
+        [data-bs-theme="dark"] .navbar-light .navbar-text,
+        [data-bs-theme="dark"] .navbar-light .nav-link,
+        [data-bs-theme="dark"] .dropdown-toggle {
+            color: #e3e3e3 !important;
+        }
+
+        [data-bs-theme="dark"] .table {
+            color: #e3e3e3;
+        }
+
+        [data-bs-theme="dark"] .table thead th {
+            background-color: #2b2b2b !important;
+            color: #e3e3e3 !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        [data-bs-theme="dark"] .table-hover tbody tr:hover {
+            background-color: rgba(255, 255, 255, 0.03);
+            color: #ffffff;
+        }
+
+        [data-bs-theme="dark"] .text-muted {
+            color: #a0a0a0 !important;
+        }
+
+        [data-bs-theme="dark"] .bg-light {
+            background-color: #2b2b2b !important;
+            color: #f8f9fa !important;
+        }
+
+        [data-bs-theme="dark"] .badge.bg-light {
+            background-color: #343a40 !important;
+            color: #f8f9fa !important;
+        }
+
+        [data-bs-theme="dark"] .progress {
+            background-color: #2b2b2b;
+        }
+
+        .sidebar {
+            height: 100vh;
+            position: sticky;
+            top: 0;
+            overflow-y: auto;
+            background-color: #212529;
+            /* Darker background */
+            color: #adb5bd;
+            transition: all 0.3s;
+            width: 260px;
+            overflow-x: hidden;
+            white-space: nowrap;
+            box-shadow: 4px 0 10px rgba(0, 0, 0, 0.05);
+            /* Subtle shadow */
+        }
+
+        /* Custom scrollbar sutil e premium para a sidebar */
+        .sidebar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .sidebar::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.1);
+        }
+        .sidebar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 4px;
+        }
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .sidebar.collapsed {
+            width: 70px;
+        }
+
+        .sidebar.collapsed .sidebar-text,
+        .sidebar.collapsed .sidebar-header,
+        .sidebar.collapsed .dropdown-toggle strong {
+            display: none;
+        }
+
+        .sidebar.collapsed .nav-link {
+            text-align: center;
+            padding-left: 0;
+            padding-right: 0;
+        }
+
+        .sidebar.collapsed .nav-link i {
+            margin-right: 0 !important;
+            font-size: 1.2rem;
+        }
+
+        /* Titles */
+        h1,
+        .h1 {
+            font-size: 1.5rem !important;
+        }
+
+        h2,
+        .h2 {
+            font-size: 1.25rem !important;
+        }
+
+        h3,
+        .h3 {
+            font-size: 1.1rem !important;
+        }
+
+        .sidebar a {
+            color: #ced4da;
+            text-decoration: none;
+            padding: 6px 10px;
+            /* Reduced padding */
+            display: block;
+            border-radius: 6px;
+            margin-bottom: 2px;
+            font-size: 0.85rem;
+            /* Reduced font size */
+            transition: background 0.2s;
+        }
+
+        .sidebar a:hover {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar a.active {
+            background-color: #0d6efd;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 2px 4px rgba(13, 110, 253, 0.2);
+        }
+
+        .content {
+            padding: 1.5rem;
+            /* Reduced padding */
+        }
+
+        /* Modern Card Styles */
+        .card {
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.04);
+            border: none;
+            border-radius: 0.5rem;
+            /* Slightly less rounded */
+            background-color: #fff;
+            margin-bottom: 1rem;
+        }
+
+        .card-header {
+            background-color: transparent;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            padding: 0.75rem 1.25rem;
+            /* Reduced padding */
+            font-weight: 600;
+            color: #344767;
+            font-size: 0.95rem;
+        }
+
+        .card-body {
+            padding: 1rem;
+            /* Reduced padding */
+        }
+
+        .form-label.required::after {
+            content: " *";
+            color: #dc3545;
+        }
+
+        /* Table enhancements */
+        .table {
+            vertical-align: middle;
+            font-size: 0.875rem;
+            /* Reduced font size for all tables */
+        }
+
+        .table thead th {
+            font-weight: 600;
+            color: #344767;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            /* Reduced header font size */
+            letter-spacing: 0.05em;
+            border-bottom-width: 1px;
+            background-color: #f8f9fa;
+        }
+
+        /* Buttons */
+        .btn {
+            border-radius: 0.4rem;
+            padding: 0.375rem 0.75rem;
+            /* Standard Bootstrap btn-sm-ish padding */
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+
+        .btn-sm {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="d-flex">
+        <div id="sidebar" class="sidebar p-3 d-flex flex-column flex-shrink-0">
+            {% set active_role = session.get('active_role') %}
+            <a href="{% if active_role in ['admin', 'regional_manager'] %}{{ url_for('academic.academic_dashboard') }}{% else %}{{ url_for('main.index') }}{% endif %}"
+                class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+                {% if system_config.logo_filename %}
+                <img src="{{ url_for('main.get_logo', v=system_config.logo_filename) }}" alt="Logo" class="me-2"
+                    style="max-height: 40px; max-width: 40px; object-fit: contain;">
+                {% else %}
+                <i class="bi bi-grid-1x2-fill fs-4 me-2"></i>
+                {% endif %}
+                <span class="fs-4 sidebar-header">{{ system_config.system_name }}</span>
+            </a>
+            <hr>
+            <ul class="nav nav-pills flex-column mb-auto">
+
+                {# PROFESSOR MENU #}
+                {% if active_role == 'professor' %}
+                <li class="nav-item">
+                    <a href="{{ url_for('professors.dashboard') }}"
+                        class="nav-link {% if 'dashboard' in request.endpoint and 'professors' in request.endpoint %}active{% endif %}">
+                        <i class="bi bi-speedometer2 me-2"></i> <span class="sidebar-text">Minhas Turmas</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('questions.list_questions') }}"
+                        class="nav-link {% if 'questions' in request.endpoint %}active{% endif %}">
+                        <i class="bi bi-collection me-2"></i> <span class="sidebar-text">Banco de Questões</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('exams.list_exams') }}"
+                        class="nav-link {% if 'exams' in request.endpoint %}active{% endif %}">
+                        <i class="bi bi-file-earmark-text me-2"></i> <span class="sidebar-text">Provas</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ url_for('users.profile') }}"
+                        class="nav-link {% if 'profile' in request.endpoint %}active{% endif %}">
+                        <i class="bi bi-person-badge me-2"></i> <span class="sidebar-text">Meus Dados</span>
+                    </a>
+                </li>
+
+                {# UNIDADE MENU #}
+                {% elif active_role == 'unidade' %}
+                <li class="nav-item">
+                    <a href="{{ url_for('reports.dashboard') }}"
+                        class="nav-link {% if request.endpoint == 'reports.dashboard' %}active{% endif %}">
+                        <i class="bi bi-speedometer2 me-2"></i> <span class="sidebar-text">Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('questions.list_questions') }}"
+                        class="nav-link {% if 'questions' in request.endpoint %}active{% endif %}">
+                        <i class="bi bi-collection me-2"></i> <span class="sidebar-text">Banco de Questões</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('exams.list_exams') }}"
+                        class="nav-link {% if 'exams' in request.endpoint %}active{% endif %}">
+                        <i class="bi bi-file-earmark-text me-2"></i> <span class="sidebar-text">Provas</span>
+                    </a>
+                </li>
+                <li class="nav-item mt-3">
+                    <span class="text-uppercase text-secondary small ms-3 fw-bold sidebar-text">Gestão Escolar</span>
+                </li>
+                <li>
+                    <a href="{{ url_for('academic.list_classes') }}"
+                        class="nav-link {% if 'classes' in request.endpoint %}active{% endif %}">
+                        <i class="bi bi-people me-2"></i> <span class="sidebar-text">Turmas</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('students.list_students') }}"
+                        class="nav-link {% if 'students' in request.endpoint %}active{% endif %}">
+                        <i class="bi bi-mortarboard me-2"></i> <span class="sidebar-text">Alunos</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('professors.list_professors') }}"
+                        class="nav-link {% if 'professors' in request.endpoint %}active{% endif %}">
+                        <i class="bi bi-person-workspace me-2"></i> <span class="sidebar-text">Professores</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ url_for('users.profile') }}"
+                        class="nav-link {% if 'profile' in request.endpoint %}active{% endif %}">
+                        <i class="bi bi-person-badge me-2"></i> <span class="sidebar-text">Meus Dados</span>
+                    </a>
+                </li>
+
+                {# STUDENT MENU #}
+                {% elif active_role == 'student' %}
+                <li class="nav-item">
+                    <a href="{{ url_for('exams.list_available_exams') }}"
+                        class="nav-link {% if 'available' in request.endpoint %}active{% endif %}">
+                        <i class="bi bi-file-earmark-text me-2"></i> <span class="sidebar-text">Minhas Provas</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ url_for('users.profile') }}"
+                        class="nav-link {% if 'profile' in request.endpoint %}active{% endif %}">
+                        <i class="bi bi-person-badge me-2"></i> <span class="sidebar-text">Meus Dados</span>
+                    </a>
+                </li>
+
+                {# ADMIN / MANAGER MENU #}
+                {% elif active_role in ['admin', 'regional_manager'] %}
+                {% set show_tenant_menus = not current_user.is_system_admin or session.get('active_tenant_id') %}
+                {% if show_tenant_menus %}
+                <li class="nav-item">
+                    <a href="{{ url_for('reports.dashboard') }}"
+                        class="nav-link {% if request.endpoint == 'reports.dashboard' %}active{% endif %}">
+                        <i class="bi bi-speedometer2 me-2"></i> <span class="sidebar-text">Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('questions.list_questions') }}"
+                        class="nav-link {% if 'questions' in request.endpoint %}active{% endif %}">
+                        <i class="bi bi-collection me-2"></i> <span class="sidebar-text">Banco de Questões</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('exams.list_exams') }}"
+                        class="nav-link {% if 'exams' in request.endpoint %}active{% endif %}">
+                        <i class="bi bi-file-earmark-text me-2"></i> <span class="sidebar-text">Provas</span>
+                    </a>
+                </li>
+                <li class="nav-item mt-3">
+                    <span class="text-uppercase text-secondary small ms-3 fw-bold sidebar-text">Matrizes e
+                        Descritores</span>
+                </li>
+                <li>
+                    <a href="{{ url_for('matrices.list_themes') }}"
+                        class="nav-link {% if 'themes' in request.endpoint %}active{% endif %}">
+                        <i class="bi bi-tags me-2"></i> <span class="sidebar-text">Temas</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('matrices.list_matrices') }}"
+                        class="nav-link {% if 'matrices' in request.endpoint and 'descriptors' not in request.endpoint and 'themes' not in request.endpoint %}active{% endif %}">
+                        <i class="bi bi-grid-3x3 me-2"></i> <span class="sidebar-text">Matrizes</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('matrices.list_descriptors') }}"
+                        class="nav-link {% if 'descriptors' in request.endpoint %}active{% endif %}">
+                        <i class="bi bi-hash me-2"></i> <span class="sidebar-text">Descritores/Habilidades</span>
+                    </a>
+                </li>
+                <li class="nav-item mt-3">
+                    <span class="text-uppercase text-secondary small ms-3 fw-bold sidebar-text">Gestão Acadêmica</span>
+                </li>
+                <li>
+                    <a href="{{ url_for('academic.academic_dashboard') }}"
+                        class="nav-link {% if request.endpoint == 'academic.academic_dashboard' %}active{% endif %}">
+                        <i class="bi bi-speedometer2 me-2"></i> <span class="sidebar-text">Indicadores</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('academic.list_evaluations') }}"
+                        class="nav-link {% if 'evaluations' in request.endpoint %}active{% endif %}">
+                        <i class="bi bi-award me-2"></i> <span class="sidebar-text">Avaliações</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('academic.list_units') }}"
+                        class="nav-link {% if 'units' in request.endpoint %}active{% endif %}">
+                        <i class="bi bi-building me-2"></i> <span class="sidebar-text">Unidades</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('academic.definitions') }}"
+                        class="nav-link {% if 'definitions' in request.endpoint %}active{% endif %}">
+                        <i class="bi bi-list-check me-2"></i> <span class="sidebar-text">Definições</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('academic.list_absence_reasons') }}"
+                        class="nav-link {% if 'absence_reasons' in request.endpoint %}active{% endif %}">
+                        <i class="bi bi-sign-stop me-2"></i> <span class="sidebar-text">Motivos de Ausência</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('academic.list_curriculums') }}"
+                        class="nav-link {% if 'curriculums' in request.endpoint %}active{% endif %}">
+                        <i class="bi bi-journal-bookmark me-2"></i> <span class="sidebar-text">Currículos</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('academic.list_classes') }}"
+                        class="nav-link {% if 'classes' in request.endpoint %}active{% endif %}">
+                        <i class="bi bi-people me-2"></i> <span class="sidebar-text">Turmas</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('students.list_students') }}"
+                        class="nav-link {% if 'students' in request.endpoint %}active{% endif %}">
+                        <i class="bi bi-mortarboard me-2"></i> <span class="sidebar-text">Alunos</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('professors.list_professors') }}"
+                        class="nav-link {% if 'professors' in request.endpoint %}active{% endif %}">
+                        <i class="bi bi-person-workspace me-2"></i> <span class="sidebar-text">Professores</span>
+                    </a>
+                </li>
+                {% endif %}
+                {% if active_role == 'admin' %}
+                <li class="nav-item mt-3">
+                    <span class="text-uppercase text-secondary small ms-3 fw-bold sidebar-text">Administração</span>
+                </li>
+                {% if current_user.is_system_admin and not session.get('active_tenant_id') %}
+                <li>
+                    <a href="{{ url_for('admin.list_tenants') }}"
+                        class="nav-link {% if 'tenants' in request.endpoint %}active{% endif %}">
+                        <i class="bi bi-briefcase-fill me-2"></i> <span class="sidebar-text">Clientes</span>
+                    </a>
+                </li>
+                {% endif %}
+                <li>
+                    <a href="{{ url_for('users.list_users') }}"
+                        class="nav-link {% if 'users' in request.endpoint and 'profile' not in request.endpoint %}active{% endif %}">
+                        <i class="bi bi-people-fill me-2"></i> <span class="sidebar-text">Usuários</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('audit.list_logs') }}"
+                        class="nav-link {% if 'audit' in request.endpoint %}active{% endif %}">
+                        <i class="bi bi-shield-check me-2"></i> <span class="sidebar-text">Auditoria</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('admin.list_imports') }}"
+                        class="nav-link {% if 'admin.list_imports' in request.endpoint %}active{% endif %}">
+                        <i class="bi bi-cloud-arrow-down me-2"></i> <span class="sidebar-text">Importações</span>
+                    </a>
+                </li>
+                {% if show_tenant_menus %}
+                <li>
+                    <a href="{{ url_for('admin.list_dietary_restrictions') }}"
+                        class="nav-link {% if 'admin.list_dietary_restrictions' in request.endpoint %}active{% endif %}">
+                        <i class="bi bi-apple me-2"></i> <span class="sidebar-text">Restrições Alimentares</span>
+                    </a>
+                </li>
+                {% endif %}
+                {% endif %}
+
+                {% endif %} {# End Admin/Manager #}
+
+                {# Always show for everyone? Or controlled? #}
+                {# Maybe "Meus Dados" for Admin too? Typically handled via "Configurações" or Dropdown. keeping it
+                simple. #}
+
+            </ul>
+        </div>
+        <div class="flex-grow-1">
+            <nav class="navbar navbar-light bg-light border-bottom mb-4">
+                <div class="container-fluid">
+                    <button class="btn btn-outline-secondary me-3" id="sidebarToggle">
+                        <i class="bi bi-list"></i>
+                    </button>
+                    <!-- Navigation texts -->
+                    <div class="navbar-text me-auto d-flex align-items-center">
+                        <span id="nav-phrase-text" class="text-secondary fst-italic ms-2 d-none d-md-inline" style="transition: opacity 0.8s; opacity: 0; font-size: 0.9rem;"></span>
+                    </div>
+
+                    <!-- Alternador de Tema Claro/Escuro -->
+                    <button class="btn btn-link nav-link me-3 text-secondary p-0 border-0" id="themeToggle" title="Alternar tema" style="font-size: 1.25rem; transition: transform 0.2s; box-shadow: none;">
+                        <i class="bi bi-sun" id="themeIcon"></i>
+                    </button>
+
+                    <!-- Cliente ativo para o Super Admin -->
+                    {% if current_user.is_authenticated and current_user.is_system_admin and session.get('active_tenant_id') %}
+                    <div class="d-flex align-items-center me-3 p-2 bg-info bg-opacity-10 border border-info rounded text-info" style="font-size: 0.85rem;">
+                        <i class="bi bi-briefcase-fill me-2 text-info"></i>
+                        <span class="fw-bold me-2">Acessando: {{ session.get('active_tenant_name') }}</span>
+                        <a href="{{ url_for('admin.deauthenticate_tenant') }}" class="btn btn-sm btn-danger py-0 px-2 fw-bold text-white ms-1" style="font-size: 0.75rem;">Sair</a>
+                    </div>
+                    {% endif %}
+
+                    <!-- User Menu Moved Here -->
+                    <div class="dropdown">
+                        {% if current_user.is_authenticated %}
+                        <a href="#" class="d-flex align-items-center text-dark text-decoration-none dropdown-toggle"
+                            id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person-circle fs-4 me-2"></i>
+                            <div class="d-flex flex-column align-items-end me-1">
+                                <strong>{{ current_user.name or current_user.username }}</strong>
+                                {% if session.get('active_role') %}
+                                <small class="text-muted" style="font-size: 0.75rem;">
+                                    {% if session.get('active_role') == 'admin' %}Administrador
+                                    {% elif session.get('active_role') == 'regional_manager' %}Gestor Regional
+                                    {% elif session.get('active_role') == 'professor' %}Professor
+                                    {% elif session.get('active_role') == 'student' %}Aluno
+                                    {% elif session.get('active_role') == 'unidade' %}Unidade Escolar
+                                    {% else %}{{ session.get('active_role')|capitalize }}{% endif %}
+                                </small>
+                                {% endif %}
+                                {% if session.get('active_school_name') %}
+                                <small class="text-primary fw-bold" style="font-size: 0.72rem;">
+                                    <i class="bi bi-building me-1"></i>{{ session.get('active_school_name') }}
+                                </small>
+                                {% endif %}
+                                {% if session.get('last_access_display') %}
+                                <small class="text-muted" style="font-size: 0.65rem;">
+                                    Último acesso: {{ session.get('last_access_display') }}
+                                </small>
+                                {% endif %}
+                            </div>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end text-small shadow" aria-labelledby="dropdownUser1">
+                            <li><a class="dropdown-item" href="{{ url_for('users.profile') }}">Minha Conta</a></li>
+                            {% if current_user.get_roles()|length > 1 %}
+                            <li><a class="dropdown-item" href="{{ url_for('auth.change_role') }}">Trocar Perfil</a></li>
+                            {% endif %}
+
+                            {% if session.get('active_role') == 'unidade' and current_user.teaching_units|length > 1 %}
+                            <li><hr class="dropdown-divider"></li>
+                            <li><h6 class="dropdown-header">Alternar Escola</h6></li>
+                            {% for school in current_user.teaching_units %}
+                            <li>
+                                <a class="dropdown-item {% if school.id == session.get('active_school_id') %}active{% endif %}" href="{{ url_for('auth.change_school', school_id=school.id) }}">
+                                    <i class="bi bi-mortarboard-fill me-1"></i> {{ school.name }}
+                                </a>
+                            </li>
+                            {% endfor %}
+                            {% endif %}
+
+                            {% if current_user.is_admin and session.get('active_role') == 'admin' %}
+                            <li><a class="dropdown-item" href="{{ url_for('main.settings') }}">Configurações</a></li>
+                            {% endif %}
+
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}">Sair</a></li>
+                        </ul>
+                        {% else %}
+                        <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-sm">
+                            <i class="bi bi-box-arrow-in-right me-2"></i> Entrar
+                        </a>
+                        {% endif %}
+                    </div>
+
+                </div>
+            </nav>
+            <div class="content">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999; margin-top: 60px;">
+                    {% for category, message in messages %}
+                    {% set bg_class = 'bg-success text-white' %}
+                    {% set icon = 'bi-check-circle-fill' %}
+                    {% set title = 'Sucesso!' %}
+                    
+                    {% if category == 'success_delete' %}
+                        {% set bg_class = 'bg-danger text-white' %}
+                        {% set icon = 'bi-trash-fill' %}
+                        {% set title = 'Excluído com sucesso!' %}
+                    {% elif category == 'danger' or category == 'error' %}
+                        {% set bg_class = 'bg-danger text-white' %}
+                        {% set icon = 'bi-x-circle-fill' %}
+                        {% set title = 'Erro!' %}
+                    {% elif category == 'warning' %}
+                        {% set bg_class = 'bg-warning text-dark' %}
+                        {% set icon = 'bi-exclamation-triangle-fill' %}
+                        {% set title = 'Atenção!' %}
+                    {% elif category == 'info' %}
+                        {% set bg_class = 'bg-info text-white' %}
+                        {% set icon = 'bi-info-circle-fill' %}
+                        {% set title = 'Informação' %}
+                    {% endif %}
+                    
+                    <div class="toast align-items-center {{ bg_class }} border-0 shadow-lg mb-2" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="5000">
+                        <div class="d-flex">
+                            <div class="toast-body d-flex align-items-center">
+                                <i class="bi {{ icon }} me-2 fs-5"></i>
+                                <div>
+                                    <strong class="fw-bold">{{ title }}</strong>
+                                    <div class="small mt-1">{{ message }}</div>
+                                </div>
+                            </div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Fechar"></button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        var toastElList = [].slice.call(document.querySelectorAll('.toast'));
+                        var toastList = toastElList.map(function (toastEl) {
+                            var toast = new bootstrap.Toast(toastEl);
+                            toast.show();
+                            return toast;
+                        });
+                    });
+                </script>
+                {% endif %}
+                {% endwith %}
+
+                <!-- Global Delete Confirmation Modal -->
+                <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content border-0 shadow">
+                            <div class="modal-header bg-white border-bottom-0 pb-0">
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body text-center p-5 pt-0">
+                                <div class="mb-4">
+                                    <i class="bi bi-exclamation-triangle-fill text-warning display-1"></i>
+                                </div>
+                                <h4 class="mb-3" id="confirmDeleteTitle">Confirmar Exclusão</h4>
+                                <p class="text-muted mb-4" id="confirmDeleteMessage">Tem certeza que deseja excluir este
+                                    item? Esta ação não pode ser desfeita.</p>
+                                <div class="row g-2">
+                                    <div class="col-6">
+                                        <button type="button" class="btn btn-light w-100"
+                                            data-bs-dismiss="modal">Cancelar</button>
+                                    </div>
+                                    <div class="col-6">
+                                        <button type="button" class="btn btn-danger w-100"
+                                            id="confirmDeleteBtn">Confirmar Exclusão</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <script>
+                    function handleDelete(formId, message) {
+                        const modal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'));
+                        const confirmBtn = document.getElementById('confirmDeleteBtn');
+                        const messageEl = document.getElementById('confirmDeleteMessage');
+
+                        if (message) messageEl.textContent = message;
+
+                        confirmBtn.onclick = function () {
+                            const form = document.getElementById(formId);
+                            if (form) form.submit();
+                        };
+
+                        modal.show();
+                    }
+                </script>
+
+                {% block content %}{% endblock %}
+            </div>
+
+            <footer class="mt-auto py-3 bg-light text-center">
+                <div class="container">
+                    <span class="text-muted small">{{ system_config.system_name }} v{{ system_version }} &copy;
+                        2026</span>
+                </div>
+            </footer>
+        </div>
+    </div>
+    <div class="modal fade" id="importProgressModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title"><i class="bi bi-cloud-arrow-up me-2"></i>Processando Importação</h5>
+                </div>
+                <div class="modal-body p-4">
+                    <p id="importProgressMessage" class="small fw-bold text-secondary mb-2">Iniciando processamento...
+                    </p>
+                    <div class="progress mb-3" style="height: 20px;">
+                        <div id="importProgressBar" class="progress-bar progress-bar-striped progress-bar-animated"
+                            role="progressbar" style="width: 0%;">0%</div>
+                    </div>
+                    <div id="importProgressErrors" class="mt-3 p-2 bg-light rounded"
+                        style="display: none; border: 1px solid #ff000022;">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="small text-danger fw-bold">Alertas/Erros durante o processo</span>
+                            <a id="downloadLogBtn" href="#" class="btn btn-sm btn-outline-danger"
+                                style="display: none;">
+                                <i class="bi bi-download me-1"></i> Baixar Log de Erros
+                            </a>
+                        </div>
+                        <details>
+                            <summary class="small text-muted cursor-pointer">Ver detalhes na tela</summary>
+                            <ul id="importErrorsList" class="small text-danger mt-2 mb-0 ps-3"></ul>
+                        </details>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% block extra_modals %}{% endblock %}
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const sidebar = document.getElementById('sidebar');
+            const toggle = document.getElementById('sidebarToggle');
+
+            if (sidebar && toggle) {
+                if (localStorage.getItem('sidebar-collapsed') === 'true') {
+                    sidebar.classList.add('collapsed');
+                }
+
+                toggle.addEventListener('click', function () {
+                    sidebar.classList.toggle('collapsed');
+                    localStorage.setItem('sidebar-collapsed', sidebar.classList.contains('collapsed'));
+                });
+            }
+            
+            // Phrase logic in navbar
+            const phrases = [
+                "Transformando dados em evidências e evidências em futuro.",
+                "Onde a tecnologia encontra o propósito pedagógico para o sucesso de cada aluno.",
+                "Inteligência para gerir, sensibilidade para ensinar, excelência para evoluir.",
+                "Facilitando o presente da gestão pedagógica para garantir o futuro da educação pública.",
+                "A ponte entre o diagnóstico preciso e a aprendizagem de excelência."
+            ];
+            let currentIdx = -1;
+            const navPhraseEl = document.getElementById('nav-phrase-text');
+            
+            function showNextPhrase() {
+                if (!navPhraseEl) return;
+                let nextIdx;
+                if (phrases.length > 1) {
+                    do { nextIdx = Math.floor(Math.random() * phrases.length); } while (nextIdx === currentIdx);
+                } else { nextIdx = 0; }
+                currentIdx = nextIdx;
+                
+                navPhraseEl.style.opacity = '0';
+                setTimeout(() => {
+                    navPhraseEl.textContent = `"${phrases[currentIdx]}"`;
+                    navPhraseEl.style.opacity = '1';
+                }, 800);
+            }
+            if(navPhraseEl) {
+                showNextPhrase();
+                setInterval(showNextPhrase, 5000);
+            }
+
+            // Garante que todo campo obrigatório tenha a classe "required" em seu label correspondente
+            document.querySelectorAll('input[required], select[required], textarea[required]').forEach(function(el) {
+                if (el.id) {
+                    const label = document.querySelector(`label[for="${el.id}"]`);
+                    if (label) {
+                        label.classList.add('required');
+                        // Remove manual asterisk siblings to prevent double asterisks
+                        let nextSib = label.nextElementSibling;
+                        if (nextSib && (nextSib.textContent.trim() === '*' || nextSib.classList.contains('text-danger'))) {
+                            if (nextSib.textContent.includes('*')) {
+                                nextSib.remove();
+                            }
+                        }
+                    }
+                }
+                let parent = el.closest('.mb-3') || el.closest('.mb-4') || el.closest('.col-md-6') || el.closest('.col-md-8') || el.closest('.col-md-4') || el.closest('.col-md-12') || el.closest('.col-12');
+                if (parent) {
+                    const label = parent.querySelector('.form-label');
+                    if (label) {
+                        label.classList.add('required');
+                    }
+                    // Remove any manual red asterisk spans inside this form group
+                    parent.querySelectorAll('.text-danger, span').forEach(span => {
+                        if (span.textContent.trim() === '*') {
+                            span.remove();
+                        }
+                    });
+                }
+            });
+        });
+
+        // Global Import Progress Function
+        function setupImportProgress(formId) {
+            const form = document.getElementById(formId);
+            if (!form) return;
+
+            form.addEventListener('submit', function (e) {
+                e.preventDefault(); // Submit via Ajax to keep modal open
+
+                const taskId = 'import_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+
+                // Add hidden field for backend
+                let hiddenInput = form.querySelector('input[name="X-Progress-ID"]');
+                if (!hiddenInput) {
+                    hiddenInput = document.createElement('input');
+                    hiddenInput.type = 'hidden';
+                    hiddenInput.name = 'X-Progress-ID';
+                    form.appendChild(hiddenInput);
+                }
+                hiddenInput.value = taskId;
+
+                // Close any open selection modals (like importModal)
+                const openModals = document.querySelectorAll('.modal.show');
+                openModals.forEach(modalEl => {
+                    if (modalEl.id !== 'importProgressModal') {
+                        const modalInstance = bootstrap.Modal.getInstance(modalEl);
+                        if (modalInstance) modalInstance.hide();
+                    }
+                });
+
+                // Reset Progress Modal
+                const bar = document.getElementById('importProgressBar');
+                const msg = document.getElementById('importProgressMessage');
+                const errBox = document.getElementById('importProgressErrors');
+                const dlBtn = document.getElementById('downloadLogBtn');
+                const errList = document.getElementById('importErrorsList');
+
+                bar.style.width = '0%';
+                bar.innerText = '0%';
+                bar.classList.add('progress-bar-animated');
+                msg.innerText = 'Iniciando processamento...';
+                errBox.style.display = 'none';
+                dlBtn.style.display = 'none';
+                errList.innerHTML = '';
+
+                // Show Modal
+                const modalEl = document.getElementById('importProgressModal');
+                const progressModal = new bootstrap.Modal(modalEl);
+                progressModal.show();
+
+                // Start polling
+                const pollInterval = setInterval(() => {
+                    fetch('/import-status/' + taskId)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.status === 'not_found') return;
+
+                            if (data.total > 0) {
+                                const percent = Math.round((data.current / data.total) * 100);
+                                bar.style.width = percent + '%';
+                                bar.innerText = `${percent}% (${data.current} de ${data.total} registros)`;
+                            }
+
+                            msg.innerText = data.message || 'Processando...';
+
+                            if (data.errors && data.errors.length > 0) {
+                                errBox.style.display = 'block';
+                                // Only update screen list periodically or if changed length to avoid lag
+                                if (errList.children.length !== data.errors.length) {
+                                    errList.innerHTML = '';
+                                    data.errors.slice(0, 50).forEach(err => {
+                                        const li = document.createElement('li');
+                                        li.innerText = err;
+                                        errList.appendChild(li);
+                                    });
+                                    if (data.errors.length > 50) {
+                                        const li = document.createElement('li');
+                                        li.innerText = `... e mais ${data.errors.length - 50} alertas.`;
+                                        errList.appendChild(li);
+                                    }
+                                }
+                            }
+
+                            if (data.log_file) {
+                                dlBtn.href = '/download-import-log/' + data.log_file;
+                                dlBtn.style.display = 'inline-block';
+                            }
+
+                            if (data.status === 'completed' || data.status === 'error') {
+                                clearInterval(pollInterval);
+                                bar.classList.remove('progress-bar-animated');
+
+                                // Add a close button that reloads the page
+                                if (!document.getElementById('reloadAfterImportBtn')) {
+                                    const footer = document.createElement('div');
+                                    footer.className = 'modal-footer p-2';
+                                    footer.innerHTML = '<button type="button" id="reloadAfterImportBtn" class="btn btn-primary w-100">Fechar e Atualizar Página</button>';
+                                    modalEl.querySelector('.modal-content').appendChild(footer);
+
+                                    document.getElementById('reloadAfterImportBtn').addEventListener('click', () => {
+                                        window.location.reload();
+                                    });
+                                }
+                            }
+                        })
+                        .catch(err => console.error('Error polling status:', err));
+                }, 1000);
+
+                // Actual Form Submission via Ajax
+                fetch(form.action, {
+                    method: 'POST',
+                    body: new FormData(form)
+                }).catch(err => {
+                    console.error('Ajax submission error:', err);
+                    clearInterval(pollInterval);
+                    msg.innerText = 'Erro na comunicação com o servidor.';
+                    bar.classList.add('bg-danger');
+                });
+            });
+        }
+
+        // PWA - Registro do Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js').then(function(registration) {
+                    console.log('[SGE+ PWA] ServiceWorker registrado com sucesso no escopo: ', registration.scope);
+                }, function(err) {
+                    console.warn('[SGE+ PWA] Falha ao registrar o ServiceWorker: ', err);
+                });
+            });
+        }
+
+        // TEMA - Alternador dinâmico Claro/Escuro com persistência
+        document.addEventListener('DOMContentLoaded', function () {
+            const themeToggle = document.getElementById('themeToggle');
+            const themeIcon = document.getElementById('themeIcon');
+            
+            if (themeToggle && themeIcon) {
+                function updateIcon(theme) {
+                    if (theme === 'dark') {
+                        themeIcon.className = 'bi bi-moon-stars-fill text-warning';
+                    } else {
+                        themeIcon.className = 'bi bi-sun text-secondary';
+                    }
+                }
+                
+                const currentTheme = document.documentElement.getAttribute('data-bs-theme') || 'light';
+                updateIcon(currentTheme);
+                
+                themeToggle.addEventListener('click', function () {
+                    const activeTheme = document.documentElement.getAttribute('data-bs-theme');
+                    const newTheme = activeTheme === 'dark' ? 'light' : 'dark';
+                    
+                    document.documentElement.setAttribute('data-bs-theme', newTheme);
+                    localStorage.setItem('theme', newTheme);
+                    updateIcon(newTheme);
+                    
+                    // Emitir evento para gráficos redesenharem se necessário
+                    window.dispatchEvent(new Event('themechange'));
+                });
+            }
+        });
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+
+</html>

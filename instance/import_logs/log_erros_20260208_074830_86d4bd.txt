@@ -1,0 +1,7 @@
+RELATÓRIO DE ERROS DE IMPORTAÇÃO
+Data/Hora: 08/02/2026 07:48:30
+----------------------------------------
+
+- Erro de teste 1
+- CPF Duplicado: 123.456.789-00
+- Unidade não encontrada: Escola ABC

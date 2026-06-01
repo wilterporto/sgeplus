@@ -1,0 +1,205 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">{{ exam.title }}</h1>
+    <div class="d-flex align-items-center gap-2">
+        {% if exam.total_value %}
+        <div class="badge bg-primary fs-6">
+            <i class="bi bi-star-fill"></i> Valor: {{ exam.total_value|round(1) }} pts
+        </div>
+        {% endif %}
+        <div id="exam-timer" class="badge bg-dark fs-6">
+            <i class="bi bi-clock"></i> <span id="time-display">00:00:00</span>
+        </div>
+    </div>
+</div>
+
+<div class="container bg-white p-5 shadow-sm mb-5">
+    <div class="alert alert-info border-0 shadow-sm mb-4 d-flex align-items-center">
+        <i class="bi bi-info-circle-fill fs-4 me-3"></i>
+        <div>
+            <strong>Instruções:</strong> Leia atentamente as questões e responda. Só finalize após revisar todas as suas
+            respostas.
+        </div>
+    </div>
+
+    <form method="POST" id="exam-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+        {% for item in exam.items %}
+        {% set question_id = item.question.id %}
+        {% set saved_answer = saved_answers.get(question_id|string) %}
+        <div class="mb-5 p-3 border-start border-4 border-primary bg-light-subtle rounded shadow-sm question-container"
+            id="container_{{ question_id }}">
+            <h5 class="mb-3">Questão {{ loop.index }}</h5>
+            <p class="fs-5">{{ item.question.statement }}</p>
+
+            <div class="options-group mt-4">
+                {% set alts = item.question.get_alternatives() %}
+                {% for key, val in alts.items() %}
+                <div class="form-check mb-3 p-2 ps-5 rounded border hover-shadow-sm transaction-all option-container"
+                    style="cursor: pointer;" onclick="selectOption('{{ question_id }}', '{{ key }}')">
+                    <input class="form-check-input mt-2" type="radio" name="q_{{ question_id }}"
+                        id="q_{{ question_id }}_{{ key }}" value="{{ key }}" {% if saved_answer==key %}checked{% endif
+                        %} onchange="saveProgress('{{ question_id }}', '{{ key }}')">
+                    <label class="form-check-label fs-5 w-100" for="q_{{ question_id }}_{{ key }}"
+                        style="cursor: pointer;">
+                        <strong>{{ key }})</strong> {{ val }}
+                    </label>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+
+        <div class="text-center mt-5">
+            <button type="button" class="btn btn-success btn-lg px-5 shadow" onclick="validateAndConfirm()">
+                <i class="bi bi-check2-all"></i> Finalizar Avaliação
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- Modal de Confirmação -->
+<div class="modal fade" id="confirmFinishModal" tabindex="-1" aria-labelledby="confirmFinishModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-body text-center p-5">
+                <div class="mb-4">
+                    <i class="bi bi-exclamation-triangle text-warning display-1"></i>
+                </div>
+                <h4 class="mb-3">Deseja realmente finalizar a prova?</h4>
+                <p class="text-muted mb-4">Você não poderá alterar suas respostas depois.</p>
+                <div class="d-flex justify-content-center gap-2">
+                    <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal">Retornar</button>
+                    <button type="button" class="btn btn-success px-4"
+                        onclick="document.getElementById('exam-form').submit();">Sim, Finalizar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Alerta de Validação -->
+<div class="modal fade" id="validationAlertModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-body text-center p-5">
+                <div class="mb-4">
+                    <i class="bi bi-exclamation-circle text-danger display-1"></i>
+                </div>
+                <h4 class="mb-3">Atenção</h4>
+                <p class="text-muted mb-4">Por favor, responda todas as questões antes de finalizar.</p>
+                <div class="d-grid">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Entendido</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .hover-shadow-sm:hover {
+        box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .075) !important;
+        background-color: var(--bs-light) !important;
+    }
+
+    .transaction-all {
+        transition: all 0.2s ease-in-out;
+    }
+
+    .form-check-input:checked+.form-check-label {
+        font-weight: bold;
+        color: var(--bs-primary);
+    }
+
+    .question-unanswered {
+        border-color: #dc3545 !important;
+        background-color: #fff8f8 !important;
+    }
+</style>
+
+{% block scripts %}
+<script>
+    // Simple timer
+    let seconds = 0;
+    setInterval(() => {
+        seconds++;
+        const h = Math.floor(seconds / 3600).toString().padStart(2, '0');
+        const m = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
+        const s = (seconds % 60).toString().padStart(2, '0');
+        document.getElementById('time-display').innerText = `${h}:${m}:${s}`;
+    }, 1000);
+
+    function selectOption(questionId, key) {
+        const input = document.getElementById(`q_${questionId}_${key}`);
+        if (input && !input.checked) {
+            input.checked = true;
+            saveProgress(questionId, key);
+        }
+    }
+
+    function saveProgress(questionId, key) {
+        // Remove highlighting if it was highlighted
+        const container = document.getElementById(`container_${questionId}`);
+        if (container) container.classList.remove('question-unanswered');
+
+        fetch(`{{ url_for('exams.save_exam_progress', id=exam.id) }}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({
+                question_id: questionId,
+                answer: key
+            })
+        }).then(response => response.json())
+            .then(data => {
+                if (data.status !== 'success') {
+                    console.error('Failed to save progress');
+                }
+            });
+    }
+
+    function validateAndConfirm() {
+        let allAnswered = true;
+        const questions = document.querySelectorAll('.question-container');
+        let firstUnanswered = null;
+
+        questions.forEach(container => {
+            const questionId = container.id.split('_')[1];
+            const radios = document.getElementsByName(`q_${questionId}`);
+            let answered = false;
+            for (let r of radios) {
+                if (r.checked) {
+                    answered = true;
+                    break;
+                }
+            }
+
+            if (!answered) {
+                allAnswered = false;
+                container.classList.add('question-unanswered');
+                if (!firstUnanswered) firstUnanswered = container;
+            } else {
+                container.classList.remove('question-unanswered');
+            }
+        });
+
+        if (!allAnswered) {
+            const valModal = new bootstrap.Modal(document.getElementById('validationAlertModal'));
+            valModal.show();
+            if (firstUnanswered) {
+                firstUnanswered.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        } else {
+            const modal = new bootstrap.Modal(document.getElementById('confirmFinishModal'));
+            modal.show();
+        }
+    }
+</script>
+{% endblock %}
+{% endblock %}

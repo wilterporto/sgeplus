@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Avaliações</h1>
+    <div class="btn-toolbar mb-2 mb-md-0 gap-2">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newEvaluationModal">
+            <i class="bi bi-plus-lg"></i> Nova Avaliação
+        </button>
+    </div>
+</div>
+
+<!-- New Evaluation Modal -->
+<div class="modal fade" id="newEvaluationModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Nova Avaliação</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" enctype="multipart/form-data">
+                <div class="modal-body">
+                    {{ form.hidden_tag() }}
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            {{ form.name.label(class="form-label required") }}
+                            {{ form.name(class="form-control") }}
+                            <div class="form-text">Ex: Simulado SAEB, Avaliação Mensal.</div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            {{ form.type.label(class="form-label required") }}
+                            {{ form.type(class="form-select") }}
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            {{ form.quantity.label(class="form-label required") }}
+                            {{ form.quantity(class="form-select", id="eval_quantity") }}
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            {{ form.multiple_components.label(class="form-label required") }}
+                            {{ form.multiple_components(class="form-select", id="eval_multiple_components") }}
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            {{ form.logo.label(class="form-label") }}
+                            {{ form.logo(class="form-control") }}
+                            <div class="form-text">Logo personalizado para o cabeçalho desta prova (.png, .jpg).</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="btnSaveEvaluation">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- List -->
+    <div class="col-12">
+        <div class="card shadow mb-4">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0 align-middle">
+                        <thead class="table-light small">
+                            <tr>
+                                <th style="width: 80px;">Logo</th>
+                                <th>Nome da Avaliação</th>
+                                <th>Tipo</th>
+                                <th class="text-center">Qtd. Questões</th>
+                                <th>Tipo Pontuação</th>
+                                <th class="text-center">Múltiplos Comp.</th>
+                                <th class="text-center">Provas Geradas</th>
+                                <th class="text-end px-4">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for eval in evaluations %}
+                            <tr class="small">
+                                <td>
+                                    {% if eval.logo_path %}
+                                    <img src="{{ url_for('static', filename=eval.logo_path) }}" alt="Logo"
+                                        style="height: 40px; width: 40px; object-fit: contain;">
+                                    {% else %}
+                                    <div class="bg-light d-flex align-items-center justify-content-center"
+                                        style="height: 40px; width: 40px;">
+                                        <i class="bi bi-image text-muted"></i>
+                                    </div>
+                                    {% endif %}
+                                </td>
+                                <td class="fw-bold">{{ eval.name }}</td>
+                                <td>{{ eval.type }}</td>
+                                <td class="text-center">{{ eval.quantity }}</td>
+                                <td>
+                                    {% if eval.scoring_type == 'fixed' %}Valor Fixo
+                                    {% elif eval.scoring_type == 'total' %}Valor Total
+                                    {% elif eval.scoring_type == 'per_question' %}Opcional por Questão
+                                    {% else %}Nenhum{% endif %}
+                                </td>
+                                <td class="text-center">
+                                    {% if eval.multiple_components %}
+                                    <span class="badge bg-success">Sim</span>
+                                    {% else %}
+                                    <span class="badge bg-secondary">Não</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center">{{ eval.exams.count() }}</td>
+                                <td class="text-end px-4">
+                                    <button type="button" class="btn btn-sm btn-outline-primary me-1"
+                                        onclick='editEvaluation({{ {"id": eval.id, "name": eval.name, "type": eval.type, "quantity": eval.quantity, "scoring_type": eval.scoring_type, "multiple_components": eval.multiple_components, "question_values": eval.question_values}|tojson|safe }})'>
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-danger"
+                                        onclick="handleDelete('delete-form-{{ eval.id }}', 'Tem certeza que deseja excluir esta avaliação?')">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                    <form id="delete-form-{{ eval.id }}"
+                                        action="{{ url_for('academic.delete_evaluation', id=eval.id) }}" method="POST"
+                                        style="display:none;">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    </form>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="7" class="text-center py-4 text-muted">
+                                    Nenhuma avaliação cadastrada.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const evalForm = document.querySelector('#newEvaluationModal form');
+    const evalModalTitle = document.querySelector('#newEvaluationModal .modal-title');
+    const evalQuantity = document.getElementById('eval_quantity');
+
+    function editEvaluation(evalData) {
+        evalModalTitle.textContent = 'Editar Avaliação';
+        evalForm.action = `/academic/evaluations/${evalData.id}/edit`;
+
+        // Fill fields
+        evalForm.querySelector('[name="name"]').value = evalData.name;
+        evalForm.querySelector('[name="type"]').value = evalData.type;
+        evalForm.querySelector('[name="quantity"]').value = evalData.quantity;
+        evalForm.querySelector('[name="multiple_components"]').value = evalData.multiple_components ? '1' : '0';
+
+        const modal = new bootstrap.Modal(document.getElementById('newEvaluationModal'));
+        modal.show();
+    }
+
+    // Reset modal on close if needed
+    document.getElementById('newEvaluationModal').addEventListener('hidden.bs.modal', function () {
+        evalModalTitle.textContent = 'Nova Avaliação';
+        evalForm.action = "{{ url_for('academic.list_evaluations') }}";
+        evalForm.reset();
+    });
+</script>
+
+<style>
+    .form-label.required:after {
+        content: " *";
+        color: red;
+    }
+</style>
+{% endblock %}

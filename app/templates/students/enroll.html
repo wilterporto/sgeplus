@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Enturmar Aluno</h1>
+</div>
+
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card shadow h-100">
+            <div class="card-header py-3 bg-white">
+                <h5 class="mb-0">{{ student.name }}</h5>
+                <small class="text-muted">Matrícula: {{ student.registration_number }}</small>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    <div class="mb-3">
+                        {{ form.class_id.label(class="form-label") }}
+                        {{ form.class_id(class="form-select") }}
+                        <div class="form-text">Selecione a turma para vincular.</div>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Confirmar Matrícula</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Histórico de Matrículas Ativas</h6>
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Turma</th>
+                            <th>Ano Escolar</th>
+                            <th>Unidade</th>
+                            <th>Data Matrícula</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for enrollment in enrollments %}
+                        <tr>
+                            <td>{{ enrollment.enrolled_class.name }}</td>
+                            <td>{{ enrollment.enrolled_class.school_year.name }}</td>
+                            <td>{{ enrollment.enrolled_class.teaching_unit.name }}</td>
+                            <td>{{ enrollment.created_at.strftime('%d/%m/%Y') }}</td>
+                            <td><span class="badge bg-success">Ativa</span></td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center text-muted">Nenhuma matrícula ativa.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

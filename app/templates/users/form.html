@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h4 class="mb-0">{{ title }}</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+
+                    <div class="mb-3">
+                        {{ form.name.label(class="form-label") }}
+                        {{ form.name(class="form-control", placeholder="Nome Completo") }}
+                        {% for error in form.name.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form.username.label(class="form-label") }} <span class="text-danger">*</span>
+                            {{ form.username(class="form-control") }}
+                            {% for error in form.username.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.email.label(class="form-label") }}
+                            {{ form.email(class="form-control") }}
+                            {% for error in form.email.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.password.label(class="form-label") }}
+                        {{ form.password(class="form-control") }}
+                        {% if user_id %}
+                        <div class="form-text">Deixe em branco para manter a senha atual.</div>
+                        {% endif %}
+                        {% for error in form.password.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form.roles.label(class="form-label") }} <span class="text-danger">*</span>
+                            {{ form.roles(class="form-select", style="height: 120px") }}
+                            {% for error in form.roles.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                            <div class="form-text small">Segure Ctrl para selecionar múltiplos perfis.</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.regional.label(class="form-label") }}
+                            {{ form.regional(class="form-control") }}
+                            {% for error in form.regional.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="mb-3" id="teaching-units-container" style="display: none;">
+                        {{ form.teaching_unit_ids.label(class="form-label") }} <span class="text-danger">*</span>
+                        {{ form.teaching_unit_ids(class="form-select", style="height: 150px") }}
+                        {% for error in form.teaching_unit_ids.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                        {% endfor %}
+                        <div class="form-text small">Segure Ctrl para selecionar múltiplas unidades escolares.</div>
+                    </div>
+
+                    <div class="mb-3 form-check">
+                        {{ form.active(class="form-check-input") }}
+                        {{ form.active.label(class="form-check-label") }}
+                    </div>
+
+                    {% if current_user.is_system_admin and not session.get('active_tenant_id') %}
+                    <div class="mb-3">
+                        {{ form.tenant_id.label(class="form-label") }}
+                        {{ form.tenant_id(class="form-select") }}
+                        {% for error in form.tenant_id.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                        {% endfor %}
+                        <div class="form-text small">Selecione a qual cliente este usuário pertence. Deixe "Nenhum" se for administrador global do sistema.</div>
+                    </div>
+                    {% endif %}
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('users.list_users') }}" class="btn btn-secondary">Cancelar</a>
+                        {{ form.submit(class="btn btn-primary") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const rolesSelect = document.getElementById('roles');
+    const container = document.getElementById('teaching-units-container');
+    
+    function toggleTeachingUnits() {
+        let isUnidade = false;
+        for (let i = 0; i < rolesSelect.options.length; i++) {
+            if (rolesSelect.options[i].selected && rolesSelect.options[i].value === 'unidade') {
+                isUnidade = true;
+                break;
+            }
+        }
+        if (isUnidade) {
+            container.style.display = 'block';
+        } else {
+            container.style.display = 'none';
+        }
+    }
+    
+    if (rolesSelect) {
+        rolesSelect.addEventListener('change', toggleTeachingUnits);
+        toggleTeachingUnits(); // Run on load
+    }
+});
+</script>
+{% endblock %}

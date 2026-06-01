@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h2>Gerenciamento de Usuários</h2>
+    </div>
+    <div class="col-md-4 text-end">
+        <a href="{{ url_for('users.create_user') }}" class="btn btn-primary">
+            <i class="bi bi-person-plus"></i> Novo Usuário
+        </a>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Nome</th>
+                        <th>Usuário</th>
+                        <th>E-mail</th>
+                        <th>Perfil</th>
+                        <th>Status</th>
+                        <th class="text-end">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users.items %}
+                    <tr>
+                        <td>{{ user.display_name }}</td>
+                        <td>{{ user.username }}</td>
+                        <td>{{ user.email or '-' }}</td>
+                        <td>
+                            {% for role in user.get_roles() %}
+                            {% if role == 'admin' %}
+                            <span class="badge bg-danger mb-1">Administrador</span>
+                            {% elif role == 'regional_manager' %}
+                            <span class="badge bg-warning text-dark mb-1">Gestor Regional</span>
+                            {% elif role == 'professor' %}
+                            <span class="badge bg-success mb-1">Professor</span>
+                            {% elif role == 'student' %}
+                            <span class="badge bg-info text-dark mb-1">Aluno</span>
+                            {% else %}
+                            <span class="badge bg-secondary mb-1">{{ role }}</span>
+                            {% endif %}
+                            {% endfor %}
+                        </td>
+                        <td>
+                            {% if user.active %}
+                            <span class="badge bg-success">Ativo</span>
+                            {% else %}
+                            <span class="badge bg-secondary">Inativo</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            {% if user.id != current_user.id %}
+                            <form action="{{ url_for('users.toggle_active', id=user.id) }}" method="POST"
+                                class="d-inline">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                                {% if user.active %}
+                                <button type="submit" class="btn btn-sm btn-outline-warning me-1" title="Desativar">
+                                    <i class="bi bi-person-x"></i>
+                                </button>
+                                {% else %}
+                                <button type="submit" class="btn btn-sm btn-outline-success me-1" title="Ativar">
+                                    <i class="bi bi-person-check"></i>
+                                </button>
+                                {% endif %}
+                            </form>
+                            {% endif %}
+
+                            <a href="{{ url_for('users.edit_user', id=user.id) }}"
+                                class="btn btn-sm btn-outline-primary me-1">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+
+                            {% if user.id != current_user.id %}
+                            <form id="delete-form-{{ user.id }}" action="{{ url_for('users.delete_user', id=user.id) }}"
+                                method="POST" class="d-inline">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                                <button type="button" class="btn btn-sm btn-outline-danger"
+                                    onclick="handleDelete('delete-form-{{ user.id }}', 'Tem certeza que deseja excluir este usuário?')"
+                                    title="Excluir">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center py-4 text-muted">Nenhum usuário encontrado.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% if users.pages > 1 %}
+    <div class="card-footer bg-white border-top-0">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="small text-muted">
+                Exibindo {{ users.items|length }} de {{ users.total }} usuários
+            </div>
+            <nav aria-label="Navegação de usuários">
+                <ul class="pagination pagination-sm mb-0">
+                    <li class="page-item {{ 'disabled' if not users.has_prev }}">
+                        <a class="page-link" href="{{ url_for('users.list_users', page=1) }}" title="Primeira">
+                            <i class="bi bi-chevron-double-left"></i>
+                        </a>
+                    </li>
+                    <li class="page-item {{ 'disabled' if not users.has_prev }}">
+                        <a class="page-link" href="{{ url_for('users.list_users', page=users.prev_num) }}">Anterior</a>
+                    </li>
+
+                    {% for page_num in users.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+                    {% if page_num %}
+                    <li class="page-item {{ 'active' if page_num == users.page }}">
+                        <a class="page-link" href="{{ url_for('users.list_users', page=page_num) }}">{{ page_num }}</a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                    {% endif %}
+                    {% endfor %}
+
+                    <li class="page-item {{ 'disabled' if not users.has_next }}">
+                        <a class="page-link" href="{{ url_for('users.list_users', page=users.next_num) }}">Próxima</a>
+                    </li>
+                    <li class="page-item {{ 'disabled' if not users.has_next }}">
+                        <a class="page-link" href="{{ url_for('users.list_users', page=users.pages) }}" title="Última">
+                            <i class="bi bi-chevron-double-right"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,297 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">{{ title }}</h1>
+</div>
+
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card shadow">
+            <div class="card-body p-4">
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+
+                    <h5 class="text-muted border-bottom pb-2 mb-3 mt-4">Dados Pessoais</h5>
+                    <div class="row">
+                        <div class="col-md-8 mb-3">
+                            {{ form.name.label(class="form-label") }} <span class="text-danger">*</span>
+                            {{ form.name(class="form-control") }}
+                            {% for error in form.name.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            {{ form.email.label(class="form-label") }}
+                            {{ form.email(class="form-control", placeholder="usuario@exemplo.com") }}
+                            {% for error in form.email.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form.cpf.label(class="form-label") }} <span class="text-danger">*</span>
+                            {{ form.cpf(class="form-control", oninput="maskCPF(this)", maxlength="14",
+                            placeholder="000.000.000-00") }}
+                            {% for error in form.cpf.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.birth_date.label(class="form-label") }} <span class="text-danger">*</span>
+                            {{ form.birth_date(class="form-control", type="date") }}
+                            {% for error in form.birth_date.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form.sex.label(class="form-label") }} <span class="text-danger">*</span>
+                            {{ form.sex(class="form-select") }}
+                            {% for error in form.sex.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.race.label(class="form-label") }} <span class="text-danger">*</span>
+                            {{ form.race(class="form-select") }}
+                            {% for error in form.race.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <h5 class="text-muted border-bottom pb-2 mb-3 mt-4">Documentação Adicional</h5>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form.inep_code.label(class="form-label") }}
+                            {{ form.inep_code(class="form-control", maxlength="12", oninput="this.value = this.value.replace(/[^0-9]/g, '')") }}
+                            {% for error in form.inep_code.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.sus_card.label(class="form-label") }}
+                            {{ form.sus_card(class="form-control", maxlength="15", oninput="this.value = this.value.replace(/[^0-9]/g, '')") }}
+                            {% for error in form.sus_card.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <h5 class="text-muted border-bottom pb-2 mb-3 mt-4">Origem e Nacionalidade</h5>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form.nationality.label(class="form-label") }}
+                            {{ form.nationality(class="form-select", id="nationality", onchange="handleNationalityChange()") }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.birth_country.label(class="form-label") }}
+                            {{ form.birth_country(class="form-control", id="birth_country") }}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form.birth_state.label(class="form-label") }}
+                            {{ form.birth_state(class="form-select", id="birth_state", onchange="loadCities(this.value)") }}
+                            {% for error in form.birth_state.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.birth_city_id.label(class="form-label") }}
+                            {{ form.birth_city_id(class="form-select", id="birth_city_id") }}
+                            {% for error in form.birth_city_id.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <h5 class="text-muted border-bottom pb-2 mb-3 mt-4">Dados Sociais e Residenciais</h5>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            {{ form.special_needs.label(class="form-label") }}
+                            {{ form.special_needs(class="form-select") }}
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            {{ form.family_income.label(class="form-label") }}
+                            {{ form.family_income(class="form-select") }}
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            {{ form.bolsa_familia.label(class="form-label") }}
+                            {{ form.bolsa_familia(class="form-select") }}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form.residential_zone.label(class="form-label") }}
+                            {{ form.residential_zone(class="form-select") }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.differentiated_location.label(class="form-label") }}
+                            {{ form.differentiated_location(class="form-select") }}
+                        </div>
+                    </div>
+
+                    <h5 class="text-muted border-bottom pb-2 mb-3 mt-4">Saúde e Matrícula</h5>
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            {{ form.dietary_restrictions.label(class="form-label") }}
+                            {{ form.dietary_restrictions(class="form-select", multiple=True, id="dietary_restrictions") }}
+                            <div class="form-text">Segure Ctrl (ou Cmd) para selecionar múltiplas opções.</div>
+                            {% for error in form.dietary_restrictions.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Only show if class choices isn't disabled or similar -->
+                    <!-- In the edit, teaching unit is just an interface to fetch classes. -->
+                    {% if request.endpoint != 'students.edit_student' %}
+
+                    <div class="mb-3">
+                        {{ form.teaching_unit_id.label(class="form-label") }} <span class="text-danger">*</span>
+                        {{ form.teaching_unit_id(class="form-select", onchange="loadClasses(this.value)") }}
+                        {% for error in form.teaching_unit_id.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.class_id.label(class="form-label") }} <span class="text-danger">*</span>
+                        {{ form.class_id(class="form-select") }}
+                        <div class="form-text">Selecione uma escola primeiro.</div>
+                        {% for error in form.class_id.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <div class="mb-4 form-check">
+                        {{ form.generate_user(class="form-check-input") }}
+                        {{ form.generate_user.label(class="form-check-label") }}
+                        <div class="form-text">Se marcado, o login será o CPF (apenas números) e a senha a data de
+                            nascimento (ddmmaaaa).</div>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{{ url_for('students.list_students') }}" class="btn btn-secondary">Cancelar</a>
+                        <button type="submit" class="btn btn-primary">Salvar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function maskCPF(input) {
+        let v = input.value.replace(/\D/g, '');
+        v = v.replace(/(\d{3})(\d)/, '$1.$2');
+        v = v.replace(/(\d{3})(\d)/, '$1.$2');
+        v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+        input.value = v;
+    }
+
+    async function loadClasses(unitId) {
+        const classSelect = document.getElementById('class_id');
+        classSelect.innerHTML = '<option value="">Carregando...</option>';
+
+        if (!unitId) {
+            classSelect.innerHTML = '<option value="">Selecione uma escola</option>';
+            return;
+        }
+
+        try {
+            const response = await fetch(`/students/api/classes/${unitId}`);
+            const data = await response.json();
+
+            classSelect.innerHTML = '';
+            data.classes.forEach(c => {
+                const option = document.createElement('option');
+                option.value = c.id;
+                option.textContent = c.name;
+                classSelect.appendChild(option);
+            });
+
+            if (data.classes.length === 0) {
+                classSelect.innerHTML = '<option value="">Nenhuma turma encontrada</option>';
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            classSelect.innerHTML = '<option value="">Erro ao carregar turmas</option>';
+        }
+    }
+
+    async function loadCities(uf) {
+        const citySelect = document.getElementById('birth_city_id');
+        citySelect.innerHTML = '<option value="0">Carregando...</option>';
+
+        if (!uf) {
+            citySelect.innerHTML = '<option value="0">Selecione uma UF</option>';
+            return;
+        }
+
+        try {
+            const response = await fetch(`/students/api/cities/${uf}`);
+            const data = await response.json();
+
+            citySelect.innerHTML = '<option value="0">Selecione...</option>';
+            data.cities.forEach(c => {
+                const option = document.createElement('option');
+                option.value = c.id;
+                option.textContent = c.name;
+                citySelect.appendChild(option);
+            });
+        } catch (error) {
+            console.error('Error:', error);
+            citySelect.innerHTML = '<option value="0">Erro ao carregar municípios</option>';
+        }
+    }
+
+    function handleNationalityChange() {
+        const nat = document.getElementById('nationality').value;
+        const stateEl = document.getElementById('birth_state');
+        const cityEl = document.getElementById('birth_city_id');
+        
+        if (nat !== 'Brasileiro') {
+            stateEl.disabled = true;
+            cityEl.disabled = true;
+            stateEl.value = '';
+            cityEl.innerHTML = '<option value="0">Selecione...</option>';
+        } else {
+            stateEl.disabled = false;
+            cityEl.disabled = false;
+        }
+    }
+
+    // Call on load
+    document.addEventListener("DOMContentLoaded", function() {
+        handleNationalityChange();
+    });
+</script>
+
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/i18n/pt-BR.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#dietary_restrictions').select2({
+            theme: 'bootstrap-5',
+            language: 'pt-BR',
+            placeholder: 'Selecione as restrições (opcional)',
+            allowClear: true,
+            width: '100%'
+        });
+    });
+</script>
+
+{% endblock %}

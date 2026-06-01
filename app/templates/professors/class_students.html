@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-1">
+                <li class="breadcrumb-item"><a href="{{ url_for('professors.dashboard') }}">Minhas Turmas</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ klass.name }}</li>
+            </ol>
+        </nav>
+        <h1 class="h2">{{ klass.name }} <small class="text-muted h5">({{ klass.teaching_unit.name }})</small></h1>
+    </div>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{{ url_for('professors.dashboard') }}" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Voltar
+        </a>
+    </div>
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0 align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 20%;">Matrícula</th>
+                        <th style="width: 60%;">Nome</th>
+                        <th style="width: 20%;">Data de Nascimento</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students.items %}
+                    <tr>
+                        <td class="font-monospace">{{ student.registration_number }}</td>
+                        <td class="fw-bold">{{ student.name }}</td>
+                        <td>{{ student.birth_date.strftime('%d/%m/%Y') if student.birth_date else '-' }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="3" class="text-center py-5 text-muted">
+                            Nenhum aluno matriculado nesta turma.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% if students.pages > 1 %}
+<nav aria-label="Page navigation" class="mt-4">
+    <ul class="pagination justify-content-center">
+        {% if students.has_prev %}
+        <li class="page-item">
+            <a class="page-link"
+                href="{{ url_for('professors.class_students', class_id=klass.id, page=students.prev_num) }}">Anterior</a>
+        </li>
+        {% endif %}
+        <li class="page-item disabled"><span class="page-link">{{ students.page }} / {{ students.pages }}</span></li>
+        {% if students.has_next %}
+        <li class="page-item">
+            <a class="page-link"
+                href="{{ url_for('professors.class_students', class_id=klass.id, page=students.next_num) }}">Próxima</a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+{% endblock %}

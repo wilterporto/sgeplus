@@ -1,0 +1,912 @@
+<!-- Wizard Form Content -->
+<!-- Note: This expects to be inside a <form> tag -->
+
+<!-- Steps Header (Wizard Tabs) -->
+<div class="wizard-header bg-light border-bottom p-3">
+    <ul class="nav nav-pills nav-fill" id="wizardTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="step1-tab" data-bs-toggle="pill" data-bs-target="#step1" type="button"
+                role="tab">1. Tipo</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link disabled" id="step2-tab" data-bs-toggle="pill" data-bs-target="#step2" type="button"
+                role="tab">2. Estrutura</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link disabled" id="step3-tab" data-bs-toggle="pill" data-bs-target="#step3" type="button"
+                role="tab">3. Descritores/Habilidades</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link disabled" id="step4-tab" data-bs-toggle="pill" data-bs-target="#step4" type="button"
+                role="tab">4. Resumo</button>
+        </li>
+    </ul>
+</div>
+
+<!-- Steps Content -->
+<div class="tab-content flex-grow-1 p-4 overflow-auto" id="wizardContent" style="min-height: 400px;">
+
+    <!-- Step 1: Tipo -->
+    <div class="tab-pane fade show active" id="step1" role="tabpanel">
+        <h5 class="mb-4">Selecione o tipo de questão:</h5>
+        {% if is_edit %}
+        <input type="hidden" name="type" value="{{ form.type.data }}">
+        <div class="alert alert-info py-2 small mb-3">
+            <i class="bi bi-info-circle me-1"></i> O tipo de questão não pode ser alterado durante a edição.
+        </div>
+        {% endif %}
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-3">
+            <!-- Option 1: Simples Escolha (Moved to Top) -->
+            <div class="col">
+                <label class="card h-100 cursor-pointer type-card">
+                    <div class="card-body">
+                        <input type="radio" name="type" value="SIMPLES_ESCOLHA" class="d-none" {% if is_edit
+                            %}disabled{% endif %} {% if form.type.data=='SIMPLES_ESCOLHA' %}checked{% endif %}>
+                        <h6 class="card-title text-primary"><i class="bi bi-check2-circle me-2"></i>Simples Escolha</h6>
+                        <p class="small text-muted mb-0">Somente uma deve ser assinalada.</p>
+                    </div>
+                </label>
+            </div>
+            <!-- Option 2: Múltipla Escolha -->
+            <div class="col">
+                <label class="card h-100 cursor-pointer type-card">
+                    <div class="card-body">
+                        <input type="radio" name="type" value="MULTIPLA_ESCOLHA" class="d-none" {% if is_edit
+                            %}disabled{% endif %} {% if form.type.data=='MULTIPLA_ESCOLHA' %}checked{% endif %}>
+                        <h6 class="card-title text-primary"><i class="bi bi-list-check me-2"></i>Múltipla Escolha</h6>
+                        <p class="small text-muted mb-0">Várias alternativas, apenas uma correta.
+                        </p>
+                    </div>
+                </label>
+            </div>
+            <!-- Option 3: Verdadeiro ou Falso -->
+            <div class="col">
+                <label class="card h-100 cursor-pointer type-card">
+                    <div class="card-body">
+                        <input type="radio" name="type" value="VERDADEIRO_FALSO" class="d-none" {% if is_edit
+                            %}disabled{% endif %} {% if form.type.data=='VERDADEIRO_FALSO' %}checked{% endif %}>
+                        <h6 class="card-title text-primary"><i class="bi bi-check-circle me-2"></i>Verdadeiro ou Falso
+                        </h6>
+                        <p class="small text-muted mb-0">Julgue itens como V ou F.</p>
+                    </div>
+                </label>
+            </div>
+            <!-- Option 4: Associar Colunas -->
+            <div class="col">
+                <label class="card h-100 cursor-pointer type-card">
+                    <div class="card-body">
+                        <input type="radio" name="type" value="ASSOCIAR_COLUNAS" class="d-none" required {% if is_edit
+                            %}disabled{% endif %} {% if form.type.data=='ASSOCIAR_COLUNAS' %}checked{% endif %}>
+                        <h6 class="card-title text-primary"><i class="bi bi-arrows-collapse me-2"></i>Associar Colunas
+                        </h6>
+                        <p class="small text-muted mb-0">Associe itens da coluna da esquerda com a
+                            direita.</p>
+                    </div>
+                </label>
+            </div>
+            <!-- Option 5: Discursiva Manual -->
+            <div class="col">
+                <label class="card h-100 cursor-pointer type-card">
+                    <div class="card-body">
+                        <input type="radio" name="type" value="DISCURSIVA_MANUAL" class="d-none" {% if is_edit
+                            %}disabled{% endif %} {% if form.type.data=='DISCURSIVA_MANUAL' %}checked{% endif %}>
+                        <h6 class="card-title text-primary"><i class="bi bi-pencil-square me-2"></i>Discursiva Manual
+                        </h6>
+                        <p class="small text-muted mb-0">Resposta em texto livre, correção manual.
+                        </p>
+                    </div>
+                </label>
+            </div>
+            <!-- Option 6: Discursiva Automática -->
+            <div class="col">
+                <label class="card h-100 cursor-pointer type-card">
+                    <div class="card-body">
+                        <input type="radio" name="type" value="DISCURSIVA_AUTOMATICA" class="d-none" {% if is_edit
+                            %}disabled{% endif %} {% if form.type.data=='DISCURSIVA_AUTOMATICA' %}checked{% endif %}>
+                        <h6 class="card-title text-primary"><i class="bi bi-cpu me-2"></i>Discursiva
+                            Automática</h6>
+                        <p class="small text-muted mb-0">Texto curto com conferência automática.</p>
+                    </div>
+                </label>
+            </div>
+            <!-- Option 7: Preencher Lacunas -->
+            <div class="col">
+                <label class="card h-100 cursor-pointer type-card">
+                    <div class="card-body">
+                        <input type="radio" name="type" value="PREENCHER_LACUNAS" class="d-none" {% if is_edit
+                            %}disabled{% endif %} {% if form.type.data=='PREENCHER_LACUNAS' %}checked{% endif %}>
+                        <h6 class="card-title text-primary"><i class="bi bi-input-cursor-text me-2"></i>Preencher
+                            Lacunas</h6>
+                        <p class="small text-muted mb-0">Complete as lacunas no texto.</p>
+                    </div>
+                </label>
+            </div>
+            <!-- Option 8: Somatória -->
+            <div class="col">
+                <label class="card h-100 cursor-pointer type-card">
+                    <div class="card-body">
+                        <input type="radio" name="type" value="SOMATORIA" class="d-none" {% if is_edit %}disabled{%
+                            endif %} {% if form.type.data=='SOMATORIA' %}checked{% endif %}>
+                        <h6 class="card-title text-primary"><i class="bi bi-plus-slash-minus me-2"></i>Somatória</h6>
+                        <p class="small text-muted mb-0">Soma dos números das alternativas corretas.
+                        </p>
+                    </div>
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Step 2: Estrutura -->
+    <div class="tab-pane fade" id="step2" role="tabpanel">
+        <div class="row">
+            <div class="col-12 mb-3">
+                {{ form.statement.label(class="form-label required") }}
+                <!-- Hidden Input for Form Submission -->
+                {{ form.statement(class="d-none", id="statement_input") }}
+                <!-- Quill Editor Container -->
+                <div id="editor-container" style="height: 150px; background: white;"></div>
+            </div>
+            <div class="col-md-6 mb-3">
+                {{ form.difficulty.label(class="form-label") }}
+                {{ form.difficulty(class="form-select") }}
+            </div>
+        </div>
+        <!-- Alternatives Section (Only for relevant types, simplified here) -->
+        <hr>
+        <h6 class="mb-3">Alternativas / Respostas</h6>
+
+        <!-- Standard Alternatives (For Multiple Choice, etc) -->
+        <div id="standard-alternatives" class="alternatives-container">
+            <div class="row g-2">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <div class="input-group-text simple-choice-radio d-none">
+                            <input class="form-check-input mt-0" type="radio" name="correct_alt_radio" value="A"
+                                aria-label="Alternativa A Correta">
+                        </div>
+                        <span class="input-group-text">A</span>
+                        {{ form.alt_a(class="form-control") }}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <div class="input-group-text simple-choice-radio d-none">
+                            <input class="form-check-input mt-0" type="radio" name="correct_alt_radio" value="B"
+                                aria-label="Alternativa B Correta">
+                        </div>
+                        <span class="input-group-text">B</span>
+                        {{ form.alt_b(class="form-control") }}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <div class="input-group-text simple-choice-radio d-none">
+                            <input class="form-check-input mt-0" type="radio" name="correct_alt_radio" value="C"
+                                aria-label="Alternativa C Correta">
+                        </div>
+                        <span class="input-group-text">C</span>
+                        {{ form.alt_c(class="form-control") }}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <div class="input-group-text simple-choice-radio d-none">
+                            <input class="form-check-input mt-0" type="radio" name="correct_alt_radio" value="D"
+                                aria-label="Alternativa D Correta">
+                        </div>
+                        <span class="input-group-text">D</span>
+                        {{ form.alt_d(class="form-control") }}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <div class="input-group-text simple-choice-radio d-none">
+                            <input class="form-check-input mt-0" type="radio" name="correct_alt_radio" value="E"
+                                aria-label="Alternativa E Correta">
+                        </div>
+                        <span class="input-group-text">E</span>
+                        {{ form.alt_e(class="form-control") }}
+                    </div>
+                </div>
+                <div class="col-md-6" id="correct_alt_dropdown_wrapper">
+                    {{ form.correct_alternative.label(class="form-label required") }}
+                    {{ form.correct_alternative(class="form-select") }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Association Alternatives (For Associar Colunas) -->
+        <div id="associar-alternatives" class="alternatives-container d-none">
+            <div class="alert alert-info py-2 small">
+                <i class="bi bi-info-circle me-1"></i> Preencha o item à esquerda e a resposta
+                correta à direita.
+            </div>
+            <div class="row g-2">
+                <!-- Pair 1 -->
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text">1</span>
+                        <input type="text" name="assoc_item_1" id="assoc_item_1" class="form-control"
+                            placeholder="Item 1"
+                            value="{{ assoc_data.get('1', {}).get('item', '') if assoc_data else '' }}">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text bg-success text-white"><i class="bi bi-check-lg"></i></span>
+                        <input type="text" name="assoc_resp_1" id="assoc_resp_1" class="form-control"
+                            placeholder="Resposta Correta 1"
+                            value="{{ assoc_data.get('1', {}).get('response', '') if assoc_data else '' }}">
+                    </div>
+                </div>
+                <!-- Pair 2 -->
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text">2</span>
+                        <input type="text" name="assoc_item_2" id="assoc_item_2" class="form-control"
+                            placeholder="Item 2"
+                            value="{{ assoc_data.get('2', {}).get('item', '') if assoc_data else '' }}">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text bg-success text-white"><i class="bi bi-check-lg"></i></span>
+                        <input type="text" name="assoc_resp_2" id="assoc_resp_2" class="form-control"
+                            placeholder="Resposta Correta 2"
+                            value="{{ assoc_data.get('2', {}).get('response', '') if assoc_data else '' }}">
+                    </div>
+                </div>
+                <!-- Pair 3 -->
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text">3</span>
+                        <input type="text" name="assoc_item_3" id="assoc_item_3" class="form-control"
+                            placeholder="Item 3"
+                            value="{{ assoc_data.get('3', {}).get('item', '') if assoc_data else '' }}">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text bg-success text-white"><i class="bi bi-check-lg"></i></span>
+                        <input type="text" name="assoc_resp_3" id="assoc_resp_3" class="form-control"
+                            placeholder="Resposta Correta 3"
+                            value="{{ assoc_data.get('3', {}).get('response', '') if assoc_data else '' }}">
+                    </div>
+                </div>
+                <!-- Pair 4 -->
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text">4</span>
+                        <input type="text" name="assoc_item_4" id="assoc_item_4" class="form-control"
+                            placeholder="Item 4"
+                            value="{{ assoc_data.get('4', {}).get('item', '') if assoc_data else '' }}">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text bg-success text-white"><i class="bi bi-check-lg"></i></span>
+                        <input type="text" name="assoc_resp_4" id="assoc_resp_4" class="form-control"
+                            placeholder="Resposta Correta 4"
+                            value="{{ assoc_data.get('4', {}).get('response', '') if assoc_data else '' }}">
+                    </div>
+                </div>
+                <!-- Pair 5 -->
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text">5</span>
+                        <input type="text" name="assoc_item_5" id="assoc_item_5" class="form-control"
+                            placeholder="Item 5"
+                            value="{{ assoc_data.get('5', {}).get('item', '') if assoc_data else '' }}">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text bg-success text-white"><i class="bi bi-check-lg"></i></span>
+                        <input type="text" name="assoc_resp_5" id="assoc_resp_5" class="form-control"
+                            placeholder="Resposta Correta 5"
+                            value="{{ assoc_data.get('5', {}).get('response', '') if assoc_data else '' }}">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Step 3: Descritores -->
+    <div class="tab-pane fade" id="step3" role="tabpanel">
+        <div class="mb-3">
+            <label class="form-label required">Selecione os Descritores/Habilidades:</label>
+
+            <!-- Hidden original field to maintain form compatibility -->
+            <div class="d-none">
+                {{ form.descriptors(id="descriptors_hidden", multiple=True) }}
+            </div>
+
+            <!-- Selection Controls -->
+            <div class="card bg-light border-0 mb-3">
+                <div class="card-body">
+                    <!-- Matrix/Theme Filter -->
+                    <div class="mb-3">
+                        <label class="form-label small text-muted">Filtrar por Matriz/Tema:</label>
+                        <select class="form-select" id="matrix_filter">
+                            <option value="">Selecione para filtrar...</option>
+                            <!-- Populated by JS -->
+                        </select>
+                    </div>
+
+                    <!-- Descriptor List (Scrollable, Wrapping) -->
+                    <div class="mb-2">
+                        <label class="form-label small text-muted">Descritor Disponível:</label>
+                        <div id="descriptor_list" class="list-group border bg-white"
+                            style="height: 150px; overflow-y: auto;">
+                            <!-- Items Populated by JS -->
+                            <div class="p-3 text-center text-muted small">Selecione um filtro acima.</div>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary w-100" type="button" id="btn_add_descriptor" disabled>
+                        <i class="bi bi-plus-lg"></i> Adicionar Selecionado
+                    </button>
+                </div>
+            </div>
+
+            <!-- Selected Descriptors List (Grid) -->
+            <div class="table-responsive border rounded bg-white" style="max-height: 250px; overflow-y: auto;">
+                <table class="table table-hover mb-0" id="descriptors_grid">
+                    <thead class="table-light sticky-top">
+                        <tr>
+                            <th>Descritor(es) Selecionado(s)</th>
+                            <th style="width: 50px;">Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Rows will be added here via JS -->
+                        <tr id="no_descriptors_row">
+                            <td colspan="2" class="text-center text-muted py-3">
+                                Nenhum descritor selecionado.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Step 4: Resumo -->
+    <div class="tab-pane fade" id="step4" role="tabpanel">
+        <h5 class="mb-3">Resumo da Questão</h5>
+        <dl class="row">
+            <dt class="col-sm-3">Tipo</dt>
+            <dd class="col-sm-9" id="summary-type">-</dd>
+
+            <dt class="col-sm-3">Enunciado</dt>
+            <dd class="col-sm-9" id="summary-statement" style="max-height: 200px; overflow-y: auto;">-</dd>
+
+            <dt class="col-sm-3">Dificuldade</dt>
+            <dd class="col-sm-9" id="summary-diff">-</dd>
+
+            <dt class="col-sm-3">Descritores</dt>
+            <dd class="col-sm-9" id="summary-desc">-</dd>
+
+            {% if is_edit %}
+            <dt class="col-sm-3">Cadastrado por</dt>
+            <dd class="col-sm-9 text-muted">{{ form.instance.creator.username if (form.instance and
+                form.instance.creator) else 'N/A' }}</dd>
+
+            <dt class="col-sm-3">Data/Hora</dt>
+            <dd class="col-sm-9 text-muted">{{ form.instance.created_at.strftime('%d/%m/%Y %H:%M') if (form.instance and
+                form.instance.created_at) else 'N/A' }}</dd>
+            {% endif %}
+        </dl>
+        <div class="alert alert-warning">
+            <i class="bi bi-exclamation-circle me-1"></i>
+            Verifique todas as informações antes de salvar.
+        </div>
+    </div>
+</div>
+
+<!-- Footer Buttons -->
+<div class="modal-footer justify-content-between">
+    <button type="button" class="btn btn-secondary" id="prevBtn" disabled>Anterior</button>
+    <div>
+        <input type="hidden" name="action" id="form_action" value="finalize">
+        <button type="button" class="btn btn-secondary" {% if not is_edit %}data-bs-dismiss="modal" {% else
+            %}onclick="history.back()" {% endif %}>Cancelar</button>
+        <button type="submit" class="btn btn-outline-primary d-none" id="draftBtn">Salvar como Rascunho</button>
+        <button type="button" class="btn btn-primary" id="nextBtn">Próximo</button>
+        <button type="submit" class="btn btn-success d-none" id="submitBtn">Finalizar Questão</button>
+    </div>
+</div>
+
+<!-- Styling -->
+<style>
+    .type-card {
+        transition: all 0.2s;
+        border: 1px solid #e9ecef;
+        /* Soft border */
+    }
+
+    .type-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15);
+    }
+
+    .type-card input:checked+.card-body {
+        background-color: #e8f0fe;
+    }
+
+    .type-card:has(input:checked) {
+        border-color: #0d6efd;
+        background-color: #e8f0fe;
+    }
+
+    .cursor-pointer {
+        cursor: pointer;
+    }
+
+    /* Fix Quill Toolbar on Bootstrap Modal */
+    .ql-toolbar.ql-snow {
+        border-top-left-radius: 4px;
+        border-top-right-radius: 4px;
+    }
+
+    .ql-container.ql-snow {
+        border-bottom-left-radius: 4px;
+        border-bottom-right-radius: 4px;
+    }
+</style>
+
+<!-- Wizard Script -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Wizard Logic
+        const tabs = ['step1', 'step2', 'step3', 'step4'];
+        let currentStep = {% if is_edit %}1{% else %}0{% endif %};
+
+    // ... (updateButtons definition is further down, we need to call it at the end of init)
+
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const submitBtn = document.getElementById('submitBtn');
+    const tabButtons = tabs.map(id => document.getElementById(id + '-tab'));
+
+    // Init Quill
+    var quill = new Quill('#editor-container', {
+        theme: 'snow',
+        modules: {
+            toolbar: [
+                [{ 'header': [1, 2, 3, false] }],
+                ['bold', 'italic', 'underline'],
+                [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                ['image', 'link', 'clean']
+            ]
+        }
+    });
+
+    // Load initial content (if validation failed and re-render)
+    const initialContent = document.getElementById('statement_input').value;
+    if (initialContent) {
+        quill.root.innerHTML = initialContent;
+    }
+
+    // Sync Quill to Hidden Input
+    quill.on('text-change', function () {
+        document.getElementById('statement_input').value = quill.root.innerHTML;
+    });
+
+    // --- Descriptor Grid Logic ---
+    // Data from Backend
+    const allDescriptors = {{ descriptors_json| tojson
+    }};
+
+    const hiddenSelect = document.getElementById('descriptors_hidden');
+    const gridBody = document.querySelector('#descriptors_grid tbody');
+    const btnAdd = document.getElementById('btn_add_descriptor');
+    const noRow = document.getElementById('no_descriptors_row');
+
+    const filterSelect = document.getElementById('matrix_filter');
+    const listContainer = document.getElementById('descriptor_list');
+
+    let currentSelectedDescriptorId = null;
+
+    // --- Init Filter ---
+    function initFilter() {
+        // Extract unique labels
+        const labels = [...new Set(allDescriptors.map(d => d.filter_label))].sort();
+
+        labels.forEach(label => {
+            const opt = document.createElement('option');
+            opt.value = label;
+            opt.text = label;
+            filterSelect.appendChild(opt);
+        });
+    }
+
+    // Filter Change Event
+    filterSelect.addEventListener('change', function () {
+        renderDescriptorList(this.value);
+        btnAdd.disabled = true;
+        currentSelectedDescriptorId = null;
+    });
+
+    // Render List
+    function renderDescriptorList(filterLabel) {
+        listContainer.innerHTML = ''; // Clear
+
+        if (!filterLabel) {
+            listContainer.innerHTML = '<div class="p-3 text-center text-muted small">Selecione um filtro acima para ver os descritores.</div>';
+            return;
+        }
+
+        const filtered = allDescriptors.filter(d => d.filter_label === filterLabel);
+
+        if (filtered.length === 0) {
+            listContainer.innerHTML = '<div class="p-3 text-center text-muted small">Nenhum descritor encontrado.</div>';
+            return;
+        }
+
+        filtered.forEach(d => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'list-group-item list-group-item-action small text-wrap'; // text-wrap handles wrapping
+            btn.style.wordBreak = 'break-word'; // Ensure long words break
+            btn.textContent = d.full_text;
+            btn.dataset.id = d.id;
+
+            btn.onclick = function () {
+                // Visual Select
+                document.querySelectorAll('#descriptor_list .active').forEach(el => el.classList.remove('active'));
+                this.classList.add('active');
+                currentSelectedDescriptorId = d.id;
+                btnAdd.disabled = false;
+            };
+
+            listContainer.appendChild(btn);
+        });
+    }
+
+    // Initial Sync (if returning from validation error)
+    function initGrid() {
+        // Clear grid (keep noRow)
+        while (gridBody.firstChild) { gridBody.removeChild(gridBody.firstChild); }
+        gridBody.appendChild(noRow);
+
+        // Check selected options in hidden field
+        let hasItems = false;
+        Array.from(hiddenSelect.options).forEach(opt => {
+            if (opt.selected) {
+                // Try finding text in local data, else fallback to option text
+                const descObj = allDescriptors.find(d => d.id == opt.value);
+                const text = descObj ? descObj.full_text : opt.text;
+                addGridRow(opt.value, text);
+                hasItems = true;
+            }
+        });
+        if (hasItems) noRow.classList.add('d-none');
+        else noRow.classList.remove('d-none');
+    }
+
+    // Add Button Click
+    btnAdd.addEventListener('click', function () {
+        if (!currentSelectedDescriptorId) return;
+
+        const val = currentSelectedDescriptorId.toString();
+        // Find text from dataset
+        const descObj = allDescriptors.find(d => d.id == val);
+        const text = descObj ? descObj.full_text : "Erro";
+
+        // Check duplicate
+        let exists = false;
+        Array.from(hiddenSelect.options).forEach(opt => {
+            if (opt.value === val && opt.selected) exists = true;
+        });
+
+        if (exists) {
+            alert('Descritor já adicionado!');
+            return;
+        }
+
+        // Select in hidden field
+        selectHiddenOption(val, true);
+
+        // Add visual row
+        addGridRow(val, text);
+        noRow.classList.add('d-none');
+    });
+
+    function addGridRow(val, text) {
+        const tr = document.createElement('tr');
+        tr.dataset.val = val;
+        tr.innerHTML = `
+            <td class="small text-wrap" style="word-break: break-word;">${text}</td>
+            <td>
+                <button type="button" class="btn btn-sm btn-outline-danger remove-desc" onclick="removeDescriptor('${val}', this)">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </td>
+        `;
+        gridBody.appendChild(tr);
+    }
+
+    // Remove Function (Global or attached)
+    window.removeDescriptor = function (val, btn) {
+        // Deselect in hidden
+        selectHiddenOption(val, false);
+        // Remove row
+        const tr = btn.closest('tr');
+        tr.remove();
+
+        // Show no row if empty
+        if (gridBody.querySelectorAll('tr').length <= 1) { // 1 because noRow might be hidden or single remaining
+            // Check if only noRow remains
+            if (!gridBody.querySelector('tr:not(#no_descriptors_row)')) {
+                noRow.classList.remove('d-none');
+            }
+        }
+    };
+
+    function selectHiddenOption(val, selected) {
+        Array.from(hiddenSelect.options).forEach(opt => {
+            if (opt.value === val) opt.selected = selected;
+        });
+    }
+
+    // Init logic on load
+    initFilter();
+    initGrid();
+
+    // Defer updateButtons to ensure function is defined (it is defined below, so we move the call or rely on hoisting if function var, but specific definition is function decl usually hoisted)
+    // Actually, updateButtons is defined as 'function updateButtons() {...}' so it is hoisted.
+    updateButtons();
+
+    // Use existing variables
+    if (draftBtn) {
+        draftBtn.addEventListener('click', () => {
+            formAction.value = 'draft';
+        });
+    }
+    if (submitBtn) {
+        submitBtn.addEventListener('click', () => {
+            formAction.value = 'finalize';
+        });
+    }
+
+    // ... (rest of the init code)
+
+    function updateButtons() {
+        prevBtn.disabled = currentStep === 0;
+
+        // Draft button visibility (from Step 2 onwards)
+        if (currentStep > 0) {
+            draftBtn.classList.remove('d-none');
+        } else {
+            draftBtn.classList.add('d-none');
+        }
+
+        if (currentStep === tabs.length - 1) {
+            nextBtn.classList.add('d-none');
+            submitBtn.classList.remove('d-none');
+        } else {
+            nextBtn.classList.remove('d-none');
+            submitBtn.classList.add('d-none');
+        }
+
+        // Enable current tab
+        const triggerEl = document.getElementById(tabs[currentStep] + '-tab');
+        const tab = new bootstrap.Tab(triggerEl);
+        tab.show();
+    }
+
+    prevBtn.addEventListener('click', () => {
+        if (currentStep > 0) {
+            currentStep--;
+            updateButtons();
+            // If going back to step 1 (Structure), ensure visibility is correct
+            if (currentStep === 1) toggleAlternatives();
+        }
+    });
+
+    function toggleAlternatives() {
+        // Safety check
+        const typeInput = document.querySelector('input[name="type"]:checked');
+        if (!typeInput) return;
+
+        const type = typeInput.value;
+        const standardDiv = document.getElementById('standard-alternatives');
+        const assocDiv = document.getElementById('associar-alternatives');
+
+        // Simple Choice Logic
+        const simpleChoiceRadios = document.querySelectorAll('.simple-choice-radio');
+        const correctAltDropdown = document.getElementById('correct_alt_dropdown_wrapper');
+
+        if (type === 'ASSOCIAR_COLUNAS') {
+            standardDiv.classList.add('d-none');
+            assocDiv.classList.remove('d-none');
+        } else {
+            assocDiv.classList.add('d-none');
+            standardDiv.classList.remove('d-none');
+
+            if (type === 'SIMPLES_ESCOLHA') {
+                // Show Radios, Hide Dropdown
+                simpleChoiceRadios.forEach(el => el.classList.remove('d-none'));
+                correctAltDropdown.classList.add('d-none');
+
+                // Sync Dropdown Value -> Radio Checked (when switching TO Simple Choice)
+                const currentVal = document.getElementById('correct_alternative').value;
+                if (currentVal) {
+                    const radio = document.querySelector(`input[name="correct_alt_radio"][value="${currentVal}"]`);
+                    if (radio) radio.checked = true;
+                }
+            } else {
+                // Hide Radios, Show Dropdown
+                simpleChoiceRadios.forEach(el => el.classList.add('d-none'));
+                correctAltDropdown.classList.remove('d-none');
+            }
+        }
+    }
+    // Sync Radio to Dropdown (Hidden or Visible)
+    // Even if hidden, the dropdown is the form field that gets submitted/validated
+    document.querySelectorAll('input[name="correct_alt_radio"]').forEach(radio => {
+        radio.addEventListener('change', function () {
+            if (this.checked) {
+                const select = document.getElementById('correct_alternative');
+                select.value = this.value;
+            }
+        });
+    });
+
+    // Sync Dropdown to Radio (Initial Load)
+    const currentCorrect = document.getElementById('correct_alternative').value;
+    if (currentCorrect) {
+        const radio = document.querySelector(`input[name="correct_alt_radio"][value="${currentCorrect}"]`);
+        if (radio) radio.checked = true;
+    }
+
+    // Initial Toggle on Load
+    if (document.querySelector('input[name="type"]:checked')) {
+        toggleAlternatives();
+    }
+
+    nextBtn.addEventListener('click', () => {
+        // Validation Logic could go here
+        if (!validateStep(currentStep)) return;
+
+        if (currentStep < tabs.length - 1) {
+            currentStep++;
+            updateButtons();
+            if (currentStep === 1) toggleAlternatives();
+            if (currentStep === 3) updateSummary();
+        }
+    });
+
+    // --- Tab Sync Logic ---
+    // Update currentStep when user manually clicks a tab
+    tabButtons.forEach((btn, index) => {
+        btn.addEventListener('shown.bs.tab', function () {
+            currentStep = index;
+            updateButtons(); // Updates buttons state (Prev/Next/Submit) based on new step
+            if (currentStep === 1) toggleAlternatives();
+            if (currentStep === 3) updateSummary();
+        });
+    });
+
+    // --- Modal Reset Logic ---
+    const wizardModal = document.getElementById('newQuestionModal');
+    if (wizardModal) {
+        wizardModal.addEventListener('hidden.bs.modal', function () {
+            // 1. Reset Form Fields
+            document.getElementById('wizardForm').reset();
+
+            // 2. Reset Quill Editor
+            if (quill) quill.setContents([]);
+            document.getElementById('statement_input').value = "";
+
+            // 3. Reset Wizard Step
+            currentStep = 0;
+            updateButtons();
+
+            // 4. Reset Descriptor Filter/List
+            const filterSelect = document.getElementById('matrix_filter');
+            if (filterSelect) filterSelect.value = "";
+            renderDescriptorList("");
+
+            // 5. Reset Descriptor Grid
+            initGrid(); // Will clear because hidden select is reset
+
+            // 6. Reset Association Fields manually if needed (reset() usually handles inputs)
+            // 7. Reset Alternatives Visibility (Default to checking first option if needed, or none)
+            // Check first type radio by default if none checked (after reset)
+            // actually reset() unchecks radios if default not set. Let's set Simple Choice as default?
+            // Or just let validation handle "Select a type".
+            // Standard behavior: reset() restores to initial HTML state.
+
+            // Ensure Step 1 is active
+            const firstTabTrigger = document.getElementById('step1-tab');
+            const tap = new bootstrap.Tab(firstTabTrigger);
+            tap.show();
+        });
+
+        // Optional: On show, ensure we start fresh or at specific state?
+        // hidden.bs.modal handles the cleanup AFTER, so show usually starts clean.
+    }
+
+    function validateStep(step) {
+        if (step === 0) {
+            const checked = document.querySelector('input[name="type"]:checked');
+            if (!checked) { alert('Selecione um tipo de questão.'); return false; }
+        }
+        if (step === 1) {
+            // Validate Quill Content (check text length avoiding empty HTML tags)
+            const text = quill.getText().trim();
+            if (text.length === 0 && !quill.root.querySelector('img')) {
+                alert('Preencha o enunciado.');
+                return false;
+            }
+            // Ensure value is synced
+            document.getElementById('statement_input').value = quill.root.innerHTML;
+        }
+        if (step === 2) { // Structure validation
+            const type = document.querySelector('input[name="type"]:checked').value;
+
+            if (type === 'ASSOCIAR_COLUNAS') {
+                // Check if at least one pair is filled
+                let filled = false;
+                for (let i = 1; i <= 5; i++) {
+                    const item = document.getElementById('assoc_item_' + i).value;
+                    const resp = document.getElementById('assoc_resp_' + i).value;
+                    if (item.trim() && resp.trim()) filled = true;
+                }
+                if (!filled) { alert('Preencha pelo menos um par de items e respostas.'); return false; }
+
+                // Auto-fill hidden standard fields to pass Form validation
+                document.getElementById('correct_alternative').value = 'A';
+                document.getElementById('alt_a').value = 'Placeholder';
+                document.getElementById('alt_b').value = 'Placeholder';
+                document.getElementById('alt_c').value = 'Placeholder';
+                document.getElementById('alt_d').value = 'Placeholder';
+                document.getElementById('alt_e').value = 'Placeholder';
+
+            } else {
+                // Standard validation
+                // Check if Alts are filled (optional? usually required)
+                if (!document.getElementById('alt_a').value.trim()) { alert('Preencha a Alternativa A'); return false; }
+                if (!document.getElementById('alt_b').value.trim()) { alert('Preencha a Alternativa B'); return false; }
+                // ... check others if needed
+
+                if (!document.getElementById('correct_alternative').value) { alert('Selecione a alternativa correta.'); return false; }
+            }
+        }
+        if (step === 3) {
+            // Check if hidden select has any selected options
+            const hiddenSelect = document.getElementById('descriptors_hidden');
+            if (hiddenSelect.selectedOptions.length === 0) {
+                alert('Adicione pelo menos um descritor.');
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function updateSummary() {
+        const type = document.querySelector('input[name="type"]:checked').value;
+        document.getElementById('summary-type').textContent = type;
+        // Use innerHTML for Rich Text
+        document.getElementById('summary-statement').innerHTML = quill.root.innerHTML;
+
+        const diffSelect = document.getElementById('difficulty');
+        document.getElementById('summary-diff').textContent = diffSelect.options[diffSelect.selectedIndex].text;
+
+        const hiddenSelect = document.getElementById('descriptors_hidden');
+        const selectedDescs = Array.from(hiddenSelect.selectedOptions).map(opt => opt.text).join(', ');
+        document.getElementById('summary-desc').textContent = selectedDescs || 'Nenhum';
+    }
+
+    // Auto-open if errors (if mostly likely unused in Edit mode directly, but kept for compat)
+    /* 
+    {% if form.errors %}
+    // Logic for errors would be finding the step with error and showing it.
+    // For now simple alert
+    alert('Verifique os erros no formulário.');
+    {% endif %}
+    */
+});
+</script>

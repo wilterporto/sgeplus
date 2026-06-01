@@ -1,0 +1,253 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Registrar Respostas Manualmente</h1>
+    <a href="{{ url_for('exams.view_exam', id=exam.id) }}" class="btn btn-sm btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Voltar para a Prova
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-md-10 mx-auto">
+        <div class="card p-4 shadow-sm">
+            <h4 class="mb-4">{{ exam.title }}</h4>
+
+            <form method="POST" id="recordForm">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                <div class="row mb-4">
+                    <!-- School Selection -->
+                    <div class="col-md-4">
+                        <label for="school_id" class="form-label fw-bold">1. Selecione a Escola</label>
+                        <select id="school_id" class="form-select" required>
+                            <option value="">-- Escolha a Escola --</option>
+                            {% for school in schools %}
+                            <option value="{{ school.id }}" {% if pre_school_id==school.id %}selected{% endif %}>{{
+                                school.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Class Selection -->
+                    <div class="col-md-4">
+                        <label for="class_id" class="form-label fw-bold">2. Selecione a Turma</label>
+                        <select id="class_id" class="form-select" required disabled>
+                            <option value="">-- Primeiro escolha a escola --</option>
+                        </select>
+                    </div>
+
+                    <!-- Student Selection -->
+                    <div class="col-md-4">
+                        <label for="student_id" class="form-label fw-bold">3. Selecione o Aluno</label>
+                        <select name="student_id" id="student_id" class="form-select" required disabled>
+                            <option value="">-- Primeiro escolha a turma --</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="answersSection" style="display: none;">
+                    <hr class="my-4">
+
+                    <div id="absenceSection" class="row mb-4 align-items-center">
+                        <div class="col-md-6">
+                            <label for="absence_reason_id" class="form-label fw-bold text-danger">Motivo de Ausência
+                                (Opcional)</label>
+                            <select name="absence_reason_id" id="absence_reason_id" class="form-select border-danger">
+                                <option value="">-- Aluno Presente --</option>
+                                {% for reason in absence_reasons %}
+                                <option value="{{ reason.id }}">{{ reason.name }}</option>
+                                {% endfor %}
+                            </select>
+                            <div class="form-text text-danger" id="absenceWarning" style="display: none;">
+                                <i class="bi bi-exclamation-triangle"></i> Ao selecionar um motivo, as respostas abaixo
+                                serão ignoradas.
+                            </div>
+                        </div>
+                    </div>
+
+                    <h5 class="mb-3">Cartão de Respostas</h5>
+                    <p class="text-muted small mb-4">Marque a alternativa assinalada pelo aluno para cada questão.</p>
+
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width: 80px;" class="text-center">Questão</th>
+                                    <th class="text-center">A</th>
+                                    <th class="text-center">B</th>
+                                    <th class="text-center">C</th>
+                                    <th class="text-center">D</th>
+                                    <th class="text-center">E</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in exam.items %}
+                                <tr>
+                                    <td class="text-center fw-bold">{{ loop.index }}</td>
+                                    {% for label in ['A', 'B', 'C', 'D', 'E'] %}
+                                    <td class="text-center">
+                                        <div class="form-check form-check-inline m-0">
+                                            <input class="form-check-input" type="radio" name="q_{{ item.question.id }}"
+                                                id="q_{{ item.question.id }}_{{ label }}" value="{{ label }}"
+                                                style="width: 25px; height: 25px;" {% if
+                                                detected_answers.get(item.question.id|string)==label %}checked{% endif
+                                                %}>
+                                        </div>
+                                    </td>
+                                    {% endfor %}
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="mt-4 d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-save me-2"></i> Salvar Respostas
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const schoolSelect = document.getElementById('school_id');
+        const classSelect = document.getElementById('class_id');
+        const studentSelect = document.getElementById('student_id');
+        const answersSection = document.getElementById('answersSection');
+
+        // Initial State Check (if pre-selected from OMR)
+        const preSchoolId = "{{ pre_school_id or '' }}";
+        const preClassId = "{{ pre_class_id or '' }}";
+        const preStudentId = "{{ detected_student_id or '' }}";
+
+        if (preSchoolId) {
+            loadClasses(preSchoolId, preClassId).then(() => {
+                if (preClassId) {
+                    loadStudents(preClassId, preStudentId);
+                }
+            });
+        }
+
+        schoolSelect.addEventListener('change', function () {
+            const schoolId = this.value;
+            classSelect.innerHTML = '<option value="">-- Carregando turmas... --</option>';
+            classSelect.disabled = true;
+            studentSelect.innerHTML = '<option value="">-- Primeiro escolha a turma --</option>';
+            studentSelect.disabled = true;
+            answersSection.style.display = 'none';
+
+            if (schoolId) {
+                loadClasses(schoolId);
+            }
+        });
+
+        classSelect.addEventListener('change', function () {
+            const classId = this.value;
+            studentSelect.innerHTML = '<option value="">-- Carregando alunos... --</option>';
+            studentSelect.disabled = true;
+            answersSection.style.display = 'none';
+
+            if (classId) {
+                loadStudents(classId);
+            }
+        });
+
+        studentSelect.addEventListener('change', function () {
+            if (this.value) {
+                answersSection.style.display = 'block';
+                document.getElementById('absenceSection').style.display = 'flex';
+                // Trigger change to set initial state of inputs
+                absenceSelect.dispatchEvent(new Event('change'));
+            } else {
+                answersSection.style.display = 'none';
+                document.getElementById('absenceSection').style.display = 'none';
+            }
+        });
+
+        const absenceSelect = document.getElementById('absence_reason_id');
+        const absenceWarning = document.getElementById('absenceWarning');
+        const answerInputs = document.querySelectorAll('input[type="radio"]');
+        const submitBtn = document.querySelector('button[type="submit"]');
+
+        absenceSelect.addEventListener('change', function () {
+            const isAbsent = this.value !== "";
+            absenceWarning.style.display = isAbsent ? 'block' : 'none';
+
+            answerInputs.forEach(input => {
+                input.disabled = isAbsent;
+                if (isAbsent) input.checked = false;
+            });
+
+            if (isAbsent) {
+                submitBtn.innerHTML = '<i class="bi bi-save me-2"></i> Salvar Motivo de Ausência';
+                submitBtn.classList.remove('btn-primary');
+                submitBtn.classList.add('btn-warning');
+            } else {
+                submitBtn.innerHTML = '<i class="bi bi-save me-2"></i> Salvar Respostas';
+                submitBtn.classList.remove('btn-warning');
+                submitBtn.classList.add('btn-primary');
+            }
+        });
+
+        function loadClasses(schoolId, selectedId = null) {
+            return fetch(`/exams/api/classes_for_school/${schoolId}?exam_id={{ exam.id }}`)
+                .then(res => res.json())
+                .then(data => {
+                    classSelect.innerHTML = '<option value="">-- Escolha a Turma --</option>';
+                    data.forEach(cls => {
+                        const opt = document.createElement('option');
+                        opt.value = cls.id;
+                        opt.textContent = cls.name;
+                        if (selectedId && cls.id == selectedId) opt.selected = true;
+                        classSelect.appendChild(opt);
+                    });
+                    classSelect.disabled = false;
+                });
+        }
+
+        function loadStudents(classId, selectedId = null) {
+            return fetch(`/exams/api/students_for_class/${classId}?exam_id={{ exam.id }}`)
+                .then(res => res.json())
+                .then(data => {
+                    studentSelect.innerHTML = '<option value="">-- Escolha o Aluno --</option>';
+                    data.forEach(stu => {
+                        const opt = document.createElement('option');
+                        opt.value = stu.id;
+                        opt.textContent = stu.name;
+                        if (selectedId && stu.id == selectedId) {
+                            opt.selected = true;
+                            answersSection.style.display = 'block'; // Show answers for OMR detection
+                        }
+                        studentSelect.appendChild(opt);
+                    });
+                    studentSelect.disabled = false;
+                });
+        }
+    });
+</script>
+
+<style>
+    .table td {
+        vertical-align: middle;
+        cursor: pointer;
+    }
+
+    .table tr:hover td {
+        background-color: #f8f9fa;
+    }
+
+    .form-check-input {
+        cursor: pointer;
+    }
+
+    .form-check-input:checked {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+    }
+</style>
+{% endblock %}

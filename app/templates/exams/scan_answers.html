@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Scanear Cartão Resposta</h1>
+    <a href="{{ url_for('exams.view_exam', id=exam.id) }}" class="btn btn-sm btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Voltar
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card p-4 shadow-sm text-center">
+            <h4 class="mb-4">{{ exam.title }}</h4>
+
+            <div class="alert alert-info text-start">
+                <h6><i class="bi bi-info-circle me-2"></i> Orientações para a captura:</h6>
+                <ul class="mb-0 small">
+                    <li>Certifique-se de que a iluminação esteja boa (evite sombras).</li>
+                    <li>O cartão deve estar bem alinhado e plano.</li>
+                    <li>As marcas de âncora nos cantos do cartão devem estar visíveis.</li>
+                    <li>Use uma câmera com boa resolução ou scanner.</li>
+                </ul>
+            </div>
+
+            <form method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                <div class="row">
+                    <!-- Exam ID is fixed as we are inside the exam scope -->
+                    <input type="hidden" id="exam_id" name="exam_id" value="{{ exam.id }}">
+
+                    <div class="col-md-6 mb-3">
+                        <label for="school_id" class="form-label required fw-bold">Escola</label>
+                        <select class="form-select" id="school_id" name="school_id" required>
+                            <option value="">Selecione a Escola...</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="class_id" class="form-label required fw-bold">Turma</label>
+                        <select class="form-select" id="class_id" name="class_id" required>
+                            <option value="">Selecione a Escola primeiro...</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 mb-3 text-start">
+                        <label for="student_id" class="form-label fw-bold">Aluno (Opcional se QR Code presente)</label>
+                        <select class="form-select form-select-lg" id="student_id" name="student_id">
+                            <option value="">Selecione a Turma primeiro...</option>
+                        </select>
+                        <div class="form-text x-small">Se o cartão tiver QR Code, o aluno é identificado
+                            automaticamente.</div>
+                    </div>
+                </div>
+
+                <div class="upload-zone border border-2 border-dashed rounded p-5 mb-4" id="upload-zone">
+                    <i class="bi bi-camera display-4 text-muted mb-3"></i>
+                    <p class="mb-3">Tire uma foto ou selecione o arquivo do cartão resposta</p>
+                    <input type="file" name="card_image" id="card_image" class="form-control" accept="image/*"
+                        capture="environment">
+                </div>
+
+                <div id="preview-container" class="mb-4 d-none">
+                    <h6>Prévia do Cartão:</h6>
+                    <img id="image-preview" src="#" alt="Preview" class="img-fluid rounded border shadow-sm"
+                        style="max-height: 400px;">
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-lg w-100" id="btn-process" disabled>
+                    <i class="bi bi-cpu me-2"></i> Processar e Validar
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const examSelect = document.getElementById('exam_id');
+        const schoolSelect = document.getElementById('school_id');
+        const classSelect = document.getElementById('class_id');
+        const studentSelect = document.getElementById('student_id');
+        const fileInput = document.getElementById('card_image');
+        const previewContainer = document.getElementById('preview-container');
+        const imagePreview = document.getElementById('image-preview');
+        const btnProcess = document.getElementById('btn-process');
+
+        // Initial setup if exam is pre-selected
+        if (examSelect.value) {
+            fetchSchools(examSelect.value);
+        }
+
+        examSelect.addEventListener('change', function () {
+            fetchSchools(this.value);
+        });
+
+        schoolSelect.addEventListener('change', function () {
+            fetchClasses(this.value);
+        });
+
+        classSelect.addEventListener('change', function () {
+            fetchStudents(this.value);
+        });
+
+        function fetchSchools(examId) {
+            if (!examId) {
+                schoolSelect.innerHTML = '<option value="">Selecione a Prova primeiro...</option>';
+                schoolSelect.disabled = true;
+                return;
+            }
+            fetch(`/exams/api/schools_for_exam/${examId}`)
+                .then(r => r.json())
+                .then(data => {
+                    let options = '<option value="">Selecione a Escola...</option>';
+                    data.forEach(s => {
+                        options += `<option value="${s.id}">${s.name}</option>`;
+                    });
+                    schoolSelect.innerHTML = options;
+                    schoolSelect.disabled = false;
+                    classSelect.innerHTML = '<option value="">Selecione a Escola primeiro...</option>';
+                    classSelect.disabled = true;
+                    studentSelect.innerHTML = '<option value="">Selecione a Turma primeiro...</option>';
+                });
+        }
+
+        function fetchClasses(schoolId) {
+            if (!schoolId) {
+                classSelect.innerHTML = '<option value="">Selecione a Escola primeiro...</option>';
+                classSelect.disabled = true;
+                return;
+            }
+            const examId = examSelect.value;
+            fetch(`/exams/api/classes_for_school/${schoolId}?exam_id=${examId}`)
+                .then(r => r.json())
+                .then(data => {
+                    let options = '<option value="">Selecione a Turma...</option>';
+                    data.forEach(c => {
+                        options += `<option value="${c.id}">${c.name}</option>`;
+                    });
+                    classSelect.innerHTML = options;
+                    classSelect.disabled = false;
+                    studentSelect.innerHTML = '<option value="">Selecione a Turma primeiro...</option>';
+                });
+        }
+
+        function fetchStudents(classId) {
+            if (!classId) {
+                studentSelect.innerHTML = '<option value="">Selecione a Turma primeiro...</option>';
+                return;
+            }
+            fetch(`/exams/api/students_for_class/${classId}`)
+                .then(r => r.json())
+                .then(data => {
+                    let options = '<option value="">Selecione o Aluno...</option>';
+                    data.forEach(s => {
+                        options += `<option value="${s.id}">${s.name}</option>`;
+                    });
+                    studentSelect.innerHTML = options;
+                });
+        }
+
+        fileInput.addEventListener('change', function () {
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    imagePreview.src = e.target.result;
+                    previewContainer.classList.remove('d-none');
+                    btnProcess.disabled = false;
+                }
+                reader.readAsDataURL(this.files[0]);
+            }
+        });
+    });
+</script>
+<style>
+    .upload-zone {
+        background-color: #f8f9fa;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    .upload-zone:hover {
+        background-color: #e9ecef;
+    }
+
+    .border-dashed {
+        border-style: dashed !important;
+    }
+
+    .x-small {
+        font-size: 0.75rem;
+    }
+</style>
+{% endblock %}
+{% endblock %}

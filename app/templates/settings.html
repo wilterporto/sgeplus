@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4">Configurações do Sistema</h2>
+            <div class="card">
+                <div class="card-header">
+                    Personalização
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('main.settings') }}" enctype="multipart/form-data">
+                        {{ form.hidden_tag() }}
+
+                        <div class="mb-3">
+                            {{ form.system_name.label(class="form-label") }}
+                            {{ form.system_name(class="form-control") }}
+                            {% for error in form.system_name.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.logo.label(class="form-label") }}
+                            {{ form.logo(class="form-control") }}
+                            {% for error in form.logo.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                            <div class="form-text">Envie uma imagem (PNG, JPG) para ser usada como logo no menu lateral.
+                            </div>
+                        </div>
+
+                        {% if current_logo %}
+                        <div class="mb-3">
+                            <label class="form-label d-block">Logo Atual:</label>
+                            <div class="d-flex align-items-center">
+                                <img src="{{ url_for('main.get_logo') }}" alt="Logo Atual" style="max-height: 50px;"
+                                    class="bg-dark p-2 rounded me-3">
+
+                                <button type="button" class="btn btn-outline-danger btn-sm"
+                                    onclick="if(confirm('Tem certeza que deseja remover a logo do sistema?')) document.getElementById('remove-logo-form').submit();">
+                                    <i class="bi bi-trash"></i> Remover Logo
+                                </button>
+                            </div>
+                        {% endif %}
+
+                        <div class="mb-3">
+                            {{ form.login_background.label(class="form-label") }}
+                            {{ form.login_background(class="form-control") }}
+                            {% for error in form.login_background.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                            <div class="form-text">Envie uma imagem (PNG, JPG) para ser usada como imagem de fundo na página de login.
+                            </div>
+                        </div>
+
+                        {% if current_login_bg %}
+                        <div class="mb-3">
+                            <label class="form-label d-block">Imagem de Fundo de Login Atual:</label>
+                            <div class="d-flex align-items-center">
+                                <img src="{{ url_for('main.get_login_bg') }}" alt="Imagem de Fundo Atual" style="max-height: 50px;"
+                                    class="bg-dark p-2 rounded me-3">
+
+                                <button type="button" class="btn btn-outline-danger btn-sm"
+                                    onclick="if(confirm('Tem certeza que deseja remover a imagem de fundo de login?')) document.getElementById('remove-login-bg-form').submit();">
+                                    <i class="bi bi-trash"></i> Remover Imagem de Fundo
+                                </button>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <hr class="my-4">
+                        <h5 class="mb-3">Configurações de E-mail (SMTP)</h5>
+
+                        <div class="row">
+                            <div class="col-md-8 mb-3">
+                                {{ form.smtp_server.label(class="form-label") }}
+                                {{ form.smtp_server(class="form-control", placeholder="smtp.exemplo.com") }}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                {{ form.smtp_port.label(class="form-label") }}
+                                {{ form.smtp_port(class="form-control", placeholder="587") }}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                {{ form.smtp_user.label(class="form-label") }}
+                                {{ form.smtp_user(class="form-control") }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form.smtp_password.label(class="form-label") }}
+                                {{ form.smtp_password(class="form-control") }}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                {{ form.smtp_security.label(class="form-label") }}
+                                {{ form.smtp_security(class="form-select") }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form.smtp_sender.label(class="form-label") }}
+                                {{ form.smtp_sender(class="form-control", placeholder="noreply@exemplo.com") }}
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <button type="submit" class="btn btn-primary">Salvar Configurações</button>
+                        </div>
+                    </form>
+                    <form id="remove-logo-form" action="{{ url_for('main.remove_logo') }}" method="POST"
+                        style="display: none;">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                    </form>
+                    <form id="remove-login-bg-form" action="{{ url_for('main.remove_login_bg') }}" method="POST"
+                        style="display: none;">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

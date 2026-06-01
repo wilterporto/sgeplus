@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-lg border-primary">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0"><i class="bi bi-info-circle-fill me-2"></i>Atualização do Sistema</h3>
+            </div>
+            <div class="card-body p-5">
+                <h4 class="card-title text-center mb-4">Uma nova versão está disponível!</h4>
+
+                <p class="card-text fs-5">
+                    O sistema foi atualizado para a versão <strong>{{ version }}</strong>.
+                </p>
+                <p class="text-muted">
+                    Para garantir o funcionamento correto e acesso às novas funcionalidades, é necessário confirmar que
+                    você está ciente desta atualização.
+                </p>
+
+                <hr class="my-4">
+
+                <div class="alert alert-info">
+                    <strong>Melhorias nesta versão:</strong><br>
+                    - Novo layout do Dashboard.<br>
+                    - Melhorias na gestão de Turmas.<br>
+                    - Correções de segurança e desempenho.
+                </div>
+
+                <form action="{{ url_for('main.confirm_update') }}" method="POST" class="d-grid gap-2 mt-4">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                    <button type="submit" class="btn btn-lg btn-success">
+                        <i class="bi bi-check-lg me-2"></i>Confirmar e Continuar
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

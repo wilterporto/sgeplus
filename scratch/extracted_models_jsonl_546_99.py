@@ -1,0 +1,1 @@
+"Script atualizado para extrair qualquer string contendo class ReferenceMatrix de transcript.jsonl"

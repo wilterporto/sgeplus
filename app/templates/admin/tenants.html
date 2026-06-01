@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Clientes do Sistema</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{{ url_for('admin.new_tenant') }}" class="btn btn-primary">
+            <i class="bi bi-plus-lg"></i> Novo Cliente
+        </a>
+    </div>
+</div>
+
+<!-- Search -->
+<form method="GET" class="row g-3 mb-4">
+    <div class="col-md-6">
+        <div class="input-group">
+            <input type="text" name="search" class="form-control" placeholder="Buscar por cliente..."
+                value="{{ search or '' }}">
+            <button class="btn btn-outline-secondary" type="submit"><i class="bi bi-search"></i></button>
+            {% if search %}
+            <a href="{{ url_for('admin.list_tenants') }}" class="btn btn-outline-danger"><i class="bi bi-x"></i></a>
+            {% endif %}
+        </div>
+    </div>
+</form>
+
+<div class="row">
+    <!-- List -->
+    <div class="col-12">
+        <div class="card shadow mb-4">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0 align-middle">
+                        <thead class="table-light small">
+                            <tr>
+                                <th>Nome do Cliente</th>
+                                <th>Tipo</th>
+                                <th>Data de Cadastro</th>
+                                <th class="text-end">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for tenant in tenants.items %}
+                            <tr class="small">
+                                <td class="fw-bold">
+                                    {{ tenant.name }}
+                                </td>
+                                <td>
+                                    {% if tenant.type == 'Estadual' %}
+                                    <span class="badge bg-primary px-2.5 py-1.5 fs-7 rounded-pill">Estadual</span>
+                                    {% else %}
+                                    <span class="badge bg-info text-dark px-2.5 py-1.5 fs-7 rounded-pill">Municipal</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-muted">
+                                    {{ tenant.created_at.strftime('%d/%m/%Y %H:%M') if tenant.created_at else 'N/A' }}
+                                </td>
+                                <td class="text-end">
+                                    <a href="{{ url_for('admin.authenticate_tenant', id=tenant.id) }}" class="btn btn-sm btn-outline-success me-1" title="Acessar Cliente">
+                                        <i class="bi bi-box-arrow-in-right me-1"></i> Acessar
+                                    </a>
+                                    <a href="{{ url_for('admin.edit_tenant', id=tenant.id) }}" class="btn btn-sm btn-outline-primary me-1" title="Editar">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <form id="delete-form-{{ tenant.id }}" action="{{ url_for('admin.delete_tenant', id=tenant.id) }}"
+                                        method="POST" class="d-inline">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                                        <button type="button" class="btn btn-sm btn-outline-danger"
+                                            onclick="handleDelete('delete-form-{{ tenant.id }}', 'Tem certeza que deseja excluir este cliente?')"
+                                            title="Excluir">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="4" class="text-center text-muted p-4">Nenhum cliente cadastrado no sistema.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                {% if tenants.pages > 1 %}
+                <nav aria-label="Page navigation" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        {% if tenants.has_prev %}
+                        <li class="page-item">
+                            <a class="page-link"
+                                href="{{ url_for('admin.list_tenants', page=tenants.prev_num, search=search) }}">Anterior</a>
+                        </li>
+                        {% endif %}
+                        <li class="page-item disabled"><span class="page-link">{{ tenants.page }} / {{ tenants.pages }}</span></li>
+                        {% if tenants.has_next %}
+                        <li class="page-item">
+                            <a class="page-link"
+                                href="{{ url_for('admin.list_tenants', page=tenants.next_num, search=search) }}">Próxima</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Diagnóstico da Turma: {{ exam.title }}</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{{ url_for('exams.view_exam', id=exam.id) }}" class="btn btn-sm btn-outline-primary">
+            <i class="bi bi-arrow-left"></i> Voltar para Prova
+        </a>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <!-- Radar Chart: Skills -->
+    <div class="col-md-6 mb-3">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white">
+                <h5 class="card-title mb-0"><i class="bi bi-bullseye text-primary"></i> Radar de Habilidades (Domínio
+                    por Descritor)</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="radarChart" style="max-height: 400px;"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recommended Actions -->
+    <div class="col-md-6 mb-3">
+        <div class="card shadow-sm h-100 border-warning">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="card-title mb-0"><i class="bi bi-lightning-charge"></i> Ações Recomendadas</h5>
+            </div>
+            <div class="card-body">
+                {% if critical_questions %}
+                <h6><i class="bi bi-exclamation-triangle text-danger"></i> Itens Críticos para Revisão:</h6>
+                <ul class="list-group list-group-flush mb-3">
+                    {% for item in critical_questions %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center py-2">
+                        <div>
+                            <strong>Questão {{ item.num }}</strong> ({{ item.descriptor }})
+                        </div>
+                        <span class="badge bg-danger rounded-pill">{{ "%.0f"|format(item.error_rate|default(0, true))
+                            }}% de erro</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+
+                {% if low_performers %}
+                <h6><i class="bi bi-people text-warning"></i> Grupo de Intervenção (Abaixo de 50%):</h6>
+                <p class="small text-muted mb-2">Recomenda-se reforço pedagógico imediato para:</p>
+                <div class="d-flex flex-wrap gap-1">
+                    {% for name in low_performers %}
+                    <span class="badge bg-light text-dark border">{{ name }}</span>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="alert alert-success py-2 mt-3">
+                    <i class="bi bi-check-circle"></i> Todos os alunos atingiram desempenho acima de 50%!
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Heatmap Matrix -->
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0"><i class="bi bi-grid-3x3-gap text-danger"></i> Matriz de Acertos e Erros
+                    (Mapa de Calor)</h5>
+                <div class="small">
+                    <span class="badge bg-success me-1">Acerto</span>
+                    <span class="badge bg-danger me-1">Erro</span>
+                    <span class="badge bg-secondary">Não resp.</span>
+                </div>
+            </div>
+            <div class="card-body p-0" style="overflow-x: auto;">
+                <table class="table table-bordered table-sm mb-0" style="min-width: 800px;">
+                    <thead class="bg-light">
+                        <tr>
+                            <th style="width: 250px; position: sticky; left: 0; z-index: 2; background: #f8f9fa;">Aluno
+                            </th>
+                            <th style="width: 80px; text-align: center;">Média</th>
+                            {% for item in exam.items %}
+                            <th style="text-align: center; font-size: 8pt; width: 35px;">Q{{ loop.index }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in heatmap_data %}
+                        <tr>
+                            <td class="small fw-bold" style="position: sticky; left: 0; z-index: 1; background: white;">
+                                {{ row.name }}</td>
+                            <td class="text-center small">{{ "%.1f"|format(row.score or 0) }}%</td>
+                            {% for ans in row.answers %}
+                            <td class="text-center p-0" style="height: 25px;">
+                                {% if ans.status == True %}
+                                <div class="bg-success w-100 h-100 opacity-75"></div>
+                                {% elif ans.status == False %}
+                                <div class="bg-danger w-100 h-100 opacity-75"></div>
+                                {% else %}
+                                <div class="bg-light w-100 h-100"></div>
+                                {% endif %}
+                            </td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-footer bg-white py-2">
+                <small class="text-muted"><i class="bi bi-info-circle"></i> A visualização vertical permite identificar
+                    questões que ninguém entendeu. A horizontal mostra alunos com lacunas sistêmicas.</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('radarChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'radar',
+        data: {
+            labels: {{ radar_labels| tojson }},
+        datasets: [{
+            label: 'Desempenho da Turma (%)',
+            data: {{ radar_data| tojson }},
+        fill: true,
+        backgroundColor: 'rgba(13, 110, 253, 0.2)',
+        borderColor: 'rgb(13, 110, 253)',
+        pointBackgroundColor: 'rgb(13, 110, 253)',
+        pointBorderColor: '#fff',
+        pointHoverBackgroundColor: '#fff',
+        pointHoverBorderColor: 'rgb(13, 110, 253)'
+            }]
+        },
+        options: {
+        scales: {
+            r: {
+                angleLines: { display: true },
+                suggestedMin: 0,
+                suggestedMax: 100,
+                ticks: {
+                    stepSize: 20,
+                    callback: function (value) { return value + '%'; }
+                }
+            }
+        },
+        elements: {
+            line: { borderWidth: 3 }
+        },
+        plugins: {
+            legend: { position: 'bottom' }
+        }
+    }
+    });
+</script>
+
+<style>
+    @media print {
+
+        .btn-toolbar,
+        .card-footer {
+            display: none !important;
+        }
+
+        .card {
+            border: 1px solid #ddd !important;
+            box-shadow: none !important;
+        }
+
+        .bg-success {
+            background-color: #198754 !important;
+            -webkit-print-color-adjust: exact;
+        }
+
+        .bg-danger {
+            background-color: #dc3545 !important;
+            -webkit-print-color-adjust: exact;
+        }
+
+        .bg-light {
+            background-color: #f8f9fa !important;
+            -webkit-print-color-adjust: exact;
+        }
+    }
+</style>
+{% endblock %}

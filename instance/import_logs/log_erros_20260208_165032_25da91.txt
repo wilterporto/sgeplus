@@ -1,0 +1,8 @@
+RELATÓRIO DE ERROS DE IMPORTAÇÃO
+Data/Hora: 08/02/2026 16:50:32
+----------------------------------------
+
+- O e-mail 'anacelia20201@icloud.com' já está sendo usado por outro usuário (CPF: 04601810175).
+- O e-mail 'dinaircorreiatavares@gmail.com' já está sendo usado por outro usuário (CPF: 44070306153).
+- O e-mail 'escolamunicipallorenapark@gmail.com' já está sendo usado por outro usuário (CPF: 77602293134).
+- O e-mail 'a@a.com.br' já está sendo usado por outro usuário (CPF: 94245894172).

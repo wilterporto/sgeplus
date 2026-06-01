@@ -1,0 +1,389 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Indicadores Acadêmicos</h1>
+</div>
+
+<!-- Summary Metrics -->
+<div class="row g-3 mb-2">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white h-100 shadow-sm border-0">
+            <div class="card-body">
+                <h6 class="card-title text-uppercase mb-2 opacity-75" style="font-size: 0.7rem;">Total de Escolas</h6>
+                <div class="d-flex align-items-center">
+                    <h2 class="display-6 fw-bold mb-0">{{ summary.total_schools }}</h2>
+                    <i class="bi bi-building ms-auto fs-3 opacity-25"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success text-white h-100 shadow-sm border-0">
+            <div class="card-body">
+                <h6 class="card-title text-uppercase mb-2 opacity-75" style="font-size: 0.7rem;">Total de Alunos</h6>
+                <div class="d-flex align-items-center">
+                    <h2 class="display-6 fw-bold mb-0">{{ summary.total_students }}</h2>
+                    <i class="bi bi-people ms-auto fs-3 opacity-25"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-info text-white h-100 shadow-sm border-0">
+            <div class="card-body">
+                <h6 class="card-title text-uppercase mb-2 opacity-75" style="font-size: 0.7rem;">Total de Turmas</h6>
+                <div class="d-flex align-items-center">
+                    <h2 class="display-6 fw-bold mb-0">{{ summary.total_classes }}</h2>
+                    <i class="bi bi-door-open ms-auto fs-3 opacity-25"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-warning text-dark h-100 shadow-sm border-0">
+            <div class="card-body">
+                <h6 class="card-title text-uppercase mb-2 opacity-75" style="font-size: 0.7rem;">Média Alunos/Turma</h6>
+                <div class="d-flex align-items-center">
+                    <h2 class="display-6 fw-bold mb-0">{{ summary.avg_students|round(1) }}</h2>
+                    <i class="bi bi-calculator ms-auto fs-3 opacity-25"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card bg-danger text-white h-100 shadow-sm border-0">
+            <div class="card-body">
+                <h6 class="card-title text-uppercase mb-2 opacity-75" style="font-size: 0.7rem;">Professores sem
+                    Modulação</h6>
+                <div class="d-flex align-items-center">
+                    <h2 class="display-6 fw-bold mb-0">{{ summary.professors_unmodulated }}</h2>
+                    <i class="bi bi-person-x ms-auto fs-3 opacity-25"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white h-100 shadow-sm border-0" style="background-color: #6610f2 !important;">
+            <div class="card-body">
+                <h6 class="card-title text-uppercase mb-2 opacity-75" style="font-size: 0.7rem;">Turmas sem Professor
+                </h6>
+                <div class="d-flex align-items-center">
+                    <h2 class="display-6 fw-bold mb-0">{{ summary.classes_unmodulated }}</h2>
+                    <i class="bi bi-door-closed ms-auto fs-3 opacity-25"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <!-- Regional Stats -->
+    <div class="col-md-8">
+        <div class="card shadow-sm h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>Indicadores por Regional</span>
+                <i class="bi bi-geo-alt text-muted"></i>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Regional</th>
+                            <th class="text-center">Escolas (%)</th>
+                            <th class="text-center">Turmas (%)</th>
+                            <th class="text-center">Alunos (%)</th>
+                            <th class="text-center">Média/Turma</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for reg in regionals %}
+                        <tr>
+                            <td class="fw-bold">{{ reg.name }}</td>
+                            <td class="text-center">
+                                {{ reg.schools }} 
+                                <span class="text-muted small ms-1" style="font-size: 0.75rem;">({{ reg.schools_perc }}%)</span>
+                            </td>
+                            <td class="text-center">
+                                {{ reg.classes }} 
+                                <span class="text-muted small ms-1" style="font-size: 0.75rem;">({{ reg.classes_perc }}%)</span>
+                            </td>
+                            <td class="text-center">
+                                {{ reg.students }} 
+                                <span class="text-muted small ms-1" style="font-size: 0.75rem;">({{ reg.students_perc }}%)</span>
+                            </td>
+                            <td class="text-center">
+                                {% if reg.classes > 0 %}
+                                {{ (reg.students / reg.classes)|round(1) }}
+                                {% else %} 0 {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-12">
+            <h4 class="border-bottom pb-2 mb-3">
+                <i class="bi bi-person-badge me-2"></i>Perfil do Aluno
+            </h4>
+        </div>
+        <!-- Student Sex -->
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-light fw-bold">Distribuição por Sexo (Alunos)</div>
+                <div class="card-body">
+                    {% for item in student_demographics.sex %}
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span class="small">{{ item.name }}</span>
+                        <span class="badge bg-light text-dark">{{ item.count }} ({{ item.perc }}%)</span>
+                    </div>
+                    <div class="progress mb-3" style="height: 8px;">
+                        <div class="progress-bar bg-primary"
+                            style="width: {{ item.perc }}%">
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <!-- Student Race -->
+        <div class="col-md-8">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-light fw-bold">Distribuição por Cor/Raça (Alunos)</div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-borderless mb-0">
+                            <tbody>
+                                {% for race, count in student_demographics.race %}
+                                <tr>
+                                    <td><span class="small text-muted">{{ race }}</span></td>
+                                    <td class="text-end fw-bold">{{ count }}</td>
+                                    <td class="text-end text-muted" style="width: 25%;">
+                                        <span class="small">{{ (count / summary.total_students * 100)|round(1) if
+                                            summary.total_students > 0 else 0 }}%</span>
+                                    </td>
+                                    <td style="width: 40%;">
+                                        <div class="progress mt-1" style="height: 6px;">
+                                            <div class="progress-bar bg-success"
+                                                style="width: {{ (count / summary.total_students * 100)|round if summary.total_students > 0 else 0 }}%">
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <!-- Nationality -->
+        <div class="col-md-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-light fw-bold">Nacionalidade (Alunos)</div>
+                <div class="card-body">
+                    {% set br_count = student_demographics.nationality.br_count %}
+                    {% set foreign_count = student_demographics.nationality.foreign_count %}
+                    {% set total = br_count + foreign_count %}
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <h2 class="mb-0 fw-bold">{{ br_count }}</h2>
+                            <span class="text-muted small">Brasileiros</span>
+                        </div>
+                        <div class="text-end">
+                            <h2 class="mb-0 fw-bold">{{ foreign_count }}</h2>
+                            <span class="text-muted small">Estrangeiros</span>
+                        </div>
+                    </div>
+                    <div class="progress" style="height: 10px;">
+                        {% if total > 0 %}
+                        <div class="progress-bar bg-primary" role="progressbar"
+                            style="width: {{ (br_count / total * 100)|round }}%"></div>
+                        <div class="progress-bar bg-warning" role="progressbar"
+                            style="width: {{ (foreign_count / total * 100)|round }}%"></div>
+                        {% else %}
+                        <div class="progress-bar bg-light" role="progressbar" style="width: 100%"></div>
+                        {% endif %}
+                    </div>
+                    <div class="mt-3 d-flex justify-content-between">
+                        <small><i class="bi bi-circle-fill text-primary me-1" style="font-size: 0.6rem;"></i> {{
+                            (br_count / total * 100)|round if total > 0 else 0 }}% Brasileiros</small>
+                        <small><i class="bi bi-circle-fill text-warning me-1" style="font-size: 0.6rem;"></i> {{
+                            (foreign_count / total * 100)|round if total > 0 else 0 }}% Estrangeiros</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Countries -->
+        <div class="col-md-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-light fw-bold">Top 5 Países de Origem (Estrangeiros)</div>
+                <div class="card-body">
+                    {% if student_demographics.countries %}
+                    <ul class="list-group list-group-flush">
+                        {% for country in student_demographics.countries %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center px-0 border-0">
+                            <span><i class="bi bi-geo-alt me-2 text-secondary"></i>{{ country.name }}</span>
+                            <span class="badge bg-light text-dark border">{{ country.count }} alunos</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <i class="bi bi-info-circle text-muted display-6"></i>
+                        <p class="text-muted mt-2">Nenhum aluno estrangeiro registrado.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Novas Seções de Perfil do Aluno: Zona Residencial, Localização Diferenciada, Bolsa Família e Deficiência -->
+    <div class="row g-3 mb-4">
+        <!-- Student Zone -->
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-light fw-bold">Zona Residencial</div>
+                <div class="card-body">
+                    {% for item in student_demographics.zone %}
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span class="small">{{ item.name }}</span>
+                        <span class="badge bg-light text-dark">{{ item.count }} ({{ item.perc }}%)</span>
+                    </div>
+                    <div class="progress mb-3" style="height: 8px;">
+                        <div class="progress-bar bg-info" style="width: {{ item.perc }}%"></div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Student Location -->
+        <div class="col-md-8">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-light fw-bold">Localização Diferenciada de Residência</div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-borderless mb-0">
+                            <tbody>
+                                {% for item in student_demographics.location %}
+                                <tr>
+                                    <td><span class="small text-muted">{{ item.name }}</span></td>
+                                    <td class="text-end fw-bold">{{ item.count }}</td>
+                                    <td class="text-end text-muted" style="width: 25%;">
+                                        <span class="small">{{ item.perc }}%</span>
+                                    </td>
+                                    <td style="width: 40%;">
+                                        <div class="progress mt-1" style="height: 6px;">
+                                            <div class="progress-bar bg-success" style="width: {{ item.perc }}%"></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Student Social stats (Bolsa Familia, Special Needs) -->
+        <div class="col-md-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light fw-bold">Programas Sociais e Acessibilidade (Alunos)</div>
+                <div class="card-body">
+                    <div class="row text-center g-3">
+                        <div class="col-md-6 border-end">
+                            <h6 class="text-muted text-uppercase mb-2" style="font-size: 0.8rem;">Bolsa Família</h6>
+                            <div class="d-flex align-items-center justify-content-center">
+                                <h2 class="display-6 fw-bold mb-0 text-success">{{ student_demographics.social.bolsa_count }}</h2>
+                                <span class="badge bg-success-subtle text-success ms-3 fs-6">{{ student_demographics.social.bolsa_perc }}%</span>
+                            </div>
+                            <p class="text-muted small mt-2 mb-0">Alunos beneficiados pelo programa federal</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted text-uppercase mb-2" style="font-size: 0.8rem;">Alunos com Deficiência (Sim)</h6>
+                            <div class="d-flex align-items-center justify-content-center">
+                                <h2 class="display-6 fw-bold mb-0 text-danger">{{ student_demographics.social.special_needs_count }}</h2>
+                                <span class="badge bg-danger-subtle text-danger ms-3 fs-6">{{ student_demographics.social.special_needs_perc }}%</span>
+                            </div>
+                            <p class="text-muted small mt-2 mb-0">Alunos com necessidades educacionais especiais ativas</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-12">
+            <h4 class="border-bottom pb-2 mb-3">
+                <i class="bi bi-person-workspace me-2"></i>Perfil do Professor
+            </h4>
+        </div>
+        <!-- Professor Sex -->
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-warning-subtle fw-bold">Distribuição por Sexo (Professores)</div>
+                <div class="card-body">
+                    {% for item in professor_demographics.sex %}
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span class="small">{{ item.name }}</span>
+                        <span class="badge bg-light text-dark">{{ item.count }} ({{ item.perc }}%)</span>
+                    </div>
+                    <div class="progress mb-3" style="height: 8px;">
+                        <div class="progress-bar bg-warning"
+                            style="width: {{ item.perc }}%">
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <!-- Professor Race -->
+        <div class="col-md-8">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-warning-subtle fw-bold">Distribuição por Cor/Raça (Professores)</div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-borderless mb-0">
+                            <tbody>
+                                {% for race, count in professor_demographics.race %}
+                                <tr>
+                                    <td><span class="small text-muted">{{ race }}</span></td>
+                                    <td class="text-end fw-bold">{{ count }}</td>
+                                    <td class="text-end text-muted" style="width: 25%;">
+                                        <span class="small">{{ (count / summary.total_professors * 100)|round(1) if
+                                            summary.total_professors > 0 else 0 }}%</span>
+                                    </td>
+                                    <td style="width: 40%;">
+                                        <div class="progress mt-1" style="height: 6px;">
+                                            <div class="progress-bar bg-warning"
+                                                style="width: {{ (count / summary.total_professors * 100)|round if summary.total_professors > 0 else 0 }}%">
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% endblock %}

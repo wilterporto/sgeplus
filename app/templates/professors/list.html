@@ -1,0 +1,323 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Professores</h1>
+    <div class="btn-toolbar mb-2 mb-md-0 gap-2">
+        <button type="button" class="btn btn-sm btn-outline-success" data-bs-toggle="modal"
+            data-bs-target="#importModal">
+            <i class="bi bi-person-down"></i> Importar Professores
+        </button>
+        <button type="button" class="btn btn-sm btn-outline-info" data-bs-toggle="modal"
+            data-bs-target="#importModulationModal">
+            <i class="bi bi-journal-arrow-down"></i> Importar Modulação
+        </button>
+        <a class="btn btn-sm btn-primary" href="{{ url_for('professors.new_professor') }}">
+            <i class="bi bi-person-plus"></i> Novo Professor
+        </a>
+    </div>
+</div>
+
+<!-- Import Modal -->
+<div class="modal fade" id="importModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Importar Professores</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="importProfessorForm" action="{{ url_for('professors.import_professors') }}" method="POST"
+                enctype="multipart/form-data">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                <div class="modal-body">
+                    <p class="small text-muted mb-3">
+                        <strong>Campos Obrigatórios:</strong> Nome Completo, Data de Nascimento, Sexo, Cor/Raça, CPF<br><br>
+                        <strong>Campos Opcionais:</strong> E-mail, Código INEP, Cartão SUS, Nacionalidade, País nascimento, UF Naturalidade, Município Naturalidade, Zona Residencial, Localização Diferenciada de Residência<br><br>
+                        <span class="text-info">* O sistema utiliza o CPF para garantir que não haja registros duplicados. E-mail único também é validado.</span>
+                    </p>
+                    <div class="mb-3">
+                        <label for="file" class="form-label">Arquivo Excel (.xlsx)</label>
+                        <input type="file" class="form-control" id="file" name="file" accept=".xlsx, .xls" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-success">Importar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Import Modulation Modal -->
+<div class="modal fade" id="importModulationModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Importar Modulação (Atribuições)</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="importModulationForm" action="{{ url_for('professors.import_modulation') }}" method="POST"
+                enctype="multipart/form-data">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                <div class="modal-body">
+                    <p class="small text-muted mb-3">
+                        O arquivo Excel deve conter as colunas: <br>
+                        <strong>Unidade de Ensino, Nome da Turma, CPF, Componente</strong>
+                    </p>
+                    <div class="mb-3">
+                        <label for="file_mod" class="form-label">Arquivo Excel (.xlsx)</label>
+                        <input type="file" class="form-control" id="file_mod" name="file" accept=".xlsx, .xls" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-info text-white">Importar Modulação</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Search -->
+<form method="GET" class="row g-3 mb-4">
+    <div class="col-md-3">
+        <input type="text" name="search" class="form-control" placeholder="Nome..." value="{{ search or '' }}">
+    </div>
+    <div class="col-md-2">
+        <select name="subject_id" class="form-select">
+            <option value="">Componente</option>
+            {% for sub in subjects %}
+            <option value="{{ sub.id }}" {{ 'selected' if subject_id==sub.id }}>{{ sub.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-md-2">
+        <select name="school_year_id" class="form-select">
+            <option value="">Ano Escolar</option>
+            {% for y in years %}
+            <option value="{{ y.id }}" {{ 'selected' if school_year_id==y.id }}>{{ y.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-md-3">
+        <select name="unit_id" class="form-select">
+            <option value="">Unidade de Ensino</option>
+            {% for s in schools %}
+            <option value="{{ s.id }}" {{ 'selected' if unit_id==s.id }}>{{ s.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-md-2 d-flex gap-1">
+        <button class="btn btn-primary flex-grow-1" type="submit"><i class="bi bi-filter"></i></button>
+        {% if search or subject_id or school_year_id or unit_id %}
+        <a href="{{ url_for('professors.list_professors') }}" class="btn btn-outline-danger"><i class="bi bi-x"></i></a>
+        {% endif %}
+    </div>
+</form>
+
+<div class="table-responsive bg-white shadow-sm">
+    <table class="table table-hover mb-0">
+        <thead class="table-light">
+            <tr>
+                <th>Nome</th>
+                <th>CPF</th>
+                <th>Nascimento</th>
+                <th>E-mail</th>
+                <th class="text-center">Unidades</th>
+                <th class="text-center">Turmas</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for professor in professors.items %}
+            <tr>
+                <td>
+                    {{ professor.name }}
+                    {% if professor.user_id %}
+                    <i class="bi bi-key-fill text-success ms-2" title="Usuário/Senha Criados"></i>
+                    {% else %}
+                    <i class="bi bi-key text-muted ms-2 opacity-25" title="Sem acesso ao sistema"></i>
+                    {% endif %}
+                </td>
+                <td>{{ professor.formatted_cpf }}</td>
+                <td>{{ professor.birth_date.strftime('%d/%m/%Y') if professor.birth_date else '-' }}</td>
+                <td>{{ professor.email or '-' }}</td>
+                <td class="text-center">
+                    <span class="badge bg-light text-dark border rounded-pill">{{ professor.teaching_units_count
+                        }}</span>
+                </td>
+                <td class="text-center">
+                    <span class="badge bg-light text-dark border rounded-pill">{{ professor.primary_school_classes_count
+                        }}</span>
+                </td>
+                <td>
+                    <div class="btn-group">
+                        <a href="{{ url_for('professors.edit_professor', id=professor.id) }}"
+                            class="btn btn-sm btn-outline-secondary" title="Editar">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        <form action="{{ url_for('professors.delete_professor', id=professor.id) }}" method="POST"
+                            class="d-inline" onsubmit="return confirm('Tem certeza?');">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Excluir">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5" class="text-center py-4 text-muted">Nenhum professor encontrado.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Advanced Pagination -->
+{% if professors.pages > 1 %}
+<nav aria-label="Page navigation" class="mt-4">
+    <ul class="pagination justify-content-center">
+        <!-- First Page -->
+        <li class="page-item {{ 'disabled' if professors.page == 1 }}">
+            <a class="page-link" href="{{ url_for('professors.list_professors', page=1, search=search) }}"
+                title="Primeira Página">
+                <i class="bi bi-chevron-double-left"></i>
+            </a>
+        </li>
+
+        {% if professors.has_prev %}
+        <li class="page-item">
+            <a class="page-link"
+                href="{{ url_for('professors.list_professors', page=professors.prev_num, search=search) }}">Anterior</a>
+        </li>
+        {% endif %}
+
+        <li class="page-item disabled d-none d-md-block">
+            <span class="page-link">Página {{ professors.page }} de {{ professors.pages }}</span>
+        </li>
+
+        {% if professors.has_next %}
+        <li class="page-item">
+            <a class="page-link"
+                href="{{ url_for('professors.list_professors', page=professors.next_num, search=search) }}">Próxima</a>
+        </li>
+        {% endif %}
+
+        <!-- Last Page -->
+        <li class="page-item {{ 'disabled' if professors.page == professors.pages }}">
+            <a class="page-link"
+                href="{{ url_for('professors.list_professors', page=professors.pages, search=search) }}"
+                title="Última Página">
+                <i class="bi bi-chevron-double-right"></i>
+            </a>
+        </li>
+    </ul>
+
+    <!-- Page Selector -->
+    <div class="d-flex justify-content-center align-items-center mt-2 gap-2">
+        <label for="pageSelect" class="small text-muted">Ir para página:</label>
+        <select id="pageSelect" class="form-select form-select-sm w-auto" onchange="window.location.href=this.value">
+            {% for p in range(1, professors.pages + 1) %}
+            <option value="{{ url_for('professors.list_professors', page=p, search=search) }}" {{ 'selected' if
+                p==professors.page }}>
+                {{ p }}
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+</nav>
+{% endif %}
+
+<script>
+    let assignmentsModal = [];
+
+    function maskCPF(input) {
+        let v = input.value.replace(/\D/g, '');
+        v = v.replace(/(\d{3})(\d)/, '$1.$2');
+        v = v.replace(/(\d{3})(\d)/, '$1.$2');
+        v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+        input.value = v;
+    }
+
+    // Modal Scripts
+    async function loadClassesModal(unitId) {
+        const classSelect = document.getElementById('selectClassModal');
+        classSelect.innerHTML = '<option value="">...</option>';
+        classSelect.disabled = true;
+        if (!unitId) return;
+
+        try {
+            const response = await fetch(`/students/api/classes/${unitId}`);
+            const data = await response.json();
+            classSelect.innerHTML = '<option value="">Selecione...</option>';
+            data.classes.forEach(c => {
+                const opt = document.createElement('option');
+                opt.value = c.id;
+                opt.textContent = c.name;
+                classSelect.appendChild(opt);
+            });
+            classSelect.disabled = false;
+        } catch (error) { console.error(error); }
+    }
+
+    function addAssignmentModal() {
+        const schoolSel = document.getElementById('selectSchoolModal');
+        const classSel = document.getElementById('selectClassModal');
+        const subjectSel = document.getElementById('selectSubjectModal');
+
+        const schoolId = schoolSel.value;
+        const schoolName = schoolSel.options[schoolSel.selectedIndex]?.text;
+        const classId = classSel.value;
+        const className = classSel.options[classSel.selectedIndex]?.text;
+        const subjectId = subjectSel.value;
+        const subjectName = subjectSel.options[subjectSel.selectedIndex]?.text;
+
+        if (!schoolId || !classId || !subjectId) return;
+
+        const exists = assignmentsModal.some(a => a.class_id == classId && a.subject_id == subjectId);
+        if (exists) {
+            alert('Atribuição Duplicada');
+            return;
+        }
+
+        assignmentsModal.push({ school_id: schoolId, school_name: schoolName, class_id: classId, class_name: className, subject_id: subjectId, subject_name: subjectName });
+        renderAssignmentsModal();
+        subjectSel.value = "";
+    }
+
+    function removeAssignmentModal(index) {
+        assignmentsModal.splice(index, 1);
+        renderAssignmentsModal();
+    }
+
+    function renderAssignmentsModal() {
+        const tbody = document.getElementById('assignmentsTableModal');
+        tbody.innerHTML = '';
+        document.getElementById('emptyMsgModal').style.display = assignmentsModal.length ? 'none' : 'block';
+
+        assignmentsModal.forEach((item, index) => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td>${item.school_name}</td><td>${item.class_name}</td><td>${item.subject_name}</td>
+                <td><button type="button" class="btn btn-sm text-danger p-0" onclick="removeAssignmentModal(${index})">&times;</button></td>`;
+            tbody.appendChild(tr);
+        });
+        document.getElementById('assignments_data').value = JSON.stringify(assignmentsModal);
+    }
+
+
+
+    const hasFlashErrors = "{{ 'true' if get_flashed_messages(category_filter=['danger']) else 'false' }}" === 'true';
+    if (hasFlashErrors) {
+        var myModal = new bootstrap.Modal(document.getElementById('importModal'));
+        myModal.show();
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        setupImportProgress('importProfessorForm');
+        setupImportProgress('importModulationForm');
+    });
+</script>
+{% endblock %}

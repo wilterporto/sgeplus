@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h4 class="mb-0 text-secondary"><i class="bi bi-person-badge me-2"></i> Meus Dados</h4>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-4">
+                    <div class="icon-box mx-auto rounded-circle bg-light p-3 d-inline-block mb-3">
+                        <i class="bi bi-person-circle display-4 text-secondary"></i>
+                    </div>
+                    <h3 class="fw-bold">{{ user.name or user.username }}</h3>
+                    <p class="text-muted mb-2">{{ user.email if user.email else 'E-mail não cadastrado' }}</p>
+
+                    <div>
+                        {% for role in user.get_roles() %}
+                        {% if role == 'admin' %}
+                        <span class="badge bg-danger mb-1">Administrador</span>
+                        {% elif role == 'regional_manager' %}
+                        <span class="badge bg-warning text-dark mb-1">Gestor Regional</span>
+                        {% elif role == 'professor' %}
+                        <span class="badge bg-success mb-1">Professor</span>
+                        {% elif role == 'student' %}
+                        <span class="badge bg-info text-dark mb-1">Aluno</span>
+                        {% else %}
+                        <span class="badge bg-secondary mb-1">{{ role }}</span>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <hr class="my-4">
+
+                <h5 class="mb-3">Seus Dados</h5>
+                <form method="POST" action="{{ url_for('users.profile') }}">
+                    <div class="mb-3">
+                        <label for="email" class="form-label">E-mail</label>
+                        <input type="email" class="form-control" id="email" name="email" value="{{ user.email or '' }}">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Nova Senha</label>
+                        <input type="password" class="form-control" id="password" name="password" minlength="6"
+                            placeholder="Deixe em branco para manter a atual">
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save me-2"></i> Salvar Alterações
+                        </button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+
+        {% if session.get('active_role') == 'student' and user.student_profile %}
+        <div class="card shadow-sm mt-3">
+            <div class="card-body">
+                <h6 class="text-muted mb-3"><i class="bi bi-mortarboard me-2"></i> Informações Escolares</h6>
+                {% set enrollment = user.student_profile.enrollments.filter_by(active=True).first() %}
+                {% if enrollment %}
+                <p class="mb-1"><strong>Escola:</strong> {{ enrollment.enrolled_class.teaching_unit.name }}</p>
+                <p class="mb-3"><strong>Turma:</strong> {{ enrollment.enrolled_class.name }}</p>
+
+                <div class="d-grid mt-3">
+                    <a href="{{ url_for('exams.list_available_exams') }}"
+                        class="btn btn-primary d-flex align-items-center justify-content-center">
+                        <i class="bi bi-pencil-square me-2"></i> Responder Provas
+                    </a>
+                </div>
+                {% else %}
+                <p class="text-warning small mb-0">Nenhuma matrícula ativa vinculada.</p>
+                {% endif %}
+            </div>
+        </div>
+        <div class="text-center mt-3 text-muted small">
+            <p>Seus dados cadastrais como Aluno são gerenciados pela secretaria.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

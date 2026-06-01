@@ -1,0 +1,355 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Turmas</h1>
+    <div class="btn-toolbar mb-2 mb-md-0 gap-2">
+        <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#importClassModal">
+            <i class="bi bi-file-earmark-spreadsheet"></i> Importar Excel
+        </button>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newClassModal">
+            <i class="bi bi-plus-lg"></i> Nova Turma
+        </button>
+    </div>
+</div>
+
+{% if active_job %}
+<div class="row mb-4" id="active-import-card">
+    <div class="col-12">
+        <div class="card border-primary bg-primary bg-opacity-10 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h6 class="mb-0 text-primary">
+                        <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                        Importação de Turmas em Andamento...
+                    </h6>
+                    <span class="badge bg-primary px-3 py-2" id="active-pct">{{ active_job.progress_percentage
+                        }}%</span>
+                </div>
+                <div class="progress" style="height: 12px;">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
+                        id="active-bar" style="width: {{ active_job.progress_percentage }}%;"
+                        aria-valuenow="{{ active_job.progress_percentage }}" aria-valuemin="0" aria-valuemax="100">
+                    </div>
+                </div>
+                <div class="mt-2 small text-muted d-flex justify-content-between">
+                    <span id="active-count">{{ active_job.processed_rows }} / {{ active_job.total_rows }} registros
+                        processados</span>
+                    <span><a href="{{ url_for('admin.list_imports') }}" class="text-decoration-none">Ver detalhes em
+                            Administração</a></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const activePoll = setInterval(() => {
+        fetch(`/admin/imports/status/{{ active_job.id }}`)
+            .then(r => r.json())
+            .then(data => {
+                const bar = document.getElementById('active-bar');
+                const pct = document.getElementById('active-pct');
+                const count = document.getElementById('active-count');
+
+                if (bar) {
+                    bar.style.width = data.progress + '%';
+                    bar.setAttribute('aria-valuenow', data.progress);
+                }
+                if (pct) pct.innerText = data.progress + '%';
+                if (count) count.innerText = `${data.processed} / ${data.total} registros processados`;
+
+                if (data.status !== 'running') {
+                    clearInterval(activePoll);
+                    setTimeout(() => window.location.reload(), 2000);
+                }
+            })
+            .catch(err => {
+                console.error('Error polling:', err);
+                clearInterval(activePoll);
+            });
+    }, 3000);
+</script>
+{% endif %}
+
+<!-- Filters -->
+<div class="card shadow-sm mb-4">
+    <div class="card-body bg-light">
+        <form method="GET" class="row g-3 align-items-end">
+            <div class="col-md-3">
+                <label for="regional_id" class="form-label small fw-bold">Regional</label>
+                <select name="regional_id" id="regional_id" class="form-select form-select-sm"
+                    onchange="this.form.submit()">
+                    <option value="">Todas as Regionais</option>
+                    {% for reg in regionals %}
+                    <option value="{{ reg.id }}" {{ 'selected' if regional_id==reg.id }}>{{ reg.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="unit_id" class="form-label small fw-bold">Escola</label>
+                <select name="unit_id" id="unit_id" class="form-select form-select-sm" onchange="this.form.submit()">
+                    <option value="">Todas as Escolas</option>
+                    {% for unit in schools %}
+                    <option value="{{ unit.id }}" {{ 'selected' if unit_id==unit.id }}>{{ unit.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label for="search" class="form-label small fw-bold">Pesquisar</label>
+                <div class="input-group input-group-sm">
+                    <input type="text" name="search" id="search" class="form-control"
+                        placeholder="Nome, turno, escola..." value="{{ search }}">
+                    <button class="btn btn-primary" type="submit">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-2 d-grid">
+                <a href="{{ url_for('academic.list_classes') }}" class="btn btn-sm btn-outline-secondary">Limpar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- New Class Modal -->
+<div class="modal fade" id="newClassModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Nova Turma</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST">
+                <div class="modal-body">
+                    {{ form.hidden_tag() }}
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form.name.label(class="form-label required") }}
+                            {{ form.name(class="form-control", placeholder="Ex: 501, 8A") }}
+                            {% for error in form.name.errors %}
+                            <span class="text-danger small">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.shift.label(class="form-label required") }}
+                            {{ form.shift(class="form-select") }}
+                            {% for error in form.shift.errors %}
+                            <span class="text-danger small">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.school_year_id.label(class="form-label required") }}
+                            {{ form.school_year_id(class="form-select") }}
+                            {% for error in form.school_year_id.errors %}
+                            <span class="text-danger small">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.teaching_unit_id.label(class="form-label required") }}
+                            {{ form.teaching_unit_id(class="form-select") }}
+                            {% for error in form.teaching_unit_id.errors %}
+                            <span class="text-danger small">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        <div class="col-md-12 mb-3">
+                        {{ form.structure_id.label(class="form-label required") }}
+                        {{ form.structure_id(class="form-select") }}
+                        <div class="form-text">Deve corresponder ao Ano Escolar selecionado.</div>
+                        {% for error in form.structure_id.errors %}
+                        <span class="text-danger small">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0 align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Nome da Turma</th>
+                        <th>Turno</th>
+                        <th>Ano Escolar</th>
+                        <th>Unidade de Ensino</th>
+                        <th class="text-center">Qtd. Alunos</th>
+                        <th class="text-end">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for class in classes.items %}
+                    <tr>
+                        <td class="fw-bold">
+                            <a href="{{ url_for('academic.list_class_students', id=class.id) }}"
+                                class="text-decoration-none">{{ class.name }}</a>
+                        </td>
+                        <td>{{ class.shift or '-' }}</td>
+                        <td>{{ class.school_year.name }}</td>
+                        <td>{{ class.teaching_unit.name }}</td>
+                        <td class="text-center">
+                            <span class="badge bg-secondary rounded-pill">{{ class.enrollments.count() }}</span>
+                        </td>
+                        <td class="text-end">
+                            <div class="btn-group">
+                                <a href="{{ url_for('academic.edit_class', id=class.id) }}"
+                                    class="btn btn-sm btn-outline-primary" title="Editar">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <button type="button" class="btn btn-sm btn-outline-danger btn-delete-class"
+                                    title="Excluir" data-url="{{ url_for('academic.delete_class', id=class.id) }}"
+                                    data-name="{{ class.name }}" data-count="{{ class.enrollments.count() }}">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center text-muted p-4">Nenhuma turma cadastrada.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Advanced Pagination -->
+        {% if classes.pages > 1 %}
+        <nav aria-label="Page navigation" class="mt-4">
+            <ul class="pagination justify-content-center">
+                <!-- First Page -->
+                <li class="page-item {{ 'disabled' if classes.page == 1 }}">
+                    <a class="page-link"
+                        href="{{ url_for('academic.list_classes', page=1, search=search, regional_id=regional_id, unit_id=unit_id) }}"
+                        title="Primeira Página">
+                        <i class="bi bi-chevron-double-left"></i>
+                    </a>
+                </li>
+
+                {% if classes.has_prev %}
+                <li class="page-item">
+                    <a class="page-link"
+                        href="{{ url_for('academic.list_classes', page=classes.prev_num, search=search, regional_id=regional_id, unit_id=unit_id) }}">Anterior</a>
+                </li>
+                {% endif %}
+
+                <li class="page-item disabled d-none d-md-block">
+                    <span class="page-link">Página {{ classes.page }} de {{ classes.pages }}</span>
+                </li>
+
+                {% if classes.has_next %}
+                <li class="page-item">
+                    <a class="page-link"
+                        href="{{ url_for('academic.list_classes', page=classes.next_num, search=search, regional_id=regional_id, unit_id=unit_id) }}">Próxima</a>
+                </li>
+                {% endif %}
+
+                <!-- Last Page -->
+                <li class="page-item {{ 'disabled' if classes.page == classes.pages }}">
+                    <a class="page-link"
+                        href="{{ url_for('academic.list_classes', page=classes.pages, search=search, regional_id=regional_id, unit_id=unit_id) }}"
+                        title="Última Página">
+                        <i class="bi bi-chevron-double-right"></i>
+                    </a>
+                </li>
+            </ul>
+
+            <!-- Page Selector -->
+            <div class="d-flex justify-content-center align-items-center mt-2 gap-2">
+                <label for="pageSelect" class="small text-muted">Ir para página:</label>
+                <select id="pageSelect" class="form-select form-select-sm w-auto"
+                    onchange="window.location.href=this.value">
+                    {% for p in range(1, classes.pages + 1) %}
+                    <option
+                        value="{{ url_for('academic.list_classes', page=p, search=search, regional_id=regional_id, unit_id=unit_id) }}"
+                        {{ 'selected' if p==classes.page }}>
+                        {{ p }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </nav>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Hidden form for deletion -->
+<form id="deleteForm" method="POST" style="display: none;">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+</form>
+
+<script>
+    document.addEventListener('click', function (e) {
+        if (e.target.closest('.btn-delete-class')) {
+            const btn = e.target.closest('.btn-delete-class');
+            const url = btn.dataset.url;
+            const name = btn.dataset.name;
+            const count = parseInt(btn.dataset.count);
+
+            if (count > 0) {
+                alert('Não é possível excluir a turma "' + name + '" pois existem ' + count + ' alunos vinculados.');
+                return;
+            }
+            if (confirm('Tem certeza que deseja excluir a turma "' + name + '"?')) {
+                handleDelete('deleteForm', 'Tem certeza que deseja excluir a turma "' + name + '"?');
+            }
+        }
+    });
+</script>
+
+<!-- Import Class Modal -->
+<div class="modal fade" id="importClassModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Importar Turmas (Excel)</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="importClassesForm" action="{{ url_for('academic.import_classes') }}" method="POST"
+                enctype="multipart/form-data">
+                <div class="modal-body">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                    <div class="mb-3">
+                        <label for="file" class="form-label">Arquivo Excel (.xlsx)</label>
+                        <input class="form-control" type="file" id="file" name="file" required accept=".xlsx">
+                    </div>
+                    <div class="alert alert-info small">
+                        <strong>Colunas Obrigatórias:</strong><br>
+                        - Nome da Turma<br>
+                        - Ano Escolar (ex: 1º Ano)<br>
+                        - Unidade de Ensino (Nome exato)<br>
+                        - Turno (Matutino, Vespertino, Noturno, Integral)<br>
+                        - Estrutura Curricular (Nome exato)
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Importar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    const hasClassErrors = "{{ 'true' if form.errors else 'false' }}" === 'true';
+    if (hasClassErrors) {
+        document.addEventListener('DOMContentLoaded', function () {
+            var myModal = new bootstrap.Modal(document.getElementById('newClassModal'));
+            myModal.show();
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        setupImportProgress('importClassesForm');
+    });
+</script>
+{% endblock %}

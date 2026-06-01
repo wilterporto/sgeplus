@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Alunos - {{ klass.name }}</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{{ url_for('academic.list_classes') }}" class="btn btn-outline-secondary me-2">
+            <i class="bi bi-arrow-left"></i> Voltar
+        </a>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addStudentModal">
+            <i class="bi bi-plus-lg"></i> Novo Aluno
+        </button>
+    </div>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0 align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Nome</th>
+                        <th>Matrícula</th>
+                        <th>Situação</th>
+                        <th class="text-end">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for enrollment in enrollments.items %}
+                    <tr>
+                        <td class="fw-bold">{{ enrollment.student.name }}</td>
+                        <td>{{ enrollment.student.registration_number }}</td>
+                        <td>
+                            {% if enrollment.active %}
+                            <span class="badge bg-success">Ativo</span>
+                            {% else %}
+                            <span class="badge bg-secondary">Inativo</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            <!-- Unenroll -->
+                            <form
+                                action="{{ url_for('academic.unenroll_student', id=klass.id, student_id=enrollment.student.id) }}"
+                                method="POST"
+                                onsubmit="return confirm('Deseja remover este aluno desta turma? (O aluno continuará no sistema)');"
+                                class="d-inline">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                                <button type="submit" class="btn btn-sm btn-outline-warning me-1"
+                                    title="Remover da Turma (Desenturmar)">
+                                    <i class="bi bi-person-dash"></i>
+                                </button>
+                            </form>
+
+                            <!-- Delete -->
+                            <form action="{{ url_for('students.delete_student', id=enrollment.student.id) }}"
+                                method="POST"
+                                onsubmit="return confirm('ATENÇÃO: Tem certeza que deseja EXCLUIR o aluno {{ enrollment.student.name }} da base de dados? Esta ação é irreversível.');"
+                                class="d-inline">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                                <button type="submit" class="btn btn-sm btn-outline-danger"
+                                    title="Excluir Aluno do Sistema">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" class="text-center text-muted p-4">Nenhum aluno matriculado nesta turma.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% if enrollments.pages > 1 %}
+<nav aria-label="Page navigation" class="mt-4">
+    <ul class="pagination justify-content-center">
+        {% if enrollments.has_prev %}
+        <li class="page-item">
+            <a class="page-link"
+                href="{{ url_for('academic.list_class_students', id=klass.id, page=enrollments.prev_num) }}">Anterior</a>
+        </li>
+        {% endif %}
+        <li class="page-item disabled"><span class="page-link">{{ enrollments.page }} / {{ enrollments.pages }}</span>
+        </li>
+        {% if enrollments.has_next %}
+        <li class="page-item">
+            <a class="page-link"
+                href="{{ url_for('academic.list_class_students', id=klass.id, page=enrollments.next_num) }}">Próxima</a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+
+<!-- Add Student Modal -->
+<div class="modal fade" id="addStudentModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Matricular Aluno</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="studentSearch" class="form-label">Buscar Aluno (Nome, CPF ou Matrícula)</label>
+                    <input type="text" class="form-control" id="studentSearch" placeholder="Digite para buscar..."
+                        autocomplete="off">
+                </div>
+                <div id="searchResults" class="list-group">
+                    <!-- Results will appear here -->
+                    <div class="text-center text-muted small mt-2" style="display:none;" id="loadingSearch">Buscando...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let searchTimeout;
+    const searchInput = document.getElementById('studentSearch');
+    const resultsContainer = document.getElementById('searchResults');
+    const loadingIndicator = document.getElementById('loadingSearch');
+
+    searchInput.addEventListener('input', function () {
+        clearTimeout(searchTimeout);
+        const query = this.value;
+
+        if (query.length < 3) {
+            resultsContainer.innerHTML = '';
+            return;
+        }
+
+        searchTimeout = setTimeout(() => {
+            fetchStudents(query);
+        }, 300);
+    });
+
+    async function fetchStudents(query) {
+        try {
+            loadingIndicator.style.display = 'block';
+            resultsContainer.innerHTML = ''; // Clear previous
+            resultsContainer.appendChild(loadingIndicator); // Keep loading
+
+            const response = await fetch(`{{ url_for('academic.search_students_api') }}?q=${encodeURIComponent(query)}`);
+            const data = await response.json();
+
+            loadingIndicator.style.display = 'none';
+            resultsContainer.innerHTML = ''; // Clear loading
+
+            if (data.results.length === 0) {
+                resultsContainer.innerHTML = '<div class="list-group-item text-muted text-center">Nenhum aluno encontrado.</div>';
+                return;
+            }
+
+            data.results.forEach(student => {
+                const item = document.createElement('div');
+                item.className = 'list-group-item d-flex justify-content-between align-items-center';
+                item.innerHTML = `
+                    <div>
+                        <div class="fw-bold">${student.name}</div>
+                        <small class="text-muted">CPF: ${student.cpf || '-'} | Mat: ${student.registration || '-'}</small>
+                    </div>
+                    <form action="{{ url_for('academic.enroll_student', id=klass.id) }}" method="POST" class="m-0">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                        <input type="hidden" name="student_id" value="${student.id}">
+                        <button type="submit" class="btn btn-sm btn-success">
+                            <i class="bi bi-plus-lg"></i>
+                        </button>
+                    </form>
+                `;
+                resultsContainer.appendChild(item);
+            });
+
+        } catch (error) {
+            console.error('Error fetching students:', error);
+            loadingIndicator.style.display = 'none';
+            resultsContainer.innerHTML = '<div class="list-group-item text-danger text-center">Erro ao buscar alunos.</div>';
+        }
+    }
+</script>
+{% endblock %}

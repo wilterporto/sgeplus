@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Editar Turma: {{ klass.name }}</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{{ url_for('academic.list_class_students', id=klass.id) }}" class="btn btn-outline-primary">
+            <i class="bi bi-people"></i> Gerenciar Alunos
+        </a>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow">
+            <div class="card-body">
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    <div class="mb-3">
+                        {{ form.name.label(class="form-label required") }}
+                        {{ form.name(class="form-control") }}
+                        {% for error in form.name.errors %}
+                        <span class="text-danger small">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.teaching_unit_id.label(class="form-label required") }}
+                        {{ form.teaching_unit_id(class="form-select") }}
+                        {% for error in form.teaching_unit_id.errors %}
+                        <span class="text-danger small">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.school_year_id.label(class="form-label required") }}
+                        {{ form.school_year_id(class="form-select") }}
+                        {% for error in form.school_year_id.errors %}
+                        <span class="text-danger small">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.structure_id.label(class="form-label required") }}
+                        {{ form.structure_id(class="form-select") }}
+                        <div class="form-text">Deve corresponder ao Ano Escolar selecionado.</div>
+                        {% for error in form.structure_id.errors %}
+                        <span class="text-danger small">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{{ url_for('academic.list_classes') }}" class="btn btn-secondary">Cancelar</a>
+                        <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

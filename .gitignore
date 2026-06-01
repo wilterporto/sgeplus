@@ -1,0 +1,47 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Caches
+.cache/
+.pytest_cache/
+.mypy_cache/
+
+# Databases (SUPER IMPORTANTE: Evitar subir a base SQLite local)
+instance/*.db
+instance/*.db-journal
+instance/*.db-wal
+instance/*.db-shm
+
+# Temp and Upload files
+instance/temp_*
+instance/uploads/*
+!instance/uploads/.gitkeep
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDEs / Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+Thumbs.db
+.DS_Store
+
+# Logs
+*.log
+pip-log.txt
+
+# OS metadata
+[Dd]ownloads/
+[Tt]emp/

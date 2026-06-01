@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Provas Geradas</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{{ url_for('exams.generate_exam') }}" class="btn btn-sm btn-success">
+            <i class="bi bi-magic"></i> Gerar Nova Prova
+        </a>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th>Título</th>
+                <th>Componente</th>
+                <th>Ano Letivo</th>
+                <th>Data Aplicação</th>
+                <th>Data Criação</th>
+                <th>Criado por</th>
+                <th>Status</th>
+                <th>Qtd. Questões</th>
+                <th>% Acertos</th>
+                <th>% Erros</th>
+                <th>% Ausências</th>
+                <th class="text-end">Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in exams_with_stats %}
+            {% set exam = item.exam %}
+            <tr>
+                <td>{{ exam.title }}</td>
+                <td>{{ exam.subject.name if exam.subject else ('Múltiplos' if exam.evaluation and exam.evaluation.multiple_components else 'N/A') }}</td>
+                <td>{{ exam.academic_year }}</td>
+                <td>{{ exam.application_date.strftime('%d/%m/%Y') }}</td>
+                <td>{{ exam.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
+                <td>{{ exam.creator.username if exam.creator else 'N/A' }}</td>
+                <td>
+                    {% if exam.status == 'Rascunho' %}
+                    <span class="badge bg-warning text-dark">Rascunho</span>
+                    {% elif exam.status == 'Aprovado' %}
+                    <span class="badge bg-success">Aprovado</span>
+                    {% else %}
+                    <span class="badge bg-secondary">Inativo</span>
+                    {% endif %}
+                </td>
+                <td>{{ exam.items.count() }}</td>
+                <td>
+                    <div class="progress" style="height: 20px;">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: {{ item.success }}%;"
+                            title="Acertos: {{ item.success }}%">{{ item.success }}%</div>
+                    </div>
+                </td>
+                <td>
+                    <div class="progress" style="height: 20px;">
+                        <div class="progress-bar bg-danger" role="progressbar" style="width: {{ item.failure }}%;"
+                            title="Erros: {{ item.failure }}%">{{ item.failure }}%</div>
+                    </div>
+                </td>
+                <td>
+                    <div class="progress" style="height: 20px;">
+                        <div class="progress-bar bg-secondary" role="progressbar" style="width: {{ item.absent }}%;"
+                            title="Ausências: {{ item.absent }}%">{{ item.absent }}%</div>
+                    </div>
+                </td>
+                <td class="text-end">
+                    <div class="btn-group">
+                        <a href="{{ url_for('exams.view_exam', id=exam.id) }}" class="btn btn-sm btn-outline-primary"
+                            title="Ver Gabarito">
+                            <i class="bi bi-eye"></i>
+                        </a>
+                        <a href="{{ url_for('exams.student_view', id=exam.id) }}" class="btn btn-sm btn-outline-dark"
+                            target="_blank" title="Vista do Aluno">
+                            <i class="bi bi-person"></i>
+                        </a>
+
+                        {% if item.can_record %}
+                        <a href="{{ url_for('exams.record_answers', id=exam.id) }}" class="btn btn-sm btn-outline-info"
+                            title="Registrar Respostas">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+                        <a href="{{ url_for('exams.scan_answers', id=exam.id) }}" class="btn btn-sm btn-outline-dark"
+                            title="Escanear Cartões">
+                            <i class="bi bi-camera"></i>
+                        </a>
+                        {% if exam.results.count() > 0 %}
+                        <a href="{{ url_for('exams.class_diagnosis', id=exam.id) }}"
+                            class="btn btn-sm btn-outline-danger" title="Diagnóstico da Turma">
+                            <i class="bi bi-pie-chart"></i>
+                        </a>
+                        {% endif %}
+                        {% endif %}
+
+                        {% if exam.status == 'Rascunho' %}
+                        {% set is_admin = current_user.is_admin or 'regional_manager' in current_user.get_roles() %}
+                        {% set is_creator_prof = current_user.id == exam.created_by_id and 'professor' in
+                        current_user.get_roles() %}
+
+                        {% if is_admin or is_creator_prof %}
+                        <form action="{{ url_for('exams.approve_exam', id=exam.id) }}" method="POST"
+                            style="display:inline;">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="btn btn-sm btn-success" title="Aprovar e Publicar">
+                                <i class="bi bi-check-circle"></i>
+                            </button>
+                        </form>
+                        {% endif %}
+                        {% elif exam.status == 'Aprovado' %}
+                        <button type="button" class="btn btn-sm btn-secondary" data-bs-toggle="modal"
+                            data-bs-target="#inactivateModal" data-bs-id="{{ exam.id }}"
+                            data-bs-title="{{ exam.title }}" title="Inativar">
+                            <i class="bi bi-pause-circle"></i>
+                        </button>
+                        {% endif %}
+
+                        {% if item.can_delete %}
+                        <button type="button" class="btn btn-sm btn-outline-danger"
+                            onclick="handleDelete('delete-form-{{ exam.id }}', 'Tem certeza que deseja excluir esta prova?')"
+                            title="Excluir">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                        {% else %}
+                        <button type="button" class="btn btn-sm btn-outline-danger disabled"
+                            title="Não pode excluir prova com respostas">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                        {% endif %}
+                    </div>
+
+                    <form id="delete-form-{{ exam.id }}" action="{{ url_for('exams.delete_exam', id=exam.id) }}"
+                        method="POST" style="display:none;">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="8" class="text-center">Nenhuma prova gerada.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal de Justificativa de Inativação -->
+<div class="modal fade" id="inactivateModal" tabindex="-1" aria-labelledby="inactivateModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="inactivateForm" method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="modal-header bg-secondary text-white">
+                    <h5 class="modal-title" id="inactivateModalLabel">Justificar Inativação</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Você está prestes a inativar a prova: <strong id="examTitleDisplay"></strong></p>
+                    <div class="mb-3">
+                        <label for="reason" class="form-label">Motivo da Inativação (obrigatório)</label>
+                        <textarea class="form-control" id="reason" name="reason" rows="3" required
+                            placeholder="Ex: Erro na matriz de referência, prova duplicada, etc."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-secondary">Inativar Prova</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var inactivateModal = document.getElementById('inactivateModal');
+        if (inactivateModal) {
+            inactivateModal.addEventListener('show.bs.modal', function (event) {
+                var button = event.relatedTarget;
+                var examId = button.getAttribute('data-bs-id');
+                var examTitle = button.getAttribute('data-bs-title');
+
+                var form = inactivateModal.querySelector('#inactivateForm');
+                var titleDisplay = inactivateModal.querySelector('#examTitleDisplay');
+
+                form.action = "{{ url_for('exams.inactivate_exam', id=0) }}".replace('0', examId);
+                titleDisplay.textContent = examTitle;
+
+                inactivateModal.querySelector('#reason').value = '';
+            });
+        }
+    });
+</script>
+{% endblock %}

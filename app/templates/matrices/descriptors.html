@@ -1,0 +1,415 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Descritores/Habilidades</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <button type="button" class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#newDescriptorModal">
+            <i class="bi bi-plus-lg"></i> Novo Descritor/Habilidade
+        </button>
+        <button type="button" class="btn btn-outline-primary me-2" data-bs-toggle="modal"
+            data-bs-target="#importChoiceModal">
+            <i class="bi bi-upload"></i> Importar
+        </button>
+        <!-- Filter dropdown -->
+        <div class="dropdown">
+            <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                <i class="bi bi-filter"></i> Filtrar por Matriz
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="{{ url_for('matrices.list_descriptors') }}">Todas</a></li>
+                {% for m in matrices %}
+                <li><a class="dropdown-item" href="{{ url_for('matrices.list_descriptors', matrix_id=m.id) }}">{{ m.name
+                        }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+
+{% if active_job %}
+<div class="row mb-4" id="active-import-card">
+    <div class="col-12">
+        <div class="card border-primary bg-primary bg-opacity-10 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h6 class="mb-0 text-primary">
+                        <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                        Importação de Descritores em Andamento...
+                    </h6>
+                    <span class="badge bg-primary px-3 py-2" id="active-pct">{{ active_job.progress_percentage
+                        }}%</span>
+                </div>
+                <div class="progress" style="height: 12px;">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
+                        id="active-bar" style="width: {{ active_job.progress_percentage }}%;"
+                        aria-valuenow="{{ active_job.progress_percentage }}" aria-valuemin="0" aria-valuemax="100">
+                    </div>
+                </div>
+                <div class="mt-2 small text-muted d-flex justify-content-between">
+                    <span id="active-count">{{ active_job.processed_rows }} / {{ active_job.total_rows }} registros
+                        processados</span>
+                    <span><a href="{{ url_for('admin.list_imports') }}" class="text-decoration-none">Ver detalhes em
+                            Administração</a></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const activePoll = setInterval(() => {
+        fetch(`/admin/imports/status/{{ active_job.id }}`)
+            .then(r => r.json())
+            .then(data => {
+                const bar = document.getElementById('active-bar');
+                const pct = document.getElementById('active-pct');
+                const count = document.getElementById('active-count');
+
+                if (bar) {
+                    bar.style.width = data.progress + '%';
+                    bar.setAttribute('aria-valuenow', data.progress);
+                }
+                if (pct) pct.innerText = data.progress + '%';
+                if (count) count.innerText = `${data.processed} / ${data.total} registros processados`;
+
+                if (data.status !== 'running') {
+                    clearInterval(activePoll);
+                    setTimeout(() => window.location.reload(), 2000);
+                }
+            })
+            .catch(err => {
+                console.error('Error polling:', err);
+                clearInterval(activePoll);
+            });
+    }, 3000);
+</script>
+{% endif %}
+
+<!-- Import Choice Modal -->
+<div class="modal fade" id="importChoiceModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Tipo de Importação</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center">
+                <p>Como deseja importar os dados?</p>
+                <div class="d-grid gap-2">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" data-bs-toggle="modal"
+                        data-bs-target="#importModal">
+                        <i class="bi bi-file-earmark-excel me-2"></i>Arquivo (Excel)
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" data-bs-toggle="modal"
+                        data-bs-target="#underConstructionModal">
+                        <i class="bi bi-journal-text me-2"></i>Documento Curricular
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Under Construction Modal -->
+<div class="modal fade" id="underConstructionModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content shadow border-0">
+            <div class="modal-header border-bottom-0 pb-0">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center pt-0 pb-4">
+                <div class="text-warning mb-3">
+                    <i class="bi bi-cone-striped" style="font-size: 3rem; opacity: 0.85;"></i>
+                </div>
+                <h5 class="fw-bold mb-2 text-dark">Recurso em Construção</h5>
+                <p class="text-muted small mb-3">A importação direta de documentos curriculares está sendo implementada pelo time de engenharia e estará disponível em breve!</p>
+                <button type="button" class="btn btn-secondary btn-sm px-4" data-bs-dismiss="modal">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Import Modal -->
+<div class="modal fade" id="importModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Importar Descritores</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="importDescriptorsForm" action="{{ url_for('matrices.import_descriptors') }}" method="POST" enctype="multipart/form-data">
+                <div class="modal-body">
+                    {{ import_form.hidden_tag() }}
+                    <div class="alert alert-info small">
+                        <strong>Atenção:</strong> O arquivo deve conter as seguintes colunas (nesta ordem):
+                        <ul class="mb-2 pl-3">
+                            <li>Matriz de Referência</li>
+                            <li>Tema</li>
+                            <li>Ano Escolar</li>
+                            <li>Componente</li>
+                            <li>Código</li>
+                            <li>Descrição</li>
+                        </ul>
+                        <p class="mb-0">Os valores de Matriz, Tema, Ano e Componente devem corresponder
+                            <strong>exatamente</strong> aos cadastrados no sistema.
+                        </p>
+                    </div>
+
+                    <div class="mb-3">
+                        {{ import_form.file.label(class="form-label") }}
+                        {{ import_form.file(class="form-control") }}
+                        {% for error in import_form.file.errors %}
+                        <span class="text-danger small">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Importar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- New Descriptor Modal -->
+<div class="modal fade" id="newDescriptorModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Novo Descritor/Habilidade</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST">
+                <div class="modal-body">
+                    {{ form.hidden_tag() }}
+                    <div class="mb-3">
+                        {{ form.type.label(class="form-label required") }}
+                        {{ form.type(class="form-select", onchange="toggleThemeField(this.value)") }}
+                        {% for error in form.type.errors %}
+                        <span class="text-danger small">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form.matrix_id.label(class="form-label required") }}
+                            {{ form.matrix_id(class="form-select", onchange="loadThemes(this.value, 'theme_id')") }}
+                            {% for error in form.matrix_id.errors %}
+                            <span class="text-danger small">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        <div class="col-md-6 mb-3" id="themeFieldWrapper">
+                            {{ form.theme_id.label(class="form-label required") }}
+                            {{ form.theme_id(class="form-select") }}
+                            {% for error in form.theme_id.errors %}
+                            <span class="text-danger small">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form.school_year_id.label(class="form-label required") }}
+                            {{ form.school_year_id(class="form-select") }}
+                            {% for error in form.school_year_id.errors %}
+                            <span class="text-danger small">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.subject_id.label(class="form-label required") }}
+                            {{ form.subject_id(class="form-select") }}
+                            {% for error in form.subject_id.errors %}
+                            <span class="text-danger small">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        {{ form.code.label(class="form-label required") }}
+                        {{ form.code(class="form-control", placeholder="Ex: D1") }}
+                        {% for error in form.code.errors %}
+                        <span class="text-danger small">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.description.label(class="form-label required") }}
+                        {{ form.description(class="form-control", rows=3) }}
+                        {% for error in form.description.errors %}
+                        <span class="text-danger small">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- List -->
+    <div class="col-12">
+        <div class="card shadow">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Código</th>
+                                <th>Tipo</th>
+                                <th>Matriz</th>
+                                <th>Tema</th>
+                                <th>Descrição</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for desc in descriptors %}
+                            <tr>
+                                <td><span class="badge bg-dark">{{ desc.code }}</span></td>
+                                <td>{{ desc.type or '-' }}</td>
+                                <td>
+                                    {% if desc.matrix %}
+                                    <small>{{ desc.matrix.name }}</small>
+                                    {% else %}
+                                    <small class="text-muted">Sem matriz</small>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if desc.theme %}
+                                    <small>{{ desc.theme.name }}</small>
+                                    {% else %}
+                                    <small class="text-muted">-</small>
+                                    {% endif %}
+                                </td>
+                                <td>{{ desc.description }}</td>
+                                <td>
+                                    {% if desc.is_active %}
+                                    <span class="badge bg-success">Ativo</span>
+                                    {% else %}
+                                    <span class="badge bg-secondary">Inativo</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group">
+                                        <form action="{{ url_for('matrices.toggle_descriptor_active', id=desc.id) }}"
+                                            method="POST" class="d-inline">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                                            <button type="submit"
+                                                class="btn btn-sm btn-outline-{{ 'warning' if desc.is_active else 'success' }}"
+                                                title="{{ 'Desativar' if desc.is_active else 'Ativar' }}">
+                                                <i class="bi bi-power"></i>
+                                            </button>
+                                        </form>
+                                        <a href="{{ url_for('matrices.edit_descriptor', id=desc.id) }}"
+                                            class="btn btn-sm btn-outline-secondary">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <form id="delete-form-{{ desc.id }}"
+                                            action="{{ url_for('matrices.delete_descriptor', id=desc.id) }}"
+                                            method="POST" class="d-inline">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                                            <button type="button" class="btn btn-sm btn-outline-danger"
+                                                onclick="handleDelete('delete-form-{{ desc.id }}', 'Tem certeza que deseja excluir este descritor?')">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="7" class="text-center text-muted p-4">Nenhum descritor encontrado.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% if pagination.pages > 1 %}
+            <div class="card-footer bg-transparent border-top-0 py-3">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center mb-0">
+                        {% if pagination.has_prev %}
+                        <li class="page-item">
+                            <a class="page-link shadow-none"
+                                href="{{ url_for('matrices.list_descriptors', page=pagination.prev_num, matrix_id=current_matrix_id) }}">Anterior</a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled"><span class="page-link shadow-none">Anterior</span></li>
+                        {% endif %}
+
+                        <li class="page-item active"><span class="page-link shadow-none">{{ pagination.page }}</span>
+                        </li>
+
+                        {% if pagination.has_next %}
+                        <li class="page-item">
+                            <a class="page-link shadow-none"
+                                href="{{ url_for('matrices.list_descriptors', page=pagination.next_num, matrix_id=current_matrix_id) }}">Próxima</a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled"><span class="page-link shadow-none">Próxima</span></li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+    function loadThemes(matrixId, targetId) {
+        const target = document.getElementById(targetId);
+
+        // Clear existing options except the first one
+        while (target.options.length > 1) {
+            target.remove(1);
+        }
+
+        if (!matrixId || matrixId == 0) return;
+
+        fetch(`/matrices/api/themes/${matrixId}`)
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(theme => {
+                    const option = new Option(theme.name, theme.id);
+                    target.add(option);
+                });
+            })
+            .catch(error => console.error('Error loading themes:', error));
+    }
+
+    function toggleThemeField(type) {
+        const wrapper = document.getElementById('themeFieldWrapper');
+        if (type === 'Habilidade') {
+            wrapper.style.display = 'none';
+        } else {
+            wrapper.style.display = 'block';
+        }
+    }
+
+    // Initialize state on load (if form has errors or pre-filled)
+    document.addEventListener('DOMContentLoaded', function () {
+        const typeField = document.querySelector('select[name="type"]');
+        if (typeField) {
+            toggleThemeField(typeField.value);
+        }
+        
+        if (typeof setupImportProgress === "function") {
+            setupImportProgress('importDescriptorsForm');
+        }
+    });
+
+    // Auto-open modal if there are errors and it's not an import error (which flashes)
+    {% if form.errors %}
+    document.addEventListener('DOMContentLoaded', function () {
+        var myModal = new bootstrap.Modal(document.getElementById('newDescriptorModal'));
+        myModal.show();
+    });
+    {% endif %}
+</script>
+{% endblock %}

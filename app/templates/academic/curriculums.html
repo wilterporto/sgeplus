@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Estruturas Curriculares</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newCurriculumModal">
+            <i class="bi bi-plus-lg"></i> Nova Matriz
+        </button>
+    </div>
+</div>
+
+<!-- New Curriculum Modal -->
+<div class="modal fade" id="newCurriculumModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Nova Matriz</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST">
+                <div class="modal-body">
+                    {{ form.hidden_tag() }}
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form.name.label(class="form-label required") }}
+                            {{ form.name(class="form-control") }}
+                            {% for error in form.name.errors %}
+                            <span class="text-danger small">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.school_year_id.label(class="form-label required") }}
+                            {{ form.school_year_id(class="form-select") }}
+                            {% for error in form.school_year_id.errors %}
+                            <span class="text-danger small">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        {{ form.subjects.label(class="form-label required") }}
+                        {{ form.subjects(class="form-select", size=8) }}
+                        <div class="form-text">Segure Ctrl para selecionar múltiplas.</div>
+                        {% for error in form.subjects.errors %}
+                        <span class="text-danger small">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow mb-4">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0 align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Nome</th>
+                                <th>Ano escolar</th>
+                                <th>Qtd. componentes</th>
+                                <th class="text-end">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for curr in curriculums %}
+                            <tr>
+                                <td class="fw-bold">{{ curr.name }}</td>
+                                <td>{{ curr.school_year.name }}</td>
+                                <td>{{ curr.subjects|length }}</td>
+                                <td class="text-end">
+                                    <a href="{{ url_for('academic.edit_curriculum', id=curr.id) }}"
+                                        class="btn btn-sm btn-outline-primary" title="Editar">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <form id="delete-form-{{ curr.id }}"
+                                        action="{{ url_for('academic.delete_curriculum', id=curr.id) }}" method="POST"
+                                        class="d-inline">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                                        <button type="button" class="btn btn-sm btn-outline-danger" title="Excluir"
+                                            onclick="handleDelete('delete-form-{{ curr.id }}', 'Tem certeza que deseja excluir esta estrutura?')">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="4" class="text-center text-muted p-4">Nenhuma estrutura cadastrada.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Auto-open modal if there are errors
+    {% if form.errors %}
+    document.addEventListener('DOMContentLoaded', function () {
+        var myModal = new bootstrap.Modal(document.getElementById('newCurriculumModal'));
+        myModal.show();
+    });
+    {% endif %}
+</script>
+{% endblock %}

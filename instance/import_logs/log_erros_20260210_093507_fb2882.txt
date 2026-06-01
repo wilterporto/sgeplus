@@ -1,0 +1,2178 @@
+RELATÓRIO DE ERROS DE IMPORTAÇÃO
+Data/Hora: 10/02/2026 09:35:07
+----------------------------------------
+
+- Linha 2: Unidade de Ensino não encontrada (BERÇÁRIO E ESCOLA EVANGÉLICA CORDEIRINHOS DE DAVI LTDA).
+- Linha 3: Unidade de Ensino não encontrada (CEI - LAR DE MATILDE).
+- Linha 4: Unidade de Ensino não encontrada (CEI - LAR DE MATILDE).
+- Linha 5: Unidade de Ensino não encontrada (CEI - LAR DE MATILDE).
+- Linha 6: Unidade de Ensino não encontrada (CEI - LAR DE MATILDE).
+- Linha 7: Unidade de Ensino não encontrada (CEI - LAR DE MATILDE).
+- Linha 8: Unidade de Ensino não encontrada (CEI BEZERRA DE MENEZES).
+- Linha 9: Unidade de Ensino não encontrada (CEI CASA ALVORADA CRISTA).
+- Linha 10: Unidade de Ensino não encontrada (CEI CASA ALVORADA CRISTA).
+- Linha 11: Unidade de Ensino não encontrada (CEI CASA ALVORADA CRISTA).
+- Linha 12: Unidade de Ensino não encontrada (CEI CASA ALVORADA CRISTA).
+- Linha 13: Unidade de Ensino não encontrada (CEI DOROTHEA RIBEIRO GUIMARÃES).
+- Linha 14: Unidade de Ensino não encontrada (CEI DOROTHEA RIBEIRO GUIMARÃES).
+- Linha 15: Unidade de Ensino não encontrada (CEI E ACOLHIMENTO VIDEIRA DE GOIÂNIA).
+- Linha 16: Unidade de Ensino não encontrada (CEI JULIANA PIRES).
+- Linha 17: Unidade de Ensino não encontrada (CEI JULIANA PIRES).
+- Linha 18: Unidade de Ensino não encontrada (CEI JULIANA PIRES).
+- Linha 19: Unidade de Ensino não encontrada (CEI OBRA DO BERÇO).
+- Linha 20: Unidade de Ensino não encontrada (CEI SUELY PASCHOAL).
+- Linha 21: Unidade de Ensino não encontrada (CEI SUELY PASCHOAL).
+- Linha 22: Unidade de Ensino não encontrada (CEI UNIÃO DAS PIONEIRAS DE GOIÂNIA).
+- Linha 23: Unidade de Ensino não encontrada (CEI UNIÃO DAS PIONEIRAS DE GOIÂNIA).
+- Linha 24: Unidade de Ensino não encontrada (CEI UNIÃO DAS PIONEIRAS DE GOIÂNIA).
+- Linha 25: Unidade de Ensino não encontrada (CEI UNIÃO DAS PIONEIRAS DE GOIÂNIA).
+- Linha 26: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 27: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 28: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 29: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 30: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 31: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 32: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 33: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 34: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 35: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 36: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 37: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 38: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 39: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 40: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 41: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 42: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 43: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 44: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 45: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 46: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 47: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 48: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 49: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 50: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 51: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 52: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 53: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 54: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 55: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 56: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 57: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 58: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 59: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 60: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 61: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 62: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 63: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 64: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 65: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 66: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 67: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 68: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 69: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 70: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 71: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 72: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 73: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 74: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 75: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 76: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 77: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 78: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 79: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 80: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 81: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 82: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 83: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 84: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 85: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 86: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 87: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 88: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 89: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 90: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 91: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 92: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 93: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 94: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 95: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 96: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 97: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 98: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 99: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 100: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 101: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 102: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 103: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 104: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 105: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 106: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 107: Unidade de Ensino não encontrada (CENTRO DE ATENDIMENTO ESPECIALIZADO RENASCER - PESTALOZZI).
+- Linha 108: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 109: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 110: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 111: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 112: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 113: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 114: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 115: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 116: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 117: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 118: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 119: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 120: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 121: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 122: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 123: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 124: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 125: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 126: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 127: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 128: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 129: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 130: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 131: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 132: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 133: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 134: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 135: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 136: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 137: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 138: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 139: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 140: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 141: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 142: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 143: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 144: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 145: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 146: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 147: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 148: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 149: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 150: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 151: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 152: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 153: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 154: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 155: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 156: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 157: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 158: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 159: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 160: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 161: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 162: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 163: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 164: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 165: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 166: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 167: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 168: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 169: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 170: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 171: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 172: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 173: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 174: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 175: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 176: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 177: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 178: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 179: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 180: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 181: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 182: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 183: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 184: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 185: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 186: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 187: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 188: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 189: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 190: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 191: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 192: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 193: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 194: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 195: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 196: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 197: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 198: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 199: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 200: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 201: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 202: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 203: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 204: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 205: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 206: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 207: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 208: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 209: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 210: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 211: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 212: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 213: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 214: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 215: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 216: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 217: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 218: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 219: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 220: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 221: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 222: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 223: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 224: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 225: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 226: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 227: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 228: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 229: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 230: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 231: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 232: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 233: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 234: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 235: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 236: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 237: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 238: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 239: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 240: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 241: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 242: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 243: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 244: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 245: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 246: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 247: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 248: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 249: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 250: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 251: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 252: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 253: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 254: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 255: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 256: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 257: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 258: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 259: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 260: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 261: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 262: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 263: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 264: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 265: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 266: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 267: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 268: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 269: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 270: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 271: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 272: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 273: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 274: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 275: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 276: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 277: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 278: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 279: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 280: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 281: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 282: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 283: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 284: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 285: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 286: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 287: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 288: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 289: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 290: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO ESPECIAL HELENA ANTIPOFF - CEESHA).
+- Linha 291: Unidade de Ensino não encontrada (CENTRO DE EDUCACAO INFANTIL ANÁLIA FRANCO).
+- Linha 292: Unidade de Ensino não encontrada (CENTRO DE EDUCACAO INFANTIL ANÁLIA FRANCO).
+- Linha 293: Unidade de Ensino não encontrada (CENTRO DE EDUCACAO INFANTIL ANÁLIA FRANCO).
+- Linha 294: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO INFANTIL ASSUNÇÃO).
+- Linha 295: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO INFANTIL ASSUNÇÃO).
+- Linha 296: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO INFANTIL ASSUNÇÃO).
+- Linha 297: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO INFANTIL ASSUNÇÃO).
+- Linha 298: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO INFANTIL ASSUNÇÃO).
+- Linha 299: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO INFANTIL ASSUNÇÃO).
+- Linha 300: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO INFANTIL ASSUNÇÃO).
+- Linha 301: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO INFANTIL ASSUNÇÃO).
+- Linha 302: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO INFANTIL ASSUNÇÃO).
+- Linha 303: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO INFANTIL ASSUNÇÃO).
+- Linha 304: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO INFANTIL ASSUNÇÃO).
+- Linha 305: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO INFANTIL ASSUNÇÃO).
+- Linha 306: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO INFANTIL ASSUNÇÃO).
+- Linha 307: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO INFANTIL ASSUNÇÃO).
+- Linha 308: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO INFANTIL ASSUNÇÃO).
+- Linha 309: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO INFANTIL ASSUNÇÃO).
+- Linha 310: Unidade de Ensino não encontrada (CENTRO DE EDUCACAO INFANTIL BETEL).
+- Linha 311: Unidade de Ensino não encontrada (CENTRO DE EDUCACAO INFANTIL BETEL).
+- Linha 312: Unidade de Ensino não encontrada (CENTRO DE EDUCACAO INFANTIL BETEL).
+- Linha 313: Unidade de Ensino não encontrada (CENTRO DE EDUCACAO INFANTIL EFICÁCIA).
+- Linha 314: Unidade de Ensino não encontrada (CENTRO DE EDUCACAO INFANTIL EFICÁCIA).
+- Linha 315: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO INFANTIL ESPÍRITA VOVÓ ISLENA).
+- Linha 316: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO INFANTIL ESPÍRITA VOVÓ ISLENA).
+- Linha 317: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO INFANTIL ESPÍRITA VOVÓ ISLENA).
+- Linha 318: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO INFANTIL ESPÍRITA VOVÓ ISLENA).
+- Linha 319: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO INFANTIL ESPÍRITA VOVÓ ISLENA).
+- Linha 320: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO INFANTIL ESPÍRITA VOVÓ ISLENA).
+- Linha 321: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO INFANTIL ESPÍRITA VOVÓ ISLENA).
+- Linha 322: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO INFANTIL ESPÍRITA VOVÓ ISLENA).
+- Linha 323: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO INFANTIL ESPÍRITA VOVÓ MECA).
+- Linha 324: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO INFANTIL ESPÍRITA VOVÓ MECA).
+- Linha 325: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO INFANTIL FRANCISCA DE LIMA).
+- Linha 326: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO INFANTIL FRANCISCA DE LIMA).
+- Linha 327: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO INFANTIL FRANCISCA DE LIMA).
+- Linha 328: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO INFANTIL FRANCISCA DE LIMA).
+- Linha 329: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO INFANTIL FRANCISCA DE LIMA).
+- Linha 330: Unidade de Ensino não encontrada (CENTRO DE EDUCACAO INFANTIL LUZEIRO).
+- Linha 331: Unidade de Ensino não encontrada (CENTRO DE EDUCACAO INFANTIL LUZEIRO).
+- Linha 332: Unidade de Ensino não encontrada (CENTRO DE EDUCACAO INFANTIL LUZEIRO).
+- Linha 333: Unidade de Ensino não encontrada (CENTRO DE EDUCACAO INFANTIL LUZEIRO).
+- Linha 334: Unidade de Ensino não encontrada (CENTRO DE EDUCACAO INFANTIL LUZEIRO).
+- Linha 335: Unidade de Ensino não encontrada (CENTRO DE EDUCACAO INFANTIL LUZEIRO).
+- Linha 336: Unidade de Ensino não encontrada (CENTRO DE EDUCACAO INFANTIL LUZEIRO).
+- Linha 337: Unidade de Ensino não encontrada (CENTRO DE EDUCACAO INFANTIL MARIA DE NAZARE).
+- Linha 338: Unidade de Ensino não encontrada (CENTRO DE EDUCACAO INFANTIL MARIA DE NAZARE).
+- Linha 339: Unidade de Ensino não encontrada (CENTRO DE EDUCACAO INFANTIL MENINO JESUS DE PRAGA).
+- Linha 340: Unidade de Ensino não encontrada (CENTRO DE EDUCACAO INFANTIL MENINO JESUS DE PRAGA).
+- Linha 341: Unidade de Ensino não encontrada (CENTRO DE EDUCACAO INFANTIL MENINO JESUS DE PRAGA).
+- Linha 342: Unidade de Ensino não encontrada (CENTRO DE EDUCACAO INFANTIL PAGIEL).
+- Linha 343: Unidade de Ensino não encontrada (CENTRO DE EDUCACAO INFANTIL PAGIEL).
+- Linha 344: Unidade de Ensino não encontrada (CENTRO DE EDUCACAO INFANTIL PAGIEL).
+- Linha 345: Unidade de Ensino não encontrada (CENTRO DE EDUCACAO INFANTIL PAGIEL).
+- Linha 346: Unidade de Ensino não encontrada (CENTRO DE EDUCACAO INFANTIL PALTI).
+- Linha 347: Unidade de Ensino não encontrada (CENTRO DE EDUCACAO INFANTIL PALTI).
+- Linha 348: Unidade de Ensino não encontrada (CENTRO DE EDUCACAO INFANTIL PEDACINHO DO CEU).
+- Linha 349: Unidade de Ensino não encontrada (CENTRO DE EDUCACAO INFANTIL PRODIGIO).
+- Linha 350: Unidade de Ensino não encontrada (CENTRO DE EDUCACAO INFANTIL PRODIGIO).
+- Linha 351: Unidade de Ensino não encontrada (CENTRO DE EDUCACAO INFANTIL SEMENTES DE AMOR).
+- Linha 352: Unidade de Ensino não encontrada (CENTRO DE EDUCACAO INFANTIL SEMENTES DE AMOR).
+- Linha 353: Unidade de Ensino não encontrada (CENTRO DE EDUCACAO INFANTIL SEMENTES DE AMOR).
+- Linha 354: Unidade de Ensino não encontrada (CENTRO DE EDUCACAO INFANTIL SOU FELIZ).
+- Linha 355: Unidade de Ensino não encontrada (CENTRO DE EDUCACAO INFANTIL SOU FELIZ).
+- Linha 356: Unidade de Ensino não encontrada (CENTRO DE EDUCACAO INFANTIL SOU FELIZ).
+- Linha 357: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 358: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 359: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 360: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 361: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 362: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 363: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 364: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 365: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 366: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 367: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 368: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 369: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 370: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 371: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 372: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 373: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 374: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 375: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 376: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 377: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 378: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 379: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 380: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 381: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 382: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 383: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 384: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 385: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 386: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 387: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 388: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 389: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 390: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 391: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 392: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 393: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 394: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 395: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 396: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 397: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 398: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 399: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 400: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 401: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 402: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 403: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 404: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 405: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 406: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 407: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 408: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 409: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 410: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 411: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 412: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 413: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 414: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 415: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 416: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 417: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 418: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 419: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 420: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 421: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 422: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 423: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 424: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 425: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 426: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 427: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 428: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 429: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 430: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 431: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 432: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 433: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 434: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 435: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 436: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 437: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 438: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 439: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 440: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 441: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 442: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 443: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 444: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 445: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 446: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 447: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 448: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 449: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 450: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 451: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 452: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 453: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 454: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 455: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 456: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 457: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 458: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 459: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 460: Unidade de Ensino não encontrada (CENTRO DE OR. REAB. E ASS. AO ENCEFALOPATA CORAE).
+- Linha 461: Unidade de Ensino não encontrada (CENTRO DE REABILITAÇÃO SÃO PAULO APÓSTOLO (CRESPA)).
+- Linha 462: Unidade de Ensino não encontrada (CENTRO DE REABILITAÇÃO SÃO PAULO APÓSTOLO (CRESPA)).
+- Linha 463: Unidade de Ensino não encontrada (CENTRO DE REABILITAÇÃO SÃO PAULO APÓSTOLO (CRESPA)).
+- Linha 464: Unidade de Ensino não encontrada (CENTRO DE REABILITAÇÃO SÃO PAULO APÓSTOLO (CRESPA)).
+- Linha 465: Unidade de Ensino não encontrada (CENTRO DE REABILITAÇÃO SÃO PAULO APÓSTOLO (CRESPA)).
+- Linha 466: Unidade de Ensino não encontrada (CENTRO DE REABILITAÇÃO SÃO PAULO APÓSTOLO (CRESPA)).
+- Linha 467: Unidade de Ensino não encontrada (CENTRO DE REABILITAÇÃO SÃO PAULO APÓSTOLO (CRESPA)).
+- Linha 468: Unidade de Ensino não encontrada (CENTRO DE REABILITAÇÃO SÃO PAULO APÓSTOLO (CRESPA)).
+- Linha 469: Unidade de Ensino não encontrada (CENTRO DE REABILITAÇÃO SÃO PAULO APÓSTOLO (CRESPA)).
+- Linha 470: Unidade de Ensino não encontrada (CENTRO DE REABILITAÇÃO SÃO PAULO APÓSTOLO (CRESPA)).
+- Linha 471: Unidade de Ensino não encontrada (CENTRO DE REABILITAÇÃO SÃO PAULO APÓSTOLO (CRESPA)).
+- Linha 472: Unidade de Ensino não encontrada (CENTRO DE REABILITAÇÃO SÃO PAULO APÓSTOLO (CRESPA)).
+- Linha 473: Unidade de Ensino não encontrada (CENTRO DE REABILITAÇÃO SÃO PAULO APÓSTOLO (CRESPA)).
+- Linha 499: Turma não encontrada na unidade (EIE2V - CENTRO PROMOCIONAL TODOS OS SANTOS I).
+- Linha 500: Turma não encontrada na unidade (EIF1M - CENTRO PROMOCIONAL TODOS OS SANTOS I).
+- Linha 501: Turma não encontrada na unidade (EIF1M - CENTRO PROMOCIONAL TODOS OS SANTOS I).
+- Linha 502: Turma não encontrada na unidade (EIF1M - CENTRO PROMOCIONAL TODOS OS SANTOS I).
+- Linha 503: Turma não encontrada na unidade (EIF2V - CENTRO PROMOCIONAL TODOS OS SANTOS I).
+- Linha 504: Turma não encontrada na unidade (EIF2V - CENTRO PROMOCIONAL TODOS OS SANTOS I).
+- Linha 505: Turma não encontrada na unidade (EIF2V - CENTRO PROMOCIONAL TODOS OS SANTOS I).
+- Linha 506: Turma não encontrada na unidade (EIF2V - CENTRO PROMOCIONAL TODOS OS SANTOS I).
+- Linha 507: Turma não encontrada na unidade (EIF3V - CENTRO PROMOCIONAL TODOS OS SANTOS I).
+- Linha 508: Unidade de Ensino não encontrada (CENTRO PROMOCIONAL TODOS OS SANTOS III).
+- Linha 509: Unidade de Ensino não encontrada (CENTRO PROMOCIONAL TODOS OS SANTOS III).
+- Linha 510: Unidade de Ensino não encontrada (CENTRO PROMOCIONAL TODOS OS SANTOS III).
+- Linha 511: Unidade de Ensino não encontrada (CENTRO PROMOCIONAL TODOS OS SANTOS III).
+- Linha 512: Unidade de Ensino não encontrada (CENTRO PROMOCIONAL TODOS OS SANTOS III).
+- Linha 513: Unidade de Ensino não encontrada (CENTRO PROMOCIONAL TODOS OS SANTOS III).
+- Linha 514: Unidade de Ensino não encontrada (CENTRO PROMOCIONAL TODOS OS SANTOS III).
+- Linha 515: Unidade de Ensino não encontrada (CENTRO PROMOCIONAL TODOS OS SANTOS III).
+- Linha 516: Unidade de Ensino não encontrada (CENTRO PROMOCIONAL TODOS OS SANTOS III).
+- Linha 517: Unidade de Ensino não encontrada (CENTRO PROMOCIONAL TODOS OS SANTOS III).
+- Linha 518: Unidade de Ensino não encontrada (CENTRO PROMOCIONAL TODOS OS SANTOS III).
+- Linha 519: Unidade de Ensino não encontrada (CMEI 13 DE MAIO).
+- Linha 520: Unidade de Ensino não encontrada (CMEI 13 DE MAIO).
+- Linha 521: Unidade de Ensino não encontrada (CMEI 13 DE MAIO).
+- Linha 522: Unidade de Ensino não encontrada (CMEI 13 DE MAIO).
+- Linha 523: Unidade de Ensino não encontrada (CMEI 13 DE MAIO).
+- Linha 524: Unidade de Ensino não encontrada (CMEI 13 DE MAIO).
+- Linha 525: Unidade de Ensino não encontrada (CMEI 13 DE MAIO).
+- Linha 526: Unidade de Ensino não encontrada (CMEI 13 DE MAIO).
+- Linha 527: Unidade de Ensino não encontrada (CMEI 13 DE MAIO).
+- Linha 528: Unidade de Ensino não encontrada (CMEI 13 DE MAIO).
+- Linha 529: Unidade de Ensino não encontrada (CMEI ALEGRIA DE APRENDER).
+- Linha 530: Unidade de Ensino não encontrada (CMEI ALEGRIA DE APRENDER).
+- Linha 531: Unidade de Ensino não encontrada (CMEI ALEGRIA DE APRENDER).
+- Linha 532: Unidade de Ensino não encontrada (CMEI ALEGRIA DE APRENDER).
+- Linha 533: Unidade de Ensino não encontrada (CMEI ALEGRIA DE APRENDER).
+- Linha 534: Unidade de Ensino não encontrada (CMEI ALEGRIA DE APRENDER).
+- Linha 535: Unidade de Ensino não encontrada (CMEI ALEGRIA DE APRENDER).
+- Linha 536: Unidade de Ensino não encontrada (CMEI ALEGRIA DE APRENDER).
+- Linha 537: Unidade de Ensino não encontrada (CMEI ALEGRIA DE APRENDER).
+- Linha 538: Unidade de Ensino não encontrada (CMEI ALEGRIA DE APRENDER).
+- Linha 539: Unidade de Ensino não encontrada (CMEI ALEGRIA DE APRENDER).
+- Linha 540: Unidade de Ensino não encontrada (CMEI ALEGRIA DE APRENDER).
+- Linha 541: Unidade de Ensino não encontrada (CMEI ALTO DA GLÓRIA).
+- Linha 542: Unidade de Ensino não encontrada (CMEI ALTO DA GLÓRIA).
+- Linha 543: Unidade de Ensino não encontrada (CMEI ALTO DA GLÓRIA).
+- Linha 544: Unidade de Ensino não encontrada (CMEI ANDREIA CRISTINA).
+- Linha 545: Unidade de Ensino não encontrada (CMEI ATHENEU DOM BOSCO).
+- Linha 546: Unidade de Ensino não encontrada (CMEI ATHENEU DOM BOSCO).
+- Linha 547: Unidade de Ensino não encontrada (CMEI ATHENEU DOM BOSCO).
+- Linha 548: Unidade de Ensino não encontrada (CMEI ATHENEU DOM BOSCO).
+- Linha 549: Unidade de Ensino não encontrada (CMEI BAIRRO FELIZ).
+- Linha 550: Unidade de Ensino não encontrada (CMEI BAIRRO GOIÁ).
+- Linha 551: Unidade de Ensino não encontrada (CMEI BAIRRO GOIÁ).
+- Linha 552: Unidade de Ensino não encontrada (CMEI BAIRRO GOIÁ).
+- Linha 553: Unidade de Ensino não encontrada (CMEI BAIRRO GOIÁ).
+- Linha 554: Unidade de Ensino não encontrada (CMEI BAIRRO GOIÁ).
+- Linha 555: Unidade de Ensino não encontrada (CMEI BAIRRO GOIÁ).
+- Linha 556: Unidade de Ensino não encontrada (CMEI BAIRRO GOIÁ).
+- Linha 557: Unidade de Ensino não encontrada (CMEI BAIRRO GOIÁ).
+- Linha 558: Unidade de Ensino não encontrada (CMEI BAIRRO GOIÁ).
+- Linha 559: Unidade de Ensino não encontrada (CMEI BAIRRO GOIÁ).
+- Linha 560: Unidade de Ensino não encontrada (CMEI BAIRRO SANTO HILÁRIO).
+- Linha 561: Unidade de Ensino não encontrada (CMEI BEIJA-FLOR II).
+- Linha 562: Unidade de Ensino não encontrada (CMEI BEIJA-FLOR II).
+- Linha 563: Unidade de Ensino não encontrada (CMEI BEIJA-FLOR II).
+- Linha 564: Unidade de Ensino não encontrada (CMEI BEIJA-FLOR II).
+- Linha 565: Unidade de Ensino não encontrada (CMEI BEIJA-FLOR II).
+- Linha 566: Unidade de Ensino não encontrada (CMEI BEIJA-FLOR II).
+- Linha 567: Unidade de Ensino não encontrada (CMEI BEM-ME-QUER).
+- Linha 568: Unidade de Ensino não encontrada (CMEI BEM-ME-QUER).
+- Linha 569: Unidade de Ensino não encontrada (CMEI BEM-ME-QUER).
+- Linha 570: Unidade de Ensino não encontrada (CMEI BEM-ME-QUER).
+- Linha 571: Unidade de Ensino não encontrada (CMEI BEM-ME-QUER).
+- Linha 572: Unidade de Ensino não encontrada (CMEI BEM-ME-QUER).
+- Linha 573: Unidade de Ensino não encontrada (CMEI BEM-ME-QUER).
+- Linha 574: Unidade de Ensino não encontrada (CMEI BRINCANDO E APRENDENDO).
+- Linha 575: Unidade de Ensino não encontrada (CMEI BRINCANDO E APRENDENDO).
+- Linha 576: Unidade de Ensino não encontrada (CMEI BRISAS DA MATA).
+- Linha 577: Unidade de Ensino não encontrada (CMEI BRISAS DA MATA).
+- Linha 578: Unidade de Ensino não encontrada (CMEI BRISAS DA MATA).
+- Linha 579: Unidade de Ensino não encontrada (CMEI BRISAS DO CERRADO (PROFESSORA SILVIA PRAXEDES)).
+- Linha 580: Unidade de Ensino não encontrada (CMEI BRISAS DO CERRADO (PROFESSORA SILVIA PRAXEDES)).
+- Linha 581: Unidade de Ensino não encontrada (CMEI BRISAS DO CERRADO (PROFESSORA SILVIA PRAXEDES)).
+- Linha 582: Unidade de Ensino não encontrada (CMEI BRISAS DO CERRADO (PROFESSORA SILVIA PRAXEDES)).
+- Linha 583: Unidade de Ensino não encontrada (CMEI BRISAS DO CERRADO (PROFESSORA SILVIA PRAXEDES)).
+- Linha 584: Unidade de Ensino não encontrada (CMEI BRISAS DO CERRADO (PROFESSORA SILVIA PRAXEDES)).
+- Linha 585: Unidade de Ensino não encontrada (CMEI BRISAS DO CERRADO (PROFESSORA SILVIA PRAXEDES)).
+- Linha 586: Unidade de Ensino não encontrada (CMEI BRISAS DO CERRADO (PROFESSORA SILVIA PRAXEDES)).
+- Linha 587: Unidade de Ensino não encontrada (CMEI BUENA VISTA III WANDERLEY MAGALHÃES).
+- Linha 588: Unidade de Ensino não encontrada (CMEI BUENA VISTA III WANDERLEY MAGALHÃES).
+- Linha 589: Unidade de Ensino não encontrada (CMEI BUENA VISTA III WANDERLEY MAGALHÃES).
+- Linha 590: Unidade de Ensino não encontrada (CMEI CANTINHO DO SABER).
+- Linha 591: Unidade de Ensino não encontrada (CMEI CANTINHO FELIZ).
+- Linha 592: Unidade de Ensino não encontrada (CMEI CANTINHO FELIZ).
+- Linha 593: Unidade de Ensino não encontrada (CMEI CANTINHO FELIZ).
+- Linha 594: Unidade de Ensino não encontrada (CMEI CANTINHO FELIZ).
+- Linha 595: Unidade de Ensino não encontrada (CMEI CANTINHO FELIZ).
+- Linha 596: Unidade de Ensino não encontrada (CMEI CEASA WILMAR LUIZ).
+- Linha 597: Unidade de Ensino não encontrada (CMEI CEASA WILMAR LUIZ).
+- Linha 598: Unidade de Ensino não encontrada (CMEI CEASA WILMAR LUIZ).
+- Linha 599: Unidade de Ensino não encontrada (CMEI CEASA WILMAR LUIZ).
+- Linha 600: Unidade de Ensino não encontrada (CMEI CEASA WILMAR LUIZ).
+- Linha 601: Unidade de Ensino não encontrada (CMEI CEASA WILMAR LUIZ).
+- Linha 602: Unidade de Ensino não encontrada (CMEI CECÍLIA MEIRELES).
+- Linha 603: Unidade de Ensino não encontrada (CMEI CECÍLIA MEIRELES).
+- Linha 604: Unidade de Ensino não encontrada (CMEI CIBELLE DE PAULA SILVEIRA).
+- Linha 605: Unidade de Ensino não encontrada (CMEI CIBELLE DE PAULA SILVEIRA).
+- Linha 606: Unidade de Ensino não encontrada (CMEI CIBELLE DE PAULA SILVEIRA).
+- Linha 607: Unidade de Ensino não encontrada (CMEI CIBELLE DE PAULA SILVEIRA).
+- Linha 608: Unidade de Ensino não encontrada (CMEI CIBELLE DE PAULA SILVEIRA).
+- Linha 609: Unidade de Ensino não encontrada (CMEI CIBELLE DE PAULA SILVEIRA).
+- Linha 610: Unidade de Ensino não encontrada (CMEI CIBELLE DE PAULA SILVEIRA).
+- Linha 611: Unidade de Ensino não encontrada (CMEI CIBELLE DE PAULA SILVEIRA).
+- Linha 612: Unidade de Ensino não encontrada (CMEI CIBELLE DE PAULA SILVEIRA).
+- Linha 613: Unidade de Ensino não encontrada (CMEI CIBELLE DE PAULA SILVEIRA).
+- Linha 614: Unidade de Ensino não encontrada (CMEI CIBELLE DE PAULA SILVEIRA).
+- Linha 615: Unidade de Ensino não encontrada (CMEI CIBELLE DE PAULA SILVEIRA).
+- Linha 616: Unidade de Ensino não encontrada (CMEI CIBELLE DE PAULA SILVEIRA).
+- Linha 617: Unidade de Ensino não encontrada (CMEI CIBELLE DE PAULA SILVEIRA).
+- Linha 618: Unidade de Ensino não encontrada (CMEI CIRANDA).
+- Linha 619: Unidade de Ensino não encontrada (CMEI CIRANDA).
+- Linha 620: Unidade de Ensino não encontrada (CMEI CIRANDA).
+- Linha 621: Unidade de Ensino não encontrada (CMEI CIRANDA).
+- Linha 622: Unidade de Ensino não encontrada (CMEI CIRANDA).
+- Linha 623: Unidade de Ensino não encontrada (CMEI CIRANDA).
+- Linha 624: Unidade de Ensino não encontrada (CMEI CIRANDA).
+- Linha 625: Unidade de Ensino não encontrada (CMEI CIRANDA).
+- Linha 626: Unidade de Ensino não encontrada (CMEI CONDOMÍNIO RIO BRANCO).
+- Linha 627: Unidade de Ensino não encontrada (CMEI CONJUNTO VERA CRUZ II).
+- Linha 628: Unidade de Ensino não encontrada (CMEI CONJUNTO VERA CRUZ II).
+- Linha 629: Unidade de Ensino não encontrada (CMEI CONJUNTO VERA CRUZ II).
+- Linha 630: Unidade de Ensino não encontrada (CMEI CONJUNTO VERA CRUZ VI).
+- Linha 631: Unidade de Ensino não encontrada (CMEI CONSUELO NASSER).
+- Linha 632: Unidade de Ensino não encontrada (CMEI CONSUELO NASSER).
+- Linha 633: Unidade de Ensino não encontrada (CMEI CONSUELO NASSER).
+- Linha 634: Unidade de Ensino não encontrada (CMEI CRIANÇA CIDADÃ).
+- Linha 635: Unidade de Ensino não encontrada (CMEI CRIANÇA CIDADÃ).
+- Linha 636: Unidade de Ensino não encontrada (CMEI CRIANÇA CIDADÃ).
+- Linha 637: Unidade de Ensino não encontrada (CMEI CRIANÇA CIDADÃ).
+- Linha 638: Unidade de Ensino não encontrada (CMEI CRIANÇA CIDADÃ).
+- Linha 639: Unidade de Ensino não encontrada (CMEI CRIANÇA CIDADÃ).
+- Linha 640: Unidade de Ensino não encontrada (CMEI CRIANÇA CIDADÃ).
+- Linha 641: Unidade de Ensino não encontrada (CMEI CRIANÇA CIDADÃ).
+- Linha 642: Unidade de Ensino não encontrada (CMEI CRIANÇA CIDADÃ).
+- Linha 643: Unidade de Ensino não encontrada (CMEI CRIANÇA FELIZ).
+- Linha 644: Unidade de Ensino não encontrada (CMEI CRIANÇA FELIZ).
+- Linha 645: Unidade de Ensino não encontrada (CMEI CRISTIANO EMÍDIO MARTINS).
+- Linha 646: Unidade de Ensino não encontrada (CMEI CRISTIANO EMÍDIO MARTINS).
+- Linha 647: Unidade de Ensino não encontrada (CMEI CRISTIANO EMÍDIO MARTINS).
+- Linha 648: Unidade de Ensino não encontrada (CMEI DA BOA PROVIDÊNCIA).
+- Linha 649: Unidade de Ensino não encontrada (CMEI DEMES JUNIO DIVINO DE FREITAS).
+- Linha 650: Unidade de Ensino não encontrada (CMEI DEMES JUNIO DIVINO DE FREITAS).
+- Linha 651: Unidade de Ensino não encontrada (CMEI DEMES JUNIO DIVINO DE FREITAS).
+- Linha 652: Unidade de Ensino não encontrada (CMEI DEPUTADO SOLON BATISTA AMARAL).
+- Linha 653: Unidade de Ensino não encontrada (CMEI DEPUTADO SOLON BATISTA AMARAL).
+- Linha 654: Unidade de Ensino não encontrada (CMEI DEPUTADO SOLON BATISTA AMARAL).
+- Linha 655: Unidade de Ensino não encontrada (CMEI DEPUTADO SOLON BATISTA AMARAL).
+- Linha 656: Unidade de Ensino não encontrada (CMEI DEPUTADO SOLON BATISTA AMARAL).
+- Linha 657: Unidade de Ensino não encontrada (CMEI DOM ANTONIO RIBEIRO DE OLIVEIRA).
+- Linha 658: Unidade de Ensino não encontrada (CMEI DOM ANTONIO RIBEIRO DE OLIVEIRA).
+- Linha 659: Unidade de Ensino não encontrada (CMEI DOM ANTONIO RIBEIRO DE OLIVEIRA).
+- Linha 660: Unidade de Ensino não encontrada (CMEI DOM ANTONIO RIBEIRO DE OLIVEIRA).
+- Linha 661: Unidade de Ensino não encontrada (CMEI DOM ANTONIO RIBEIRO DE OLIVEIRA).
+- Linha 662: Unidade de Ensino não encontrada (CMEI DOM ANTONIO RIBEIRO DE OLIVEIRA).
+- Linha 663: Unidade de Ensino não encontrada (CMEI DOM ANTONIO RIBEIRO DE OLIVEIRA).
+- Linha 664: Unidade de Ensino não encontrada (CMEI DOM ANTONIO RIBEIRO DE OLIVEIRA).
+- Linha 665: Unidade de Ensino não encontrada (CMEI DOM ANTONIO RIBEIRO DE OLIVEIRA).
+- Linha 666: Unidade de Ensino não encontrada (CMEI DOM ANTONIO RIBEIRO DE OLIVEIRA).
+- Linha 667: Unidade de Ensino não encontrada (CMEI DOM ANTONIO RIBEIRO DE OLIVEIRA).
+- Linha 668: Unidade de Ensino não encontrada (CMEI DOM ANTONIO RIBEIRO DE OLIVEIRA).
+- Linha 669: Unidade de Ensino não encontrada (CMEI DOM ANTONIO RIBEIRO DE OLIVEIRA).
+- Linha 670: Unidade de Ensino não encontrada (CMEI DOM ANTONIO RIBEIRO DE OLIVEIRA).
+- Linha 671: Unidade de Ensino não encontrada (CMEI DOM ANTONIO RIBEIRO DE OLIVEIRA).
+- Linha 672: Unidade de Ensino não encontrada (CMEI DOM ANTONIO RIBEIRO DE OLIVEIRA).
+- Linha 673: Unidade de Ensino não encontrada (CMEI DOM ANTONIO RIBEIRO DE OLIVEIRA).
+- Linha 674: Unidade de Ensino não encontrada (CMEI DOM ANTONIO RIBEIRO DE OLIVEIRA).
+- Linha 675: Unidade de Ensino não encontrada (CMEI DOM ANTONIO RIBEIRO DE OLIVEIRA).
+- Linha 676: Unidade de Ensino não encontrada (CMEI DOM ANTONIO RIBEIRO DE OLIVEIRA).
+- Linha 677: Unidade de Ensino não encontrada (CMEI DOM ANTONIO RIBEIRO DE OLIVEIRA).
+- Linha 678: Unidade de Ensino não encontrada (CMEI DOM ANTONIO RIBEIRO DE OLIVEIRA).
+- Linha 679: Unidade de Ensino não encontrada (CMEI DOMICIANO DE FARIA).
+- Linha 680: Unidade de Ensino não encontrada (CMEI DOMICIANO DE FARIA).
+- Linha 681: Unidade de Ensino não encontrada (CMEI DOMICIANO DE FARIA).
+- Linha 682: Unidade de Ensino não encontrada (CMEI DOMICIANO DE FARIA).
+- Linha 683: Unidade de Ensino não encontrada (CMEI DOMICIANO DE FARIA).
+- Linha 684: Unidade de Ensino não encontrada (CMEI DOMICIANO DE FARIA).
+- Linha 685: Unidade de Ensino não encontrada (CMEI DOMICIANO DE FARIA).
+- Linha 686: Unidade de Ensino não encontrada (CMEI DOMICIANO DE FARIA).
+- Linha 687: Unidade de Ensino não encontrada (CMEI DOMICIANO DE FARIA).
+- Linha 688: Unidade de Ensino não encontrada (CMEI DONA RAMILA).
+- Linha 689: Unidade de Ensino não encontrada (CMEI DONA RAMILA).
+- Linha 690: Unidade de Ensino não encontrada (CMEI DONA RAMILA).
+- Linha 691: Unidade de Ensino não encontrada (CMEI DONA RAMILA).
+- Linha 692: Unidade de Ensino não encontrada (CMEI DONA TITA (ANTIGO CMEI JOÃO VAZ)).
+- Linha 693: Unidade de Ensino não encontrada (CMEI DONA TITA (ANTIGO CMEI JOÃO VAZ)).
+- Linha 694: Unidade de Ensino não encontrada (CMEI DRª ELIZABETH PINTO RIBEIRO).
+- Linha 695: Unidade de Ensino não encontrada (CMEI DRª ELIZABETH PINTO RIBEIRO).
+- Linha 696: Unidade de Ensino não encontrada (CMEI DRA. MARIZETE FERNANDES DE CASTRO CARVALHO).
+- Linha 697: Unidade de Ensino não encontrada (CMEI DRA. MARIZETE FERNANDES DE CASTRO CARVALHO).
+- Linha 698: Unidade de Ensino não encontrada (CMEI FABIANO DE CRISTO).
+- Linha 699: Unidade de Ensino não encontrada (CMEI FABIANO DE CRISTO).
+- Linha 700: Unidade de Ensino não encontrada (CMEI FABIANO DE CRISTO).
+- Linha 701: Unidade de Ensino não encontrada (CMEI FABIANO DE CRISTO).
+- Linha 702: Unidade de Ensino não encontrada (CMEI FABIANO DE CRISTO).
+- Linha 703: Unidade de Ensino não encontrada (CMEI GOIÂNIA VIVA).
+- Linha 704: Unidade de Ensino não encontrada (CMEI GOVERNADOR OLINTO DE PAULA LEITE).
+- Linha 705: Unidade de Ensino não encontrada (CMEI GOVERNADOR OLINTO DE PAULA LEITE).
+- Linha 706: Unidade de Ensino não encontrada (CMEI GOVERNADOR OLINTO DE PAULA LEITE).
+- Linha 707: Unidade de Ensino não encontrada (CMEI GOVERNADOR OLINTO DE PAULA LEITE).
+- Linha 708: Unidade de Ensino não encontrada (CMEI GOVERNADOR OLINTO DE PAULA LEITE).
+- Linha 709: Unidade de Ensino não encontrada (CMEI HERDEIROS DO FUTURO).
+- Linha 710: Unidade de Ensino não encontrada (CMEI HERDEIROS DO FUTURO).
+- Linha 711: Unidade de Ensino não encontrada (CMEI HUGO DE MORAIS).
+- Linha 712: Unidade de Ensino não encontrada (CMEI HUGO DE MORAIS).
+- Linha 713: Unidade de Ensino não encontrada (CMEI HUGO DE MORAIS).
+- Linha 714: Unidade de Ensino não encontrada (CMEI HUGO DE MORAIS).
+- Linha 715: Unidade de Ensino não encontrada (CMEI HUGO DE MORAIS).
+- Linha 716: Unidade de Ensino não encontrada (CMEI HUGO DE MORAIS).
+- Linha 717: Unidade de Ensino não encontrada (CMEI HUGO DE MORAIS).
+- Linha 718: Unidade de Ensino não encontrada (CMEI HUGO DE MORAIS).
+- Linha 719: Unidade de Ensino não encontrada (CMEI HUGO DE MORAIS).
+- Linha 720: Unidade de Ensino não encontrada (CMEI HUGO DE MORAIS).
+- Linha 721: Unidade de Ensino não encontrada (CMEI HUGO DE MORAIS).
+- Linha 722: Unidade de Ensino não encontrada (CMEI HUGO DE MORAIS).
+- Linha 723: Unidade de Ensino não encontrada (CMEI IPÊ AMARELO).
+- Linha 724: Unidade de Ensino não encontrada (CMEI IPÊ AMARELO).
+- Linha 725: Unidade de Ensino não encontrada (CMEI IRMÃ LÍDIA).
+- Linha 726: Unidade de Ensino não encontrada (CMEI IRMÃ LÍDIA).
+- Linha 727: Unidade de Ensino não encontrada (CMEI IRMÃ LÍDIA).
+- Linha 728: Unidade de Ensino não encontrada (CMEI IRMÃ LÍDIA).
+- Linha 729: Unidade de Ensino não encontrada (CMEI IRMÃ LÍDIA).
+- Linha 730: Unidade de Ensino não encontrada (CMEI IRMÃ LÍDIA).
+- Linha 731: Unidade de Ensino não encontrada (CMEI IRMÃ LÍDIA).
+- Linha 732: Unidade de Ensino não encontrada (CMEI JARDIM AMÉRICA).
+- Linha 733: Unidade de Ensino não encontrada (CMEI JARDIM AMÉRICA).
+- Linha 734: Unidade de Ensino não encontrada (CMEI JARDIM AMÉRICA II).
+- Linha 735: Unidade de Ensino não encontrada (CMEI JARDIM AMÉRICA II).
+- Linha 736: Unidade de Ensino não encontrada (CMEI JARDIM AMÉRICA II).
+- Linha 737: Unidade de Ensino não encontrada (CMEI JARDIM AMÉRICA II).
+- Linha 738: Unidade de Ensino não encontrada (CMEI JARDIM AMÉRICA II).
+- Linha 739: Unidade de Ensino não encontrada (CMEI JARDIM AMÉRICA II).
+- Linha 740: Unidade de Ensino não encontrada (CMEI JARDIM AMÉRICA II).
+- Linha 741: Unidade de Ensino não encontrada (CMEI JARDIM AMÉRICA II).
+- Linha 742: Unidade de Ensino não encontrada (CMEI JARDIM AMÉRICA II).
+- Linha 743: Unidade de Ensino não encontrada (CMEI JARDIM ANA LÚCIA).
+- Linha 744: Unidade de Ensino não encontrada (CMEI JARDIM ANA LÚCIA).
+- Linha 745: Unidade de Ensino não encontrada (CMEI JARDIM ANA LÚCIA).
+- Linha 746: Unidade de Ensino não encontrada (CMEI JARDIM ANA LÚCIA).
+- Linha 747: Unidade de Ensino não encontrada (CMEI JARDIM BALNEÁRIO MEIA PONTE).
+- Linha 748: Unidade de Ensino não encontrada (CMEI JARDIM BALNEÁRIO MEIA PONTE).
+- Linha 749: Unidade de Ensino não encontrada (CMEI JARDIM BALNEÁRIO MEIA PONTE).
+- Linha 750: Unidade de Ensino não encontrada (CMEI JARDIM CURITIBA).
+- Linha 751: Unidade de Ensino não encontrada (CMEI JARDIM CURITIBA).
+- Linha 752: Unidade de Ensino não encontrada (CMEI JARDIM CURITIBA).
+- Linha 753: Unidade de Ensino não encontrada (CMEI JARDIM DAS AROEIRAS).
+- Linha 754: Unidade de Ensino não encontrada (CMEI JARDIM DAS AROEIRAS).
+- Linha 755: Unidade de Ensino não encontrada (CMEI JARDIM GUANABARA I).
+- Linha 756: Unidade de Ensino não encontrada (CMEI JARDIM GUANABARA I).
+- Linha 757: Unidade de Ensino não encontrada (CMEI JARDIM GUANABARA I).
+- Linha 758: Unidade de Ensino não encontrada (CMEI JARDIM GUANABARA I).
+- Linha 759: Unidade de Ensino não encontrada (CMEI JARDIM GUANABARA I).
+- Linha 760: Unidade de Ensino não encontrada (CMEI JARDIM GUANABARA III).
+- Linha 761: Unidade de Ensino não encontrada (CMEI JARDIM GUANABARA III).
+- Linha 762: Unidade de Ensino não encontrada (CMEI JARDIM LIBERDADE).
+- Linha 763: Unidade de Ensino não encontrada (CMEI JARDIM LIBERDADE).
+- Linha 764: Unidade de Ensino não encontrada (CMEI JARDIM LIBERDADE).
+- Linha 765: Unidade de Ensino não encontrada (CMEI JARDIM LIBERDADE).
+- Linha 766: Unidade de Ensino não encontrada (CMEI JARDIM LIBERDADE).
+- Linha 767: Unidade de Ensino não encontrada (CMEI JARDIM LIBERDADE).
+- Linha 768: Unidade de Ensino não encontrada (CMEI JARDIM LIBERDADE).
+- Linha 769: Unidade de Ensino não encontrada (CMEI JARDIM LIBERDADE).
+- Linha 770: Unidade de Ensino não encontrada (CMEI JARDIM MARILIZA).
+- Linha 771: Unidade de Ensino não encontrada (CMEI JARDIM MARILIZA).
+- Linha 772: Unidade de Ensino não encontrada (CMEI JARDIM MARILIZA).
+- Linha 773: Unidade de Ensino não encontrada (CMEI JARDIM NOVA ESPERANÇA).
+- Linha 774: Unidade de Ensino não encontrada (CMEI JARDIM NOVA ESPERANÇA).
+- Linha 775: Unidade de Ensino não encontrada (CMEI JARDIM PRESIDENTE).
+- Linha 776: Unidade de Ensino não encontrada (CMEI JARDIM PRESIDENTE).
+- Linha 777: Unidade de Ensino não encontrada (CMEI JARDIM PRESIDENTE).
+- Linha 778: Unidade de Ensino não encontrada (CMEI JARDIM PRIMAVERA).
+- Linha 779: Unidade de Ensino não encontrada (CMEI JARDIM PRIMAVERA).
+- Linha 780: Unidade de Ensino não encontrada (CMEI JARDIM PRIMAVERA).
+- Linha 781: Unidade de Ensino não encontrada (CMEI JARDINS DO CERRADO 4 ANTONIO ALMEIDA).
+- Linha 782: Unidade de Ensino não encontrada (CMEI JARDINS DO CERRADO 4 ANTONIO ALMEIDA).
+- Linha 783: Unidade de Ensino não encontrada (CMEI JARDINS DO CERRADO 4 ANTONIO ALMEIDA).
+- Linha 784: Unidade de Ensino não encontrada (CMEI JARDINS DO CERRADO 4 ANTONIO ALMEIDA).
+- Linha 785: Unidade de Ensino não encontrada (CMEI JARDINS DO CERRADO 4 ANTONIO ALMEIDA).
+- Linha 786: Unidade de Ensino não encontrada (CMEI JARDINS DO CERRADO 4 ANTONIO ALMEIDA).
+- Linha 787: Unidade de Ensino não encontrada (CMEI JARDINS DO CERRADO I).
+- Linha 788: Unidade de Ensino não encontrada (CMEI JARDINS DO CERRADO I).
+- Linha 789: Unidade de Ensino não encontrada (CMEI JARDINS DO CERRADO I).
+- Linha 790: Unidade de Ensino não encontrada (CMEI JOÃO NAVEGA DE AGUIAR).
+- Linha 791: Unidade de Ensino não encontrada (CMEI JOÃO NAVEGA DE AGUIAR).
+- Linha 792: Unidade de Ensino não encontrada (CMEI JOÃO NAVEGA DE AGUIAR).
+- Linha 793: Unidade de Ensino não encontrada (CMEI JOÃO NAVEGA DE AGUIAR).
+- Linha 794: Unidade de Ensino não encontrada (CMEI JOÃO NAVEGA DE AGUIAR).
+- Linha 795: Unidade de Ensino não encontrada (CMEI JOÃO NAVEGA DE AGUIAR).
+- Linha 796: Unidade de Ensino não encontrada (CMEI JOÃO NAVEGA DE AGUIAR).
+- Linha 797: Unidade de Ensino não encontrada (CMEI JOÃO NAVEGA DE AGUIAR).
+- Linha 798: Unidade de Ensino não encontrada (CMEI JOÃO NAVEGA DE AGUIAR).
+- Linha 799: Unidade de Ensino não encontrada (CMEI JOÃO NAVEGA DE AGUIAR).
+- Linha 800: Unidade de Ensino não encontrada (CMEI JOÃO NAVEGA DE AGUIAR).
+- Linha 801: Unidade de Ensino não encontrada (CMEI JOÃO NAVEGA DE AGUIAR).
+- Linha 802: Unidade de Ensino não encontrada (CMEI JOÃO NAVEGA DE AGUIAR).
+- Linha 803: Unidade de Ensino não encontrada (CMEI JOÃO NAVEGA DE AGUIAR).
+- Linha 804: Unidade de Ensino não encontrada (CMEI JOÃO NAVEGA DE AGUIAR).
+- Linha 805: Unidade de Ensino não encontrada (CMEI JOÃO NAVEGA DE AGUIAR).
+- Linha 806: Unidade de Ensino não encontrada (CMEI JOÃO NAVEGA DE AGUIAR).
+- Linha 807: Unidade de Ensino não encontrada (CMEI JOÃO NAVEGA DE AGUIAR).
+- Linha 808: Unidade de Ensino não encontrada (CMEI JOÃO NAVEGA DE AGUIAR).
+- Linha 809: Unidade de Ensino não encontrada (CMEI JOÃO NAVEGA DE AGUIAR).
+- Linha 810: Unidade de Ensino não encontrada (CMEI JOÃO NAVEGA DE AGUIAR).
+- Linha 811: Unidade de Ensino não encontrada (CMEI JOÃO PAULO I).
+- Linha 812: Unidade de Ensino não encontrada (CMEI JOÃO PAULO I).
+- Linha 813: Unidade de Ensino não encontrada (CMEI JOÃO PAULO I).
+- Linha 814: Unidade de Ensino não encontrada (CMEI JOÃO PAULO I).
+- Linha 815: Unidade de Ensino não encontrada (CMEI JOÃO PAULO I).
+- Linha 816: Unidade de Ensino não encontrada (CMEI JOÃO PAULO I).
+- Linha 817: Unidade de Ensino não encontrada (CMEI JOÃO PAULO I).
+- Linha 818: Unidade de Ensino não encontrada (CMEI JOÃO PAULO I).
+- Linha 819: Unidade de Ensino não encontrada (CMEI JOÃO PAULO I).
+- Linha 820: Unidade de Ensino não encontrada (CMEI JOÃO PAULO I).
+- Linha 821: Unidade de Ensino não encontrada (CMEI JOAO PEDRO CALEMBO).
+- Linha 822: Unidade de Ensino não encontrada (CMEI JOSÉ ALVES BATISTA).
+- Linha 823: Unidade de Ensino não encontrada (CMEI JOSÉ ALVES BATISTA).
+- Linha 824: Unidade de Ensino não encontrada (CMEI JOSÉ ALVES BATISTA).
+- Linha 825: Unidade de Ensino não encontrada (CMEI LYGIA RASSI).
+- Linha 826: Unidade de Ensino não encontrada (CMEI LYGIA RASSI).
+- Linha 827: Unidade de Ensino não encontrada (CMEI LYGIA RASSI).
+- Linha 828: Unidade de Ensino não encontrada (CMEI LYGIA RASSI).
+- Linha 829: Unidade de Ensino não encontrada (CMEI LYGIA RASSI).
+- Linha 830: Unidade de Ensino não encontrada (CMEI LYGIA RASSI).
+- Linha 831: Unidade de Ensino não encontrada (CMEI MÃE TINA).
+- Linha 832: Unidade de Ensino não encontrada (CMEI MÃE TINA).
+- Linha 833: Unidade de Ensino não encontrada (CMEI MÃE TINA).
+- Linha 834: Unidade de Ensino não encontrada (CMEI MÃE TINA).
+- Linha 835: Unidade de Ensino não encontrada (CMEI MÃE TINA).
+- Linha 836: Unidade de Ensino não encontrada (CMEI MÃE TINA).
+- Linha 837: Unidade de Ensino não encontrada (CMEI MÃE TINA).
+- Linha 838: Unidade de Ensino não encontrada (CMEI MARCIA LORENA MENDES).
+- Linha 839: Unidade de Ensino não encontrada (CMEI MARIA JOSÉ DOS SANTOS (ANTIGO CEI MARIA GENOVEVA)).
+- Linha 840: Unidade de Ensino não encontrada (CMEI MARIA JOSÉ DOS SANTOS (ANTIGO CEI MARIA GENOVEVA)).
+- Linha 841: Unidade de Ensino não encontrada (CMEI MARIA JOSÉ DOS SANTOS (ANTIGO CEI MARIA GENOVEVA)).
+- Linha 842: Unidade de Ensino não encontrada (CMEI MATEUS BARCELOS BARRETOS).
+- Linha 843: Unidade de Ensino não encontrada (CMEI MATEUS BARCELOS BARRETOS).
+- Linha 844: Unidade de Ensino não encontrada (CMEI MINERVINA MARIA DE SOUSA).
+- Linha 845: Unidade de Ensino não encontrada (CMEI MINERVINA MARIA DE SOUSA).
+- Linha 846: Unidade de Ensino não encontrada (CMEI MINERVINA MARIA DE SOUSA).
+- Linha 847: Unidade de Ensino não encontrada (CMEI MINERVINA MARIA DE SOUSA).
+- Linha 848: Unidade de Ensino não encontrada (CMEI MINERVINA MARIA DE SOUSA).
+- Linha 849: Unidade de Ensino não encontrada (CMEI MONTEIRO LOBATO).
+- Linha 850: Unidade de Ensino não encontrada (CMEI MONTEIRO LOBATO).
+- Linha 851: Unidade de Ensino não encontrada (CMEI MONTEIRO LOBATO).
+- Linha 852: Unidade de Ensino não encontrada (CMEI MONTEIRO LOBATO).
+- Linha 853: Unidade de Ensino não encontrada (CMEI MONTEIRO LOBATO).
+- Linha 854: Unidade de Ensino não encontrada (CMEI MORADA DO SOL).
+- Linha 855: Unidade de Ensino não encontrada (CMEI MORADA DO SOL).
+- Linha 856: Unidade de Ensino não encontrada (CMEI MORADA DO SOL).
+- Linha 857: Unidade de Ensino não encontrada (CMEI MORADA DO SOL).
+- Linha 858: Unidade de Ensino não encontrada (CMEI MORADA DO SOL).
+- Linha 859: Unidade de Ensino não encontrada (CMEI MORADA DO SOL).
+- Linha 860: Unidade de Ensino não encontrada (CMEI MORADA DO SOL).
+- Linha 861: Unidade de Ensino não encontrada (CMEI MORADA DO SOL).
+- Linha 862: Unidade de Ensino não encontrada (CMEI MUNDO NOVO III).
+- Linha 863: Unidade de Ensino não encontrada (CMEI MUNDO NOVO III).
+- Linha 864: Unidade de Ensino não encontrada (CMEI MUNDO NOVO III).
+- Linha 865: Unidade de Ensino não encontrada (CMEI NION ALBERNAZ).
+- Linha 866: Unidade de Ensino não encontrada (CMEI NION ALBERNAZ).
+- Linha 867: Unidade de Ensino não encontrada (CMEI NION ALBERNAZ).
+- Linha 868: Unidade de Ensino não encontrada (CMEI NION ALBERNAZ).
+- Linha 869: Unidade de Ensino não encontrada (CMEI NION ALBERNAZ).
+- Linha 870: Unidade de Ensino não encontrada (CMEI NION ALBERNAZ).
+- Linha 871: Unidade de Ensino não encontrada (CMEI NION ALBERNAZ).
+- Linha 872: Unidade de Ensino não encontrada (CMEI NION ALBERNAZ).
+- Linha 873: Unidade de Ensino não encontrada (CMEI NION ALBERNAZ).
+- Linha 874: Unidade de Ensino não encontrada (CMEI NION ALBERNAZ).
+- Linha 875: Unidade de Ensino não encontrada (CMEI NION ALBERNAZ).
+- Linha 876: Unidade de Ensino não encontrada (CMEI NOSSA SENHORA APARECIDA).
+- Linha 877: Unidade de Ensino não encontrada (CMEI NOSSA SENHORA DAS GRAÇAS).
+- Linha 878: Unidade de Ensino não encontrada (CMEI NOSSA SENHORA DAS GRAÇAS).
+- Linha 879: Unidade de Ensino não encontrada (CMEI OITO DE MARÇO).
+- Linha 880: Unidade de Ensino não encontrada (CMEI OITO DE MARÇO).
+- Linha 881: Unidade de Ensino não encontrada (CMEI OITO DE MARÇO).
+- Linha 882: Unidade de Ensino não encontrada (CMEI OITO DE MARÇO).
+- Linha 883: Unidade de Ensino não encontrada (CMEI OITO DE MARÇO).
+- Linha 884: Unidade de Ensino não encontrada (CMEI OITO DE MARÇO).
+- Linha 885: Unidade de Ensino não encontrada (CMEI OITO DE MARÇO).
+- Linha 886: Unidade de Ensino não encontrada (CMEI OITO DE MARÇO).
+- Linha 887: Unidade de Ensino não encontrada (CMEI OITO DE MARÇO).
+- Linha 888: Unidade de Ensino não encontrada (CMEI ORIENTE VILLE).
+- Linha 889: Unidade de Ensino não encontrada (CMEI ORIENTE VILLE).
+- Linha 890: Unidade de Ensino não encontrada (CMEI ORIENTE VILLE).
+- Linha 891: Unidade de Ensino não encontrada (CMEI ORIENTE VILLE).
+- Linha 892: Unidade de Ensino não encontrada (CMEI ORIENTE VILLE).
+- Linha 893: Unidade de Ensino não encontrada (CMEI ORIENTE VILLE).
+- Linha 894: Unidade de Ensino não encontrada (CMEI ORIENTE VILLE).
+- Linha 895: Unidade de Ensino não encontrada (CMEI ORIENTE VILLE).
+- Linha 896: Unidade de Ensino não encontrada (CMEI ORIENTE VILLE).
+- Linha 897: Unidade de Ensino não encontrada (CMEI ORIENTE VILLE).
+- Linha 898: Unidade de Ensino não encontrada (CMEI ORIENTE VILLE).
+- Linha 899: Unidade de Ensino não encontrada (CMEI ORIENTE VILLE).
+- Linha 900: Unidade de Ensino não encontrada (CMEI ORIENTE VILLE).
+- Linha 901: Unidade de Ensino não encontrada (CMEI ORIENTE VILLE).
+- Linha 902: Unidade de Ensino não encontrada (CMEI ORIENTE VILLE).
+- Linha 903: Unidade de Ensino não encontrada (CMEI ORIENTE VILLE).
+- Linha 904: Unidade de Ensino não encontrada (CMEI ORIENTE VILLE).
+- Linha 905: Unidade de Ensino não encontrada (CMEI ORIENTE VILLE).
+- Linha 906: Unidade de Ensino não encontrada (CMEI ORIENTE VILLE).
+- Linha 907: Unidade de Ensino não encontrada (CMEI ORIENTE VILLE).
+- Linha 908: Unidade de Ensino não encontrada (CMEI ORIENTE VILLE).
+- Linha 909: Unidade de Ensino não encontrada (CMEI ORIENTE VILLE).
+- Linha 910: Unidade de Ensino não encontrada (CMEI ORIENTE VILLE).
+- Linha 911: Unidade de Ensino não encontrada (CMEI ORIENTE VILLE).
+- Linha 912: Unidade de Ensino não encontrada (CMEI ORIENTE VILLE).
+- Linha 913: Unidade de Ensino não encontrada (CMEI ORIENTE VILLE).
+- Linha 914: Unidade de Ensino não encontrada (CMEI ORIENTE VILLE).
+- Linha 915: Unidade de Ensino não encontrada (CMEI ORIENTE VILLE).
+- Linha 916: Unidade de Ensino não encontrada (CMEI ORIENTE VILLE).
+- Linha 917: Unidade de Ensino não encontrada (CMEI ORIENTE VILLE).
+- Linha 918: Unidade de Ensino não encontrada (CMEI ORIENTE VILLE).
+- Linha 919: Unidade de Ensino não encontrada (CMEI ORIENTE VILLE).
+- Linha 920: Unidade de Ensino não encontrada (CMEI PADRE VITALIS).
+- Linha 921: Unidade de Ensino não encontrada (CMEI PADRE VITALIS).
+- Linha 922: Unidade de Ensino não encontrada (CMEI PADRE VITALIS).
+- Linha 923: Unidade de Ensino não encontrada (CMEI PADRE VITALIS).
+- Linha 924: Unidade de Ensino não encontrada (CMEI PADRE VITALIS).
+- Linha 925: Unidade de Ensino não encontrada (CMEI PARQUE AMAZÔNIA).
+- Linha 926: Unidade de Ensino não encontrada (CMEI PARQUE AMAZÔNIA).
+- Linha 927: Unidade de Ensino não encontrada (CMEI PARQUE ATHENEU).
+- Linha 928: Unidade de Ensino não encontrada (CMEI PARQUE ATHENEU).
+- Linha 929: Unidade de Ensino não encontrada (CMEI PARQUE ATHENEU).
+- Linha 930: Unidade de Ensino não encontrada (CMEI PARQUE ELDORADO OESTE).
+- Linha 931: Unidade de Ensino não encontrada (CMEI PARQUE TREMENDÃO).
+- Linha 932: Unidade de Ensino não encontrada (CMEI PARQUE TREMENDÃO).
+- Linha 933: Unidade de Ensino não encontrada (CMEI PARQUE TREMENDÃO).
+- Linha 934: Unidade de Ensino não encontrada (CMEI PARQUE TREMENDÃO).
+- Linha 935: Unidade de Ensino não encontrada (CMEI PEQUENO APRENDIZ).
+- Linha 936: Unidade de Ensino não encontrada (CMEI PEQUENO APRENDIZ).
+- Linha 937: Unidade de Ensino não encontrada (CMEI PRESIDENTE COSTA E SILVA).
+- Linha 938: Unidade de Ensino não encontrada (CMEI PRIMEIROS PASSOS).
+- Linha 939: Unidade de Ensino não encontrada (CMEI PRIMEIROS PASSOS).
+- Linha 940: Unidade de Ensino não encontrada (CMEI PRIMEIROS PASSOS).
+- Linha 941: Unidade de Ensino não encontrada (CMEI PRIMEIROS PASSOS).
+- Linha 942: Unidade de Ensino não encontrada (CMEI PRIMEIROS PASSOS).
+- Linha 943: Unidade de Ensino não encontrada (CMEI PROFESSORA ALZIRA DE OLIVEIRA ALVES).
+- Linha 944: Unidade de Ensino não encontrada (CMEI PROFESSORA IACY ALBA ROCHA FERREIRA LIMA).
+- Linha 945: Unidade de Ensino não encontrada (CMEI PROFESSORA IACY ALBA ROCHA FERREIRA LIMA).
+- Linha 946: Unidade de Ensino não encontrada (CMEI PROFESSORA IACY ALBA ROCHA FERREIRA LIMA).
+- Linha 947: Unidade de Ensino não encontrada (CMEI PROFESSORA IACY ALBA ROCHA FERREIRA LIMA).
+- Linha 948: Unidade de Ensino não encontrada (CMEI PROFESSORA IACY ALBA ROCHA FERREIRA LIMA).
+- Linha 949: Unidade de Ensino não encontrada (CMEI PROFESSORA IACY ALBA ROCHA FERREIRA LIMA).
+- Linha 950: Unidade de Ensino não encontrada (CMEI PROFESSORA IACY ALBA ROCHA FERREIRA LIMA).
+- Linha 951: Unidade de Ensino não encontrada (CMEI PROFESSORA NAIR LACERDA JUBÉ BORGES).
+- Linha 952: Unidade de Ensino não encontrada (CMEI PROFESSORA NAIR LACERDA JUBÉ BORGES).
+- Linha 953: Unidade de Ensino não encontrada (CMEI PROFESSORA NAIR LACERDA JUBÉ BORGES).
+- Linha 954: Unidade de Ensino não encontrada (CMEI RAIMUNDO LISBOA PEREIRA).
+- Linha 955: Unidade de Ensino não encontrada (CMEI RAIMUNDO LISBOA PEREIRA).
+- Linha 956: Unidade de Ensino não encontrada (CMEI REAL CONQUISTA).
+- Linha 957: Unidade de Ensino não encontrada (CMEI REAL CONQUISTA).
+- Linha 958: Unidade de Ensino não encontrada (CMEI REAL CONQUISTA).
+- Linha 959: Unidade de Ensino não encontrada (CMEI REAL CONQUISTA).
+- Linha 960: Unidade de Ensino não encontrada (CMEI REAL CONQUISTA).
+- Linha 961: Unidade de Ensino não encontrada (CMEI REAL CONQUISTA).
+- Linha 962: Unidade de Ensino não encontrada (CMEI RECANTO DO SABER).
+- Linha 963: Unidade de Ensino não encontrada (CMEI RECANTO INFANTIL).
+- Linha 964: Unidade de Ensino não encontrada (CMEI RECANTO INFANTIL).
+- Linha 965: Unidade de Ensino não encontrada (CMEI RESIDENCIAL ALPHAVILLE).
+- Linha 966: Unidade de Ensino não encontrada (CMEI RESIDENCIAL ALPHAVILLE).
+- Linha 967: Unidade de Ensino não encontrada (CMEI RESIDENCIAL ALPHAVILLE).
+- Linha 968: Unidade de Ensino não encontrada (CMEI RESIDENCIAL ALPHAVILLE).
+- Linha 969: Unidade de Ensino não encontrada (CMEI RESIDENCIAL ALPHAVILLE).
+- Linha 970: Unidade de Ensino não encontrada (CMEI RESIDENCIAL ITAIPU).
+- Linha 971: Unidade de Ensino não encontrada (CMEI RESIDENCIAL ITAIPU).
+- Linha 972: Unidade de Ensino não encontrada (CMEI RESIDENCIAL ITAIPU).
+- Linha 973: Unidade de Ensino não encontrada (CMEI RESIDENCIAL ITAIPU).
+- Linha 974: Unidade de Ensino não encontrada (CMEI RESIDENCIAL ITAIPU).
+- Linha 975: Unidade de Ensino não encontrada (CMEI RESIDENCIAL ITAIPU).
+- Linha 976: Unidade de Ensino não encontrada (CMEI RESIDENCIAL ITAIPU).
+- Linha 977: Unidade de Ensino não encontrada (CMEI RESIDENCIAL ITAIPU).
+- Linha 978: Unidade de Ensino não encontrada (CMEI RESIDENCIAL ITAMARACA).
+- Linha 979: Unidade de Ensino não encontrada (CMEI RESIDENCIAL ITAMARACA).
+- Linha 980: Unidade de Ensino não encontrada (CMEI RESIDENCIAL ITAMARACA).
+- Linha 981: Unidade de Ensino não encontrada (CMEI RESIDENCIAL ITAMARACA).
+- Linha 982: Unidade de Ensino não encontrada (CMEI SAGRADA FAMILIA).
+- Linha 983: Unidade de Ensino não encontrada (CMEI SAGRADA FAMILIA).
+- Linha 984: Unidade de Ensino não encontrada (CMEI SAGRADA FAMILIA).
+- Linha 985: Unidade de Ensino não encontrada (CMEI SAGRADA FAMILIA).
+- Linha 986: Unidade de Ensino não encontrada (CMEI SANTA LUZIA).
+- Linha 987: Unidade de Ensino não encontrada (CMEI SANTA LUZIA).
+- Linha 988: Unidade de Ensino não encontrada (CMEI SANTA LUZIA).
+- Linha 989: Unidade de Ensino não encontrada (CMEI SANTA LUZIA).
+- Linha 990: Unidade de Ensino não encontrada (CMEI SANTA LUZIA).
+- Linha 991: Unidade de Ensino não encontrada (CMEI SANTA LUZIA).
+- Linha 992: Unidade de Ensino não encontrada (CMEI SANTA LUZIA).
+- Linha 993: Unidade de Ensino não encontrada (CMEI SANTA LUZIA).
+- Linha 994: Unidade de Ensino não encontrada (CMEI SANTA MONICA).
+- Linha 995: Unidade de Ensino não encontrada (CMEI SANTA MONICA).
+- Linha 996: Unidade de Ensino não encontrada (CMEI SANTA MONICA).
+- Linha 997: Unidade de Ensino não encontrada (CMEI SANTA MONICA).
+- Linha 998: Unidade de Ensino não encontrada (CMEI SÃO CRISTOVÃO).
+- Linha 999: Unidade de Ensino não encontrada (CMEI SÃO CRISTOVÃO).
+- Linha 1000: Unidade de Ensino não encontrada (CMEI SÃO CRISTOVÃO).
+- Linha 1001: Unidade de Ensino não encontrada (CMEI SÃO PIO X).
+- Linha 1002: Unidade de Ensino não encontrada (CMEI SÃO PIO X).
+- Linha 1003: Unidade de Ensino não encontrada (CMEI SÃO PIO X).
+- Linha 1004: Unidade de Ensino não encontrada (CMEI SÃO PIO X).
+- Linha 1005: Unidade de Ensino não encontrada (CMEI SARA E REBECA).
+- Linha 1006: Unidade de Ensino não encontrada (CMEI SETOR AEROVIARIO I).
+- Linha 1007: Unidade de Ensino não encontrada (CMEI SETOR AEROVIARIO I).
+- Linha 1008: Unidade de Ensino não encontrada (CMEI SETOR AEROVIARIO I).
+- Linha 1009: Unidade de Ensino não encontrada (CMEI SETOR AEROVIARIO I).
+- Linha 1010: Unidade de Ensino não encontrada (CMEI SETOR AEROVIARIO I).
+- Linha 1011: Unidade de Ensino não encontrada (CMEI SETOR PROGRESSO).
+- Linha 1012: Unidade de Ensino não encontrada (CMEI SETOR UNIAO).
+- Linha 1013: Unidade de Ensino não encontrada (CMEI SETOR UNIAO).
+- Linha 1014: Unidade de Ensino não encontrada (CMEI SOLANGE PARK).
+- Linha 1015: Unidade de Ensino não encontrada (CMEI SOLANGE PARK).
+- Linha 1016: Unidade de Ensino não encontrada (CMEI TEMPO DE INFANCIA).
+- Linha 1017: Unidade de Ensino não encontrada (CMEI TEMPO DE INFANCIA).
+- Linha 1018: Unidade de Ensino não encontrada (CMEI TIO OSCAR).
+- Linha 1019: Unidade de Ensino não encontrada (CMEI TIO OSCAR).
+- Linha 1020: Unidade de Ensino não encontrada (CMEI TIO OSCAR).
+- Linha 1021: Unidade de Ensino não encontrada (CMEI TIO OSCAR).
+- Linha 1022: Unidade de Ensino não encontrada (CMEI TIO OSCAR).
+- Linha 1023: Unidade de Ensino não encontrada (CMEI TIO OSCAR).
+- Linha 1024: Unidade de Ensino não encontrada (CMEI TIO OSCAR).
+- Linha 1025: Unidade de Ensino não encontrada (CMEI TIO OSCAR).
+- Linha 1026: Unidade de Ensino não encontrada (CMEI TIO OSCAR).
+- Linha 1027: Unidade de Ensino não encontrada (CMEI TIO OSCAR).
+- Linha 1028: Unidade de Ensino não encontrada (CMEI TIO OSCAR).
+- Linha 1029: Unidade de Ensino não encontrada (CMEI TIO OSCAR).
+- Linha 1030: Unidade de Ensino não encontrada (CMEI TIO ROMÃO).
+- Linha 1031: Unidade de Ensino não encontrada (CMEI VALE DOS SONHOS).
+- Linha 1032: Unidade de Ensino não encontrada (CMEI VALE DOS SONHOS).
+- Linha 1033: Unidade de Ensino não encontrada (CMEI VALE DOS SONHOS).
+- Linha 1034: Unidade de Ensino não encontrada (CMEI VALE DOS SONHOS).
+- Linha 1035: Unidade de Ensino não encontrada (CMEI VALE DOS SONHOS).
+- Linha 1036: Unidade de Ensino não encontrada (CMEI VALE DOS SONHOS).
+- Linha 1037: Unidade de Ensino não encontrada (CMEI VALE DOS SONHOS).
+- Linha 1038: Unidade de Ensino não encontrada (CMEI VALE DOS SONHOS).
+- Linha 1039: Unidade de Ensino não encontrada (CMEI VILA AREIAO).
+- Linha 1040: Unidade de Ensino não encontrada (CMEI VILA FAIÇALVILLE).
+- Linha 1041: Unidade de Ensino não encontrada (CMEI VILA FINSOCIAL I).
+- Linha 1042: Unidade de Ensino não encontrada (CMEI VILA FINSOCIAL I).
+- Linha 1043: Unidade de Ensino não encontrada (CMEI VILA FINSOCIAL I).
+- Linha 1044: Unidade de Ensino não encontrada (CMEI VILA IZAURA).
+- Linha 1045: Unidade de Ensino não encontrada (CMEI VILA IZAURA).
+- Linha 1046: Unidade de Ensino não encontrada (CMEI VILA IZAURA).
+- Linha 1047: Unidade de Ensino não encontrada (CMEI VILA IZAURA).
+- Linha 1048: Unidade de Ensino não encontrada (CMEI VILA IZAURA).
+- Linha 1049: Unidade de Ensino não encontrada (CMEI VILA LEGIONÁRIAS).
+- Linha 1050: Unidade de Ensino não encontrada (CMEI VILA MAUA).
+- Linha 1051: Unidade de Ensino não encontrada (CMEI VILA MAUA).
+- Linha 1052: Unidade de Ensino não encontrada (CMEI VILA MAUA).
+- Linha 1053: Unidade de Ensino não encontrada (CMEI VILA MAUA).
+- Linha 1054: Unidade de Ensino não encontrada (CMEI VILA REDENÇÃO).
+- Linha 1055: Unidade de Ensino não encontrada (CMEI VILA REDENÇÃO).
+- Linha 1056: Unidade de Ensino não encontrada (CMEI VILA REDENÇÃO).
+- Linha 1057: Unidade de Ensino não encontrada (CMEI VILA REDENÇÃO).
+- Linha 1058: Unidade de Ensino não encontrada (CMEI VILA SANTANA).
+- Linha 1059: Unidade de Ensino não encontrada (CMEI VILA SANTANA).
+- Linha 1060: Unidade de Ensino não encontrada (CMEI VILA SANTANA).
+- Linha 1061: Unidade de Ensino não encontrada (CMEI VILA SANTANA).
+- Linha 1062: Unidade de Ensino não encontrada (CMEI VILA SANTANA).
+- Linha 1063: Unidade de Ensino não encontrada (CMEI VILA SANTANA).
+- Linha 1064: Unidade de Ensino não encontrada (CMEI VILA SANTANA).
+- Linha 1065: Unidade de Ensino não encontrada (CMEI VILA SANTANA).
+- Linha 1066: Unidade de Ensino não encontrada (CMEI VILA SANTANA).
+- Linha 1067: Unidade de Ensino não encontrada (CMEI VILA SANTANA).
+- Linha 1068: Unidade de Ensino não encontrada (CMEI VILA SANTANA).
+- Linha 1069: Unidade de Ensino não encontrada (CMEI VILA SANTANA).
+- Linha 1070: Unidade de Ensino não encontrada (CMEI VILA SANTANA).
+- Linha 1071: Unidade de Ensino não encontrada (CMEI VILA SANTANA).
+- Linha 1072: Unidade de Ensino não encontrada (CMEI VILA SANTANA).
+- Linha 1073: Unidade de Ensino não encontrada (CMEI VILA SANTANA).
+- Linha 1074: Unidade de Ensino não encontrada (CMEI VILLAGE ATALAIA).
+- Linha 1075: Unidade de Ensino não encontrada (CMEI VILLAGE ATALAIA).
+- Linha 1076: Unidade de Ensino não encontrada (CMEI VILLAGE ATALAIA).
+- Linha 1077: Unidade de Ensino não encontrada (CMEI VILLAGE ATALAIA).
+- Linha 1078: Unidade de Ensino não encontrada (CMEI VILLAGE ATALAIA).
+- Linha 1079: Unidade de Ensino não encontrada (CMEI VILLAGE ATALAIA).
+- Linha 1080: Unidade de Ensino não encontrada (CMEI VILLAGE ATALAIA).
+- Linha 1081: Unidade de Ensino não encontrada (CMEI VILLAGE ATALAIA).
+- Linha 1082: Unidade de Ensino não encontrada (CMEI VILLAGE ATALAIA).
+- Linha 1083: Unidade de Ensino não encontrada (CMEI VILLAGE ATALAIA).
+- Linha 1084: Unidade de Ensino não encontrada (CMEI VILLAGE ATALAIA).
+- Linha 1085: Unidade de Ensino não encontrada (CMEI VILLAGE ATALAIA).
+- Linha 1086: Unidade de Ensino não encontrada (CMEI VILLAGE ATALAIA).
+- Linha 1087: Unidade de Ensino não encontrada (CMEI VILLAGE ATALAIA).
+- Linha 1088: Unidade de Ensino não encontrada (CMEI VILLAGE ATALAIA).
+- Linha 1089: Unidade de Ensino não encontrada (CMEI VIVER A INFÂNCIA).
+- Linha 1090: Unidade de Ensino não encontrada (CMEI VIVER A INFÂNCIA).
+- Linha 1091: Unidade de Ensino não encontrada (CMEI VIVER A INFÂNCIA).
+- Linha 1092: Unidade de Ensino não encontrada (CMEI VIVER A INFÂNCIA).
+- Linha 1093: Unidade de Ensino não encontrada (CMEI VIVER A INFÂNCIA).
+- Linha 1094: Unidade de Ensino não encontrada (CMEI VIVER A INFÂNCIA).
+- Linha 1095: Unidade de Ensino não encontrada (CMEI VIVER A INFÂNCIA).
+- Linha 1096: Unidade de Ensino não encontrada (CMEI VIVER A INFÂNCIA).
+- Linha 1097: Unidade de Ensino não encontrada (CMEI VIVER A INFÂNCIA).
+- Linha 1098: Unidade de Ensino não encontrada (CMEI VIVER A INFÂNCIA).
+- Linha 1099: Unidade de Ensino não encontrada (CMEI VIVER A INFÂNCIA).
+- Linha 1100: Unidade de Ensino não encontrada (CMEI VIVER A INFÂNCIA).
+- Linha 1101: Unidade de Ensino não encontrada (CMEI VIVER A INFÂNCIA).
+- Linha 1102: Unidade de Ensino não encontrada (CMEI VIVER A INFÂNCIA).
+- Linha 1103: Unidade de Ensino não encontrada (CMEI VIVER A INFÂNCIA).
+- Linha 1104: Unidade de Ensino não encontrada (CMEI VIVER A INFÂNCIA).
+- Linha 1105: Unidade de Ensino não encontrada (CMEI VIVER A INFÂNCIA).
+- Linha 1106: Unidade de Ensino não encontrada (CMEI VIVER A INFÂNCIA).
+- Linha 1164: Turma não encontrada na unidade (EIE1V - COLÉGIO GONÇALVES LEDO).
+- Linha 1165: Turma não encontrada na unidade (EIF2V - COLÉGIO GONÇALVES LEDO).
+- Linha 1166: Turma não encontrada na unidade (EIF2V - COLÉGIO GONÇALVES LEDO).
+- Linha 1167: Unidade de Ensino não encontrada (CRECHE CAETANO FOGLIA).
+- Linha 1168: Unidade de Ensino não encontrada (CRECHE CAETANO FOGLIA).
+- Linha 1169: Unidade de Ensino não encontrada (CRECHE CASA DO CAMINHO).
+- Linha 1170: Unidade de Ensino não encontrada (CRECHE CASA DO CAMINHO).
+- Linha 1171: Unidade de Ensino não encontrada (CRECHE CASA DO CAMINHO).
+- Linha 1172: Unidade de Ensino não encontrada (CRECHE CASA DO CAMINHO).
+- Linha 1173: Unidade de Ensino não encontrada (CRECHE CASA DO CAMINHO).
+- Linha 1174: Unidade de Ensino não encontrada (CRECHE CASA DO CAMINHO).
+- Linha 1175: Unidade de Ensino não encontrada (CRECHE CASA DO CAMINHO).
+- Linha 1176: Unidade de Ensino não encontrada (CRECHE CASA DO CAMINHO).
+- Linha 1177: Unidade de Ensino não encontrada (CRECHE CASA DO CAMINHO).
+- Linha 1178: Unidade de Ensino não encontrada (CRECHE CASA DO CAMINHO).
+- Linha 1179: Unidade de Ensino não encontrada (CRECHE E EDUCANDÁRIO E. RECANTO DE PAZ PAULA PRADO).
+- Linha 1180: Unidade de Ensino não encontrada (CRECHE E EDUCANDÁRIO E. RECANTO DE PAZ PAULA PRADO).
+- Linha 1181: Unidade de Ensino não encontrada (CRECHE E EDUCANDÁRIO E. RECANTO DE PAZ PAULA PRADO).
+- Linha 1182: Unidade de Ensino não encontrada (CRECHE ESPÍRITA MARIA DOLORES).
+- Linha 1183: Unidade de Ensino não encontrada (CRECHE ESPÍRITA MARIA DOLORES).
+- Linha 1184: Unidade de Ensino não encontrada (CRECHE ESPÍRITA MARIA DOLORES).
+- Linha 1185: Unidade de Ensino não encontrada (CRECHE ESPÍRITA MARIA DOLORES).
+- Linha 1186: Unidade de Ensino não encontrada (CRECHE ESPÍRITA MARIA DOLORES).
+- Linha 1187: Unidade de Ensino não encontrada (CRECHE ESPÍRITA MARIA DOLORES).
+- Linha 1188: Unidade de Ensino não encontrada (CRECHE ESPÍRITA MARIA DOLORES).
+- Linha 1189: Unidade de Ensino não encontrada (CRECHE ESPÍRITA MARIA DOLORES).
+- Linha 1190: Unidade de Ensino não encontrada (CRECHE ESPÍRITA MARIA DOLORES).
+- Linha 1191: Unidade de Ensino não encontrada (CRECHE ESPÍRITA MARIA DOLORES).
+- Linha 1192: Unidade de Ensino não encontrada (CRECHE LUIGINA).
+- Linha 1193: Unidade de Ensino não encontrada (CRECHE LUIGINA).
+- Linha 1194: Unidade de Ensino não encontrada (CRECHE LUIGINA).
+- Linha 1195: Unidade de Ensino não encontrada (CRECHE METODISTA).
+- Linha 1196: Unidade de Ensino não encontrada (CRECHE METODISTA).
+- Linha 1197: Unidade de Ensino não encontrada (CRECHE SAO JUDAS TADEU).
+- Linha 1230: Turma não encontrada na unidade (EIE1M - EDUCANDÁRIO ESPÍRITA EURÍPEDES BARSANULFO).
+- Linha 1231: Turma não encontrada na unidade (EIF1M - EDUCANDÁRIO ESPÍRITA EURÍPEDES BARSANULFO).
+- Linha 1232: Turma não encontrada na unidade (EIF1M - EDUCANDÁRIO ESPÍRITA EURÍPEDES BARSANULFO).
+- Linha 1294: Turma não encontrada na unidade (EIF1M - EM AGRIPINA TEIXEIRA MAGALHÃES).
+- Linha 1295: Turma não encontrada na unidade (EIF2V - EM AGRIPINA TEIXEIRA MAGALHÃES).
+- Linha 1296: Turma não encontrada na unidade (EIF2V - EM AGRIPINA TEIXEIRA MAGALHÃES).
+- Linha 1299: Turma não encontrada na unidade (EIE1I - EM ÁGUA BRANCA).
+- Linha 1300: Turma não encontrada na unidade (EIE1I - EM ÁGUA BRANCA).
+- Linha 1301: Turma não encontrada na unidade (EIE2I - EM ÁGUA BRANCA).
+- Linha 1302: Turma não encontrada na unidade (EIE2I - EM ÁGUA BRANCA).
+- Linha 1303: Turma não encontrada na unidade (EIE3I - EM ÁGUA BRANCA).
+- Linha 1304: Turma não encontrada na unidade (EIE3I - EM ÁGUA BRANCA).
+- Linha 1305: Turma não encontrada na unidade (EIE3I - EM ÁGUA BRANCA).
+- Linha 1306: Turma não encontrada na unidade (EIE4I - EM ÁGUA BRANCA).
+- Linha 1307: Turma não encontrada na unidade (EIE4I - EM ÁGUA BRANCA).
+- Linha 1308: Turma não encontrada na unidade (EIF2I - EM ÁGUA BRANCA).
+- Linha 1321: Turma não encontrada na unidade (EIE1V - EM ALICE COUTINHO).
+- Linha 1322: Turma não encontrada na unidade (EIF2V - EM ALICE COUTINHO).
+- Linha 1332: Turma não encontrada na unidade (EIF1I - EM ALONSO DIAS PINHEIRO).
+- Linha 1389: Turma não encontrada na unidade (EIE1V - EM ALTO DO VALE).
+- Linha 1390: Turma não encontrada na unidade (EIF1V - EM ALTO DO VALE).
+- Linha 1391: Turma não encontrada na unidade (EIF1V - EM ALTO DO VALE).
+- Linha 1392: Turma não encontrada na unidade (EIF1V - EM ALTO DO VALE).
+- Linha 1393: Turma não encontrada na unidade (EIF1V - EM ALTO DO VALE).
+- Linha 1394: Turma não encontrada na unidade (EIF1V - EM ALTO DO VALE).
+- Linha 1395: Turma não encontrada na unidade (EIF2V - EM ALTO DO VALE).
+- Linha 1396: Turma não encontrada na unidade (EIF2V - EM ALTO DO VALE).
+- Linha 1452: Turma não encontrada na unidade (EIE1V - EM AMÂNCIO SEIXO DE BRITO).
+- Linha 1453: Turma não encontrada na unidade (EIE1V - EM AMÂNCIO SEIXO DE BRITO).
+- Linha 1454: Turma não encontrada na unidade (EIF1V - EM AMÂNCIO SEIXO DE BRITO).
+- Linha 1455: Turma não encontrada na unidade (EIF2V - EM AMÂNCIO SEIXO DE BRITO).
+- Linha 1456: Turma não encontrada na unidade (EIF2V - EM AMÂNCIO SEIXO DE BRITO).
+- Linha 1457: Turma não encontrada na unidade (EIF3V - EM AMÂNCIO SEIXO DE BRITO).
+- Linha 1458: Turma não encontrada na unidade (EIF4V - EM AMÂNCIO SEIXO DE BRITO).
+- Linha 1459: Turma não encontrada na unidade (EIF4V - EM AMÂNCIO SEIXO DE BRITO).
+- Linha 1460: Turma não encontrada na unidade (EIF4V - EM AMÂNCIO SEIXO DE BRITO).
+- Linha 1519: Turma não encontrada na unidade (EIE1M - EM ANTÔNIO FIDELIS).
+- Linha 1520: Turma não encontrada na unidade (EIE1M - EM ANTÔNIO FIDELIS).
+- Linha 1521: Turma não encontrada na unidade (EIE2V - EM ANTÔNIO FIDELIS).
+- Linha 1522: Turma não encontrada na unidade (EIF1M - EM ANTÔNIO FIDELIS).
+- Linha 1523: Turma não encontrada na unidade (EIF1M - EM ANTÔNIO FIDELIS).
+- Linha 1524: Turma não encontrada na unidade (EIF1M - EM ANTÔNIO FIDELIS).
+- Linha 1525: Turma não encontrada na unidade (EIF2M - EM ANTÔNIO FIDELIS).
+- Linha 1526: Turma não encontrada na unidade (EIF2M - EM ANTÔNIO FIDELIS).
+- Linha 1527: Turma não encontrada na unidade (EIF3V - EM ANTÔNIO FIDELIS).
+- Linha 1528: Turma não encontrada na unidade (EIF3V - EM ANTÔNIO FIDELIS).
+- Linha 1529: Turma não encontrada na unidade (EIF3V - EM ANTÔNIO FIDELIS).
+- Linha 1530: Turma não encontrada na unidade (EIF3V - EM ANTÔNIO FIDELIS).
+- Linha 1531: Turma não encontrada na unidade (EIF3V - EM ANTÔNIO FIDELIS).
+- Linha 1532: Turma não encontrada na unidade (EIF4V - EM ANTÔNIO FIDELIS).
+- Linha 1581: Turma não encontrada na unidade (EIE1V - EM ARÃO FERNANDES DE OLIVEIRA).
+- Linha 1582: Turma não encontrada na unidade (EIE1V - EM ARÃO FERNANDES DE OLIVEIRA).
+- Linha 1583: Turma não encontrada na unidade (EIF1V - EM ARÃO FERNANDES DE OLIVEIRA).
+- Linha 1584: Turma não encontrada na unidade (EIF1V - EM ARÃO FERNANDES DE OLIVEIRA).
+- Linha 1585: Turma não encontrada na unidade (EIF2V - EM ARÃO FERNANDES DE OLIVEIRA).
+- Linha 1586: Turma não encontrada na unidade (EIF2V - EM ARÃO FERNANDES DE OLIVEIRA).
+- Linha 1587: Turma não encontrada na unidade (EIF3V - EM ARÃO FERNANDES DE OLIVEIRA).
+- Linha 1588: Turma não encontrada na unidade (EIF3V - EM ARÃO FERNANDES DE OLIVEIRA).
+- Linha 1613: Turma não encontrada na unidade (EIE1V - EM ARCEBISPO DOM EMMANUEL).
+- Linha 1614: Turma não encontrada na unidade (EIE1V - EM ARCEBISPO DOM EMMANUEL).
+- Linha 1615: Turma não encontrada na unidade (EIE1V - EM ARCEBISPO DOM EMMANUEL).
+- Linha 1616: Turma não encontrada na unidade (EIF1V - EM ARCEBISPO DOM EMMANUEL).
+- Linha 1617: Turma não encontrada na unidade (EIF1V - EM ARCEBISPO DOM EMMANUEL).
+- Linha 1618: Turma não encontrada na unidade (EIF2V - EM ARCEBISPO DOM EMMANUEL).
+- Linha 1646: Turma não encontrada na unidade (EIE1V - EM ARY RIBEIRO VALADÃO FILHO).
+- Linha 1647: Turma não encontrada na unidade (EIF1V - EM ARY RIBEIRO VALADÃO FILHO).
+- Linha 1648: Turma não encontrada na unidade (EIF1V - EM ARY RIBEIRO VALADÃO FILHO).
+- Linha 1649: Turma não encontrada na unidade (EIF2V - EM ARY RIBEIRO VALADÃO FILHO).
+- Linha 1650: Turma não encontrada na unidade (EIF2V - EM ARY RIBEIRO VALADÃO FILHO).
+- Linha 1651: Turma não encontrada na unidade (EIF2V - EM ARY RIBEIRO VALADÃO FILHO).
+- Linha 1652: Turma não encontrada na unidade (EIF3V - EM ARY RIBEIRO VALADÃO FILHO).
+- Linha 1653: Turma não encontrada na unidade (EIF3V - EM ARY RIBEIRO VALADÃO FILHO).
+- Linha 1699: Turma não encontrada na unidade (EIE1V - EM AYRTON SENNA).
+- Linha 1700: Turma não encontrada na unidade (EIF1V - EM AYRTON SENNA).
+- Linha 1701: Turma não encontrada na unidade (EIF1V - EM AYRTON SENNA).
+- Linha 1702: Turma não encontrada na unidade (EIF2V - EM AYRTON SENNA).
+- Linha 1703: Turma não encontrada na unidade (EIF2V - EM AYRTON SENNA).
+- Linha 1704: Turma não encontrada na unidade (EIF3V - EM AYRTON SENNA).
+- Linha 1705: Turma não encontrada na unidade (EIF3V - EM AYRTON SENNA).
+- Linha 1706: Turma não encontrada na unidade (EIF3V - EM AYRTON SENNA).
+- Linha 1707: Turma não encontrada na unidade (EIF4V - EM AYRTON SENNA).
+- Linha 1708: Turma não encontrada na unidade (EIF4V - EM AYRTON SENNA).
+- Linha 1709: Turma não encontrada na unidade (EIF4V - EM AYRTON SENNA).
+- Linha 1710: Turma não encontrada na unidade (EIF4V - EM AYRTON SENNA).
+- Linha 1711: Turma não encontrada na unidade (EIF5V - EM AYRTON SENNA).
+- Linha 1712: Turma não encontrada na unidade (EIF5V - EM AYRTON SENNA).
+- Linha 1713: Turma não encontrada na unidade (EIF5V - EM AYRTON SENNA).
+- Linha 1714: Turma não encontrada na unidade (EIF6V - EM AYRTON SENNA).
+- Linha 1715: Turma não encontrada na unidade (EIF6V - EM AYRTON SENNA).
+- Linha 1716: Turma não encontrada na unidade (EIF6V - EM AYRTON SENNA).
+- Linha 1717: Turma não encontrada na unidade (EIF6V - EM AYRTON SENNA).
+- Linha 1748: Turma não encontrada na unidade (EIE1V - EM BALNEÁRIO MEIA PONTE).
+- Linha 1749: Turma não encontrada na unidade (EIE3V - EM BALNEÁRIO MEIA PONTE).
+- Linha 1750: Turma não encontrada na unidade (EIF2M - EM BALNEÁRIO MEIA PONTE).
+- Linha 1751: Turma não encontrada na unidade (EIF2M - EM BALNEÁRIO MEIA PONTE).
+- Linha 1752: Turma não encontrada na unidade (EIF3M - EM BALNEÁRIO MEIA PONTE).
+- Linha 1800: Turma não encontrada na unidade (EIE1V - EM BARBARA DE SOUZA MORAIS).
+- Linha 1801: Turma não encontrada na unidade (EIE2V - EM BARBARA DE SOUZA MORAIS).
+- Linha 1802: Turma não encontrada na unidade (EIE2V - EM BARBARA DE SOUZA MORAIS).
+- Linha 1803: Turma não encontrada na unidade (EIF1V - EM BARBARA DE SOUZA MORAIS).
+- Linha 1835: Turma não encontrada na unidade (EIE1M - EM BENEDITA LUÍZA DA SILVA DE MIRANDA).
+- Linha 1836: Turma não encontrada na unidade (EIE2V - EM BENEDITA LUÍZA DA SILVA DE MIRANDA).
+- Linha 1837: Turma não encontrada na unidade (EIE2V - EM BENEDITA LUÍZA DA SILVA DE MIRANDA).
+- Linha 1838: Turma não encontrada na unidade (EIE2V - EM BENEDITA LUÍZA DA SILVA DE MIRANDA).
+- Linha 1839: Turma não encontrada na unidade (EIF1M - EM BENEDITA LUÍZA DA SILVA DE MIRANDA).
+- Linha 1840: Turma não encontrada na unidade (EIF5V - EM BENEDITA LUÍZA DA SILVA DE MIRANDA).
+- Linha 1841: Turma não encontrada na unidade (EIF5V - EM BENEDITA LUÍZA DA SILVA DE MIRANDA).
+- Linha 1842: Turma não encontrada na unidade (EIF5V - EM BENEDITA LUÍZA DA SILVA DE MIRANDA).
+- Linha 1843: Turma não encontrada na unidade (EIF6V - EM BENEDITA LUÍZA DA SILVA DE MIRANDA).
+- Linha 1844: Turma não encontrada na unidade (EIF6V - EM BENEDITA LUÍZA DA SILVA DE MIRANDA).
+- Linha 1845: Turma não encontrada na unidade (EIF7V - EM BENEDITA LUÍZA DA SILVA DE MIRANDA).
+- Linha 1916: Turma não encontrada na unidade (EIE1V - EM BERNARDO ÉLIS).
+- Linha 1917: Turma não encontrada na unidade (EIE1V - EM BERNARDO ÉLIS).
+- Linha 1918: Turma não encontrada na unidade (EIF1V - EM BERNARDO ÉLIS).
+- Linha 1943: Turma não encontrada na unidade (EIF1V - EM BISPO ABIGAIL CARLOS DE ALMEIDA).
+- Linha 1944: Turma não encontrada na unidade (EIF1V - EM BISPO ABIGAIL CARLOS DE ALMEIDA).
+- Linha 1945: Turma não encontrada na unidade (EIF3M - EM BISPO ABIGAIL CARLOS DE ALMEIDA).
+- Linha 1946: Turma não encontrada na unidade (EIF3M - EM BISPO ABIGAIL CARLOS DE ALMEIDA).
+- Linha 2002: Turma não encontrada na unidade (EIE1V - EM BOM JESUS).
+- Linha 2003: Turma não encontrada na unidade (EIE2V - EM BOM JESUS).
+- Linha 2004: Turma não encontrada na unidade (EIE4V - EM BOM JESUS).
+- Linha 2005: Turma não encontrada na unidade (EIF1V - EM BOM JESUS).
+- Linha 2006: Turma não encontrada na unidade (EIF1V - EM BOM JESUS).
+- Linha 2007: Turma não encontrada na unidade (EIF2V - EM BOM JESUS).
+- Linha 2008: Turma não encontrada na unidade (EIF2V - EM BOM JESUS).
+- Linha 2009: Turma não encontrada na unidade (EIF3V - EM BOM JESUS).
+- Linha 2010: Turma não encontrada na unidade (EIF4V - EM BOM JESUS).
+- Linha 2046: Turma não encontrada na unidade (EFEJA-1ºS1ºPAN - EM BRICE FRANCISCO CORDEIRO).
+- Linha 2047: Turma não encontrada na unidade (EIF1V - EM BRICE FRANCISCO CORDEIRO).
+- Linha 2048: Turma não encontrada na unidade (EIF1V - EM BRICE FRANCISCO CORDEIRO).
+- Linha 2049: Turma não encontrada na unidade (EIF1V - EM BRICE FRANCISCO CORDEIRO).
+- Linha 2050: Turma não encontrada na unidade (EIF1V - EM BRICE FRANCISCO CORDEIRO).
+- Linha 2051: Turma não encontrada na unidade (EIF1V - EM BRICE FRANCISCO CORDEIRO).
+- Linha 2052: Turma não encontrada na unidade (EIF2V - EM BRICE FRANCISCO CORDEIRO).
+- Linha 2053: Turma não encontrada na unidade (EIF2V - EM BRICE FRANCISCO CORDEIRO).
+- Linha 2054: Turma não encontrada na unidade (EIF3V - EM BRICE FRANCISCO CORDEIRO).
+- Linha 2140: Turma não encontrada na unidade (EIE1V - EM BUENA VISTA).
+- Linha 2141: Turma não encontrada na unidade (EIF1V - EM BUENA VISTA).
+- Linha 2142: Turma não encontrada na unidade (EIF1V - EM BUENA VISTA).
+- Linha 2143: Turma não encontrada na unidade (EIF2V - EM BUENA VISTA).
+- Linha 2144: Turma não encontrada na unidade (EIF2V - EM BUENA VISTA).
+- Linha 2145: Turma não encontrada na unidade (EIF3V - EM BUENA VISTA).
+- Linha 2146: Turma não encontrada na unidade (EIF3V - EM BUENA VISTA).
+- Linha 2147: Turma não encontrada na unidade (EIF3V - EM BUENA VISTA).
+- Linha 2148: Turma não encontrada na unidade (EIF4V - EM BUENA VISTA).
+- Linha 2149: Turma não encontrada na unidade (EIF5V - EM BUENA VISTA).
+- Linha 2150: Turma não encontrada na unidade (EIF5V - EM BUENA VISTA).
+- Linha 2197: Turma não encontrada na unidade (EIE1V - EM CASTORINA BITTENCOURT ALVES).
+- Linha 2198: Turma não encontrada na unidade (EIE1V - EM CASTORINA BITTENCOURT ALVES).
+- Linha 2199: Turma não encontrada na unidade (EIF1V - EM CASTORINA BITTENCOURT ALVES).
+- Linha 2200: Turma não encontrada na unidade (EIF3V - EM CASTORINA BITTENCOURT ALVES).
+- Linha 2201: Turma não encontrada na unidade (EIF3V - EM CASTORINA BITTENCOURT ALVES).
+- Linha 2306: Turma não encontrada na unidade (EIE1V - EM CÉSAR DA CUNHA BASTOS).
+- Linha 2307: Turma não encontrada na unidade (EIE1V - EM CÉSAR DA CUNHA BASTOS).
+- Linha 2308: Turma não encontrada na unidade (EIEF1V - EM CÉSAR DA CUNHA BASTOS).
+- Linha 2309: Turma não encontrada na unidade (EIF1V - EM CÉSAR DA CUNHA BASTOS).
+- Linha 2310: Turma não encontrada na unidade (EIF1V - EM CÉSAR DA CUNHA BASTOS).
+- Linha 2311: Turma não encontrada na unidade (EIF1V - EM CÉSAR DA CUNHA BASTOS).
+- Linha 2312: Turma não encontrada na unidade (EIF1V - EM CÉSAR DA CUNHA BASTOS).
+- Linha 2313: Turma não encontrada na unidade (EIF2V - EM CÉSAR DA CUNHA BASTOS).
+- Linha 2314: Turma não encontrada na unidade (EIF2V - EM CÉSAR DA CUNHA BASTOS).
+- Linha 2315: Turma não encontrada na unidade (EIF2V - EM CÉSAR DA CUNHA BASTOS).
+- Linha 2316: Turma não encontrada na unidade (EIF2V - EM CÉSAR DA CUNHA BASTOS).
+- Linha 2407: Turma não encontrada na unidade (EIF1V - EM D. ANGELINA PUCCI LIMONGI).
+- Linha 2408: Turma não encontrada na unidade (EIF1V - EM D. ANGELINA PUCCI LIMONGI).
+- Linha 2409: Turma não encontrada na unidade (EIF1V - EM D. ANGELINA PUCCI LIMONGI).
+- Linha 2410: Turma não encontrada na unidade (EIF2V - EM D. ANGELINA PUCCI LIMONGI).
+- Linha 2411: Turma não encontrada na unidade (EIF2V - EM D. ANGELINA PUCCI LIMONGI).
+- Linha 2412: Turma não encontrada na unidade (EIF2V - EM D. ANGELINA PUCCI LIMONGI).
+- Linha 2413: Turma não encontrada na unidade (EIF2V - EM D. ANGELINA PUCCI LIMONGI).
+- Linha 2459: Turma não encontrada na unidade (EIF1I - EM DE TEMPO INTEGRAL JARDIM NOVO MUNDO).
+- Linha 2460: Turma não encontrada na unidade (EIF2I - EM DE TEMPO INTEGRAL JARDIM NOVO MUNDO).
+- Linha 2629: Turma não encontrada na unidade (EIE2V - EM DEPUTADO JAMEL CECÍLIO).
+- Linha 2630: Turma não encontrada na unidade (EIF1M - EM DEPUTADO JAMEL CECÍLIO).
+- Linha 2631: Turma não encontrada na unidade (EIF2V - EM DEPUTADO JAMEL CECÍLIO).
+- Linha 2632: Turma não encontrada na unidade (EIF2V - EM DEPUTADO JAMEL CECÍLIO).
+- Linha 2633: Turma não encontrada na unidade (EIF3V - EM DEPUTADO JAMEL CECÍLIO).
+- Linha 2634: Turma não encontrada na unidade (EIF3V - EM DEPUTADO JAMEL CECÍLIO).
+- Linha 2693: Turma não encontrada na unidade (EIE1V - EM DOM FERNANDO GOMES DOS SANTOS).
+- Linha 2694: Turma não encontrada na unidade (EIE1V - EM DOM FERNANDO GOMES DOS SANTOS).
+- Linha 2744: Turma não encontrada na unidade (EIF1I - EM DONA BELINHA).
+- Linha 2745: Turma não encontrada na unidade (EIF1I - EM DONA BELINHA).
+- Linha 2746: Turma não encontrada na unidade (EIF1I - EM DONA BELINHA).
+- Linha 2784: Turma não encontrada na unidade (EIF1V - EM DONA ROSA MARTINS PERIM).
+- Linha 2810: Turma não encontrada na unidade (EIF2V - EM DONATA MONTEIRO DA MOTTA).
+- Linha 2811: Turma não encontrada na unidade (EIF2V - EM DONATA MONTEIRO DA MOTTA).
+- Linha 2812: Turma não encontrada na unidade (EIF3V - EM DONATA MONTEIRO DA MOTTA).
+- Linha 2861: Turma não encontrada na unidade (EIE1V - EM DR. NICANOR DE ASSIS ALBERNAZ).
+- Linha 2862: Turma não encontrada na unidade (EIE2V - EM DR. NICANOR DE ASSIS ALBERNAZ).
+- Linha 2863: Turma não encontrada na unidade (EIE2V - EM DR. NICANOR DE ASSIS ALBERNAZ).
+- Linha 2864: Turma não encontrada na unidade (EIF1V - EM DR. NICANOR DE ASSIS ALBERNAZ).
+- Linha 2894: Turma não encontrada na unidade (EIE1V - EM ELI BRASILIENSE).
+- Linha 2895: Turma não encontrada na unidade (EIF1V - EM ELI BRASILIENSE).
+- Linha 2896: Turma não encontrada na unidade (EIF2V - EM ELI BRASILIENSE).
+- Linha 2990: Turma não encontrada na unidade (EIF1V - EM ENG. ROBINHO MARTINS DE AZEVEDO).
+- Linha 2991: Turma não encontrada na unidade (EIF1V - EM ENG. ROBINHO MARTINS DE AZEVEDO).
+- Linha 2992: Turma não encontrada na unidade (EIF2V - EM ENG. ROBINHO MARTINS DE AZEVEDO).
+- Linha 2993: Turma não encontrada na unidade (EIF2V - EM ENG. ROBINHO MARTINS DE AZEVEDO).
+- Linha 2994: Turma não encontrada na unidade (EIF3V - EM ENG. ROBINHO MARTINS DE AZEVEDO).
+- Linha 2995: Turma não encontrada na unidade (EIF3V - EM ENG. ROBINHO MARTINS DE AZEVEDO).
+- Linha 3057: Turma não encontrada na unidade (EIE1V - EM ENGº ANTÔNIO FÉLIX DA SILVA).
+- Linha 3058: Turma não encontrada na unidade (EIE1V - EM ENGº ANTÔNIO FÉLIX DA SILVA).
+- Linha 3059: Turma não encontrada na unidade (EIE2V - EM ENGº ANTÔNIO FÉLIX DA SILVA).
+- Linha 3060: Turma não encontrada na unidade (EIE2V - EM ENGº ANTÔNIO FÉLIX DA SILVA).
+- Linha 3061: Turma não encontrada na unidade (EIF1V - EM ENGº ANTÔNIO FÉLIX DA SILVA).
+- Linha 3062: Turma não encontrada na unidade (EIF1V - EM ENGº ANTÔNIO FÉLIX DA SILVA).
+- Linha 3063: Turma não encontrada na unidade (EIF1V - EM ENGº ANTÔNIO FÉLIX DA SILVA).
+- Linha 3064: Turma não encontrada na unidade (EIF1V - EM ENGº ANTÔNIO FÉLIX DA SILVA).
+- Linha 3065: Turma não encontrada na unidade (EIF1V - EM ENGº ANTÔNIO FÉLIX DA SILVA).
+- Linha 3144: Turma não encontrada na unidade (EIE1V - EM ERNESTINA LINA MARRA).
+- Linha 3145: Turma não encontrada na unidade (EIEF1V - EM ERNESTINA LINA MARRA).
+- Linha 3146: Turma não encontrada na unidade (EIEF1V - EM ERNESTINA LINA MARRA).
+- Linha 3147: Turma não encontrada na unidade (EIF1V - EM ERNESTINA LINA MARRA).
+- Linha 3148: Turma não encontrada na unidade (EIF1V - EM ERNESTINA LINA MARRA).
+- Linha 3149: Turma não encontrada na unidade (EIF2V - EM ERNESTINA LINA MARRA).
+- Linha 3187: Turma não encontrada na unidade (EIE1V - EM EVA VIEIRA DE ALMEIDA).
+- Linha 3188: Turma não encontrada na unidade (EIE1V - EM EVA VIEIRA DE ALMEIDA).
+- Linha 3189: Turma não encontrada na unidade (EIE2V - EM EVA VIEIRA DE ALMEIDA).
+- Linha 3190: Turma não encontrada na unidade (EIE2V - EM EVA VIEIRA DE ALMEIDA).
+- Linha 3191: Turma não encontrada na unidade (EIF1V - EM EVA VIEIRA DE ALMEIDA).
+- Linha 3192: Turma não encontrada na unidade (EIF1V - EM EVA VIEIRA DE ALMEIDA).
+- Linha 3193: Turma não encontrada na unidade (EIF2V - EM EVA VIEIRA DE ALMEIDA).
+- Linha 3194: Turma não encontrada na unidade (EIF2V - EM EVA VIEIRA DE ALMEIDA).
+- Linha 3252: Turma não encontrada na unidade (EIE1V - EM FRANCISCO MATIAS).
+- Linha 3253: Turma não encontrada na unidade (EIE1V - EM FRANCISCO MATIAS).
+- Linha 3254: Turma não encontrada na unidade (EIE1V - EM FRANCISCO MATIAS).
+- Linha 3255: Turma não encontrada na unidade (EIE1V - EM FRANCISCO MATIAS).
+- Linha 3256: Turma não encontrada na unidade (EIE1V - EM FRANCISCO MATIAS).
+- Linha 3257: Turma não encontrada na unidade (EIF1V - EM FRANCISCO MATIAS).
+- Linha 3258: Turma não encontrada na unidade (EIF1V - EM FRANCISCO MATIAS).
+- Linha 3259: Turma não encontrada na unidade (EIF2V - EM FRANCISCO MATIAS).
+- Linha 3382: Turma não encontrada na unidade (EFEJA1ºS1ºPAN - EM GERALDA DE AQUINO).
+- Linha 3383: Turma não encontrada na unidade (EFEJA1ºS1ºPAN - EM GERALDA DE AQUINO).
+- Linha 3384: Turma não encontrada na unidade (EIF1V - EM GERALDA DE AQUINO).
+- Linha 3482: Turma não encontrada na unidade (EIF1V - EM HEBERT JOSE DE SOUZA).
+- Linha 3483: Turma não encontrada na unidade (EIF2V - EM HEBERT JOSE DE SOUZA).
+- Linha 3533: Turma não encontrada na unidade (EIE1V - EM HONESTINO MONTEIRO GUIMARÃES).
+- Linha 3534: Turma não encontrada na unidade (EIE2V - EM HONESTINO MONTEIRO GUIMARÃES).
+- Linha 3535: Turma não encontrada na unidade (EIF1V - EM HONESTINO MONTEIRO GUIMARÃES).
+- Linha 3536: Turma não encontrada na unidade (EIF1V - EM HONESTINO MONTEIRO GUIMARÃES).
+- Linha 3537: Turma não encontrada na unidade (EIF1V - EM HONESTINO MONTEIRO GUIMARÃES).
+- Linha 3538: Turma não encontrada na unidade (EIF1V - EM HONESTINO MONTEIRO GUIMARÃES).
+- Linha 3539: Turma não encontrada na unidade (EIF2V - EM HONESTINO MONTEIRO GUIMARÃES).
+- Linha 3540: Turma não encontrada na unidade (EIF2V - EM HONESTINO MONTEIRO GUIMARÃES).
+- Linha 3541: Turma não encontrada na unidade (EIF3V - EM HONESTINO MONTEIRO GUIMARÃES).
+- Linha 3542: Turma não encontrada na unidade (EIF3V - EM HONESTINO MONTEIRO GUIMARÃES).
+- Linha 3571: Turma não encontrada na unidade (EIE2V - EM IRMÃ VENERANDA).
+- Linha 3572: Turma não encontrada na unidade (EIF1V - EM IRMÃ VENERANDA).
+- Linha 3573: Turma não encontrada na unidade (EIF2V - EM IRMÃ VENERANDA).
+- Linha 3574: Turma não encontrada na unidade (EIF2V - EM IRMÃ VENERANDA).
+- Linha 3685: Turma não encontrada na unidade (EIE1V - EM IZABEL ESPERIDIÃO JORGE).
+- Linha 3686: Turma não encontrada na unidade (EIF1M - EM IZABEL ESPERIDIÃO JORGE).
+- Linha 3687: Turma não encontrada na unidade (EIF1M - EM IZABEL ESPERIDIÃO JORGE).
+- Linha 3688: Turma não encontrada na unidade (EIF2V - EM IZABEL ESPERIDIÃO JORGE).
+- Linha 3689: Turma não encontrada na unidade (EIF2V - EM IZABEL ESPERIDIÃO JORGE).
+- Linha 3690: Turma não encontrada na unidade (EIF3V - EM IZABEL ESPERIDIÃO JORGE).
+- Linha 3691: Turma não encontrada na unidade (EIF3V - EM IZABEL ESPERIDIÃO JORGE).
+- Linha 3692: Turma não encontrada na unidade (EIF3V - EM IZABEL ESPERIDIÃO JORGE).
+- Linha 3724: Turma não encontrada na unidade (EIE1V - EM JAIME CÂMARA).
+- Linha 3725: Turma não encontrada na unidade (EIF1V - EM JAIME CÂMARA).
+- Linha 3726: Turma não encontrada na unidade (EIF1V - EM JAIME CÂMARA).
+- Linha 3797: Unidade de Ensino não encontrada (EM JARDIM AMÉRICA (ANTIGA ESCOLA JOAQUIM SOBROSA)).
+- Linha 3798: Unidade de Ensino não encontrada (EM JARDIM AMÉRICA (ANTIGA ESCOLA JOAQUIM SOBROSA)).
+- Linha 3799: Unidade de Ensino não encontrada (EM JARDIM AMÉRICA (ANTIGA ESCOLA JOAQUIM SOBROSA)).
+- Linha 3800: Unidade de Ensino não encontrada (EM JARDIM AMÉRICA (ANTIGA ESCOLA JOAQUIM SOBROSA)).
+- Linha 3801: Unidade de Ensino não encontrada (EM JARDIM AMÉRICA (ANTIGA ESCOLA JOAQUIM SOBROSA)).
+- Linha 3802: Unidade de Ensino não encontrada (EM JARDIM AMÉRICA (ANTIGA ESCOLA JOAQUIM SOBROSA)).
+- Linha 3803: Unidade de Ensino não encontrada (EM JARDIM AMÉRICA (ANTIGA ESCOLA JOAQUIM SOBROSA)).
+- Linha 3804: Unidade de Ensino não encontrada (EM JARDIM AMÉRICA (ANTIGA ESCOLA JOAQUIM SOBROSA)).
+- Linha 3805: Unidade de Ensino não encontrada (EM JARDIM AMÉRICA (ANTIGA ESCOLA JOAQUIM SOBROSA)).
+- Linha 3806: Unidade de Ensino não encontrada (EM JARDIM AMÉRICA (ANTIGA ESCOLA JOAQUIM SOBROSA)).
+- Linha 3807: Unidade de Ensino não encontrada (EM JARDIM AMÉRICA (ANTIGA ESCOLA JOAQUIM SOBROSA)).
+- Linha 3808: Unidade de Ensino não encontrada (EM JARDIM AMÉRICA (ANTIGA ESCOLA JOAQUIM SOBROSA)).
+- Linha 3809: Unidade de Ensino não encontrada (EM JARDIM AMÉRICA (ANTIGA ESCOLA JOAQUIM SOBROSA)).
+- Linha 3810: Unidade de Ensino não encontrada (EM JARDIM AMÉRICA (ANTIGA ESCOLA JOAQUIM SOBROSA)).
+- Linha 3811: Unidade de Ensino não encontrada (EM JARDIM AMÉRICA (ANTIGA ESCOLA JOAQUIM SOBROSA)).
+- Linha 3812: Unidade de Ensino não encontrada (EM JARDIM AMÉRICA (ANTIGA ESCOLA JOAQUIM SOBROSA)).
+- Linha 3813: Unidade de Ensino não encontrada (EM JARDIM AMÉRICA (ANTIGA ESCOLA JOAQUIM SOBROSA)).
+- Linha 3814: Unidade de Ensino não encontrada (EM JARDIM AMÉRICA (ANTIGA ESCOLA JOAQUIM SOBROSA)).
+- Linha 3815: Unidade de Ensino não encontrada (EM JARDIM AMÉRICA (ANTIGA ESCOLA JOAQUIM SOBROSA)).
+- Linha 3816: Unidade de Ensino não encontrada (EM JARDIM AMÉRICA (ANTIGA ESCOLA JOAQUIM SOBROSA)).
+- Linha 3817: Unidade de Ensino não encontrada (EM JARDIM AMÉRICA (ANTIGA ESCOLA JOAQUIM SOBROSA)).
+- Linha 3818: Unidade de Ensino não encontrada (EM JARDIM AMÉRICA (ANTIGA ESCOLA JOAQUIM SOBROSA)).
+- Linha 3819: Unidade de Ensino não encontrada (EM JARDIM AMÉRICA (ANTIGA ESCOLA JOAQUIM SOBROSA)).
+- Linha 3820: Unidade de Ensino não encontrada (EM JARDIM AMÉRICA (ANTIGA ESCOLA JOAQUIM SOBROSA)).
+- Linha 3821: Unidade de Ensino não encontrada (EM JARDIM AMÉRICA (ANTIGA ESCOLA JOAQUIM SOBROSA)).
+- Linha 3822: Unidade de Ensino não encontrada (EM JARDIM AMÉRICA (ANTIGA ESCOLA JOAQUIM SOBROSA)).
+- Linha 3823: Unidade de Ensino não encontrada (EM JARDIM AMÉRICA (ANTIGA ESCOLA JOAQUIM SOBROSA)).
+- Linha 3824: Unidade de Ensino não encontrada (EM JARDIM AMÉRICA (ANTIGA ESCOLA JOAQUIM SOBROSA)).
+- Linha 3825: Unidade de Ensino não encontrada (EM JARDIM AMÉRICA (ANTIGA ESCOLA JOAQUIM SOBROSA)).
+- Linha 3860: Turma não encontrada na unidade (EIF1V - EM JARDIM ATLÂNTICO).
+- Linha 3861: Turma não encontrada na unidade (EIF1V - EM JARDIM ATLÂNTICO).
+- Linha 3862: Turma não encontrada na unidade (EIF1V - EM JARDIM ATLÂNTICO).
+- Linha 3863: Turma não encontrada na unidade (EIF1V - EM JARDIM ATLÂNTICO).
+- Linha 3894: Turma não encontrada na unidade (EIE1V - EM JARDIM NOVA ESPERANÇA).
+- Linha 3895: Turma não encontrada na unidade (EIE1V - EM JARDIM NOVA ESPERANÇA).
+- Linha 3896: Turma não encontrada na unidade (EIE1V - EM JARDIM NOVA ESPERANÇA).
+- Linha 3897: Turma não encontrada na unidade (EIE1V - EM JARDIM NOVA ESPERANÇA).
+- Linha 3898: Turma não encontrada na unidade (EIE4V - EM JARDIM NOVA ESPERANÇA).
+- Linha 3899: Turma não encontrada na unidade (EIE5V - EM JARDIM NOVA ESPERANÇA).
+- Linha 3900: Turma não encontrada na unidade (EIF1V - EM JARDIM NOVA ESPERANÇA).
+- Linha 3901: Turma não encontrada na unidade (EIF3V - EM JARDIM NOVA ESPERANÇA).
+- Linha 3902: Turma não encontrada na unidade (EIF4V - EM JARDIM NOVA ESPERANÇA).
+- Linha 3903: Turma não encontrada na unidade (EIF5V - EM JARDIM NOVA ESPERANÇA).
+- Linha 3904: Turma não encontrada na unidade (EIF5V - EM JARDIM NOVA ESPERANÇA).
+- Linha 3905: Turma não encontrada na unidade (EIF5V - EM JARDIM NOVA ESPERANÇA).
+- Linha 3906: Turma não encontrada na unidade (EIF5V - EM JARDIM NOVA ESPERANÇA).
+- Linha 3969: Turma não encontrada na unidade (EFEJA-1ºS1ºP2ºP3ºPAN - EM JESUÍNA DE ABREU).
+- Linha 3970: Turma não encontrada na unidade (EIE1V - EM JESUÍNA DE ABREU).
+- Linha 3971: Turma não encontrada na unidade (EIE1V - EM JESUÍNA DE ABREU).
+- Linha 3972: Turma não encontrada na unidade (EIF1V - EM JESUÍNA DE ABREU).
+- Linha 3973: Turma não encontrada na unidade (EIF2V - EM JESUÍNA DE ABREU).
+- Linha 3974: Turma não encontrada na unidade (EIF2V - EM JESUÍNA DE ABREU).
+- Linha 3975: Turma não encontrada na unidade (EIF2V - EM JESUÍNA DE ABREU).
+- Linha 4046: Turma não encontrada na unidade (EIF1V - EM JOÃO ALVES DE QUEIROZ).
+- Linha 4047: Turma não encontrada na unidade (EIF1V - EM JOÃO ALVES DE QUEIROZ).
+- Linha 4048: Turma não encontrada na unidade (EIF2V - EM JOÃO ALVES DE QUEIROZ).
+- Linha 4049: Turma não encontrada na unidade (EIF2V - EM JOÃO ALVES DE QUEIROZ).
+- Linha 4089: Turma não encontrada na unidade (EIE1V - EM JOÃO BRAZ).
+- Linha 4090: Turma não encontrada na unidade (EIE1V - EM JOÃO BRAZ).
+- Linha 4091: Turma não encontrada na unidade (EIF1V - EM JOÃO BRAZ).
+- Linha 4092: Turma não encontrada na unidade (EIF1V - EM JOÃO BRAZ).
+- Linha 4093: Turma não encontrada na unidade (EIF1V - EM JOÃO BRAZ).
+- Linha 4094: Turma não encontrada na unidade (EIF1V - EM JOÃO BRAZ).
+- Linha 4095: Turma não encontrada na unidade (EIF1V - EM JOÃO BRAZ).
+- Linha 4096: Turma não encontrada na unidade (EIF2V - EM JOÃO BRAZ).
+- Linha 4097: Turma não encontrada na unidade (EIF2V - EM JOÃO BRAZ).
+- Linha 4098: Turma não encontrada na unidade (EIF3V - EM JOÃO BRAZ).
+- Linha 4125: Turma não encontrada na unidade (EIF1V - EM JOÃO DE PAULA TEIXEIRA).
+- Linha 4126: Turma não encontrada na unidade (EIF1V - EM JOÃO DE PAULA TEIXEIRA).
+- Linha 4127: Turma não encontrada na unidade (EIF1V - EM JOÃO DE PAULA TEIXEIRA).
+- Linha 4247: Turma não encontrada na unidade (EIE1V - EM JOEL MARCELINO DE OLIVEIRA).
+- Linha 4248: Turma não encontrada na unidade (EIE1V - EM JOEL MARCELINO DE OLIVEIRA).
+- Linha 4249: Turma não encontrada na unidade (EIE2V - EM JOEL MARCELINO DE OLIVEIRA).
+- Linha 4250: Turma não encontrada na unidade (EIF1V - EM JOEL MARCELINO DE OLIVEIRA).
+- Linha 4251: Turma não encontrada na unidade (EIF1V - EM JOEL MARCELINO DE OLIVEIRA).
+- Linha 4252: Turma não encontrada na unidade (EIF2V - EM JOEL MARCELINO DE OLIVEIRA).
+- Linha 4253: Turma não encontrada na unidade (EIF2V - EM JOEL MARCELINO DE OLIVEIRA).
+- Linha 4272: Turma não encontrada na unidade (EFEJA-1ºS1ºP2ºP3ºPAN - EM JOSÉ ALVES VILA NOVA).
+- Linha 4273: Turma não encontrada na unidade (EIF1V - EM JOSÉ ALVES VILA NOVA).
+- Linha 4287: Turma não encontrada na unidade (EIE1I - EM JOSÉ CARLOS PIMENTA).
+- Linha 4288: Turma não encontrada na unidade (EIF1I - EM JOSÉ CARLOS PIMENTA).
+- Linha 4289: Turma não encontrada na unidade (EIF1I - EM JOSÉ CARLOS PIMENTA).
+- Linha 4328: Turma não encontrada na unidade (EIF1V - EM LAURICIO PEDRO RASMUSSEM).
+- Linha 4329: Turma não encontrada na unidade (EIF2V - EM LAURICIO PEDRO RASMUSSEM).
+- Linha 4362: Turma não encontrada na unidade (EIF1V - EM LAURINDO SOBREIRA DO AMARAL).
+- Linha 4363: Turma não encontrada na unidade (EIF2V - EM LAURINDO SOBREIRA DO AMARAL).
+- Linha 4427: Turma não encontrada na unidade (EIE1V - EM LIONS CLUBE BANDEIRANTES).
+- Linha 4428: Turma não encontrada na unidade (EIF1V - EM LIONS CLUBE BANDEIRANTES).
+- Linha 4429: Turma não encontrada na unidade (EIF2V - EM LIONS CLUBE BANDEIRANTES).
+- Linha 4498: Turma não encontrada na unidade (EIF1M - EM LORENA PARK).
+- Linha 4499: Turma não encontrada na unidade (EIF2M - EM LORENA PARK).
+- Linha 4500: Turma não encontrada na unidade (EIF2M - EM LORENA PARK).
+- Linha 4501: Turma não encontrada na unidade (EIF2M - EM LORENA PARK).
+- Linha 4502: Turma não encontrada na unidade (EIF2M - EM LORENA PARK).
+- Linha 4503: Turma não encontrada na unidade (EIF3V - EM LORENA PARK).
+- Linha 4504: Turma não encontrada na unidade (EIF3V - EM LORENA PARK).
+- Linha 4505: Turma não encontrada na unidade (EIF3V - EM LORENA PARK).
+- Linha 4506: Turma não encontrada na unidade (EIF3V - EM LORENA PARK).
+- Linha 4507: Turma não encontrada na unidade (EIF3V - EM LORENA PARK).
+- Linha 4508: Turma não encontrada na unidade (EIF3V - EM LORENA PARK).
+- Linha 4509: Turma não encontrada na unidade (EIF4V - EM LORENA PARK).
+- Linha 4510: Turma não encontrada na unidade (EIF4V - EM LORENA PARK).
+- Linha 4570: Turma não encontrada na unidade (EID2V-EXT - EM LUZIA DE SOUZA FIUZA).
+- Linha 4571: Turma não encontrada na unidade (EIE2V-EXT - EM LUZIA DE SOUZA FIUZA).
+- Linha 4572: Turma não encontrada na unidade (EIF1M-EXT - EM LUZIA DE SOUZA FIUZA).
+- Linha 4573: Turma não encontrada na unidade (EIF1M-EXT - EM LUZIA DE SOUZA FIUZA).
+- Linha 4574: Turma não encontrada na unidade (EIF1V - EM LUZIA DE SOUZA FIUZA).
+- Linha 4575: Turma não encontrada na unidade (EIF1V - EM LUZIA DE SOUZA FIUZA).
+- Linha 4576: Turma não encontrada na unidade (EIF1V - EM LUZIA DE SOUZA FIUZA).
+- Linha 4577: Turma não encontrada na unidade (EIF2V - EM LUZIA DE SOUZA FIUZA).
+- Linha 4578: Turma não encontrada na unidade (EIF2V - EM LUZIA DE SOUZA FIUZA).
+- Linha 4579: Turma não encontrada na unidade (EIF2V - EM LUZIA DE SOUZA FIUZA).
+- Linha 4580: Turma não encontrada na unidade (EIF2V-EXT - EM LUZIA DE SOUZA FIUZA).
+- Linha 4581: Turma não encontrada na unidade (EIF4V - EM LUZIA DE SOUZA FIUZA).
+- Linha 4582: Turma não encontrada na unidade (EIF4V - EM LUZIA DE SOUZA FIUZA).
+- Linha 4615: Turma não encontrada na unidade (EFEJA-1ºS1ºPAN - EM MADRE FRANCISCA).
+- Linha 4616: Turma não encontrada na unidade (EIE1V - EM MADRE FRANCISCA).
+- Linha 4617: Turma não encontrada na unidade (EIF1V - EM MADRE FRANCISCA).
+- Linha 4666: Turma não encontrada na unidade (EIE2V - EM MANOEL JACINTHO COELHO).
+- Linha 4667: Turma não encontrada na unidade (EIF1V - EM MANOEL JACINTHO COELHO).
+- Linha 4668: Turma não encontrada na unidade (EIF1V - EM MANOEL JACINTHO COELHO).
+- Linha 4669: Turma não encontrada na unidade (EIF1V - EM MANOEL JACINTHO COELHO).
+- Linha 4670: Turma não encontrada na unidade (EIF2V - EM MANOEL JACINTHO COELHO).
+- Linha 4671: Turma não encontrada na unidade (EIF2V - EM MANOEL JACINTHO COELHO).
+- Linha 4672: Turma não encontrada na unidade (EIF3V - EM MANOEL JACINTHO COELHO).
+- Linha 4673: Turma não encontrada na unidade (EIF3V - EM MANOEL JACINTHO COELHO).
+- Linha 4674: Turma não encontrada na unidade (EIF3V - EM MANOEL JACINTHO COELHO).
+- Linha 4675: Turma não encontrada na unidade (EIF3V - EM MANOEL JACINTHO COELHO).
+- Linha 4676: Turma não encontrada na unidade (EIF3V - EM MANOEL JACINTHO COELHO).
+- Linha 4699: Turma não encontrada na unidade (EIE1M - EM MANOEL JOSÉ DE OLIVEIRA).
+- Linha 4700: Turma não encontrada na unidade (EIE1M - EM MANOEL JOSÉ DE OLIVEIRA).
+- Linha 4701: Turma não encontrada na unidade (EIE1M - EM MANOEL JOSÉ DE OLIVEIRA).
+- Linha 4702: Turma não encontrada na unidade (EIE3V - EM MANOEL JOSÉ DE OLIVEIRA).
+- Linha 4703: Turma não encontrada na unidade (EIEF2M - EM MANOEL JOSÉ DE OLIVEIRA).
+- Linha 4704: Turma não encontrada na unidade (EIEF2M - EM MANOEL JOSÉ DE OLIVEIRA).
+- Linha 4705: Turma não encontrada na unidade (EIF1M - EM MANOEL JOSÉ DE OLIVEIRA).
+- Linha 4706: Turma não encontrada na unidade (EIF1M - EM MANOEL JOSÉ DE OLIVEIRA).
+- Linha 4707: Turma não encontrada na unidade (EIF2V - EM MANOEL JOSÉ DE OLIVEIRA).
+- Linha 4708: Turma não encontrada na unidade (EIF2V - EM MANOEL JOSÉ DE OLIVEIRA).
+- Linha 4751: Turma não encontrada na unidade (EIF1V - EM MARCOS ANTÔNIO DIAS BATISTA).
+- Linha 4752: Turma não encontrada na unidade (EIF1V - EM MARCOS ANTÔNIO DIAS BATISTA).
+- Linha 4753: Turma não encontrada na unidade (EIF2V - EM MARCOS ANTÔNIO DIAS BATISTA).
+- Linha 4754: Turma não encontrada na unidade (EIF2V - EM MARCOS ANTÔNIO DIAS BATISTA).
+- Linha 4918: Turma não encontrada na unidade (EIE1V - EM MARIA CÂNDIDA FIGUEIREDO).
+- Linha 4919: Turma não encontrada na unidade (EIE2V - EM MARIA CÂNDIDA FIGUEIREDO).
+- Linha 4920: Turma não encontrada na unidade (EIF1M - EM MARIA CÂNDIDA FIGUEIREDO).
+- Linha 4921: Turma não encontrada na unidade (EIF1M - EM MARIA CÂNDIDA FIGUEIREDO).
+- Linha 4922: Turma não encontrada na unidade (EIF1M - EM MARIA CÂNDIDA FIGUEIREDO).
+- Linha 4923: Turma não encontrada na unidade (EIF1M - EM MARIA CÂNDIDA FIGUEIREDO).
+- Linha 4924: Turma não encontrada na unidade (EIF2V - EM MARIA CÂNDIDA FIGUEIREDO).
+- Linha 4925: Turma não encontrada na unidade (EIF2V - EM MARIA CÂNDIDA FIGUEIREDO).
+- Linha 4926: Turma não encontrada na unidade (EIF2V - EM MARIA CÂNDIDA FIGUEIREDO).
+- Linha 4927: Turma não encontrada na unidade (EIF2V - EM MARIA CÂNDIDA FIGUEIREDO).
+- Linha 4928: Turma não encontrada na unidade (EIF3V - EM MARIA CÂNDIDA FIGUEIREDO).
+- Linha 4929: Turma não encontrada na unidade (EIF3V - EM MARIA CÂNDIDA FIGUEIREDO).
+- Linha 4970: Turma não encontrada na unidade (EIE1V - EM MARIA CLARA MACHADO).
+- Linha 4971: Turma não encontrada na unidade (EIE1V - EM MARIA CLARA MACHADO).
+- Linha 4972: Turma não encontrada na unidade (EIEF2V - EM MARIA CLARA MACHADO).
+- Linha 4973: Turma não encontrada na unidade (EIEF2V - EM MARIA CLARA MACHADO).
+- Linha 4974: Turma não encontrada na unidade (EIF1V - EM MARIA CLARA MACHADO).
+- Linha 5018: Turma não encontrada na unidade (EFEJA-1ºS1ºPAN - EM MARIA DA TERRA).
+- Linha 5019: Turma não encontrada na unidade (EIE1V - EM MARIA DA TERRA).
+- Linha 5020: Turma não encontrada na unidade (EIF1V - EM MARIA DA TERRA).
+- Linha 5021: Turma não encontrada na unidade (EIF1V - EM MARIA DA TERRA).
+- Linha 5022: Turma não encontrada na unidade (EIF1V - EM MARIA DA TERRA).
+- Linha 5023: Turma não encontrada na unidade (EIF2V - EM MARIA DA TERRA).
+- Linha 5024: Turma não encontrada na unidade (EIF2V - EM MARIA DA TERRA).
+- Linha 5025: Turma não encontrada na unidade (EIF3V - EM MARIA DA TERRA).
+- Linha 5080: Turma não encontrada na unidade (EIE1V - EM MARIA HELENA BATISTA BRETAS).
+- Linha 5081: Turma não encontrada na unidade (EIE1V - EM MARIA HELENA BATISTA BRETAS).
+- Linha 5082: Turma não encontrada na unidade (EIF1V - EM MARIA HELENA BATISTA BRETAS).
+- Linha 5083: Turma não encontrada na unidade (EIF1V - EM MARIA HELENA BATISTA BRETAS).
+- Linha 5084: Turma não encontrada na unidade (EIF1V - EM MARIA HELENA BATISTA BRETAS).
+- Linha 5085: Turma não encontrada na unidade (EIF2V - EM MARIA HELENA BATISTA BRETAS).
+- Linha 5086: Turma não encontrada na unidade (EIF2V - EM MARIA HELENA BATISTA BRETAS).
+- Linha 5087: Turma não encontrada na unidade (EIF2V - EM MARIA HELENA BATISTA BRETAS).
+- Linha 5088: Turma não encontrada na unidade (EIF2V - EM MARIA HELENA BATISTA BRETAS).
+- Linha 5098: Turma não encontrada na unidade (EIE1M - EM MARIA ODETE AUGUSTA DE BRITO).
+- Linha 5099: Turma não encontrada na unidade (EIE1M - EM MARIA ODETE AUGUSTA DE BRITO).
+- Linha 5100: Turma não encontrada na unidade (EIE3M - EM MARIA ODETE AUGUSTA DE BRITO).
+- Linha 5101: Turma não encontrada na unidade (EIE3M - EM MARIA ODETE AUGUSTA DE BRITO).
+- Linha 5102: Turma não encontrada na unidade (EIE3M - EM MARIA ODETE AUGUSTA DE BRITO).
+- Linha 5103: Turma não encontrada na unidade (EIE4V - EM MARIA ODETE AUGUSTA DE BRITO).
+- Linha 5104: Turma não encontrada na unidade (EIE5V - EM MARIA ODETE AUGUSTA DE BRITO).
+- Linha 5105: Turma não encontrada na unidade (EIF1M - EM MARIA ODETE AUGUSTA DE BRITO).
+- Linha 5106: Turma não encontrada na unidade (EIF1M - EM MARIA ODETE AUGUSTA DE BRITO).
+- Linha 5107: Turma não encontrada na unidade (EIF1M - EM MARIA ODETE AUGUSTA DE BRITO).
+- Linha 5108: Turma não encontrada na unidade (EIF2M - EM MARIA ODETE AUGUSTA DE BRITO).
+- Linha 5109: Turma não encontrada na unidade (EIF2M - EM MARIA ODETE AUGUSTA DE BRITO).
+- Linha 5110: Turma não encontrada na unidade (EIF2M - EM MARIA ODETE AUGUSTA DE BRITO).
+- Linha 5111: Turma não encontrada na unidade (EIF3V - EM MARIA ODETE AUGUSTA DE BRITO).
+- Linha 5112: Turma não encontrada na unidade (EIF4V - EM MARIA ODETE AUGUSTA DE BRITO).
+- Linha 5257: Turma não encontrada na unidade (EIE1V - EM NOSSA SENHORA APARECIDA).
+- Linha 5258: Turma não encontrada na unidade (EIE1V - EM NOSSA SENHORA APARECIDA).
+- Linha 5259: Turma não encontrada na unidade (EIE1V - EM NOSSA SENHORA APARECIDA).
+- Linha 5260: Turma não encontrada na unidade (EIE2V - EM NOSSA SENHORA APARECIDA).
+- Linha 5300: Turma não encontrada na unidade (EIE1V - EM NOSSA SENHORA DA TERRA).
+- Linha 5301: Turma não encontrada na unidade (EIE2V - EM NOSSA SENHORA DA TERRA).
+- Linha 5302: Turma não encontrada na unidade (EIF1V - EM NOSSA SENHORA DA TERRA).
+- Linha 5303: Turma não encontrada na unidade (EIF2V - EM NOSSA SENHORA DA TERRA).
+- Linha 5304: Turma não encontrada na unidade (EIF2V - EM NOSSA SENHORA DA TERRA).
+- Linha 5305: Turma não encontrada na unidade (EIF3V - EM NOSSA SENHORA DA TERRA).
+- Linha 5306: Turma não encontrada na unidade (EIF3V - EM NOSSA SENHORA DA TERRA).
+- Linha 5307: Turma não encontrada na unidade (EIF4V - EM NOSSA SENHORA DA TERRA).
+- Linha 5353: Turma não encontrada na unidade (EIF2V - EM NOVA CONQUISTA).
+- Linha 5437: Turma não encontrada na unidade (EIE1V - EM OLEGÁRIO MOREIRA BORGES).
+- Linha 5438: Turma não encontrada na unidade (EIE1V - EM OLEGÁRIO MOREIRA BORGES).
+- Linha 5439: Turma não encontrada na unidade (EIE1V - EM OLEGÁRIO MOREIRA BORGES).
+- Linha 5440: Turma não encontrada na unidade (EIE2V - EM OLEGÁRIO MOREIRA BORGES).
+- Linha 5441: Turma não encontrada na unidade (EIEF1V - EM OLEGÁRIO MOREIRA BORGES).
+- Linha 5442: Turma não encontrada na unidade (EIEF1V - EM OLEGÁRIO MOREIRA BORGES).
+- Linha 5443: Turma não encontrada na unidade (EIEF1V - EM OLEGÁRIO MOREIRA BORGES).
+- Linha 5444: Turma não encontrada na unidade (EIEF2V - EM OLEGÁRIO MOREIRA BORGES).
+- Linha 5445: Turma não encontrada na unidade (EIF3V - EM OLEGÁRIO MOREIRA BORGES).
+- Linha 5446: Turma não encontrada na unidade (EIF3V - EM OLEGÁRIO MOREIRA BORGES).
+- Linha 5447: Turma não encontrada na unidade (EIF3V - EM OLEGÁRIO MOREIRA BORGES).
+- Linha 5527: Turma não encontrada na unidade (EIE1V - EM PADRE LIMA).
+- Linha 5528: Turma não encontrada na unidade (EIF1V - EM PADRE LIMA).
+- Linha 5529: Turma não encontrada na unidade (EIF2V - EM PADRE LIMA).
+- Linha 5530: Turma não encontrada na unidade (EIF2V - EM PADRE LIMA).
+- Linha 5531: Turma não encontrada na unidade (EIF2V - EM PADRE LIMA).
+- Linha 5555: Turma não encontrada na unidade (EIE1M - EM PADRE PELÁGIO).
+- Linha 5556: Turma não encontrada na unidade (EIE1M - EM PADRE PELÁGIO).
+- Linha 5557: Turma não encontrada na unidade (EIE2V - EM PADRE PELÁGIO).
+- Linha 5558: Turma não encontrada na unidade (EIE2V - EM PADRE PELÁGIO).
+- Linha 5559: Turma não encontrada na unidade (EIF1M - EM PADRE PELÁGIO).
+- Linha 5560: Turma não encontrada na unidade (EIF1M - EM PADRE PELÁGIO).
+- Linha 5561: Turma não encontrada na unidade (EIF1V - EM PADRE PELÁGIO).
+- Linha 5562: Turma não encontrada na unidade (EIF3V - EM PADRE PELÁGIO).
+- Linha 5563: Turma não encontrada na unidade (EIF3V - EM PADRE PELÁGIO).
+- Linha 5570: Turma não encontrada na unidade (EIE1I - EM PADRE ZEZINHO).
+- Linha 5571: Turma não encontrada na unidade (EIE2 - EM PADRE ZEZINHO).
+- Linha 5572: Turma não encontrada na unidade (EIF1I - EM PADRE ZEZINHO).
+- Linha 5573: Turma não encontrada na unidade (EIF1I - EM PADRE ZEZINHO).
+- Linha 5574: Turma não encontrada na unidade (EIF1I - EM PADRE ZEZINHO).
+- Linha 5575: Turma não encontrada na unidade (EIF1I - EM PADRE ZEZINHO).
+- Linha 5576: Turma não encontrada na unidade (EIF2I - EM PADRE ZEZINHO).
+- Linha 5577: Turma não encontrada na unidade (EIF2I - EM PADRE ZEZINHO).
+- Linha 5578: Turma não encontrada na unidade (EIF2I - EM PADRE ZEZINHO).
+- Linha 5579: Turma não encontrada na unidade (EIF2I - EM PADRE ZEZINHO).
+- Linha 5601: Turma não encontrada na unidade (EIF2M - EM PATRICIA RODRIGUES DE PAIVA).
+- Linha 5602: Turma não encontrada na unidade (EIF3V - EM PATRICIA RODRIGUES DE PAIVA).
+- Linha 5603: Turma não encontrada na unidade (EIF4V - EM PATRICIA RODRIGUES DE PAIVA).
+- Linha 5662: Turma não encontrada na unidade (EIE2V - EM PEDRO CIRÍACO DE OLIVEIRA).
+- Linha 5663: Turma não encontrada na unidade (EIE2V - EM PEDRO CIRÍACO DE OLIVEIRA).
+- Linha 5664: Turma não encontrada na unidade (EIE3V - EM PEDRO CIRÍACO DE OLIVEIRA).
+- Linha 5665: Turma não encontrada na unidade (EIF1V - EM PEDRO CIRÍACO DE OLIVEIRA).
+- Linha 5666: Turma não encontrada na unidade (EIF2V - EM PEDRO CIRÍACO DE OLIVEIRA).
+- Linha 5747: Turma não encontrada na unidade (EIE1V - EM PEDRO GOMES DE MENEZES).
+- Linha 5748: Turma não encontrada na unidade (EIE1V - EM PEDRO GOMES DE MENEZES).
+- Linha 5749: Turma não encontrada na unidade (EIE1V - EM PEDRO GOMES DE MENEZES).
+- Linha 5750: Turma não encontrada na unidade (EIF1V - EM PEDRO GOMES DE MENEZES).
+- Linha 5751: Turma não encontrada na unidade (EIF1V - EM PEDRO GOMES DE MENEZES).
+- Linha 5826: Turma não encontrada na unidade (EIE1V - EM PRESIDENTE VARGAS).
+- Linha 5893: Turma não encontrada na unidade (EIE1M - EM PROF. JOSE DECIO FILHO).
+- Linha 5894: Turma não encontrada na unidade (EIE1M - EM PROF. JOSE DECIO FILHO).
+- Linha 5895: Turma não encontrada na unidade (EIE2V - EM PROF. JOSE DECIO FILHO).
+- Linha 5928: Turma não encontrada na unidade (EFEJA-1°S2°PAN - EM PROF. MOACIR MONCLAR BRANDÃO).
+- Linha 5929: Turma não encontrada na unidade (EIF2V - EM PROF. MOACIR MONCLAR BRANDÃO).
+- Linha 5930: Turma não encontrada na unidade (EIF2V - EM PROF. MOACIR MONCLAR BRANDÃO).
+- Linha 5931: Turma não encontrada na unidade (EIF2V - EM PROF. MOACIR MONCLAR BRANDÃO).
+- Linha 5981: Turma não encontrada na unidade (EIE1V - EM PROF. PERCIVAL XAVIER REBELO).
+- Linha 5982: Turma não encontrada na unidade (EIF1V - EM PROF. PERCIVAL XAVIER REBELO).
+- Linha 5983: Turma não encontrada na unidade (EIF1V - EM PROF. PERCIVAL XAVIER REBELO).
+- Linha 6012: Turma não encontrada na unidade (EIE1V - EM PROF. SALMON GOMES FIGUEIREDO).
+- Linha 6013: Turma não encontrada na unidade (EIF1V - EM PROF. SALMON GOMES FIGUEIREDO).
+- Linha 6014: Turma não encontrada na unidade (EIF1V - EM PROF. SALMON GOMES FIGUEIREDO).
+- Linha 6077: Turma não encontrada na unidade (EIE1V - EM PROFª ANTÔNIA MARANHÃO DO AMARAL).
+- Linha 6078: Turma não encontrada na unidade (EIE1V - EM PROFª ANTÔNIA MARANHÃO DO AMARAL).
+- Linha 6079: Turma não encontrada na unidade (EIEF1V - EM PROFª ANTÔNIA MARANHÃO DO AMARAL).
+- Linha 6080: Turma não encontrada na unidade (EIEF1V - EM PROFª ANTÔNIA MARANHÃO DO AMARAL).
+- Linha 6081: Turma não encontrada na unidade (EIEF1V - EM PROFª ANTÔNIA MARANHÃO DO AMARAL).
+- Linha 6082: Turma não encontrada na unidade (EIF1V - EM PROFª ANTÔNIA MARANHÃO DO AMARAL).
+- Linha 6083: Turma não encontrada na unidade (EIF1V - EM PROFª ANTÔNIA MARANHÃO DO AMARAL).
+- Linha 6084: Turma não encontrada na unidade (EIF2V - EM PROFª ANTÔNIA MARANHÃO DO AMARAL).
+- Linha 6147: Turma não encontrada na unidade (EIF2V - EM PROFª DEUSHAYDES RODRIGUES DE OLIVEIRA).
+- Linha 6175: Turma não encontrada na unidade (EIE1V - EM PROFª EDNA DE ROURE).
+- Linha 6176: Turma não encontrada na unidade (EIEF1M - EM PROFª EDNA DE ROURE).
+- Linha 6177: Turma não encontrada na unidade (EIEF1M - EM PROFª EDNA DE ROURE).
+- Linha 6178: Turma não encontrada na unidade (EIF2M - EM PROFª EDNA DE ROURE).
+- Linha 6179: Turma não encontrada na unidade (EIF3V - EM PROFª EDNA DE ROURE).
+- Linha 6180: Turma não encontrada na unidade (EIF3V - EM PROFª EDNA DE ROURE).
+- Linha 6258: Turma não encontrada na unidade (EIE1V - EM PROFESSOR ARISTOCLIDES TEIXEIRA).
+- Linha 6259: Turma não encontrada na unidade (EIF1V - EM PROFESSOR ARISTOCLIDES TEIXEIRA).
+- Linha 6260: Turma não encontrada na unidade (EIF1V - EM PROFESSOR ARISTOCLIDES TEIXEIRA).
+- Linha 6325: Turma não encontrada na unidade (EIE1V - EM PROFESSOR NADAL SFREDO).
+- Linha 6326: Turma não encontrada na unidade (EIF1V - EM PROFESSOR NADAL SFREDO).
+- Linha 6327: Turma não encontrada na unidade (EIF1V - EM PROFESSOR NADAL SFREDO).
+- Linha 6328: Turma não encontrada na unidade (EIF2V - EM PROFESSOR NADAL SFREDO).
+- Linha 6329: Turma não encontrada na unidade (EIF3V - EM PROFESSOR NADAL SFREDO).
+- Linha 6330: Turma não encontrada na unidade (EIF3V - EM PROFESSOR NADAL SFREDO).
+- Linha 6372: Turma não encontrada na unidade (EIF1V - EM PROFESSOR PAULO FREIRE).
+- Linha 6373: Turma não encontrada na unidade (EIF1V - EM PROFESSOR PAULO FREIRE).
+- Linha 6374: Turma não encontrada na unidade (EIF2V - EM PROFESSOR PAULO FREIRE).
+- Linha 6375: Turma não encontrada na unidade (EIF2V - EM PROFESSOR PAULO FREIRE).
+- Linha 6376: Turma não encontrada na unidade (EIF2V - EM PROFESSOR PAULO FREIRE).
+- Linha 6377: Turma não encontrada na unidade (EIF3V - EM PROFESSOR PAULO FREIRE).
+- Linha 6482: Turma não encontrada na unidade (EIF1I - EM PROFESSORA AMÉLIA FERNANDES MARTINS).
+- Linha 6483: Turma não encontrada na unidade (EIF1I - EM PROFESSORA AMÉLIA FERNANDES MARTINS).
+- Linha 6484: Turma não encontrada na unidade (EIF2I - EM PROFESSORA AMÉLIA FERNANDES MARTINS).
+- Linha 6485: Turma não encontrada na unidade (EIF2I - EM PROFESSORA AMÉLIA FERNANDES MARTINS).
+- Linha 6486: Turma não encontrada na unidade (EIF3I - EM PROFESSORA AMÉLIA FERNANDES MARTINS).
+- Linha 6487: Turma não encontrada na unidade (EIF3I - EM PROFESSORA AMÉLIA FERNANDES MARTINS).
+- Linha 6508: Turma não encontrada na unidade (EIE2V - EM PROFESSORA ANNA MARIA MELINI).
+- Linha 6509: Turma não encontrada na unidade (EIEF1M - EM PROFESSORA ANNA MARIA MELINI).
+- Linha 6510: Turma não encontrada na unidade (EIEF1M - EM PROFESSORA ANNA MARIA MELINI).
+- Linha 6511: Turma não encontrada na unidade (EIEF1M - EM PROFESSORA ANNA MARIA MELINI).
+- Linha 6512: Turma não encontrada na unidade (EIF1M - EM PROFESSORA ANNA MARIA MELINI).
+- Linha 6513: Turma não encontrada na unidade (EIF1M - EM PROFESSORA ANNA MARIA MELINI).
+- Linha 6514: Turma não encontrada na unidade (EIF1M - EM PROFESSORA ANNA MARIA MELINI).
+- Linha 6515: Turma não encontrada na unidade (EIF1M - EM PROFESSORA ANNA MARIA MELINI).
+- Linha 6516: Turma não encontrada na unidade (EIF2V - EM PROFESSORA ANNA MARIA MELINI).
+- Linha 6517: Turma não encontrada na unidade (EIF2V - EM PROFESSORA ANNA MARIA MELINI).
+- Linha 6518: Turma não encontrada na unidade (EIF2V - EM PROFESSORA ANNA MARIA MELINI).
+- Linha 6519: Turma não encontrada na unidade (EIF3V - EM PROFESSORA ANNA MARIA MELINI).
+- Linha 6552: Turma não encontrada na unidade (EIF1V - EM PROFESSORA CLEONICE MONTEIRO WOLNEY).
+- Linha 6553: Turma não encontrada na unidade (EIF1V - EM PROFESSORA CLEONICE MONTEIRO WOLNEY).
+- Linha 6554: Turma não encontrada na unidade (EIF1V - EM PROFESSORA CLEONICE MONTEIRO WOLNEY).
+- Linha 6555: Turma não encontrada na unidade (EIF1V - EM PROFESSORA CLEONICE MONTEIRO WOLNEY).
+- Linha 6605: Turma não encontrada na unidade (EIF1V - EM PROFESSORA D'ALKA LELES).
+- Linha 6606: Turma não encontrada na unidade (EIF2V - EM PROFESSORA D'ALKA LELES).
+- Linha 6607: Turma não encontrada na unidade (EIF2V - EM PROFESSORA D'ALKA LELES).
+- Linha 6608: Turma não encontrada na unidade (EIF3V - EM PROFESSORA D'ALKA LELES).
+- Linha 6609: Turma não encontrada na unidade (EIF3V - EM PROFESSORA D'ALKA LELES).
+- Linha 6749: Turma não encontrada na unidade (EFEJA-1ºS1ºP2ºP3ºPAMEXT - EM PROFESSORA LEONÍSIA NAVES DE ALMEIDA).
+- Linha 6750: Turma não encontrada na unidade (EIF1V - EM PROFESSORA LEONÍSIA NAVES DE ALMEIDA).
+- Linha 6751: Turma não encontrada na unidade (EIF2V - EM PROFESSORA LEONÍSIA NAVES DE ALMEIDA).
+- Linha 6752: Turma não encontrada na unidade (EIF2V - EM PROFESSORA LEONÍSIA NAVES DE ALMEIDA).
+- Linha 6753: Turma não encontrada na unidade (EIF3V - EM PROFESSORA LEONÍSIA NAVES DE ALMEIDA).
+- Linha 6754: Turma não encontrada na unidade (EIF3V - EM PROFESSORA LEONÍSIA NAVES DE ALMEIDA).
+- Linha 6776: Turma não encontrada na unidade (EIE1I - EM PROFESSORA LOUSINHA).
+- Linha 6777: Turma não encontrada na unidade (EIE1I - EM PROFESSORA LOUSINHA).
+- Linha 6778: Turma não encontrada na unidade (EIE2I - EM PROFESSORA LOUSINHA).
+- Linha 6779: Turma não encontrada na unidade (EIE2I - EM PROFESSORA LOUSINHA).
+- Linha 6780: Turma não encontrada na unidade (EIE2I - EM PROFESSORA LOUSINHA).
+- Linha 6781: Turma não encontrada na unidade (EIE2I - EM PROFESSORA LOUSINHA).
+- Linha 6782: Turma não encontrada na unidade (EIF1I - EM PROFESSORA LOUSINHA).
+- Linha 6783: Turma não encontrada na unidade (EIF1I - EM PROFESSORA LOUSINHA).
+- Linha 6784: Turma não encontrada na unidade (EIF2I - EM PROFESSORA LOUSINHA).
+- Linha 6785: Turma não encontrada na unidade (EIF2I - EM PROFESSORA LOUSINHA).
+- Linha 6786: Turma não encontrada na unidade (EIF2I - EM PROFESSORA LOUSINHA).
+- Linha 6787: Turma não encontrada na unidade (EIF2I - EM PROFESSORA LOUSINHA).
+- Linha 6788: Turma não encontrada na unidade (EIF3I - EM PROFESSORA LOUSINHA).
+- Linha 6789: Turma não encontrada na unidade (EIF3I - EM PROFESSORA LOUSINHA).
+- Linha 6790: Turma não encontrada na unidade (EIF3I - EM PROFESSORA LOUSINHA).
+- Linha 6871: Turma não encontrada na unidade (EIEF1V - EM PROFESSORA MARÍLIA CARNEIRO AZEVEDO DIAS).
+- Linha 6872: Turma não encontrada na unidade (EIEF1V - EM PROFESSORA MARÍLIA CARNEIRO AZEVEDO DIAS).
+- Linha 6873: Turma não encontrada na unidade (EIEF2V - EM PROFESSORA MARÍLIA CARNEIRO AZEVEDO DIAS).
+- Linha 6925: Turma não encontrada na unidade (EIE1V - EM PROFESSORA NARA DO CARMO REZENDE AMORIM).
+- Linha 6926: Turma não encontrada na unidade (EIE2V - EM PROFESSORA NARA DO CARMO REZENDE AMORIM).
+- Linha 6927: Turma não encontrada na unidade (EIE2V - EM PROFESSORA NARA DO CARMO REZENDE AMORIM).
+- Linha 6928: Turma não encontrada na unidade (EIE2V - EM PROFESSORA NARA DO CARMO REZENDE AMORIM).
+- Linha 6929: Turma não encontrada na unidade (EIF1V - EM PROFESSORA NARA DO CARMO REZENDE AMORIM).
+- Linha 6930: Turma não encontrada na unidade (EIF1V - EM PROFESSORA NARA DO CARMO REZENDE AMORIM).
+- Linha 6931: Turma não encontrada na unidade (EIF1V - EM PROFESSORA NARA DO CARMO REZENDE AMORIM).
+- Linha 6986: Turma não encontrada na unidade (EID1M - EM RAINHA DA PAZ).
+- Linha 6987: Turma não encontrada na unidade (EID2V - EM RAINHA DA PAZ).
+- Linha 6988: Turma não encontrada na unidade (EIE1M - EM RAINHA DA PAZ).
+- Linha 6989: Turma não encontrada na unidade (EIE2M - EM RAINHA DA PAZ).
+- Linha 6990: Turma não encontrada na unidade (EIE2M - EM RAINHA DA PAZ).
+- Linha 6991: Turma não encontrada na unidade (EIE3V - EM RAINHA DA PAZ).
+- Linha 6992: Turma não encontrada na unidade (EIE3V - EM RAINHA DA PAZ).
+- Linha 6993: Turma não encontrada na unidade (EIE4V - EM RAINHA DA PAZ).
+- Linha 6994: Turma não encontrada na unidade (EIE4V - EM RAINHA DA PAZ).
+- Linha 6995: Turma não encontrada na unidade (EIE4V - EM RAINHA DA PAZ).
+- Linha 6996: Turma não encontrada na unidade (EIF1M - EM RAINHA DA PAZ).
+- Linha 6997: Turma não encontrada na unidade (EIF1M - EM RAINHA DA PAZ).
+- Linha 6998: Turma não encontrada na unidade (EIF1M - EM RAINHA DA PAZ).
+- Linha 6999: Turma não encontrada na unidade (EIF2M - EM RAINHA DA PAZ).
+- Linha 7000: Turma não encontrada na unidade (EIF2M - EM RAINHA DA PAZ).
+- Linha 7001: Turma não encontrada na unidade (EIF2M - EM RAINHA DA PAZ).
+- Linha 7002: Turma não encontrada na unidade (EIF3V - EM RAINHA DA PAZ).
+- Linha 7003: Turma não encontrada na unidade (EIF3V - EM RAINHA DA PAZ).
+- Linha 7004: Turma não encontrada na unidade (EIF3V - EM RAINHA DA PAZ).
+- Linha 7005: Turma não encontrada na unidade (EIF3V - EM RAINHA DA PAZ).
+- Linha 7006: Turma não encontrada na unidade (EIF4V - EM RAINHA DA PAZ).
+- Linha 7063: Turma não encontrada na unidade (EIF1V - EM RECANTO DO BOSQUE).
+- Linha 7064: Turma não encontrada na unidade (EIF1V - EM RECANTO DO BOSQUE).
+- Linha 7065: Turma não encontrada na unidade (EIF2V - EM RECANTO DO BOSQUE).
+- Linha 7066: Turma não encontrada na unidade (EIF2V - EM RECANTO DO BOSQUE).
+- Linha 7067: Turma não encontrada na unidade (EIF2V - EM RECANTO DO BOSQUE).
+- Linha 7068: Turma não encontrada na unidade (EIF3V - EM RECANTO DO BOSQUE).
+- Linha 7069: Turma não encontrada na unidade (EIF3V - EM RECANTO DO BOSQUE).
+- Linha 7070: Turma não encontrada na unidade (EIF3V - EM RECANTO DO BOSQUE).
+- Linha 7071: Turma não encontrada na unidade (EIF4V - EM RECANTO DO BOSQUE).
+- Linha 7072: Turma não encontrada na unidade (EIF4V - EM RECANTO DO BOSQUE).
+- Linha 7073: Turma não encontrada na unidade (EIF4V - EM RECANTO DO BOSQUE).
+- Linha 7173: Turma não encontrada na unidade (EIF1V - EM RENASCER).
+- Linha 7174: Turma não encontrada na unidade (EIF1V - EM RENASCER).
+- Linha 7175: Turma não encontrada na unidade (EIF2V - EM RENASCER).
+- Linha 7176: Turma não encontrada na unidade (EIF2V - EM RENASCER).
+- Linha 7260: Turma não encontrada na unidade (EFEJA-1ºS1ºPAN - EM RESIDENCIAL ITAIPÚ).
+- Linha 7293: Turma não encontrada na unidade (EIE1M - EM RESIDENCIAL MONTE CARLO).
+- Linha 7294: Turma não encontrada na unidade (EIE1M - EM RESIDENCIAL MONTE CARLO).
+- Linha 7295: Turma não encontrada na unidade (EIE1M - EM RESIDENCIAL MONTE CARLO).
+- Linha 7296: Turma não encontrada na unidade (EIE2M - EM RESIDENCIAL MONTE CARLO).
+- Linha 7297: Turma não encontrada na unidade (EIE2M - EM RESIDENCIAL MONTE CARLO).
+- Linha 7298: Turma não encontrada na unidade (EIE3V - EM RESIDENCIAL MONTE CARLO).
+- Linha 7299: Turma não encontrada na unidade (EIE3V - EM RESIDENCIAL MONTE CARLO).
+- Linha 7300: Turma não encontrada na unidade (EIE3V - EM RESIDENCIAL MONTE CARLO).
+- Linha 7301: Turma não encontrada na unidade (EIE3V - EM RESIDENCIAL MONTE CARLO).
+- Linha 7302: Turma não encontrada na unidade (EIE3V - EM RESIDENCIAL MONTE CARLO).
+- Linha 7303: Turma não encontrada na unidade (EIF2M - EM RESIDENCIAL MONTE CARLO).
+- Linha 7304: Turma não encontrada na unidade (EIF2M - EM RESIDENCIAL MONTE CARLO).
+- Linha 7305: Turma não encontrada na unidade (EIF3V - EM RESIDENCIAL MONTE CARLO).
+- Linha 7342: Turma não encontrada na unidade (EIE2V - EM ROTARY GOIÂNIA SUL).
+- Linha 7343: Turma não encontrada na unidade (EIE2V - EM ROTARY GOIÂNIA SUL).
+- Linha 7344: Turma não encontrada na unidade (EIE2V - EM ROTARY GOIÂNIA SUL).
+- Linha 7345: Turma não encontrada na unidade (EIE2V - EM ROTARY GOIÂNIA SUL).
+- Linha 7346: Turma não encontrada na unidade (EIF1M - EM ROTARY GOIÂNIA SUL).
+- Linha 7347: Turma não encontrada na unidade (EIF1M - EM ROTARY GOIÂNIA SUL).
+- Linha 7348: Turma não encontrada na unidade (EIF1M - EM ROTARY GOIÂNIA SUL).
+- Linha 7349: Turma não encontrada na unidade (EIF1M - EM ROTARY GOIÂNIA SUL).
+- Linha 7350: Turma não encontrada na unidade (EIF2V - EM ROTARY GOIÂNIA SUL).
+- Linha 7375: Turma não encontrada na unidade (EIF1V - EM RUI BARBOSA).
+- Linha 7376: Turma não encontrada na unidade (EIF2V - EM RUI BARBOSA).
+- Linha 7394: Turma não encontrada na unidade (EIE1I - EM SANTA TEREZINHA).
+- Linha 7395: Turma não encontrada na unidade (EIF1I - EM SANTA TEREZINHA).
+- Linha 7396: Turma não encontrada na unidade (EIF1I - EM SANTA TEREZINHA).
+- Linha 7397: Turma não encontrada na unidade (EIF1I - EM SANTA TEREZINHA).
+- Linha 7444: Turma não encontrada na unidade (EIE1V - EM SÃO JOSÉ).
+- Linha 7445: Turma não encontrada na unidade (EIE1V - EM SÃO JOSÉ).
+- Linha 7446: Turma não encontrada na unidade (EIE2V - EM SÃO JOSÉ).
+- Linha 7447: Turma não encontrada na unidade (EIE3V - EM SÃO JOSÉ).
+- Linha 7448: Turma não encontrada na unidade (EIF2V - EM SÃO JOSÉ).
+- Linha 7449: Turma não encontrada na unidade (EIF3V - EM SÃO JOSÉ).
+- Linha 7450: Turma não encontrada na unidade (EIF3V - EM SÃO JOSÉ).
+- Linha 7525: Turma não encontrada na unidade (EIE1V - EM SENADOR DARCY RIBEIRO).
+- Linha 7526: Turma não encontrada na unidade (EIE2V - EM SENADOR DARCY RIBEIRO).
+- Linha 7527: Turma não encontrada na unidade (EIF1V - EM SENADOR DARCY RIBEIRO).
+- Linha 7528: Turma não encontrada na unidade (EIF1V - EM SENADOR DARCY RIBEIRO).
+- Linha 7529: Turma não encontrada na unidade (EIF1V - EM SENADOR DARCY RIBEIRO).
+- Linha 7530: Turma não encontrada na unidade (EIF2V - EM SENADOR DARCY RIBEIRO).
+- Linha 7531: Turma não encontrada na unidade (EIF2V - EM SENADOR DARCY RIBEIRO).
+- Linha 7564: Turma não encontrada na unidade (EIE1V - EM SOLAR VILLE).
+- Linha 7565: Turma não encontrada na unidade (EIE3V - EM SOLAR VILLE).
+- Linha 7566: Turma não encontrada na unidade (EIF1V - EM SOLAR VILLE).
+- Linha 7567: Turma não encontrada na unidade (EIF1V - EM SOLAR VILLE).
+- Linha 7568: Turma não encontrada na unidade (EIF2V - EM SOLAR VILLE).
+- Linha 7569: Turma não encontrada na unidade (EIF3V - EM SOLAR VILLE).
+- Linha 7673: Turma não encontrada na unidade (EIE1V - EM TROPICAL VILLE).
+- Linha 7674: Turma não encontrada na unidade (EIF2V - EM TROPICAL VILLE).
+- Linha 7675: Turma não encontrada na unidade (EIF2V - EM TROPICAL VILLE).
+- Linha 7676: Turma não encontrada na unidade (EIF3V - EM TROPICAL VILLE).
+- Linha 7677: Turma não encontrada na unidade (EIF4V - EM TROPICAL VILLE).
+- Linha 7678: Turma não encontrada na unidade (EIF4V - EM TROPICAL VILLE).
+- Linha 7679: Turma não encontrada na unidade (EIF5V - EM TROPICAL VILLE).
+- Linha 7735: Turma não encontrada na unidade (EIE2V - EM VEREADOR CARLOS EURICO DE CAMARGO ALVES).
+- Linha 7736: Turma não encontrada na unidade (EIE3V - EM VEREADOR CARLOS EURICO DE CAMARGO ALVES).
+- Linha 7737: Turma não encontrada na unidade (EIE4V - EM VEREADOR CARLOS EURICO DE CAMARGO ALVES).
+- Linha 7738: Turma não encontrada na unidade (EIF1V - EM VEREADOR CARLOS EURICO DE CAMARGO ALVES).
+- Linha 7739: Turma não encontrada na unidade (EIF1V - EM VEREADOR CARLOS EURICO DE CAMARGO ALVES).
+- Linha 7740: Turma não encontrada na unidade (EIF2V - EM VEREADOR CARLOS EURICO DE CAMARGO ALVES).
+- Linha 7741: Turma não encontrada na unidade (EIF2V - EM VEREADOR CARLOS EURICO DE CAMARGO ALVES).
+- Linha 7742: Turma não encontrada na unidade (EIF3V - EM VEREADOR CARLOS EURICO DE CAMARGO ALVES).
+- Linha 7743: Turma não encontrada na unidade (EIF4V - EM VEREADOR CARLOS EURICO DE CAMARGO ALVES).
+- Linha 7779: Turma não encontrada na unidade (EIF1V - EM VICENTE RODRIGUES DO PRADO).
+- Linha 7780: Turma não encontrada na unidade (EIF1V - EM VICENTE RODRIGUES DO PRADO).
+- Linha 7833: Turma não encontrada na unidade (EIE1V - EM VIRGÍNIA GOMES PEREIRA).
+- Linha 7834: Turma não encontrada na unidade (EIF1V - EM VIRGÍNIA GOMES PEREIRA).
+- Linha 7874: Turma não encontrada na unidade (EIE3V-EXT - EM VITOR HUGO LUDWIG).
+- Linha 7875: Turma não encontrada na unidade (EIEF1V-EXT - EM VITOR HUGO LUDWIG).
+- Linha 7876: Turma não encontrada na unidade (EIEF1V-EXT - EM VITOR HUGO LUDWIG).
+- Linha 7877: Turma não encontrada na unidade (EIF1M-EXT - EM VITOR HUGO LUDWIG).
+- Linha 7878: Turma não encontrada na unidade (EIF2V-EXT - EM VITOR HUGO LUDWIG).
+- Linha 7925: Turma não encontrada na unidade (EIE1M - EM WATERLOO PRUDENTE).
+- Linha 7926: Turma não encontrada na unidade (EIE1M - EM WATERLOO PRUDENTE).
+- Linha 7927: Turma não encontrada na unidade (EIE2V - EM WATERLOO PRUDENTE).
+- Linha 7928: Turma não encontrada na unidade (EIE4V - EM WATERLOO PRUDENTE).
+- Linha 7929: Turma não encontrada na unidade (EIF1M - EM WATERLOO PRUDENTE).
+- Linha 7930: Turma não encontrada na unidade (EIF1M - EM WATERLOO PRUDENTE).
+- Linha 7931: Turma não encontrada na unidade (EIF2V - EM WATERLOO PRUDENTE).
+- Linha 7932: Turma não encontrada na unidade (EIF3V - EM WATERLOO PRUDENTE).
+- Linha 7979: Turma não encontrada na unidade (EIE1M - EM WILMAR DA SILVA GUIMARÃES).
+- Linha 7980: Turma não encontrada na unidade (EIE1M - EM WILMAR DA SILVA GUIMARÃES).
+- Linha 7981: Turma não encontrada na unidade (EIE1M - EM WILMAR DA SILVA GUIMARÃES).
+- Linha 7982: Turma não encontrada na unidade (EIE1V - EM WILMAR DA SILVA GUIMARÃES).
+- Linha 7983: Turma não encontrada na unidade (EIE1V - EM WILMAR DA SILVA GUIMARÃES).
+- Linha 7984: Turma não encontrada na unidade (EIF1M - EM WILMAR DA SILVA GUIMARÃES).
+- Linha 7985: Turma não encontrada na unidade (EIF2M - EM WILMAR DA SILVA GUIMARÃES).
+- Linha 7986: Turma não encontrada na unidade (EIF2M - EM WILMAR DA SILVA GUIMARÃES).
+- Linha 7987: Turma não encontrada na unidade (EIF2M - EM WILMAR DA SILVA GUIMARÃES).
+- Linha 7988: Turma não encontrada na unidade (EIF2V - EM WILMAR DA SILVA GUIMARÃES).
+- Linha 7989: Turma não encontrada na unidade (EIF2V - EM WILMAR DA SILVA GUIMARÃES).
+- Linha 8044: Turma não encontrada na unidade (EIF1I - EMTI PROFESSORA MARLEI GARCIA).
+- Linha 8045: Turma não encontrada na unidade (EIF1I - EMTI PROFESSORA MARLEI GARCIA).
+- Linha 8046: Turma não encontrada na unidade (EIF2I - EMTI PROFESSORA MARLEI GARCIA).
+- Linha 8047: Turma não encontrada na unidade (EIF2I - EMTI PROFESSORA MARLEI GARCIA).
+- Linha 8048: Turma não encontrada na unidade (EIF3I - EMTI PROFESSORA MARLEI GARCIA).
+- Linha 8049: Turma não encontrada na unidade (EIF4I - EMTI PROFESSORA MARLEI GARCIA).
+- Linha 8050: Turma não encontrada na unidade (EIF4I - EMTI PROFESSORA MARLEI GARCIA).
+- Linha 8078: Unidade de Ensino não encontrada (ESCOLA APEGO).
+- Linha 8110: Turma não encontrada na unidade (EIF1M - ESCOLA DIREITO DO SABER - CECOM).
+- Linha 8111: Turma não encontrada na unidade (EIF1M - ESCOLA DIREITO DO SABER - CECOM).
+- Linha 8112: Turma não encontrada na unidade (EIF1M - ESCOLA DIREITO DO SABER - CECOM).
+- Linha 8113: Turma não encontrada na unidade (EIF1M - ESCOLA DIREITO DO SABER - CECOM).
+- Linha 8114: Turma não encontrada na unidade (EIF2V - ESCOLA DIREITO DO SABER - CECOM).
+- Linha 8115: Turma não encontrada na unidade (EIF2V - ESCOLA DIREITO DO SABER - CECOM).
+- Linha 8116: Turma não encontrada na unidade (EIF2V - ESCOLA DIREITO DO SABER - CECOM).
+- Linha 8117: Turma não encontrada na unidade (EIF2V - ESCOLA DIREITO DO SABER - CECOM).
+- Linha 8118: Turma não encontrada na unidade (EIF2V - ESCOLA DIREITO DO SABER - CECOM).
+- Linha 8119: Unidade de Ensino não encontrada (ESCOLA ESPÍRITA IRMÃ CELINA).
+- Linha 8120: Unidade de Ensino não encontrada (ESCOLA ESPÍRITA IRMÃ CELINA).
+- Linha 8131: Turma não encontrada na unidade (EIF1M - ESCOLA ESPIRITA PEDRO DE CAMARGO).
+- Linha 8176: Turma não encontrada na unidade (EIE1M - ESCOLA ESPIRITA TENDA DO CAMINHO).
+- Linha 8233: Turma não encontrada na unidade (EIF1V - ESCOLA NEIO LUCIO NACIFF).
+- Linha 8234: Turma não encontrada na unidade (EIF2V - ESCOLA NEIO LUCIO NACIFF).
+- Linha 8272: Turma não encontrada na unidade (EIF1M - ESCOLA ROTARY GOIANIA OESTE).
+- Linha 8273: Turma não encontrada na unidade (EIF2V - ESCOLA ROTARY GOIANIA OESTE).
+- Linha 8274: Turma não encontrada na unidade (EIF2V - ESCOLA ROTARY GOIANIA OESTE).
+- Linha 8318: Turma não encontrada na unidade (EIE1M - ESCOLA SANTA RITA DE CASSIA).
+- Linha 8319: Turma não encontrada na unidade (EIE2V - ESCOLA SANTA RITA DE CASSIA).
+- Linha 8320: Turma não encontrada na unidade (EIE2V - ESCOLA SANTA RITA DE CASSIA).
+- Linha 8321: Turma não encontrada na unidade (EIF1M - ESCOLA SANTA RITA DE CASSIA).
+- Linha 8322: Turma não encontrada na unidade (EIF1M - ESCOLA SANTA RITA DE CASSIA).
+- Linha 8323: Turma não encontrada na unidade (EIF1M - ESCOLA SANTA RITA DE CASSIA).
+- Linha 8324: Turma não encontrada na unidade (EIF1M - ESCOLA SANTA RITA DE CASSIA).
+- Linha 8325: Turma não encontrada na unidade (EIF1M - ESCOLA SANTA RITA DE CASSIA).
+- Linha 8326: Turma não encontrada na unidade (EIF2V - ESCOLA SANTA RITA DE CASSIA).
+- Linha 8406: Unidade de Ensino não encontrada (NUCLEO EDUCACIONAL MAE DOLOROSA).
+- Linha 8407: Unidade de Ensino não encontrada (NUCLEO EDUCACIONAL MAE DOLOROSA).
+- Linha 8408: Unidade de Ensino não encontrada (NUCLEO EDUCACIONAL MAE DOLOROSA).
+- Linha 8409: Unidade de Ensino não encontrada (CEI UNIÃO DAS PIONEIRAS DE GOIÂNIA).
+- Linha 8410: Unidade de Ensino não encontrada (CENTRO DE EDUCACAO INFANTIL EFICÁCIA).
+- Linha 8411: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO INFANTIL ESPÍRITA VOVÓ ISLENA).
+- Linha 8412: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO INFANTIL ESPÍRITA VOVÓ MECA).
+- Linha 8413: Unidade de Ensino não encontrada (CENTRO DE EDUCACAO INFANTIL MARIA DE NAZARE).
+- Linha 8414: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO INFANTIL NOSSA SENHORA DE NAZARE).
+- Linha 8415: Unidade de Ensino não encontrada (CENTRO DE EDUCACAO INFANTIL QUERUBINS).
+- Linha 8416: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇAO INFANTIL RABONI).
+- Linha 8417: Unidade de Ensino não encontrada (CMEI ALEGRIA DE APRENDER).
+- Linha 8418: Unidade de Ensino não encontrada (CMEI ATHENEU DOM BOSCO).
+- Linha 8419: Unidade de Ensino não encontrada (CMEI BRISAS DO CERRADO (PROFESSORA SILVIA PRAXEDES)).
+- Linha 8420: Unidade de Ensino não encontrada (CMEI CLEMENTE RAIMUNDO SAUTHIER).
+- Linha 8421: Unidade de Ensino não encontrada (CMEI CONJUNTO VERA CRUZ II).
+- Linha 8422: Unidade de Ensino não encontrada (CMEI CONJUNTO VERA CRUZ VI).
+- Linha 8423: Unidade de Ensino não encontrada (CMEI DEMES JUNIO DIVINO DE FREITAS).
+- Linha 8424: Unidade de Ensino não encontrada (CMEI DEPUTADO SOLON BATISTA AMARAL).
+- Linha 8425: Unidade de Ensino não encontrada (CMEI DEPUTADO SOLON BATISTA AMARAL).
+- Linha 8426: Unidade de Ensino não encontrada (CMEI DOM ANTONIO RIBEIRO DE OLIVEIRA).
+- Linha 8427: Unidade de Ensino não encontrada (CMEI JARDIM AMÉRICA II).
+- Linha 8428: Unidade de Ensino não encontrada (CMEI JARDIM BALNEÁRIO MEIA PONTE).
+- Linha 8429: Unidade de Ensino não encontrada (CMEI JARDIM GOIÁS).
+- Linha 8430: Unidade de Ensino não encontrada (CMEI JARDIM GUANABARA III).
+- Linha 8431: Unidade de Ensino não encontrada (CMEI JOAO PEDRO CALEMBO).
+- Linha 8432: Unidade de Ensino não encontrada (CMEI MARIA CECÍLIA DE LIMA).
+- Linha 8433: Unidade de Ensino não encontrada (CMEI MORADA DO SOL).
+- Linha 8434: Unidade de Ensino não encontrada (CMEI NOSSA SENHORA DAS GRAÇAS).
+- Linha 8435: Unidade de Ensino não encontrada (CMEI PADRE VITALIS).
+- Linha 8436: Unidade de Ensino não encontrada (CMEI PARQUE TREMENDÃO).
+- Linha 8437: Unidade de Ensino não encontrada (CMEI PEQUENO APRENDIZ).
+- Linha 8438: Unidade de Ensino não encontrada (CMEI PROFESSORA IACY ALBA ROCHA FERREIRA LIMA).
+- Linha 8439: Unidade de Ensino não encontrada (CMEI RECANTO DO SABER).
+- Linha 8440: Unidade de Ensino não encontrada (CMEI RECANTO DO SABER).
+- Linha 8441: Unidade de Ensino não encontrada (CMEI RESIDENCIAL ITAIPU).
+- Linha 8442: Unidade de Ensino não encontrada (CMEI SÃO PIO X).
+- Linha 8443: Unidade de Ensino não encontrada (CMEI SÃO PIO X).
+- Linha 8444: Unidade de Ensino não encontrada (CMEI SOLANGE PARK).
+- Linha 8445: Unidade de Ensino não encontrada (CMEI VILA FINSOCIAL I).
+- Linha 8446: Unidade de Ensino não encontrada (CMEI VILA LEGIONÁRIAS).
+- Linha 8447: Unidade de Ensino não encontrada (CMEI VILA MAUA).
+- Linha 8448: Unidade de Ensino não encontrada (CMEI VILLAGE ATALAIA).
+- Linha 8463: Turma não encontrada na unidade (EIF1V - EM ENGº ANTÔNIO FÉLIX DA SILVA).
+- Linha 8466: Turma não encontrada na unidade (EIF2V - EM GERALDA DE AQUINO).
+- Linha 8473: Turma não encontrada na unidade (EFEJA-1ºS1ºP2ºP3ºPAN - EM JESUÍNA DE ABREU).
+- Linha 8474: Turma não encontrada na unidade (EFEJA-1ºS1ºP2ºP3ºPAN - EM JESUÍNA DE ABREU).
+- Linha 8475: Turma não encontrada na unidade (EFEJA-1ºS1ºP2ºP3ºPAN - EM JESUÍNA DE ABREU).
+- Linha 8481: Turma não encontrada na unidade (EIF3V - EM LORENA PARK).
+- Linha 8485: Turma não encontrada na unidade (EIF3V - EM NOSSA SENHORA APARECIDA).
+- Linha 8502: Turma não encontrada na unidade (EIE3V - EM TROPICAL VILLE).
+- Linha 8507: Unidade de Ensino não encontrada (CEI - LAR DE MATILDE).
+- Linha 8508: Unidade de Ensino não encontrada (CEI - LAR DE MATILDE).
+- Linha 8509: Unidade de Ensino não encontrada (CEI - LAR DE MATILDE).
+- Linha 8510: Unidade de Ensino não encontrada (CEI - LAR DE MATILDE).
+- Linha 8511: Unidade de Ensino não encontrada (CEI - LAR DE MATILDE).
+- Linha 8512: Unidade de Ensino não encontrada (CEI DOROTHEA RIBEIRO GUIMARÃES).
+- Linha 8513: Unidade de Ensino não encontrada (CEI DOROTHEA RIBEIRO GUIMARÃES).
+- Linha 8514: Unidade de Ensino não encontrada (CEI E ACOLHIMENTO VIDEIRA DE GOIÂNIA).
+- Linha 8515: Unidade de Ensino não encontrada (CEI VIDEIRA).
+- Linha 8516: Unidade de Ensino não encontrada (CENTRO DE APOIO EDUC COM. JESUS CRISTO É HUMILDADE).
+- Linha 8517: Unidade de Ensino não encontrada (CENTRO DE APOIO EDUC COM. JESUS CRISTO É HUMILDADE).
+- Linha 8518: Unidade de Ensino não encontrada (CENTRO DE APOIO EDUC COM. JESUS CRISTO É HUMILDADE).
+- Linha 8519: Unidade de Ensino não encontrada (CENTRO DE APOIO EDUC COM. JESUS CRISTO É HUMILDADE).
+- Linha 8520: Unidade de Ensino não encontrada (CENTRO DE APOIO EDUC COM. JESUS CRISTO É HUMILDADE).
+- Linha 8521: Unidade de Ensino não encontrada (CENTRO DE APOIO EDUC COM. JESUS CRISTO É HUMILDADE).
+- Linha 8522: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO INFANTIL ASSUNÇÃO).
+- Linha 8523: Unidade de Ensino não encontrada (CENTRO DE EDUCACAO INFANTIL EFICÁCIA).
+- Linha 8524: Unidade de Ensino não encontrada (CENTRO DE EDUCACAO INFANTIL EFICÁCIA).
+- Linha 8525: Unidade de Ensino não encontrada (CENTRO DE EDUCACAO INFANTIL EFRATÁ).
+- Linha 8526: Unidade de Ensino não encontrada (CENTRO DE EDUCACAO INFANTIL EFRATÁ).
+- Linha 8527: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO INFANTIL ESPÍRITA VOVÓ MECA).
+- Linha 8528: Unidade de Ensino não encontrada (CENTRO DE EDUCACAO INFANTIL LUZEIRO).
+- Linha 8529: Unidade de Ensino não encontrada (CENTRO DE EDUCACAO INFANTIL MENINO JESUS DE PRAGA).
+- Linha 8530: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇÃO INFANTIL NOSSA SENHORA DE NAZARE).
+- Linha 8531: Unidade de Ensino não encontrada (CENTRO DE EDUCACAO INFANTIL PAGIEL).
+- Linha 8532: Unidade de Ensino não encontrada (CENTRO DE EDUCACAO INFANTIL PAGIEL).
+- Linha 8533: Unidade de Ensino não encontrada (CENTRO DE EDUCACAO INFANTIL PAGIEL).
+- Linha 8534: Unidade de Ensino não encontrada (CENTRO DE EDUCACAO INFANTIL QUERUBINS).
+- Linha 8535: Unidade de Ensino não encontrada (CENTRO DE EDUCACAO INFANTIL QUERUBINS).
+- Linha 8536: Unidade de Ensino não encontrada (CENTRO DE EDUCAÇAO INFANTIL RABONI).
+- Linha 8537: Unidade de Ensino não encontrada (CENTRO DE EDUCACAO INFANTIL RENASCER).
+- Linha 8538: Unidade de Ensino não encontrada (CENTRO DE EDUCACAO INFANTIL SOU FELIZ).
+- Linha 8539: Unidade de Ensino não encontrada (CENTRO PROMOCIONAL TODOS OS SANTOS III).
+- Linha 8540: Unidade de Ensino não encontrada (CMEI ALEGRIA DE APRENDER).
+- Linha 8541: Unidade de Ensino não encontrada (CMEI ALEGRIA DE APRENDER).
+- Linha 8542: Unidade de Ensino não encontrada (CMEI ALTO DA GLÓRIA).
+- Linha 8543: Unidade de Ensino não encontrada (CMEI BAIRRO SANTO HILÁRIO).
+- Linha 8544: Unidade de Ensino não encontrada (CMEI BAIRRO SANTO HILÁRIO).
+- Linha 8545: Unidade de Ensino não encontrada (CMEI BRINCANDO E APRENDENDO).
+- Linha 8546: Unidade de Ensino não encontrada (CMEI BRISAS DA MATA).
+- Linha 8547: Unidade de Ensino não encontrada (CMEI CEASA WILMAR LUIZ).
+- Linha 8548: Unidade de Ensino não encontrada (CMEI CECÍLIA MEIRELES).
+- Linha 8549: Unidade de Ensino não encontrada (CMEI CECÍLIA MEIRELES).
+- Linha 8550: Unidade de Ensino não encontrada (CMEI CECÍLIA MEIRELES).
+- Linha 8551: Unidade de Ensino não encontrada (CMEI CORA CORALINA).
+- Linha 8552: Unidade de Ensino não encontrada (CMEI CRIANÇA CIDADÃ).
+- Linha 8553: Unidade de Ensino não encontrada (CMEI DA BOA PROVIDÊNCIA).
+- Linha 8554: Unidade de Ensino não encontrada (CMEI DOM ANTONIO RIBEIRO DE OLIVEIRA).
+- Linha 8555: Unidade de Ensino não encontrada (CMEI DOM ANTONIO RIBEIRO DE OLIVEIRA).
+- Linha 8556: Unidade de Ensino não encontrada (CMEI DOM ANTONIO RIBEIRO DE OLIVEIRA).
+- Linha 8557: Unidade de Ensino não encontrada (CMEI DOM ANTONIO RIBEIRO DE OLIVEIRA).
+- Linha 8558: Unidade de Ensino não encontrada (CMEI DRA. MARIZETE FERNANDES DE CASTRO CARVALHO).
+- Linha 8559: Unidade de Ensino não encontrada (CMEI EVANGELINA PEREIRA DA COSTA).
+- Linha 8560: Unidade de Ensino não encontrada (CMEI EVANGELINA PEREIRA DA COSTA).
+- Linha 8561: Unidade de Ensino não encontrada (CMEI EVANGELINA PEREIRA DA COSTA).
+- Linha 8562: Unidade de Ensino não encontrada (CMEI FABIANO DE CRISTO).
+- Linha 8563: Unidade de Ensino não encontrada (CMEI FABIANO DE CRISTO).
+- Linha 8564: Unidade de Ensino não encontrada (CMEI FABIANO DE CRISTO).
+- Linha 8565: Unidade de Ensino não encontrada (CMEI FABIANO DE CRISTO).
+- Linha 8566: Unidade de Ensino não encontrada (CMEI GOIÂNIA VIVA).
+- Linha 8567: Unidade de Ensino não encontrada (CMEI GOIÂNIA VIVA).
+- Linha 8568: Unidade de Ensino não encontrada (CMEI IPÊ AMARELO).
+- Linha 8569: Unidade de Ensino não encontrada (CMEI IRMÃ LÍDIA).
+- Linha 8570: Unidade de Ensino não encontrada (CMEI JARDIM BALNEÁRIO MEIA PONTE).
+- Linha 8571: Unidade de Ensino não encontrada (CMEI JARDIM EUROPA II).
+- Linha 8572: Unidade de Ensino não encontrada (CMEI JARDIM GUANABARA I).
+- Linha 8573: Unidade de Ensino não encontrada (CMEI JARDIM GUANABARA III).
+- Linha 8574: Unidade de Ensino não encontrada (CMEI JARDIM GUANABARA III).
+- Linha 8575: Unidade de Ensino não encontrada (CMEI JARDINS DO CERRADO 4 ANTONIO ALMEIDA).
+- Linha 8576: Unidade de Ensino não encontrada (CMEI JARDINS DO CERRADO I).
+- Linha 8577: Unidade de Ensino não encontrada (CMEI JOAO PEDRO CALEMBO).
+- Linha 8578: Unidade de Ensino não encontrada (CMEI JOSÉ ALVES BATISTA).
+- Linha 8579: Unidade de Ensino não encontrada (CMEI LYGIA RASSI).
+- Linha 8580: Unidade de Ensino não encontrada (CMEI LYGIA RASSI).
+- Linha 8581: Unidade de Ensino não encontrada (CMEI MÃE TINA).
+- Linha 8582: Unidade de Ensino não encontrada (CMEI MARCIA LORENA MENDES).
+- Linha 8583: Unidade de Ensino não encontrada (CMEI MARIA JOSÉ DOS SANTOS (ANTIGO CEI MARIA GENOVEVA)).
+- Linha 8584: Unidade de Ensino não encontrada (CMEI MATEUS BARCELOS BARRETOS).
+- Linha 8585: Unidade de Ensino não encontrada (CMEI MONTEIRO LOBATO).
+- Linha 8586: Unidade de Ensino não encontrada (CMEI NOSSA SENHORA DAS GRAÇAS).
+- Linha 8587: Unidade de Ensino não encontrada (CMEI ORIENTE VILLE).
+- Linha 8588: Unidade de Ensino não encontrada (CMEI ORIENTE VILLE).
+- Linha 8589: Unidade de Ensino não encontrada (CMEI ORIENTE VILLE).
+- Linha 8590: Unidade de Ensino não encontrada (CMEI ORIENTE VILLE).
+- Linha 8591: Unidade de Ensino não encontrada (CMEI ORIENTE VILLE).
+- Linha 8592: Unidade de Ensino não encontrada (CMEI ORIENTE VILLE).
+- Linha 8593: Unidade de Ensino não encontrada (CMEI ORIENTE VILLE).
+- Linha 8594: Unidade de Ensino não encontrada (CMEI ORIENTE VILLE).
+- Linha 8595: Unidade de Ensino não encontrada (CMEI ORIENTE VILLE).
+- Linha 8596: Unidade de Ensino não encontrada (CMEI ORIENTE VILLE).
+- Linha 8597: Unidade de Ensino não encontrada (CMEI PARQUE TREMENDÃO).
+- Linha 8598: Unidade de Ensino não encontrada (CMEI PRIMEIROS PASSOS).
+- Linha 8599: Unidade de Ensino não encontrada (CMEI PROFESSORA ALZIRA DE OLIVEIRA ALVES).
+- Linha 8600: Unidade de Ensino não encontrada (CMEI PROFESSORA ALZIRA DE OLIVEIRA ALVES).
+- Linha 8601: Unidade de Ensino não encontrada (CMEI PROFESSORA ALZIRA DE OLIVEIRA ALVES).
+- Linha 8602: Unidade de Ensino não encontrada (CMEI PROFESSORA IACY ALBA ROCHA FERREIRA LIMA).
+- Linha 8603: Unidade de Ensino não encontrada (CMEI PROFESSORA IACY ALBA ROCHA FERREIRA LIMA).
+- Linha 8604: Unidade de Ensino não encontrada (CMEI REAL CONQUISTA).
+- Linha 8605: Unidade de Ensino não encontrada (CMEI RECANTO DA CRIANÇA RHAYSA CRISTINE FERNANDES CORREA).
+- Linha 8606: Unidade de Ensino não encontrada (CMEI RESIDENCIAL ALPHAVILLE).
+- Linha 8607: Unidade de Ensino não encontrada (CMEI RESIDENCIAL ITAIPU).
+- Linha 8608: Unidade de Ensino não encontrada (CMEI SAGRADA FAMILIA).
+- Linha 8609: Unidade de Ensino não encontrada (CMEI SANTA LUZIA).
+- Linha 8610: Unidade de Ensino não encontrada (CMEI SÃO PIO X).
+- Linha 8611: Unidade de Ensino não encontrada (CMEI SÃO PIO X).
+- Linha 8612: Unidade de Ensino não encontrada (CMEI SÃO PIO X).
+- Linha 8613: Unidade de Ensino não encontrada (CMEI SÃO PIO X).
+- Linha 8614: Unidade de Ensino não encontrada (CMEI TIO ROMÃO).
+- Linha 8615: Unidade de Ensino não encontrada (CMEI VILA FAIÇALVILLE).
+- Linha 8616: Unidade de Ensino não encontrada (CMEI VILA IZAURA).
+- Linha 8617: Unidade de Ensino não encontrada (CMEI VILA IZAURA).
+- Linha 8618: Unidade de Ensino não encontrada (CMEI VILA SANTANA).
+- Linha 8619: Unidade de Ensino não encontrada (CMEI VILLAGE ATALAIA).
+- Linha 8620: Unidade de Ensino não encontrada (CMEI VIVER A INFÂNCIA).
+- Linha 8626: Turma não encontrada na unidade (EIF2V - COLÉGIO GONÇALVES LEDO).
+- Linha 8627: Unidade de Ensino não encontrada (CRECHE CAETANO FOGLIA).
+- Linha 8628: Unidade de Ensino não encontrada (CRECHE CAETANO FOGLIA).
+- Linha 8629: Unidade de Ensino não encontrada (CRECHE CAETANO FOGLIA).
+- Linha 8630: Unidade de Ensino não encontrada (CRECHE CAETANO FOGLIA).
+- Linha 8631: Unidade de Ensino não encontrada (CRECHE CAETANO FOGLIA).
+- Linha 8632: Unidade de Ensino não encontrada (CRECHE CAETANO FOGLIA).
+- Linha 8633: Unidade de Ensino não encontrada (CRECHE CAETANO FOGLIA).
+- Linha 8634: Unidade de Ensino não encontrada (CRECHE E EDUCANDÁRIO E. RECANTO DE PAZ PAULA PRADO).
+- Linha 8635: Unidade de Ensino não encontrada (CRECHE ESPÍRITA MARIA DOLORES).
+- Linha 8636: Unidade de Ensino não encontrada (CRECHE ESPÍRITA MARIA DOLORES).
+- Linha 8637: Unidade de Ensino não encontrada (CRECHE METODISTA).
+- Linha 8638: Unidade de Ensino não encontrada (CRECHE METODISTA).
+- Linha 8639: Unidade de Ensino não encontrada (CRECHE METODISTA).
+- Linha 8640: Unidade de Ensino não encontrada (CRECHE METODISTA).
+- Linha 8641: Unidade de Ensino não encontrada (CRECHE VÓ MARIA DE NAZARETH).
+- Linha 8643: Turma não encontrada na unidade (EIF1M - EDUCANDÁRIO ESPÍRITA EURÍPEDES BARSANULFO).
+- Linha 8651: Turma não encontrada na unidade (EIF1M - EM AGRIPINA TEIXEIRA MAGALHÃES).
+- Linha 8652: Turma não encontrada na unidade (EIE2I - EM ÁGUA BRANCA).
+- Linha 8678: Turma não encontrada na unidade (EIF1M - EM ANTÔNIO FIDELIS).
+- Linha 8695: Turma não encontrada na unidade (EIE1V - EM BALNEÁRIO MEIA PONTE).
+- Linha 8702: Turma não encontrada na unidade (EID1V - EM BARBARA DE SOUZA MORAIS).
+- Linha 8703: Turma não encontrada na unidade (EIF3V - EM BARBARA DE SOUZA MORAIS).
+- Linha 8709: Turma não encontrada na unidade (EIF6V - EM BENEDITA LUÍZA DA SILVA DE MIRANDA).
+- Linha 8725: Turma não encontrada na unidade (EFEJA-1ºS1ºP2ºP3ºPAMEXT - EM BOM JESUS).
+- Linha 8728: Turma não encontrada na unidade (EFEJA-1ºS1ºPAN - EM BRICE FRANCISCO CORDEIRO).
+- Linha 8729: Turma não encontrada na unidade (EFEJA-1ºS1ºPAN - EM BRICE FRANCISCO CORDEIRO).
+- Linha 8730: Turma não encontrada na unidade (EFEJA-1ºS2ºP3ºPAN - EM BRICE FRANCISCO CORDEIRO).
+- Linha 8731: Turma não encontrada na unidade (EFEJA-1ºS2ºP3ºPAN - EM BRICE FRANCISCO CORDEIRO).
+- Linha 8732: Turma não encontrada na unidade (EFEJA-1ºS2ºP3ºPAN - EM BRICE FRANCISCO CORDEIRO).
+- Linha 8733: Turma não encontrada na unidade (EFEJA-1ºS2ºP3ºPAN - EM BRICE FRANCISCO CORDEIRO).
+- Linha 8734: Turma não encontrada na unidade (EFEJA-1ºS2ºP3ºPAN - EM BRICE FRANCISCO CORDEIRO).
+- Linha 8735: Turma não encontrada na unidade (EFEJA-1ºS2ºP3ºPAN - EM BRICE FRANCISCO CORDEIRO).
+- Linha 8847: Turma não encontrada na unidade (EIF1V - EM DONATA MONTEIRO DA MOTTA).
+- Linha 8863: Turma não encontrada na unidade (EIE1V - EM ENGº ANTÔNIO FÉLIX DA SILVA).
+- Linha 8902: Turma não encontrada na unidade (EIE2V - EM IRMÃ VENERANDA).
+- Linha 8903: Turma não encontrada na unidade (EIF1V - EM IRMÃ VENERANDA).
+- Linha 8908: Turma não encontrada na unidade (EIE1V - EM IZABEL ESPERIDIÃO JORGE).
+- Linha 8909: Turma não encontrada na unidade (EIF3V - EM IZABEL ESPERIDIÃO JORGE).
+- Linha 8928: Unidade de Ensino não encontrada (EM JARDIM AMÉRICA (ANTIGA ESCOLA JOAQUIM SOBROSA)).
+- Linha 8929: Unidade de Ensino não encontrada (EM JARDIM AMÉRICA (ANTIGA ESCOLA JOAQUIM SOBROSA)).
+- Linha 8930: Unidade de Ensino não encontrada (EM JARDIM AMÉRICA (ANTIGA ESCOLA JOAQUIM SOBROSA)).
+- Linha 8931: Unidade de Ensino não encontrada (EM JARDIM AMÉRICA (ANTIGA ESCOLA JOAQUIM SOBROSA)).
+- Linha 8932: Unidade de Ensino não encontrada (EM JARDIM AMÉRICA (ANTIGA ESCOLA JOAQUIM SOBROSA)).
+- Linha 8933: Unidade de Ensino não encontrada (EM JARDIM AMÉRICA (ANTIGA ESCOLA JOAQUIM SOBROSA)).
+- Linha 8934: Unidade de Ensino não encontrada (EM JARDIM AMÉRICA (ANTIGA ESCOLA JOAQUIM SOBROSA)).
+- Linha 8935: Unidade de Ensino não encontrada (EM JARDIM AMÉRICA (ANTIGA ESCOLA JOAQUIM SOBROSA)).
+- Linha 8955: Turma não encontrada na unidade (EFEJA-1ºS1ºP1N - EM JARDIM NOVA ESPERANÇA).
+- Linha 8956: Turma não encontrada na unidade (EFEJA-1ºS2ºP3ºPAN - EM JARDIM NOVA ESPERANÇA).
+- Linha 8957: Turma não encontrada na unidade (EIE1V - EM JARDIM NOVA ESPERANÇA).
+- Linha 8958: Turma não encontrada na unidade (EIE1V - EM JARDIM NOVA ESPERANÇA).
+- Linha 8959: Turma não encontrada na unidade (EIE1V - EM JARDIM NOVA ESPERANÇA).
+- Linha 8960: Turma não encontrada na unidade (EIF1V - EM JARDIM NOVA ESPERANÇA).
+- Linha 8961: Turma não encontrada na unidade (EIF3V - EM JARDIM NOVA ESPERANÇA).
+- Linha 8962: Turma não encontrada na unidade (EIF3V - EM JARDIM NOVA ESPERANÇA).
+- Linha 8963: Turma não encontrada na unidade (EIF3V - EM JARDIM NOVA ESPERANÇA).
+- Linha 8964: Turma não encontrada na unidade (EIF4V - EM JARDIM NOVA ESPERANÇA).
+- Linha 8965: Turma não encontrada na unidade (EIF5V - EM JARDIM NOVA ESPERANÇA).
+- Linha 8966: Turma não encontrada na unidade (EIF5V - EM JARDIM NOVA ESPERANÇA).
+- Linha 8992: Turma não encontrada na unidade (EIE2V - EM JOÃO BRAZ).
+- Linha 8993: Turma não encontrada na unidade (EIF1V - EM JOÃO BRAZ).
+- Linha 9021: Turma não encontrada na unidade (EIE1V - EM LAURICIO PEDRO RASMUSSEM).
+- Linha 9029: Turma não encontrada na unidade (EIF1V - EM LIONS CLUBE BANDEIRANTES).
+- Linha 9030: Turma não encontrada na unidade (EIF1V - EM LIONS CLUBE BANDEIRANTES).
+- Linha 9034: Turma não encontrada na unidade (EIE1M - EM LORENA PARK).
+- Linha 9038: Turma não encontrada na unidade (EIF3V - EM LUZIA DE SOUZA FIUZA).
+- Linha 9087: Turma não encontrada na unidade (EIE1V - EM MARIA CLARA MACHADO).
+- Linha 9100: Turma não encontrada na unidade (EIE2M - EM MARIA ODETE AUGUSTA DE BRITO).
+- Linha 9152: Turma não encontrada na unidade (EIF2V - EM NOSSA SENHORA DA TERRA).
+- Linha 9180: Turma não encontrada na unidade (EIE2V - EM OLEGÁRIO MOREIRA BORGES).
+- Linha 9192: Turma não encontrada na unidade (EIE1V - EM PADRE LIMA).
+- Linha 9193: Turma não encontrada na unidade (EIE2V - EM PADRE LIMA).
+- Linha 9195: Turma não encontrada na unidade (EIF2I - EM PADRE ZEZINHO).
+- Linha 9229: Turma não encontrada na unidade (EIF1V - EM PEDRO GOMES DE MENEZES).
+- Linha 9250: Turma não encontrada na unidade (EIF1V - EM PRESIDENTE VARGAS).
+- Linha 9251: Turma não encontrada na unidade (EIF1V - EM PRESIDENTE VARGAS).
+- Linha 9261: Turma não encontrada na unidade (EFEJA-1°S1°PAN - EM PROF. MOACIR MONCLAR BRANDÃO).
+- Linha 9262: Turma não encontrada na unidade (EIF1V - EM PROF. MOACIR MONCLAR BRANDÃO).
+- Linha 9288: Turma não encontrada na unidade (EIE1V - EM PROF. PERCIVAL XAVIER REBELO).
+- Linha 9289: Turma não encontrada na unidade (EIE1V - EM PROF. PERCIVAL XAVIER REBELO).
+- Linha 9290: Turma não encontrada na unidade (EIF1V - EM PROF. PERCIVAL XAVIER REBELO).
+- Linha 9291: Turma não encontrada na unidade (EIF2V - EM PROF. PERCIVAL XAVIER REBELO).
+- Linha 9292: Turma não encontrada na unidade (EIF2V - EM PROF. PERCIVAL XAVIER REBELO).
+- Linha 9294: Turma não encontrada na unidade (EIEF1V - EM PROFª ANTÔNIA MARANHÃO DO AMARAL).
+- Linha 9300: Turma não encontrada na unidade (EIF2M - EM PROFª EDNA DE ROURE).
+- Linha 9314: Turma não encontrada na unidade (EIF3V - EM PROFESSOR NADAL SFREDO).
+- Linha 9326: Turma não encontrada na unidade (EIF1I - EM PROFESSORA AMÉLIA FERNANDES MARTINS).
+- Linha 9328: Turma não encontrada na unidade (EIF1M - EM PROFESSORA ANNA MARIA MELINI).
+- Linha 9341: Turma não encontrada na unidade (EIF3V - EM PROFESSORA LEONÍSIA NAVES DE ALMEIDA).
+- Linha 9371: Turma não encontrada na unidade (EIE2M - EM RAINHA DA PAZ).
+- Linha 9372: Turma não encontrada na unidade (EIF2M - EM RAINHA DA PAZ).
+- Linha 9382: Turma não encontrada na unidade (EIF3V - EM RECANTO DO BOSQUE).
+- Linha 9399: Turma não encontrada na unidade (EIF1M - EM RESIDENCIAL MONTE CARLO).
+- Linha 9400: Turma não encontrada na unidade (EIF1M - EM RESIDENCIAL MONTE CARLO).
+- Linha 9401: Turma não encontrada na unidade (EIF2M - EM RESIDENCIAL MONTE CARLO).
+- Linha 9402: Turma não encontrada na unidade (EIF3V - EM RESIDENCIAL MONTE CARLO).
+- Linha 9403: Turma não encontrada na unidade (EIF4V - EM RESIDENCIAL MONTE CARLO).
+- Linha 9433: Turma não encontrada na unidade (EIE3V - EM SOLAR VILLE).
+- Linha 9434: Turma não encontrada na unidade (EIF1V - EM SOLAR VILLE).
+- Linha 9435: Turma não encontrada na unidade (EIF3V - EM SOLAR VILLE).
+- Linha 9438: Turma não encontrada na unidade (EIF4V - EM VEREADOR CARLOS EURICO DE CAMARGO ALVES).
+- Linha 9447: Turma não encontrada na unidade (EIF1V - EM VICENTE RODRIGUES DO PRADO).
+- Linha 9457: Turma não encontrada na unidade (EIF1V - EM VIRGÍNIA GOMES PEREIRA).
+- Linha 9460: Turma não encontrada na unidade (EIE3V-EXT - EM VITOR HUGO LUDWIG).
+- Linha 9473: Unidade de Ensino não encontrada (ESCOLA APEGO).
+- Linha 9489: Turma não encontrada na unidade (EIE1V - ESCOLA DIREITO DO SABER - CECOM).
+- Linha 9490: Turma não encontrada na unidade (EIE1V - ESCOLA DIREITO DO SABER - CECOM).
+- Linha 9491: Turma não encontrada na unidade (EIF1M - ESCOLA DIREITO DO SABER - CECOM).
+- Linha 9492: Turma não encontrada na unidade (EIF2V - ESCOLA DIREITO DO SABER - CECOM).
+- Linha 9493: Turma não encontrada na unidade (EIF2V - ESCOLA DIREITO DO SABER - CECOM).
+- Linha 9494: Turma não encontrada na unidade (EIF2V - ESCOLA DIREITO DO SABER - CECOM).
+- Linha 9495: Unidade de Ensino não encontrada (ESCOLA ESPÍRITA ALLAN KARDEC).
+- Linha 9496: Unidade de Ensino não encontrada (ESCOLA ESPÍRITA IRMÃ CELINA).
+- Linha 9497: Unidade de Ensino não encontrada (ESCOLA ESPIRITA PIETRO UBALDI).
+- Linha 9516: Turma não encontrada na unidade (EIF1V - INSTITUTO EDUCACIONAL EMMANUEL - IRRADIAÇÃO ESPÍRITA CRISTÃ).

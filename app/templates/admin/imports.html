@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Monitoramento de Importações</h1>
+</div>
+
+
+
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>ID</th>
+                                <th>Tipo</th>
+                                <th>Arquivo</th>
+                                <th>Usuário</th>
+                                <th>Início</th>
+                                <th>Progresso</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for job in jobs %}
+                            <tr id="job-row-{{ job.id }}">
+                                <td>{{ job.id }}</td>
+                                <td>
+                                    <span class="badge bg-info text-dark">{{ job.import_type }}</span>
+                                </td>
+                                <td>{{ job.filename }}</td>
+                                <td>{{ job.user.username }}</td>
+                                <td>{{ job.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
+                                <td style="width: 250px;">
+                                    <div class="progress" style="height: 20px;">
+                                        <div class="progress-bar progress-bar-striped {% if job.status == 'running' %}progress-bar-animated{% endif %}"
+                                            role="progressbar" id="progress-bar-{{ job.id }}"
+                                            style="width: {{ job.progress_percentage }}%;"
+                                            aria-valuenow="{{ job.progress_percentage }}" aria-valuemin="0"
+                                            aria-valuemax="100">
+                                            {{ job.progress_percentage }}%
+                                        </div>
+                                    </div>
+                                    <small class="text-muted" id="progress-text-{{ job.id }}">
+                                        {{ job.processed_rows }} / {{ job.total_rows }} linhas
+                                    </small>
+                                </td>
+                                <td>
+                                    <span class="badge id-status-{{ job.id }} 
+                                        {% if job.status == 'completed' %}bg-success
+                                        {% elif job.status == 'failed' %}bg-danger
+                                        {% elif job.status == 'running' %}bg-primary
+                                        {% else %}bg-secondary{% endif %}">
+                                        {{ job.status|capitalize }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if job.errors and job.status != 'running' %}
+                                    <button class="btn btn-sm btn-outline-warning" onclick="showErrors({{ job.id }})">
+                                        <i class="bi bi-exclamation-triangle"></i> Ver Erros
+                                    </button>
+                                    {% endif %}
+                                    {% if job.status in ['pending', 'running'] %}
+                                    <form action="{{ url_for('admin.cancel_import', id=job.id) }}" method="POST" class="d-inline" onsubmit="return confirm('Deseja realmente cancelar esta importação?')">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                                            <i class="bi bi-x-circle"></i> Cancelar
+                                        </button>
+                                    </form>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Errors Modal -->
+<div class="modal fade" id="errorsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Detalhes e Erros da Importação</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <ul id="errorsList" class="list-group list-group-flush">
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function showErrors(jobId) {
+        fetch(`/admin/imports/status/${jobId}`)
+            .then(r => r.json())
+            .then(data => {
+                const list = document.getElementById('errorsList');
+                list.innerHTML = '';
+                const errors = JSON.parse(data.errors || '[]');
+                if (errors.length === 0) {
+                    list.innerHTML = '<li class="list-group-item text-success">Nenhum erro encontrado durante o processamento.</li>';
+                } else {
+                    errors.forEach(err => {
+                        const li = document.createElement('li');
+                        li.className = 'list-group-item list-group-item-warning';
+                        li.innerText = err;
+                        list.appendChild(li);
+                    });
+                }
+                const modal = new bootstrap.Modal(document.getElementById('errorsModal'));
+                modal.show();
+            });
+    }
+
+    // Auto-update running jobs
+    setInterval(() => {
+        const runningJobs = document.querySelectorAll('.bg-primary');
+        runningJobs.forEach(badge => {
+            const jobId = badge.classList[1].split('-')[2];
+            fetch(`/admin/imports/status/${jobId}`)
+                .then(r => r.json())
+                .then(data => {
+                    const bar = document.getElementById(`progress-bar-${jobId}`);
+                    const text = document.getElementById(`progress-text-${jobId}`);
+
+                    if (bar) {
+                        bar.style.width = data.progress + '%';
+                        bar.innerText = data.progress + '%';
+                        bar.setAttribute('aria-valuenow', data.progress);
+                    }
+                    if (text) {
+                        text.innerText = `${data.processed} / ${data.total} linhas`;
+                    }
+
+                    if (data.status !== 'running') {
+                        location.reload(); // Refresh to update badges and colors once done
+                    }
+                });
+        });
+    }, 3000);
+</script>
+{% endblock %}
