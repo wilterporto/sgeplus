@@ -438,6 +438,58 @@ def get_dashboard_data(exam_id, regional_ids=None, unit_ids=None, class_ids=None
         dietary=dietary
     )
 
+    # 7. Map Data
+    map_data = {
+        'schools': [],
+        'missing_coords_count': 0
+    }
+    
+    # Base query for target schools based on exam scope
+    target_schools_query = TeachingUnit.query.filter_by(type='Escola', tenant_id=exam.tenant_id)
+    
+    # Restringe às escolas que efetivamente possuem alunos ativos no ano/série da prova
+    target_schools_query = target_schools_query.join(Class, Class.teaching_unit_id == TeachingUnit.id)
+    target_schools_query = target_schools_query.join(Enrollment, Enrollment.class_id == Class.id).filter(Enrollment.active == True)
+    
+    if exam.school_year_id:
+        target_schools_query = target_schools_query.filter(Class.school_year_id == exam.school_year_id)
+    
+    # First, apply exam scope
+    if exam.classes.count() > 0:
+        target_schools_query = target_schools_query.filter(Class.id.in_([c.id for c in exam.classes]))
+    elif exam.teaching_unit_id:
+        target_schools_query = target_schools_query.filter(TeachingUnit.id == exam.teaching_unit_id)
+    elif exam.regional_id:
+        target_schools_query = target_schools_query.filter(TeachingUnit.parent_id == exam.regional_id)
+        
+    # Then, apply user filters
+    if unit_ids:
+        target_schools_query = target_schools_query.filter(TeachingUnit.id.in_(unit_ids))
+    elif regional_ids:
+        target_schools_query = target_schools_query.filter(TeachingUnit.parent_id.in_(regional_ids))
+        
+    target_schools = target_schools_query.distinct().all()
+    
+    # Get scores from ranking to color code
+    school_scores = {s['name']: s['score'] for s in rankings['schools']}
+    
+    for sch in target_schools:
+        if sch.latitude and sch.longitude:
+            try:
+                lat = float(sch.latitude.replace(',', '.'))
+                lng = float(sch.longitude.replace(',', '.'))
+                map_data['schools'].append({
+                    'id': sch.id,
+                    'name': sch.name,
+                    'lat': lat,
+                    'lng': lng,
+                    'score': school_scores.get(sch.name, None)
+                })
+            except ValueError:
+                map_data['missing_coords_count'] += 1
+        else:
+            map_data['missing_coords_count'] += 1
+
     return {
         'kpis': {
             'avg_score': round(avg_score, 1),
@@ -463,6 +515,7 @@ def get_dashboard_data(exam_id, regional_ids=None, unit_ids=None, class_ids=None
         'radar_labels': radar_labels,
         'radar_data': radar_data,
         'rankings': rankings,
+        'map_data': map_data,
         'current_exam_title': current_display
     }
 

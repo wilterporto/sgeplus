@@ -199,12 +199,18 @@
                                 </td>
                                 <td>{{ unit.parent.name if unit.parent else '-' }}</td>
                                 <td class="text-center">
-                                    <span class="badge bg-light text-dark border rounded-pill">{{ unit.classes_count
-                                        }}</span>
+                                    {% if unit.type == 'Escola' %}
+                                    <span class="badge bg-light text-dark border rounded-pill">{{ unit.classes_count }}</span>
+                                    {% else %}
+                                    <span class="text-muted">-</span>
+                                    {% endif %}
                                 </td>
                                 <td class="text-center">
-                                    <span class="badge bg-light text-dark border rounded-pill">{{ unit.students_count
-                                        }}</span>
+                                    {% if unit.type == 'Escola' %}
+                                    <span class="badge bg-light text-dark border rounded-pill">{{ unit.students_count }}</span>
+                                    {% else %}
+                                    <span class="text-muted">-</span>
+                                    {% endif %}
                                 </td>
                                 <td class="text-end">
                                     <div class="btn-group">

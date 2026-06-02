@@ -262,9 +262,13 @@ class ExamItem(db.Model):
 class AbsenceReason(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     tenant_id = db.Column(db.Integer, db.ForeignKey('tenant.id'), nullable=True)
-    name = db.Column(db.String(128), nullable=False, unique=True)
+    name = db.Column(db.String(128), nullable=False)
     
     tenant = db.relationship('Tenant')
+    
+    __table_args__ = (
+        db.UniqueConstraint('tenant_id', 'name', name='uq_absence_reason_tenant_name'),
+    )
 
 class TeachingUnit(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -287,7 +291,14 @@ class TeachingUnit(db.Model):
     
     @property
     def classes_count(self):
-        return self.classes.count()
+        from app.models import Class
+        if self.type == 'Escola':
+            return self.classes.count()
+        else:
+            return db.session.query(db.func.count(Class.id))\
+                .join(TeachingUnit, Class.teaching_unit_id == TeachingUnit.id)\
+                .filter(TeachingUnit.parent_id == self.id)\
+                .scalar() or 0
         
     @property
     def students_count(self):

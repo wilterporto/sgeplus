@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 
 {% block content %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+
 <div
     class="d-flex flex-wrap justify-content-between align-items-center pt-3 pb-2 mb-3 border-bottom bg-white px-3 rounded shadow-sm">
     <h1 class="h4 mb-md-0"><i class="bi bi-speedometer2 text-primary"></i> Dashboard Integrado</h1>
@@ -236,6 +238,10 @@
             <li class="nav-item" role="presentation">
                 <button class="nav-link fw-bold border-0 border-bottom border-3" id="rankings-tab" data-bs-toggle="tab"
                     data-bs-target="#rankings-content" type="button" role="tab">Rankings</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link fw-bold border-0 border-bottom border-3" id="map-tab" data-bs-toggle="tab"
+                    data-bs-target="#map-content" type="button" role="tab">Mapa das Escolas</button>
             </li>
         </ul>
 
@@ -543,6 +549,22 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Map Tab -->
+            <div class="tab-pane fade" id="map-content" role="tabpanel">
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0 fw-bold"><i class="bi bi-geo-alt text-primary me-2"></i>Mapa das Escolas Alvo</h6>
+                    </div>
+                    <div class="card-body p-0 position-relative">
+                        <div id="mapMissingAlert" class="alert alert-warning m-3 d-none">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                            <strong>Atenção:</strong> <span id="mapMissingCount">0</span> escola(s) não estão presentes no mapa pois não têm informações de latitude e longitude no cadastro.
+                        </div>
+                        <div id="schoolsMap" style="height: 500px; width: 100%; z-index: 1;"></div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -612,7 +634,11 @@
 </style>
 {% endblock %}
 {% block scripts %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script>
+    let mapInstance = null;
+    let mapMarkers = [];
+
     const LEVELS = {
         REDE: 0,
         REGIONAL: 1,
@@ -887,6 +913,7 @@
                 updateDifficultyPerformance(data.difficulty_performance);
                 updateSkillsRadar(data.radar_labels, data.radar_data);
                 updateGlobalRankings(data.rankings);
+                if (typeof updateMap === 'function') { updateMap(data.map_data); }
                 renderBreadcrumbs();
                 updateComponentsPerformance(data.components_performance);
                 updateAbsenceReasonsChart(data.absence_reasons);
@@ -1562,6 +1589,74 @@
         // Render detailed questions table
         if (typeof updateQuestionsTable === 'function') {
             updateQuestionsTable(items);
+        }
+    }
+
+    function updateMap(mapData) {
+        if (!mapData) return;
+        
+        const missingAlert = document.getElementById('mapMissingAlert');
+        const missingCount = document.getElementById('mapMissingCount');
+        
+        if (mapData.missing_coords_count > 0) {
+            missingCount.innerText = mapData.missing_coords_count;
+            missingAlert.classList.remove('d-none');
+        } else {
+            missingAlert.classList.add('d-none');
+        }
+        
+        if (!mapInstance) {
+            mapInstance = L.map('schoolsMap').setView([-10.184, -48.333], 6); // Default view
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(mapInstance);
+            
+            // Fix map rendering issue when initialized in a hidden tab
+            const mapTab = document.getElementById('map-tab');
+            if (mapTab) {
+                mapTab.addEventListener('shown.bs.tab', function() {
+                    mapInstance.invalidateSize();
+                    if (mapMarkers.length > 0) {
+                        const group = new L.featureGroup(mapMarkers);
+                        mapInstance.fitBounds(group.getBounds(), {padding: [30, 30]});
+                    }
+                });
+            }
+        }
+        
+        // Remove existing markers
+        mapMarkers.forEach(m => mapInstance.removeLayer(m));
+        mapMarkers = [];
+        
+        mapData.schools.forEach(sch => {
+            if (sch.lat && sch.lng) {
+                // Determine marker color based on score
+                let color = '#0d6efd'; // blue
+                if (sch.score !== null) {
+                    if (sch.score >= 75) color = '#198754'; // green
+                    else if (sch.score >= 50) color = '#ffc107'; // yellow
+                    else color = '#dc3545'; // red
+                }
+                
+                const iconHtml = `<div style="background-color: ${color}; width: 16px; height: 16px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 4px rgba(0,0,0,0.5);"></div>`;
+                const customIcon = L.divIcon({
+                    html: iconHtml,
+                    className: 'custom-leaflet-marker',
+                    iconSize: [16, 16],
+                    iconAnchor: [8, 8]
+                });
+                
+                const marker = L.marker([sch.lat, sch.lng], {icon: customIcon}).addTo(mapInstance);
+                const scoreText = sch.score !== null ? `Proficiência: ${sch.score.toFixed(1)}%` : 'Sem resultados processados';
+                marker.bindPopup(`<strong>${sch.name}</strong><br>${scoreText}`);
+                mapMarkers.push(marker);
+            }
+        });
+        
+        const isActive = document.getElementById('map-content').classList.contains('active');
+        if (isActive && mapMarkers.length > 0) {
+            const group = new L.featureGroup(mapMarkers);
+            mapInstance.fitBounds(group.getBounds(), {padding: [30, 30]});
         }
     }
 </script>

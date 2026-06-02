@@ -331,8 +331,8 @@
             </div>
             {% if pagination.pages > 1 %}
             <div class="card-footer bg-transparent border-top-0 py-3">
-                <nav aria-label="Page navigation">
-                    <ul class="pagination justify-content-center mb-0">
+                <nav aria-label="Page navigation" class="d-flex justify-content-center align-items-center flex-wrap gap-3">
+                    <ul class="pagination mb-0">
                         {% if pagination.has_prev %}
                         <li class="page-item">
                             <a class="page-link shadow-none"
@@ -354,6 +354,14 @@
                         <li class="page-item disabled"><span class="page-link shadow-none">Próxima</span></li>
                         {% endif %}
                     </ul>
+                    <div class="d-flex align-items-center">
+                        <span class="text-muted small me-2">Página {{ pagination.page }} de {{ pagination.pages }}</span>
+                        <select class="form-select form-select-sm w-auto shadow-none" onchange="window.location.href=this.value">
+                            {% for p in range(1, pagination.pages + 1) %}
+                            <option value="{{ url_for('matrices.list_descriptors', page=p, matrix_id=current_matrix_id) }}" {% if p == pagination.page %}selected{% endif %}>Ir para pág. {{ p }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
                 </nav>
             </div>
             {% endif %}
