@@ -26,130 +26,168 @@
             <form method="POST" id="generate-form">
                 {{ form.hidden_tag() }}
 
-                {% if not is_teacher and not is_unidade %}
-                <div class="mb-3">
-                    {{ form.evaluation_id.label(class="form-label required") }}
-                    {{ form.evaluation_id(class="form-select") }}
-                    <div class="form-text">
-                        Não encontrou a avaliação? <a href="{{ url_for('academic.list_evaluations') }}"
-                            class="text-decoration-none">Cadastre aqui</a>.
+                <!-- CARD 1: Dados Básicos -->
+                <div class="card mb-4 shadow-sm border-0">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="bi bi-info-circle me-2"></i>Dados Básicos</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if not is_teacher and not is_unidade %}
+                        <div class="mb-3">
+                            {{ form.evaluation_id.label(class="form-label required") }}
+                            {{ form.evaluation_id(class="form-select") }}
+                            <div class="form-text">
+                                Não encontrou a avaliação? <a href="{{ url_for('academic.list_evaluations') }}"
+                                    class="text-decoration-none">Cadastre aqui</a>.
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                {{ form.application_date.label(class="form-label required") }}
+                                {{ form.application_date(class="form-control", type="date") }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.scoring_type.label(class="form-label required") }}
+                                {{ form.scoring_type(class="form-select", id="scoring_type") }}
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3" id="div_total_value" style="display:none;">
+                            <div class="col-md-6"></div>
+                            <div class="col-md-6">
+                                {{ form.total_value.label(class="form-label", id="label_total_value") }}
+                                {{ form.total_value(class="form-control", placeholder="Ex: 10.0") }}
+                                <div class="form-text small text-muted" id="help_total_value"></div>
+                            </div>
+                        </div>
+
+                        {% if not is_teacher and not is_unidade %}
+                        <div class="form-check">
+                            {{ form.allow_teacher_entry(class="form-check-input") }}
+                            {{ form.allow_teacher_entry.label(class="form-check-label") }}
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
-                {% endif %}
 
-                <div class="row mb-3">
-                    <div class="col-md-12">
-                        {{ form.application_date.label(class="form-label required") }}
-                        {{ form.application_date(class="form-control", type="date") }}
+                <!-- CARD 2: Filtros de Questões -->
+                <div class="card mb-4 shadow-sm border-0">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0"><i class="bi bi-funnel me-2"></i>Filtros de Questões</h5>
                     </div>
-                </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                {{ form.difficulty.label(class="form-label required") }}
+                                {{ form.difficulty(class="form-select") }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.quantity.label(class="form-label required") }}
+                                {{ form.quantity(class="form-select", id="total_quantity") }}
+                                <div class="invalid-feedback" id="quantity_error_msg"></div>
+                            </div>
+                        </div>
 
-                <div class="row mb-3 bg-light p-3 border rounded" {% if is_teacher or is_unidade %}style="display:none;" {% endif %}>
-                    <div class="col-md-4">
-                        {{ form.scope_type.label(class="form-label required") }}
-                        {{ form.scope_type(class="form-select", id="scope_type") }}
-                    </div>
-                    <div class="col-md-8" id="div_regional" style="display:none;">
-                        {{ form.regional_id.label(class="form-label") }}
-                        {{ form.regional_id(class="form-select", multiple=True, style="height: 100px;") }}
-                        <div class="form-text text-primary small">
-                            <i class="bi bi-info-circle me-1"></i> Segure CTRL para selecionar múltiplas regionais.
+                        <div class="row mb-3">
+                            <div class="col-md-12 mb-3">
+                                {{ form.matrix_id.label(class="form-label required") }}
+                                {{ form.matrix_id(class="form-select") }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form.school_year_id.label(class="form-label required") }}
+                                {{ form.school_year_id(class="form-select", id="school_year_id") }}
+                            </div>
+                            <div class="col-md-6 mb-3" id="div_subject_id">
+                                {{ form.subject_id.label(class="form-label required") }}
+                                {{ form.subject_id(class="form-select", id="subject_id") }}
+                            </div>
+                            <div class="col-md-6 mb-3" id="div_subject_ids" style="display:none;">
+                                {{ form.subject_ids.label(class="form-label required") }}
+                                {{ form.subject_ids(class="form-select", id="subject_ids", multiple=True, style="height: 100px;") }}
+                                <div class="form-text text-primary small">
+                                    <i class="bi bi-info-circle me-1"></i> Segure CTRL para selecionar múltiplos componentes.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Dynamic Component Quantities -->
+                        <div id="component_quantities_container" class="mb-3" style="display: none;">
+                            <h6 class="border-bottom pb-2 mb-3">Quantidade por Componente Curricular</h6>
+                            <div id="component_quantities_list" class="row"></div>
+                            <div class="form-text text-muted" id="component_quantities_help"></div>
+                        </div>
+
+                        <div class="mb-2">
+                            {{ form.descriptor_ids.label(class="form-label") }}
+                            {{ form.descriptor_ids(class="form-select", id="descriptor_ids", style="height: 150px;") }}
+                            <div class="form-text">
+                                <i class="bi bi-info-circle me-1"></i> Selecione um ou mais descritores. Segure CTRL para múltiplas.
+                            </div>
                         </div>
                     </div>
-                    <div class="col-md-8" id="div_school" style="display:none;">
-                        {{ form.teaching_unit_id.label(class="form-label") }}
-                        {{ form.teaching_unit_id(class="form-select", multiple=True, style="height: 100px;") }}
-                        <div class="form-text text-primary small">
-                            <i class="bi bi-info-circle me-1"></i> Segure CTRL para selecionar múltiplas unidades.
+                </div>
+
+                <!-- CARD 3: Público Alvo -->
+                <div class="card mb-4 shadow-sm border-0">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0"><i class="bi bi-people me-2"></i>Público Alvo</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3" {% if is_teacher or is_unidade %}style="display:none;" {% endif %}>
+                            <div class="col-md-12">
+                                {{ form.scope_type.label(class="form-label required") }}
+                                {{ form.scope_type(class="form-select", id="scope_type") }}
+                            </div>
+                            <div class="col-md-12 mt-3" id="div_regional" style="display:none;">
+                                {{ form.regional_id.label(class="form-label") }}
+                                {{ form.regional_id(class="form-select", multiple=True, style="height: 250px;") }}
+                                <div class="form-text text-primary small">
+                                    <i class="bi bi-info-circle me-1"></i> Segure CTRL para selecionar múltiplas regionais.
+                                </div>
+                            </div>
+                            <div class="col-md-12 mt-3" id="div_school" style="display:none;">
+                                {{ form.teaching_unit_id.label(class="form-label") }}
+                                {{ form.teaching_unit_id(class="form-select", multiple=True, style="height: 250px;") }}
+                                <div class="form-text text-primary small">
+                                    <i class="bi bi-info-circle me-1"></i> Segure CTRL para selecionar múltiplas unidades.
+                                </div>
+                            </div>
+                            <div class="col-md-12 mt-3" id="div_city" style="display:none;">
+                                {{ form.target_cities.label(class="form-label") }}
+                                {{ form.target_cities(class="form-select", multiple=True, style="height: 250px;") }}
+                                <div class="form-text text-primary small">
+                                    <i class="bi bi-info-circle me-1"></i> Segure CTRL para selecionar múltiplos municípios.
+                                </div>
+                            </div>
+                        </div>
+
+                        {% if is_teacher or is_unidade %}
+                        <div class="mb-3" id="div_professor_classes">
+                            {{ form.class_ids.label(class="form-label required") }}
+                            {{ form.class_ids(class="form-select", multiple=True, style="height: 100px;",
+                            id="class_ids_selector") }}
+                            <div class="form-text text-primary small">
+                                <i class="bi bi-info-circle me-1"></i> Selecione as turmas para as quais a prova será válida.
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <div class="row">
+                            <div class="col-md-6 mb-2">
+                                {{ form.target_nationality.label(class="form-label") }}
+                                {{ form.target_nationality(class="form-select") }}
+                                <div class="form-text small">Define se a prova aparecerá para estrangeiros.</div>
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                {{ form.special_needs_filter.label(class="form-label") }}
+                                {{ form.special_needs_filter(class="form-select") }}
+                                <div class="form-text small">Filtra a prova por situação de deficiência.</div>
+                            </div>
                         </div>
                     </div>
                 </div>
-
-
-                <div class="row mb-3">
-                    <div class="col-md-12 mb-3">
-                        {{ form.matrix_id.label(class="form-label required") }}
-                        {{ form.matrix_id(class="form-select") }}
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        {{ form.school_year_id.label(class="form-label required") }}
-                        {{ form.school_year_id(class="form-select", id="school_year_id") }}
-                    </div>
-                    <div class="col-md-6 mb-3" id="div_subject_id">
-                        {{ form.subject_id.label(class="form-label required") }}
-                        {{ form.subject_id(class="form-select", id="subject_id") }}
-                    </div>
-                    <div class="col-md-6 mb-3" id="div_subject_ids" style="display:none;">
-                        {{ form.subject_ids.label(class="form-label required") }}
-                        {{ form.subject_ids(class="form-select", id="subject_ids", multiple=True, style="height: 100px;") }}
-                        <div class="form-text text-primary small">
-                            <i class="bi bi-info-circle me-1"></i> Segure CTRL para selecionar múltiplos componentes.
-                        </div>
-                    </div>
-                </div>
-
-                {% if is_teacher or is_unidade %}
-                <div class="mb-3" id="div_professor_classes">
-                    {{ form.class_ids.label(class="form-label required") }}
-                    {{ form.class_ids(class="form-select", multiple=True, style="height: 100px;",
-                    id="class_ids_selector") }}
-                    <div class="form-text text-primary small">
-                        <i class="bi bi-info-circle me-1"></i> Selecione as turmas para as quais a prova será válida.
-                    </div>
-                </div>
-                {% endif %}
-
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        {{ form.difficulty.label(class="form-label required") }}
-                        {{ form.difficulty(class="form-select") }}
-                    </div>
-                    <div class="col-md-6">
-                        {{ form.quantity.label(class="form-label required") }}
-                        {{ form.quantity(class="form-select") }}
-                    </div>
-                </div>
-
-                <div class="row mb-3 p-3 border rounded bg-light">
-                    <div class="col-md-6">
-                        {{ form.scoring_type.label(class="form-label required") }}
-                        {{ form.scoring_type(class="form-select", id="scoring_type") }}
-                    </div>
-                    <div class="col-md-6" id="div_total_value" style="display:none;">
-                        {{ form.total_value.label(class="form-label", id="label_total_value") }}
-                        {{ form.total_value(class="form-control", placeholder="Ex: 10.0") }}
-                        <div class="form-text small text-muted" id="help_total_value"></div>
-                    </div>
-                </div>
-
-                <div class="row mb-3 p-3 border rounded bg-white">
-                    <div class="col-md-6 mb-2">
-                        {{ form.target_nationality.label(class="form-label") }}
-                        {{ form.target_nationality(class="form-select") }}
-                        <div class="form-text small">Define se a prova aparecerá para estrangeiros.</div>
-                    </div>
-                    <div class="col-md-6 mb-2">
-                        {{ form.special_needs_filter.label(class="form-label") }}
-                        {{ form.special_needs_filter(class="form-select") }}
-                        <div class="form-text small">Filtra a prova por situação de deficiência.</div>
-                    </div>
-                </div>
-
-                <div class="mb-4">
-                    {{ form.descriptor_ids.label(class="form-label") }}
-                    {{ form.descriptor_ids(class="form-select", id="descriptor_ids", style="height: 150px;") }}
-                    <div class="form-text">
-                        <i class="bi bi-info-circle me-1"></i> Selecione um ou mais descritores. Segure CTRL para
-                        múltiplas.
-                    </div>
-                </div>
-
-                {% if not is_teacher and not is_unidade %}
-                <div class="mb-4 form-check">
-                    {{ form.allow_teacher_entry(class="form-check-input") }}
-                    {{ form.allow_teacher_entry.label(class="form-check-label") }}
-                </div>
-                {% endif %}
 
                 <button type="submit" class="btn btn-primary d-flex align-items-center justify-content-center">
                     <i class="bi bi-shuffle me-2"></i>
@@ -165,9 +203,11 @@
         const val = this.value;
         const divRegional = document.getElementById('div_regional');
         const divSchool = document.getElementById('div_school');
+        const divCity = document.getElementById('div_city');
 
         divRegional.style.display = (val === 'regional') ? 'block' : 'none';
         divSchool.style.display = (val === 'school') ? 'block' : 'none';
+        if (divCity) divCity.style.display = (val === 'city') ? 'block' : 'none';
     });
 
     // Trigger once on load
@@ -302,12 +342,104 @@
             .catch(error => console.error('Error fetching descriptors:', error));
     }
 
-    // Set up listeners
+    // Dynamic component quantities logic
+    const totalQtySelect = document.getElementById('total_quantity');
+    const compQuantitiesContainer = document.getElementById('component_quantities_container');
+    const compQuantitiesList = document.getElementById('component_quantities_list');
+    const compQuantitiesHelp = document.getElementById('component_quantities_help');
+
+    function updateComponentQuantities() {
+        const isMultiple = checkMultipleComponents();
+        if (!isMultiple) {
+            compQuantitiesContainer.style.display = 'none';
+            return;
+        }
+
+        const selectedOptions = Array.from(subjectIdsSelect.selectedOptions);
+        if (selectedOptions.length === 0) {
+            compQuantitiesContainer.style.display = 'none';
+            return;
+        }
+
+        compQuantitiesContainer.style.display = 'block';
+        
+        // Save current values to preserve them during re-render
+        const currentValues = {};
+        compQuantitiesList.querySelectorAll('input').forEach(input => {
+            currentValues[input.dataset.subjectId] = input.value;
+        });
+
+        compQuantitiesList.innerHTML = '';
+        selectedOptions.forEach(opt => {
+            const subjectId = opt.value;
+            const subjectName = opt.textContent;
+            const val = currentValues[subjectId] || '0';
+
+            const col = document.createElement('div');
+            col.className = 'col-md-4 mb-2';
+            col.innerHTML = `
+                <label class="form-label small mb-1">${subjectName}</label>
+                <input type="number" name="component_quantity_${subjectId}" data-subject-id="${subjectId}" class="form-control form-control-sm component-qty-input" min="0" value="${val}">
+            `;
+            compQuantitiesList.appendChild(col);
+        });
+
+        validateComponentQuantities();
+
+        // Add event listeners to new inputs
+        compQuantitiesList.querySelectorAll('input').forEach(input => {
+            input.addEventListener('input', validateComponentQuantities);
+        });
+    }
+
+    function validateComponentQuantities() {
+        const isMultiple = checkMultipleComponents();
+        if (!isMultiple) return true;
+
+        const totalQty = parseInt(totalQtySelect.value) || 0;
+        let sum = 0;
+        compQuantitiesList.querySelectorAll('input').forEach(input => {
+            sum += parseInt(input.value) || 0;
+        });
+
+        const btnSubmit = document.querySelector('#generate-form button[type="submit"]');
+        const qtyErrorMsg = document.getElementById('quantity_error_msg');
+
+        if (sum > totalQty) {
+            compQuantitiesHelp.innerHTML = `<span class="text-danger"><i class="bi bi-exclamation-triangle"></i> A soma das questões (${sum}) ultrapassa o limite total da prova (${totalQty}).</span>`;
+            totalQtySelect.classList.add('is-invalid');
+            qtyErrorMsg.textContent = 'Aumente a Quantidade de Questões ou reduza as dos componentes.';
+            btnSubmit.disabled = true;
+            return false;
+        } else if (sum < totalQty) {
+             compQuantitiesHelp.innerHTML = `<span class="text-danger"><i class="bi bi-info-circle"></i> A soma das questões (${sum}) deve ser exatamente igual ao limite total da prova (${totalQty}).</span>`;
+             totalQtySelect.classList.add('is-invalid');
+             qtyErrorMsg.textContent = 'A soma das questões dos componentes deve ser igual ao total.';
+             btnSubmit.disabled = true;
+             return false;
+        } else {
+            compQuantitiesHelp.innerHTML = `<span class="text-success"><i class="bi bi-check-circle"></i> A soma está dentro do limite exato (${sum}/${totalQty}).</span>`;
+            totalQtySelect.classList.remove('is-invalid');
+            btnSubmit.disabled = false;
+            return true;
+        }
+    }
+
+    totalQtySelect.addEventListener('change', validateComponentQuantities);
+
+    if (subjectIdsSelect) {
+        subjectIdsSelect.addEventListener('change', function() {
+            updateDescriptors();
+            updateComponentQuantities();
+        });
+    }
+
     const evalSelect = document.getElementById('evaluation_id');
     if (evalSelect) {
         evalSelect.addEventListener('change', function() {
             toggleSubjectFields();
             updateCurriculumSubjects();
+            updateComponentQuantities();
         });
     }
 
@@ -319,17 +451,13 @@
         subjectSelect.addEventListener('change', updateDescriptors);
     }
 
-    const subjectIdsSelect = document.getElementById('subject_ids');
-    if (subjectIdsSelect) {
-        subjectIdsSelect.addEventListener('change', updateDescriptors);
-    }
-
     matrixSelect.addEventListener('change', updateDescriptors);
 
     // Initial load configurations
     toggleSubjectFields();
     if (checkMultipleComponents()) {
         updateCurriculumSubjects();
+        setTimeout(updateComponentQuantities, 500); // Give time for subjects to load
     } else {
         if (matrixSelect.value != '0') {
             updateDescriptors();
@@ -347,7 +475,7 @@
         if (val === 'none') {
             divTotalValue.style.display = 'none';
         } else {
-            divTotalValue.style.display = 'block';
+            divTotalValue.style.display = 'flex';
             if (val === 'fixed') {
                 labelTotalValue.textContent = 'Valor por Questão';
                 helpTotalValue.textContent = 'Este valor será atribuído a cada questão da prova.';

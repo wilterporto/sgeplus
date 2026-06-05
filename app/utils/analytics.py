@@ -473,6 +473,20 @@ def get_dashboard_data(exam_id, regional_ids=None, unit_ids=None, class_ids=None
     # Get scores from ranking to color code
     school_scores = {s['name']: s['score'] for s in rankings['schools']}
     
+    school_levels = {}
+    for student in rankings['students']:
+        school_name = student['sub']
+        score = student['score']
+        
+        if score < 25: level = 1
+        elif score < 50: level = 2
+        elif score < 75: level = 3
+        else: level = 4
+        
+        if school_name not in school_levels:
+            school_levels[school_name] = set()
+        school_levels[school_name].add(level)
+    
     for sch in target_schools:
         if sch.latitude and sch.longitude:
             try:
@@ -483,7 +497,8 @@ def get_dashboard_data(exam_id, regional_ids=None, unit_ids=None, class_ids=None
                     'name': sch.name,
                     'lat': lat,
                     'lng': lng,
-                    'score': school_scores.get(sch.name, None)
+                    'score': school_scores.get(sch.name, None),
+                    'levels': list(school_levels.get(sch.name, set()))
                 })
             except ValueError:
                 map_data['missing_coords_count'] += 1
@@ -586,13 +601,13 @@ def get_rankings_data(exam_id, regional_ids=None, unit_ids=None, class_ids=None,
         return {'schools': [], 'classes': [], 'students': [], 'professors': []}
 
     # Schools Ranking
-    schools_ranking = db.session.query(TeachingUnit.name, func.avg(StudentResult.score_percentage).label('score'))\
+    schools_ranking = db.session.query(TeachingUnit.name, func.avg(StudentResult.score_percentage).label('score'), TeachingUnit.municipio)\
         .join(Class, Class.teaching_unit_id == TeachingUnit.id)\
         .join(Enrollment, Enrollment.class_id == Class.id)\
         .join(Student, Student.id == Enrollment.student_id)\
         .join(StudentResult, StudentResult.student_id == Student.id)\
         .filter(StudentResult.id.in_(result_ids))\
-        .group_by(TeachingUnit.name).order_by(sa.desc('score')).all()
+        .group_by(TeachingUnit.name, TeachingUnit.municipio).order_by(sa.desc('score')).all()
 
     # Classes Ranking
     classes_ranking = db.session.query(Class.name, TeachingUnit.name, func.avg(StudentResult.score_percentage).label('score'))\
@@ -604,7 +619,7 @@ def get_rankings_data(exam_id, regional_ids=None, unit_ids=None, class_ids=None,
         .group_by(Class.id, TeachingUnit.name).order_by(sa.desc('score')).all()
 
     # Students Ranking
-    students_ranking = db.session.query(Student.name, StudentResult.score_percentage.label('score'), TeachingUnit.name)\
+    students_ranking = db.session.query(Student.name, StudentResult.score_percentage.label('score'), TeachingUnit.name, Class.name.label('class_name'))\
         .join(StudentResult, StudentResult.student_id == Student.id)\
         .join(Enrollment, Enrollment.student_id == Student.id).filter(Enrollment.active == True)\
         .join(Class, Class.id == Enrollment.class_id)\
@@ -628,9 +643,9 @@ def get_rankings_data(exam_id, regional_ids=None, unit_ids=None, class_ids=None,
     professors_ranking = prof_query.group_by(Professor.id).order_by(sa.desc('score')).all()
 
     return {
-        'schools': [{'name': r[0], 'score': round(r[1] or 0, 2)} for r in schools_ranking],
+        'schools': [{'name': r[0], 'score': round(r[1] or 0, 2), 'municipio': r[2]} for r in schools_ranking],
         'classes': [{'name': r[0], 'sub': r[1], 'score': round(r[2] or 0, 2)} for r in classes_ranking],
-        'students': [{'name': r[0], 'sub': r[2], 'score': round(r[1] or 0, 2)} for r in students_ranking],
+        'students': [{'name': r[0], 'sub': r[2], 'score': round(r[1] or 0, 2), 'class_name': r[3]} for r in students_ranking],
         'professors': [{'name': r[0], 'score': round(r[1] or 0, 2)} for r in professors_ranking]
     }
 

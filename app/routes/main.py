@@ -125,6 +125,21 @@ def settings():
             
             current_app.logger.info("Login background saved to database successfully.")
             
+        # Save Favicon
+        if form.favicon.data:
+            if not allowed_file(form.favicon.data.filename, ['ico', 'png']):
+                flash("Formato de favicon inválido. Apenas ICO e PNG são permitidos.", "danger")
+                return redirect(url_for("main.settings"))
+            current_app.logger.info(f"Processing favicon: {form.favicon.data.filename}")
+            
+            file_data = form.favicon.data.read()
+            SystemConfig.set_data('favicon_image', file_data)
+            
+            filename = secure_filename(form.favicon.data.filename)
+            SystemConfig.set_value('favicon_filename', filename)
+            
+            current_app.logger.info("Favicon saved to database successfully.")
+            
         # Save SMTP Settings
         SystemConfig.set_value('smtp_server', form.smtp_server.data)
         SystemConfig.set_value('smtp_port', str(form.smtp_port.data) if form.smtp_port.data is not None else '')
@@ -156,7 +171,8 @@ def settings():
     
     current_logo = SystemConfig.get_value('logo_filename')
     current_login_bg = SystemConfig.get_value('login_bg_filename')
-    return render_template('settings.html', form=form, current_logo=current_logo, current_login_bg=current_login_bg)
+    current_favicon = SystemConfig.get_value('favicon_filename')
+    return render_template('settings.html', form=form, current_logo=current_logo, current_login_bg=current_login_bg, current_favicon=current_favicon)
 
 @main_bp.route('/settings/logo')
 def get_logo():
@@ -248,6 +264,45 @@ def remove_login_bg():
         log_audit('DELETE', 'SystemConfig', 0, "Removeu a imagem de fundo de login do sistema")
 
     flash('Imagem de Fundo Módulo Login removida com sucesso!', 'success')
+        
+    return redirect(url_for('main.settings'))
+
+@main_bp.route('/settings/favicon')
+def get_favicon():
+    from app.models import SystemConfig
+    from flask import send_file
+    import io
+    
+    data = SystemConfig.get_data('favicon_image')
+    if data:
+        filename = SystemConfig.get_value('favicon_filename') or 'favicon.ico'
+        mimetype = 'image/png' if filename.endswith('.png') else 'image/x-icon'
+        return send_file(io.BytesIO(data), mimetype=mimetype)
+    
+    # Fallback or 404
+    return "No favicon", 404
+
+@main_bp.route('/settings/remove_favicon', methods=['POST'])
+def remove_favicon():
+    from app.models import SystemConfig
+    from flask import redirect, url_for, flash
+    from flask_login import login_required, current_user
+    
+    if not current_user.is_authenticated or not current_user.is_admin:
+        flash('Acesso não autorizado', 'danger')
+        return redirect(url_for('main.index'))
+
+    SystemConfig.set_value('favicon_filename', None)
+    
+    favicon_data_item = SystemConfig.query.filter_by(key='favicon_image').first()
+    if favicon_data_item:
+        from app import db
+        db.session.delete(favicon_data_item)
+        db.session.commit()
+        from app.audit_utils import log_audit
+        log_audit('DELETE', 'SystemConfig', 0, "Removeu o favicon do sistema")
+
+    flash('Favicon removido com sucesso!', 'success')
         
     return redirect(url_for('main.settings'))
 

@@ -1,4 +1,4 @@
-from flask import render_template, flash, redirect, url_for
+from flask import render_template, flash, redirect, url_for, send_file, request, jsonify
 from flask_login import login_required, current_user
 from app.routes import reports_bp
 from app.models import StudentResult, Question, Descriptor, Exam, db, ExamItem, AbsenceReason, Student, Enrollment, Class, SchoolYear
@@ -6,9 +6,9 @@ from sqlalchemy import func
 import json
 import random
 from datetime import datetime
-
-from app.utils.analytics import get_exam_selectors, get_dashboard_data
-from flask import request, jsonify
+from io import BytesIO
+from xhtml2pdf import pisa
+from app.utils.analytics import get_exam_selectors, get_dashboard_data, get_rankings_data
 
 @reports_bp.route('/')
 @login_required
@@ -154,6 +154,115 @@ def seed_absence_reasons():
         )
     return redirect(url_for('reports.dashboard'))
 
+@reports_bp.route('/export/students-by-level')
+@login_required
+def export_students_by_level():
+    exam_id = request.args.get('exam_id', type=int)
+    level = request.args.get('level', type=int)
+    if not exam_id or not level:
+        return "Exam ID e Nível são obrigatórios", 400
+
+    regional_ids = request.args.getlist('regional_id[]', type=int)
+    unit_ids = request.args.getlist('unit_id[]', type=int)
+    school_year_ids = request.args.getlist('school_year_id[]', type=int)
+    class_ids = request.args.getlist('class_id[]', type=int)
+    races = request.args.getlist('races[]')
+    nationalities = request.args.getlist('nationalities[]')
+    incomes = request.args.getlist('incomes[]')
+    zones = request.args.getlist('zones[]')
+    locations = request.args.getlist('locations[]')
+    deficiency = request.args.getlist('deficiency[]')
+    bolsa = request.args.getlist('bolsa[]')
+    dietary = request.args.getlist('dietary[]')
+
+    rankings = get_rankings_data(
+        exam_id, regional_ids, unit_ids, class_ids, school_year_ids,
+        races, nationalities, incomes, zones, locations, deficiency, bolsa, dietary
+    )
+
+    filtered_students = []
+    for s in rankings.get('students', []):
+        score = s['score']
+        if score < 25: s_level = 1
+        elif score < 50: s_level = 2
+        elif score < 75: s_level = 3
+        else: s_level = 4
+        
+        if s_level == level:
+            filtered_students.append(s)
+
+    # Order alphabetically by school and then by student
+    filtered_students.sort(key=lambda x: (x['sub'] or '', x['name'] or ''))
+
+    exam = Exam.query.get_or_404(exam_id)
+    html = render_template('reports/pdf_students_by_level.html', 
+                           students=filtered_students, 
+                           level=level, 
+                           exam=exam,
+                           now=datetime.now())
+    
+    dest = BytesIO()
+    pisa_status = pisa.CreatePDF(html, dest=dest)
+    if pisa_status.err:
+        return "Erro ao gerar PDF", 500
+    
+    dest.seek(0)
+    return send_file(dest, download_name=f"alunos_nivel_{level}.pdf", as_attachment=True, mimetype='application/pdf')
+
+@reports_bp.route('/export/schools-by-proficiency')
+@login_required
+def export_schools_by_proficiency():
+    exam_id = request.args.get('exam_id', type=int)
+    prof_op = request.args.get('prof_op')
+    prof_val = request.args.get('prof_val', type=float)
+    if not exam_id or not prof_op or prof_val is None:
+        return "Exam ID, Operador e Valor são obrigatórios", 400
+
+    regional_ids = request.args.getlist('regional_id[]', type=int)
+    unit_ids = request.args.getlist('unit_id[]', type=int)
+    school_year_ids = request.args.getlist('school_year_id[]', type=int)
+    class_ids = request.args.getlist('class_id[]', type=int)
+    races = request.args.getlist('races[]')
+    nationalities = request.args.getlist('nationalities[]')
+    incomes = request.args.getlist('incomes[]')
+    zones = request.args.getlist('zones[]')
+    locations = request.args.getlist('locations[]')
+    deficiency = request.args.getlist('deficiency[]')
+    bolsa = request.args.getlist('bolsa[]')
+    dietary = request.args.getlist('dietary[]')
+
+    rankings = get_rankings_data(
+        exam_id, regional_ids, unit_ids, class_ids, school_year_ids,
+        races, nationalities, incomes, zones, locations, deficiency, bolsa, dietary
+    )
+
+    filtered_schools = []
+    for s in rankings.get('schools', []):
+        score = s['score']
+        if score is None: continue
+        if prof_op == '<' and score < prof_val:
+            filtered_schools.append(s)
+        elif prof_op == '>' and score > prof_val:
+            filtered_schools.append(s)
+
+    # Order alphabetically by school
+    filtered_schools.sort(key=lambda x: x['name'] or '')
+
+    exam = Exam.query.get_or_404(exam_id)
+    html = render_template('reports/pdf_schools_by_proficiency.html', 
+                           schools=filtered_schools, 
+                           prof_op=prof_op, 
+                           prof_val=prof_val, 
+                           exam=exam,
+                           now=datetime.now())
+    
+    dest = BytesIO()
+    pisa_status = pisa.CreatePDF(html, dest=dest)
+    if pisa_status.err:
+        return "Erro ao gerar PDF", 500
+    
+    dest.seek(0)
+    return send_file(dest, download_name=f"escolas_proficiencia.pdf", as_attachment=True, mimetype='application/pdf')
 
 @reports_bp.route('/seed')
 def seed_data():

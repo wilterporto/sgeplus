@@ -1,5 +1,0 @@
-RELATÓRIO DE ERROS DE IMPORTAÇÃO
-Data/Hora: 28/05/2026 11:58:58
-----------------------------------------
-
-- Linha 2: Tema 'Theme A' não encontrado na Matriz 'Matrix B'.

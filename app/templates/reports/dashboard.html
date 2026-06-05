@@ -162,7 +162,10 @@
             <div class="col-md-3">
                 <div class="card text-center border-0 bg-info text-white shadow-sm h-100">
                     <div class="card-body py-3">
-                        <div class="small opacity-75 mb-1 text-uppercase fw-bold">Status Rede</div>
+                        <div class="small opacity-75 mb-1 text-uppercase fw-bold d-flex align-items-center justify-content-center">
+                            Status Rede
+                            <i class="bi bi-info-circle ms-2" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-html="true" title="Status da Rede" data-bs-content="<b>Excelente:</b> &ge; 70%<br><b>Em Evolução:</b> 50% a 69,9%<br><b>Crítico:</b> &lt; 50%" style="cursor: help;"></i>
+                        </div>
                         <h3 id="kpi-status" class="mt-1 mb-0 fw-bold">-</h3>
                     </div>
                 </div>
@@ -556,6 +559,43 @@
                     <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
                         <h6 class="mb-0 fw-bold"><i class="bi bi-geo-alt text-primary me-2"></i>Mapa das Escolas Alvo</h6>
                     </div>
+                    <div class="card-body p-3 position-relative bg-light border-bottom">
+                        <div class="row g-2 align-items-end">
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold small mb-1">Nível de proficiência dos alunos</label>
+                                <select id="mapFilterLevel" class="form-select form-select-sm" onchange="applyMapFilters()">
+                                    <option value="">Todos</option>
+                                    <option value="1">Nível 1 (&lt;25%)</option>
+                                    <option value="2">Nível 2 (25%-49,9%)</option>
+                                    <option value="3">Nível 3 (50%-74,9%)</option>
+                                    <option value="4">Nível 4 (75%-100%)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold small mb-1">Proficiência da escola</label>
+                                <select id="mapFilterSchoolProfOp" class="form-select form-select-sm" onchange="toggleSchoolProfVal(); applyMapFilters()">
+                                    <option value="">Todos</option>
+                                    <option value="<">Abaixo de</option>
+                                    <option value=">">Acima de</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4" id="mapFilterSchoolProfValContainer" style="display: none;">
+                                <label class="form-label fw-bold small mb-1">Comparativo (%)</label>
+                                <div class="input-group input-group-sm">
+                                    <input type="number" id="mapFilterSchoolProfVal" class="form-control form-control-sm" min="0" max="100" onchange="applyMapFilters()" onkeyup="applyMapFilters()">
+                                    <span class="input-group-text">%</span>
+                                </div>
+                            </div>
+                            <div class="col-md-12 mt-3" id="mapExportContainer" style="display: none;">
+                                <button id="btnExportStudents" class="btn btn-sm btn-outline-primary" style="display: none;" onclick="exportMapStudents()">
+                                    <i class="bi bi-printer"></i> Imprimir Relação de Alunos
+                                </button>
+                                <button id="btnExportSchools" class="btn btn-sm btn-outline-primary ms-2" style="display: none;" onclick="exportMapSchools()">
+                                    <i class="bi bi-download"></i> Baixar Relatório de Escolas
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                     <div class="card-body p-0 position-relative">
                         <div id="mapMissingAlert" class="alert alert-warning m-3 d-none">
                             <i class="bi bi-exclamation-triangle-fill me-2"></i>
@@ -687,6 +727,10 @@
     // Trigger change event on page load if an exam is already pre-selected
     document.addEventListener('DOMContentLoaded', function () {
         // Inicializar tooltips e outros componentes se necessário
+        var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+        var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+            return new bootstrap.Popover(popoverTriggerEl);
+        });
         
         // Listener para redimensionar os gráficos Chart.js quando as abas ficarem visíveis
         const tabElements = document.querySelectorAll('button[data-bs-toggle="tab"]');
@@ -873,16 +917,15 @@
         modal.show();
     }
 
-    function loadDashboardData(callback) {
-        if (!dashboardState.exam_id) return;
-
-        let url = `/reports/data?exam_id=${dashboardState.exam_id}`;
-
+    function getFiltersQueryString() {
+        if (!dashboardState.exam_id) return '';
+        let qs = `exam_id=${dashboardState.exam_id}`;
+        
         // Selection filters
-        dashboardState.selections[LEVELS.REGIONAL].forEach(item => url += `&regional_id[]=${item.id}`);
-        dashboardState.selections[LEVELS.UNIT].forEach(item => url += `&unit_id[]=${item.id}`);
-        dashboardState.selections[LEVELS.GRADE].forEach(item => url += `&school_year_id[]=${item.id}`);
-        dashboardState.selections[LEVELS.CLASS].forEach(item => url += `&class_id[]=${item.id}`);
+        dashboardState.selections[LEVELS.REGIONAL].forEach(item => qs += `&regional_id[]=${item.id}`);
+        dashboardState.selections[LEVELS.UNIT].forEach(item => qs += `&unit_id[]=${item.id}`);
+        dashboardState.selections[LEVELS.GRADE].forEach(item => qs += `&school_year_id[]=${item.id}`);
+        dashboardState.selections[LEVELS.CLASS].forEach(item => qs += `&class_id[]=${item.id}`);
 
         // Advanced Filters
         const races = Array.from(document.getElementById('filterRace').selectedOptions).map(o => o.value);
@@ -894,14 +937,22 @@
         const bolsa = Array.from(document.getElementById('filterBolsa').selectedOptions).map(o => o.value);
         const dietary = Array.from(document.getElementById('filterDietary').selectedOptions).map(o => o.value);
 
-        races.forEach(r => url += `&races[]=${encodeURIComponent(r)}`);
-        nationalities.forEach(n => url += `&nationalities[]=${encodeURIComponent(n)}`);
-        incomes.forEach(i => url += `&incomes[]=${encodeURIComponent(i)}`);
-        zones.forEach(z => url += `&zones[]=${encodeURIComponent(z)}`);
-        locations.forEach(l => url += `&locations[]=${encodeURIComponent(l)}`);
-        deficiency.forEach(d => url += `&deficiency[]=${encodeURIComponent(d)}`);
-        bolsa.forEach(b => url += `&bolsa[]=${encodeURIComponent(b)}`);
-        dietary.forEach(dt => url += `&dietary[]=${encodeURIComponent(dt)}`);
+        races.forEach(r => qs += `&races[]=${encodeURIComponent(r)}`);
+        nationalities.forEach(n => qs += `&nationalities[]=${encodeURIComponent(n)}`);
+        incomes.forEach(i => qs += `&incomes[]=${encodeURIComponent(i)}`);
+        zones.forEach(z => qs += `&zones[]=${encodeURIComponent(z)}`);
+        locations.forEach(l => qs += `&locations[]=${encodeURIComponent(l)}`);
+        deficiency.forEach(d => qs += `&deficiency[]=${encodeURIComponent(d)}`);
+        bolsa.forEach(b => qs += `&bolsa[]=${encodeURIComponent(b)}`);
+        dietary.forEach(dt => qs += `&dietary[]=${encodeURIComponent(dt)}`);
+        
+        return qs;
+    }
+
+    function loadDashboardData(callback) {
+        if (!dashboardState.exam_id) return;
+
+        const url = `/reports/data?` + getFiltersQueryString();
 
         fetch(url)
             .then(res => res.json())
@@ -1592,7 +1643,82 @@
         }
     }
 
+    let originalMapData = null;
+
+    function applyMapFilters() {
+        if (!originalMapData) return;
+        const levelFilter = document.getElementById('mapFilterLevel').value;
+        const profOp = document.getElementById('mapFilterSchoolProfOp').value;
+        const profVal = document.getElementById('mapFilterSchoolProfVal').value;
+        
+        const filteredSchools = originalMapData.schools.filter(sch => {
+            if (levelFilter) {
+                if (!sch.levels || !sch.levels.includes(parseInt(levelFilter))) {
+                    return false;
+                }
+            }
+            if (profOp && profVal !== '') {
+                const val = parseFloat(profVal);
+                if (sch.score === null) return false;
+                if (profOp === '<' && !(sch.score < val)) return false;
+                if (profOp === '>' && !(sch.score > val)) return false;
+            }
+            return true;
+        });
+        
+        renderMap({
+            schools: filteredSchools,
+            missing_coords_count: originalMapData.missing_coords_count
+        });
+        
+        const btnStudents = document.getElementById('btnExportStudents');
+        const btnSchools = document.getElementById('btnExportSchools');
+        const exportContainer = document.getElementById('mapExportContainer');
+        
+        btnStudents.style.display = levelFilter ? 'inline-block' : 'none';
+        btnSchools.style.display = (profOp && profVal !== '') ? 'inline-block' : 'none';
+        exportContainer.style.display = (levelFilter || (profOp && profVal !== '')) ? 'block' : 'none';
+    }
+
+    function toggleSchoolProfVal() {
+        const op = document.getElementById('mapFilterSchoolProfOp').value;
+        document.getElementById('mapFilterSchoolProfValContainer').style.display = op ? 'block' : 'none';
+    }
+
     function updateMap(mapData) {
+        if (!mapData) return;
+        originalMapData = JSON.parse(JSON.stringify(mapData)); // Store for filtering
+        
+        // Reset filters when new data comes in
+        const levelFilter = document.getElementById('mapFilterLevel');
+        const opFilter = document.getElementById('mapFilterSchoolProfOp');
+        const valFilter = document.getElementById('mapFilterSchoolProfVal');
+        
+        if (levelFilter) levelFilter.value = '';
+        if (opFilter) opFilter.value = '';
+        if (valFilter) valFilter.value = '';
+        toggleSchoolProfVal();
+        
+        renderMap(originalMapData);
+        applyMapFilters();
+    }
+    
+    function exportMapStudents() {
+        const levelFilter = document.getElementById('mapFilterLevel').value;
+        if (!levelFilter) return;
+        const url = `/reports/export/students-by-level?` + getFiltersQueryString() + `&level=${levelFilter}`;
+        window.open(url, '_blank');
+    }
+
+    function exportMapSchools() {
+        const profOp = document.getElementById('mapFilterSchoolProfOp').value;
+        const profVal = document.getElementById('mapFilterSchoolProfVal').value;
+        if (!profOp || profVal === '') return;
+        const url = `/reports/export/schools-by-proficiency?` + getFiltersQueryString() + `&prof_op=${encodeURIComponent(profOp)}&prof_val=${profVal}`;
+        window.open(url, '_blank');
+    }
+    
+    function renderMap(mapData) {
         if (!mapData) return;
         
         const missingAlert = document.getElementById('mapMissingAlert');

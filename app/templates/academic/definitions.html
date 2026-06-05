@@ -87,6 +87,138 @@
     </div>
 </div>
 
+<div class="row">
+    <!-- Quilombola Communities -->
+    <div class="col-md-6 mb-4">
+        <div class="card shadow h-100">
+            <div class="card-header py-3 bg-light d-flex justify-content-between align-items-center">
+                <h6 class="m-0 font-weight-bold text-dark">Comunidades Quilombolas</h6>
+                <div>
+                    <button type="button" class="btn btn-sm btn-outline-secondary me-2" data-bs-toggle="modal"
+                        data-bs-target="#importQuilombolaModal">
+                        <i class="bi bi-upload"></i> Importar
+                    </button>
+                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                        data-bs-target="#newQuilombolaModal">
+                        <i class="bi bi-plus-lg"></i> Novo
+                    </button>
+                </div>
+            </div>
+            
+            {% if active_quilombola_job %}
+            <div class="card-body border-bottom bg-light pb-2">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h6 class="mb-0 text-primary">
+                        <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                        Importação em Andamento...
+                    </h6>
+                    <span class="badge bg-primary px-3 py-2" id="quilombola-pct">{{ active_quilombola_job.progress_percentage }}%</span>
+                </div>
+                <div class="progress" style="height: 12px;">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
+                        id="quilombola-bar" style="width: {{ active_quilombola_job.progress_percentage }}%;"
+                        aria-valuenow="{{ active_quilombola_job.progress_percentage }}" aria-valuemin="0" aria-valuemax="100">
+                    </div>
+                </div>
+                <div class="mt-2 small text-muted d-flex justify-content-between">
+                    <span id="quilombola-count">{{ active_quilombola_job.processed_rows }} / {{ active_quilombola_job.total_rows }} registros processados</span>
+                    <span><a href="{{ url_for('admin.list_imports') }}" class="text-decoration-none">Ver detalhes</a></span>
+                </div>
+            </div>
+            {% endif %}
+            
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    {% for qc in quilombola_communities %}
+                    <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
+                        {{ qc.name }}
+                        <div>
+                            <form id="delete-quilombola-form-{{ qc.id }}"
+                                action="{{ url_for('academic.delete_quilombola', id=qc.id) }}" method="POST"
+                                class="d-inline">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                                <button type="button" class="btn btn-sm btn-outline-danger border-0" title="Excluir"
+                                    onclick="handleDelete('delete-quilombola-form-{{ qc.id }}', 'Tem certeza que deseja excluir a comunidade {{ qc.name }}?')">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </li>
+                    {% else %}
+                    <li class="list-group-item text-muted">Nenhuma comunidade quilombola cadastrada.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Indigenous Peoples -->
+    <div class="col-md-6 mb-4">
+        <div class="card shadow h-100">
+            <div class="card-header py-3 bg-light d-flex justify-content-between align-items-center">
+                <h6 class="m-0 font-weight-bold text-dark">Povos Indígenas</h6>
+                <div>
+                    <button type="button" class="btn btn-sm btn-outline-secondary me-2" data-bs-toggle="modal"
+                        data-bs-target="#importIndigenousModal">
+                        <i class="bi bi-upload"></i> Importar
+                    </button>
+                    <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal"
+                        data-bs-target="#newIndigenousModal">
+                        <i class="bi bi-plus-lg"></i> Novo
+                    </button>
+                </div>
+            </div>
+            
+            {% if active_indigenous_job %}
+            <div class="card-body border-bottom bg-light pb-2">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h6 class="mb-0 text-primary">
+                        <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                        Importação em Andamento...
+                    </h6>
+                    <span class="badge bg-primary px-3 py-2" id="indigenous-pct">{{ active_indigenous_job.progress_percentage }}%</span>
+                </div>
+                <div class="progress" style="height: 12px;">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
+                        id="indigenous-bar" style="width: {{ active_indigenous_job.progress_percentage }}%;"
+                        aria-valuenow="{{ active_indigenous_job.progress_percentage }}" aria-valuemin="0" aria-valuemax="100">
+                    </div>
+                </div>
+                <div class="mt-2 small text-muted d-flex justify-content-between">
+                    <span id="indigenous-count">{{ active_indigenous_job.processed_rows }} / {{ active_indigenous_job.total_rows }} registros processados</span>
+                    <span><a href="{{ url_for('admin.list_imports') }}" class="text-decoration-none">Ver detalhes</a></span>
+                </div>
+            </div>
+            {% endif %}
+            
+            <div class="card-body">
+                <div class="d-flex flex-wrap gap-2">
+                    {% for ip in indigenous_peoples %}
+                    <div class="badge bg-secondary p-2 fs-6 d-flex align-items-center gap-2">
+                        {{ ip.name }}
+                        <div class="ms-1 border-start ps-1 d-flex gap-1">
+                            <form id="delete-indigenous-form-{{ ip.id }}"
+                                action="{{ url_for('academic.delete_indigenous', id=ip.id) }}" method="POST"
+                                class="d-inline">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                                <button type="button"
+                                    class="border-0 bg-transparent p-0 text-white opacity-75 hover-opacity-100"
+                                    title="Excluir"
+                                    onclick="handleDelete('delete-indigenous-form-{{ ip.id }}', 'Tem certeza que deseja excluir o povo indígena {{ ip.name }}?')">
+                                    <i class="bi bi-trash" style="font-size: 0.8rem;"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    {% else %}
+                    <span class="text-muted">Nenhum povo indígena cadastrado.</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- New Year Modal -->
 <div class="modal fade" id="newYearModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
@@ -150,8 +282,142 @@
     </div>
 </div>
 
+<!-- New Quilombola Modal -->
+<div class="modal fade" id="newQuilombolaModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Nova Comunidade Quilombola</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST">
+                <div class="modal-body">
+                    {{ quilombola_form.hidden_tag() }}
+                    <div class="mb-3">
+                        {{ quilombola_form.name.label(class="form-label required") }}
+                        {{ quilombola_form.name(class="form-control", placeholder="Nome da comunidade") }}
+                        {% for error in quilombola_form.name.errors %}
+                        <span class="text-danger small">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    {{ quilombola_form.submit(class="btn btn-primary") }}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- New Indigenous Modal -->
+<div class="modal fade" id="newIndigenousModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Novo Povo Indígena</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST">
+                <div class="modal-body">
+                    {{ indigenous_form.hidden_tag() }}
+                    <div class="mb-3">
+                        {{ indigenous_form.name.label(class="form-label required") }}
+                        {{ indigenous_form.name(class="form-control", placeholder="Nome do povo indígena") }}
+                        {% for error in indigenous_form.name.errors %}
+                        <span class="text-danger small">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    {{ indigenous_form.submit(class="btn btn-success") }}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Import Quilombola Modal -->
+<div class="modal fade" id="importQuilombolaModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content border-0 shadow">
+            <form id="importQuilombolaForm" action="{{ url_for('academic.import_quilombola') }}" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                <div class="modal-header bg-primary text-white border-0">
+                    <h5 class="modal-title"><i class="bi bi-file-earmark-excel me-2"></i>Importar Comunidades Quilombolas</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="mb-4">
+                        <label class="form-label text-muted small fw-bold text-uppercase">Arquivo Excel (.xlsx)</label>
+                        {{ import_quilombola_form.file(class="form-control", accept=".xlsx, .xls") }}
+                    </div>
+                    <div class="alert alert-info border-0 rounded-3 mb-0">
+                        <div class="d-flex">
+                            <i class="bi bi-info-circle-fill fs-4 me-3 text-info"></i>
+                            <div>
+                                <h6 class="alert-heading fw-bold mb-1">Padrão do Arquivo</h6>
+                                <p class="mb-0 small">O arquivo deve conter a coluna "Nome". Registros duplicados serão ignorados. <br>
+                                    <a href="{{ url_for('academic.download_quilombola_layout') }}" class="fw-bold mt-2 d-inline-block text-decoration-none">
+                                        <i class="bi bi-download me-1"></i>Baixar modelo (.xlsx)
+                                    </a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pb-4 pe-4">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+                    {{ import_quilombola_form.submit(class="btn btn-primary px-4") }}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Import Indigenous Modal -->
+<div class="modal fade" id="importIndigenousModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content border-0 shadow">
+            <form id="importIndigenousForm" action="{{ url_for('academic.import_indigenous') }}" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                <div class="modal-header bg-success text-white border-0">
+                    <h5 class="modal-title"><i class="bi bi-file-earmark-excel me-2"></i>Importar Povos Indígenas</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="mb-4">
+                        <label class="form-label text-muted small fw-bold text-uppercase">Arquivo Excel (.xlsx)</label>
+                        {{ import_indigenous_form.file(class="form-control", accept=".xlsx, .xls") }}
+                    </div>
+                    <div class="alert alert-info border-0 rounded-3 mb-0">
+                        <div class="d-flex">
+                            <i class="bi bi-info-circle-fill fs-4 me-3 text-info"></i>
+                            <div>
+                                <h6 class="alert-heading fw-bold mb-1">Padrão do Arquivo</h6>
+                                <p class="mb-0 small">O arquivo deve conter a coluna "Nome". Registros duplicados serão ignorados. <br>
+                                    <a href="{{ url_for('academic.download_indigenous_layout') }}" class="fw-bold mt-2 d-inline-block text-decoration-none text-success">
+                                        <i class="bi bi-download me-1"></i>Baixar modelo (.xlsx)
+                                    </a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pb-4 pe-4">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+                    {{ import_indigenous_form.submit(class="btn btn-success px-4") }}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <div id="form-errors" data-year-errors="{{ 'true' if year_form.errors else 'false' }}"
-    data-subject-errors="{{ 'true' if subject_form.errors else 'false' }}">
+    data-subject-errors="{{ 'true' if subject_form.errors else 'false' }}"
+    data-quilombola-errors="{{ 'true' if quilombola_form.errors else 'false' }}"
+    data-indigenous-errors="{{ 'true' if indigenous_form.errors else 'false' }}">
 </div>
 
 <script>
@@ -167,6 +433,55 @@
             var myModal = new bootstrap.Modal(document.getElementById('newSubjectModal'));
             myModal.show();
         }
+        
+        if (errorContainer.dataset.quilombolaErrors === 'true') {
+            var myModal = new bootstrap.Modal(document.getElementById('newQuilombolaModal'));
+            myModal.show();
+        }
+
+        if (errorContainer.dataset.indigenousErrors === 'true') {
+            var myModal = new bootstrap.Modal(document.getElementById('newIndigenousModal'));
+            myModal.show();
+        }
+        
+        if (typeof setupImportProgress === "function") {
+            setupImportProgress('importQuilombolaForm');
+            setupImportProgress('importIndigenousForm');
+        }
+        
+        {% if active_quilombola_job %}
+        const qPoll = setInterval(() => {
+            fetch("{{ url_for('admin.import_status', id=active_quilombola_job.id) }}")
+                .then(r => r.json())
+                .then(data => {
+                    const bar = document.getElementById('quilombola-bar');
+                    if(bar) bar.style.width = data.progress + '%';
+                    document.getElementById('quilombola-pct').innerText = data.progress + '%';
+                    document.getElementById('quilombola-count').innerText = `${data.processed} / ${data.total} registros processados`;
+                    if(data.status !== 'running') {
+                        clearInterval(qPoll);
+                        setTimeout(() => window.location.reload(), 2000);
+                    }
+                });
+        }, 2000);
+        {% endif %}
+        
+        {% if active_indigenous_job %}
+        const iPoll = setInterval(() => {
+            fetch("{{ url_for('admin.import_status', id=active_indigenous_job.id) }}")
+                .then(r => r.json())
+                .then(data => {
+                    const bar = document.getElementById('indigenous-bar');
+                    if(bar) bar.style.width = data.progress + '%';
+                    document.getElementById('indigenous-pct').innerText = data.progress + '%';
+                    document.getElementById('indigenous-count').innerText = `${data.processed} / ${data.total} registros processados`;
+                    if(data.status !== 'running') {
+                        clearInterval(iPoll);
+                        setTimeout(() => window.location.reload(), 2000);
+                    }
+                });
+        }, 2000);
+        {% endif %}
     });
 </script>
 {% endblock %}

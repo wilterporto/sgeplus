@@ -26,12 +26,41 @@
                 enctype="multipart/form-data">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                 <div class="modal-body">
-                    <p class="small text-muted mb-3">
-                        <strong>Campos Obrigatórios:</strong> Unidade de Ensino, Nome da Turma, Nome Completo, Sexo, Data de Nascimento, CPF, Cor/Raça, Nacionalidade, País nascimento, Deficiência<br><br>
-                        <strong>Campos Opcionais:</strong> Código INEP, Cartão SUS, UF Naturalidade, Município Naturalidade, Zona Residencial, Localização Diferenciada de Residência, Bolsa Família, Renda Familiar, E-mail, Restrições Alimentares
-                        <br><br>
-                        <span class="text-danger fw-bold"><i class="bi bi-exclamation-triangle-fill"></i> Siga a formatação correta para evitar erros de importação.</span>
-                    </p>
+                    <div class="alert alert-info small mb-3">
+                        <strong>Colunas Recomendadas:</strong><br>
+                        - INEP da Escola (Facilita a identificação exata)<br><br>
+                        <strong>Colunas Obrigatórias:</strong><br>
+                        - Unidade de Ensino (Nome exato se INEP não informado)<br>
+                        - Nome da Turma<br>
+                        - Nome Completo<br>
+                        - Sexo<br>
+                        - Data de Nascimento<br>
+                        - CPF<br>
+                        - Cor/Raça<br>
+                        - Nacionalidade<br>
+                        - País nascimento<br>
+                        - Deficiência<br><br>
+                        <strong>Campos Opcionais:</strong><br>
+                        - Código INEP (do Aluno)<br>
+                        - Cartão SUS<br>
+                        - E-mail<br>
+                        - UF Naturalidade<br>
+                        - Município Naturalidade<br>
+                        - Zona Residencial<br>
+                        - Localização Diferenciada de Residência<br>
+                        - Bolsa Família<br>
+                        - Renda Familiar<br>
+                        - Restrições Alimentares<br>
+                        - É Quilombola?<br>
+                        - Comunidade Quilombola<br>
+                        - Povo Indígena<br>
+                    </div>
+                    
+                    <div class="mb-3 d-flex justify-content-end">
+                        <a href="{{ url_for('students.download_student_layout') }}" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-download"></i> Baixar Layout de Exemplo
+                        </a>
+                    </div>
                     <div class="mb-3">
                         <label for="file" class="form-label">Arquivo Excel (.xlsx)</label>
                         <input type="file" class="form-control" id="file" name="file" accept=".xlsx, .xls" required>

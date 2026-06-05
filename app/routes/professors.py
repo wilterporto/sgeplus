@@ -47,7 +47,17 @@ def list_professors():
     query = filter_by_tenant(query, Professor)
     
     if search:
-        query = query.filter(Professor.name.ilike(f'%{search}%'))
+        from sqlalchemy import func
+        import re
+        search_clean = re.sub(r'[^0-9]', '', search)
+        if search_clean:
+            query = query.filter(db.or_(
+                Professor.name.ilike(f'%{search}%'),
+                Professor.cpf.ilike(f'%{search}%'),
+                func.replace(func.replace(Professor.cpf, '.', ''), '-', '').ilike(f'%{search_clean}%')
+            ))
+        else:
+            query = query.filter(Professor.name.ilike(f'%{search}%'))
     
     professors = query.distinct().order_by(Professor.name).paginate(page=page, per_page=30)
     
@@ -355,6 +365,75 @@ def delete_professor(id):
     flash('Professor excluído.', 'success')
     return redirect(url_for('professors.list_professors'))
 
+@professors_bp.route('/download-professor-layout')
+@login_required
+def download_professor_layout():
+    import pandas as pd
+    from io import BytesIO
+    from flask import send_file
+    
+    data = {
+        'Nome Completo': ['João Silva Professor', 'Maria Souza Professora'],
+        'Data de Nascimento': ['01/05/1980', '15/08/1985'],
+        'Sexo': ['M', 'F'],
+        'Cor/Raça': ['Branca', 'Parda'],
+        'CPF': ['111.222.333-44', '555.666.777-88'],
+        'Código INEP': ['123456789012', '987654321098'],
+        'Cartão SUS': ['123456789012345', ''],
+        'Nacionalidade': ['Brasileiro', 'Brasileiro'],
+        'País nascimento': ['Brasil', 'Brasil'],
+        'UF Naturalidade': ['SP', 'MG'],
+        'Município Naturalidade': ['São Paulo', 'Belo Horizonte'],
+        'Zona Residencial': ['Urbana', 'Rural'],
+        'Localização Diferenciada de Residência': ['Não está em área de localização diferenciada', 'Não está em área de localização diferenciada'],
+        'E-mail': ['joao.prof@email.com', 'maria.prof@email.com']
+    }
+    
+    df = pd.DataFrame(data)
+    
+    output = BytesIO()
+    with pd.ExcelWriter(output, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False, sheet_name='Professores')
+        
+    output.seek(0)
+    
+    return send_file(
+        output,
+        as_attachment=True,
+        download_name='layout_importacao_professores.xlsx',
+        mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+
+@professors_bp.route('/download-modulation-layout')
+@login_required
+def download_modulation_layout():
+    import pandas as pd
+    from io import BytesIO
+    from flask import send_file
+    
+    data = {
+        'INEP da Escola': ['12345678', ''],
+        'Unidade de Ensino': ['Escola Exemplo 1', 'Escola Exemplo 1'],
+        'Nome da Turma': ['101', '102'],
+        'CPF': ['111.222.333-44', '555.666.777-88'],
+        'Componente': ['Matemática', 'Língua Portuguesa']
+    }
+    
+    df = pd.DataFrame(data)
+    
+    output = BytesIO()
+    with pd.ExcelWriter(output, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False, sheet_name='Modulacao')
+        
+    output.seek(0)
+    
+    return send_file(
+        output,
+        as_attachment=True,
+        download_name='layout_importacao_modulacoes.xlsx',
+        mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+
 @professors_bp.route('/import', methods=['POST'])
 def import_professors():
     if 'file' not in request.files:
@@ -379,7 +458,8 @@ def import_professors():
         from app.models import Professor, User
         prof_query = Professor.query
         prof_query = filter_by_tenant(prof_query, Professor)
-        prof_map = {p.cpf: p for p in prof_query.all()}
+        import re
+        prof_map = {re.sub(r'[^0-9]', '', p.cpf): p for p in prof_query.all() if p.cpf}
         
         user_query = User.query
         user_query = filter_by_tenant(user_query, User)
@@ -404,6 +484,17 @@ def import_professors():
                 clean_cpf = re.sub(r'[^0-9]', '', item['cpf'])
                 email_val = item.get('email')
                 
+                # 0. Check for email uniqueness (In-memory)
+                if email_val:
+                    conflict_username = email_map.get(email_val)
+                    if conflict_username and conflict_username != clean_cpf:
+                        err_msg = f"Aviso: CPF {item['cpf']} - {item['name']} importado com sucesso, mas ficou com e-mail vazio (o e-mail '{email_val}' já pertence a outro cadastro)."
+                        errors.append(err_msg)
+                        if task_id: update_import_progress(task_id, i+1, message=f"Aviso em {item['name']}", error=err_msg)
+                        email_val = None
+                    else:
+                        email_map[email_val] = clean_cpf
+                        
                 # 1. Update or Create Professor
                 professor = prof_map.get(item['cpf'])
                 if professor:
@@ -447,7 +538,7 @@ def import_professors():
                     prof_map[item['cpf']] = professor # Add to local map for same-batch consistency
                     created += 1
                 
-                db.session.flush() # Get ID for user association if new
+                # (Removed flush to allow SQLAlchemy to batch inserts)
                 
                 # 2. Sync User
                 user = user_map.get(clean_cpf)
@@ -475,15 +566,10 @@ def import_professors():
                 
                 professor.user = user
                 
-                # 3. Check for email uniqueness (In-memory)
-                if email_val:
-                    conflict_username = email_map.get(email_val)
-                    if conflict_username and conflict_username != clean_cpf:
-                        raise ValueError(f"O e-mail '{email_val}' já está sendo usado por outro usuário (CPF: {conflict_username}).")
-                    email_map[email_val] = clean_cpf # Reserve for this session
+                # (Email uniqueness was checked at step 0)
                 
-                # Batch commit every 100 or final
-                if (created + updated) % 100 == 0 or i == total - 1:
+                # Batch commit every 500 or final
+                if (created + updated) % 500 == 0 or i == total - 1:
                     db.session.commit()
                     if task_id: update_import_progress(task_id, i+1, message=f"Lote processado ({created + updated})")
                 else:
@@ -552,7 +638,8 @@ def import_modulation():
         # Pre-fetch for performance: Map (class_id, subject_id) -> Existing TeachingAssignment
         prof_query = Professor.query.with_entities(Professor.cpf, Professor.id)
         prof_query = filter_by_tenant(prof_query, Professor)
-        prof_id_map = {p.cpf: p.id for p in prof_query.all()}
+        import re
+        prof_id_map = {re.sub(r'[^0-9]', '', p.cpf): p.id for p in prof_query.all() if p.cpf}
         
         # We need the full object to update professor_id
         all_assignments = TeachingAssignment.query.join(Class).filter(Class.tenant_id == current_user.tenant_id).all()

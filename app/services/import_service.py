@@ -15,16 +15,17 @@ class ImportService:
             return {"success": False, "error": f"Erro ao ler arquivo: {str(e)}"}
             
         # Define Columns based on type
-        if type == 'student':
-            required = ["Unidade de Ensino", "Nome da Turma", "Nome Completo", "Sexo", "Data de Nascimento", "CPF", "Cor/Raça", "Nacionalidade", "País nascimento", "Deficiência"]
-        elif type == 'professor':
-            required = ["Nome Completo", "Data de Nascimento", "Sexo", "Cor/Raça", "CPF"]
-        elif type == 'modulation':
-            col_subject = "Componente" if "Componente" in df.columns or ("Componente" not in df.columns and "Disciplina" not in df.columns) else "Disciplina"
-            required = ["Unidade de Ensino", "Nome da Turma", "CPF", col_subject]
-        elif type == 'class':
-             required = ["Nome da Turma", "Ano Escolar", "Unidade de Ensino", "Turno", "Estrutura Curricular"]
-        else:
+        required_cols = {
+            'student': ["Unidade de Ensino", "Nome da Turma", "Nome Completo", "Sexo", "Data de Nascimento", "CPF", "Cor/Raça", "Nacionalidade", "País nascimento", "Deficiência"],
+            'professor': ["Nome Completo", "Data de Nascimento", "Sexo", "Cor/Raça", "CPF"],
+            'class': ["Nome da Turma", "Ano Escolar", "Unidade de Ensino", "Turno", "Estrutura Curricular"],
+            'modulation': ["INEP da Escola", "Unidade de Ensino", "Nome da Turma", "CPF", "Componente"],
+            'quilombola': ["Nome"],
+            'indigenous': ["Nome"]
+        }
+        
+        required = required_cols.get(type)
+        if not required:
              return {"success": False, "error": "Tipo de importação inválido."}
             
         # Check columns
@@ -43,6 +44,7 @@ class ImportService:
         total = len(df)
 
         schools_cache = {}
+        schools_inep_cache = {}
         cities_cache = {}
         classes_cache = {} # Key: (SchoolID, ClassName) -> ClassID
         subjects_cache = {}
@@ -53,6 +55,8 @@ class ImportService:
         all_schools = TeachingUnit.query.filter_by(type='Escola').all()
         for s in all_schools:
             schools_cache[s.name.strip().lower()] = s.id
+            if s.inep_code:
+                schools_inep_cache[s.inep_code.strip()] = s.id
             
         if type in ['student', 'professor']:
             all_cities = City.query.all()
@@ -83,7 +87,14 @@ class ImportService:
             row_num = index + 2 
             item_data = {}
             
-            if type == 'class':
+            if type in ['quilombola', 'indigenous']:
+                name = str(row.get("Nome", "")).strip()
+                if not name or name.lower() == 'nan':
+                    errors.append(f"Linha {row_num}: Nome é obrigatório.")
+                    continue
+                item_data = {'name': name}
+                
+            elif type == 'class':
                 class_name = str(row.get("Nome da Turma", "")).strip()
                 year_name = str(row.get("Ano Escolar", "")).strip()
                 unit_name = str(row.get("Unidade de Ensino", "")).strip()
@@ -115,42 +126,54 @@ class ImportService:
                 }
 
             elif type == 'modulation':
+                school_inep = str(row.get("INEP da Escola", row.get("INEP", ""))).strip()
                 school_name = str(row.get("Unidade de Ensino", "")).strip()
                 class_name = str(row.get("Nome da Turma", "")).strip()
                 cpf_raw = str(row.get("CPF", "")).strip()
                 subject_name = str(row.get("Componente", row.get("Disciplina", ""))).strip()
                 
-                if not school_name or school_name == 'nan' or not class_name or class_name == 'nan' or not cpf_raw or cpf_raw == 'nan' or not subject_name or subject_name == 'nan':
-                     errors.append(f"Linha {row_num}: Todos os campos são obrigatórios (Unidade, Turma, CPF, Componente).")
-                     continue
+                if (not school_inep or school_inep == 'nan') and (not school_name or school_name == 'nan'):
+                    errors.append(f"Linha {row_num}: Unidade de Ensino ou INEP é obrigatório.")
+                    continue
+
+                if not class_name or class_name == 'nan' or not cpf_raw or cpf_raw == 'nan' or not subject_name or subject_name == 'nan':
+                    errors.append(f"Linha {row_num}: Turma, CPF e Componente são obrigatórios.")
+                    continue
                      
-                 cpf_clean = re.sub(r'[^0-9]', '', cpf_raw)
-                 if len(cpf_clean) != 11:
-                     errors.append(f"Linha {row_num}: CPF inválido ({cpf_raw}).")
-                     continue
-                 # item_data['cpf'] will use cpf_clean below
+                cpf_clean = re.sub(r'[^0-9]', '', cpf_raw)
+                if len(cpf_clean) != 11:
+                    errors.append(f"Linha {row_num}: CPF inválido ({cpf_raw}).")
+                    continue
                  
-                 unit_id = schools_cache.get(school_name.lower())
-                 if not unit_id:
-                     errors.append(f"Linha {row_num}: Unidade de Ensino não encontrada ({school_name}).")
-                     continue
+                unit_id = None
+                if school_inep and school_inep != 'nan':
+                    if school_inep.endswith('.0'):
+                        school_inep = school_inep[:-2]
+                    unit_id = schools_inep_cache.get(school_inep)
+                    
+                if not unit_id:
+                    unit_id = schools_cache.get(school_name.lower())
+
+                if not unit_id:
+                    errors.append(f"Linha {row_num}: Unidade de Ensino não encontrada (INEP: '{school_inep}', Nome: '{school_name}').")
+                    continue
                      
-                 class_id = classes_cache.get((unit_id, class_name.lower()))
-                 if not class_id:
-                     errors.append(f"Linha {row_num}: Turma não encontrada na unidade informada ({class_name} - {school_name}).")
-                     continue
+                class_id = classes_cache.get((unit_id, class_name.lower()))
+                if not class_id:
+                    errors.append(f"Linha {row_num}: Turma não encontrada na unidade informada ({class_name} - {school_name}).")
+                    continue
                      
-                 sub_id = subjects_cache.get(subject_name.lower())
-                 if not sub_id:
-                     errors.append(f"Linha {row_num}: Componente não encontrado ({subject_name}).")
-                     continue
+                sub_id = subjects_cache.get(subject_name.lower())
+                if not sub_id:
+                    errors.append(f"Linha {row_num}: Componente não encontrado ({subject_name}).")
+                    continue
                      
-                 item_data = {
+                item_data = {
                      'cpf': cpf_clean,
                      'class_id': class_id,
                      'subject_id': sub_id,
                      'school_id': unit_id
-                 }
+                }
             
             else:
                 # Student or Professor
@@ -207,8 +230,16 @@ class ImportService:
                 birth_state_raw = str(row.get("UF Naturalidade", "")).strip()[:2].upper()
                 birth_city_raw = str(row.get("Município Naturalidade", "")).strip()
                 birth_city_id = None
-                if birth_state_raw and birth_state_raw != 'NAN' and birth_city_raw and birth_city_raw != 'nan':
-                    birth_city_id = cities_cache.get(f"{birth_state_raw.lower()}_{birth_city_raw.lower()}")
+                
+                if birth_city_raw and birth_city_raw != 'nan':
+                    if birth_state_raw and birth_state_raw != 'NAN':
+                        birth_city_id = cities_cache.get(f"{birth_state_raw.lower()}_{birth_city_raw.lower()}")
+                    else:
+                        for key, cid in cities_cache.items():
+                            if key.endswith(f"_{birth_city_raw.lower()}"):
+                                birth_city_id = cid
+                                birth_state_raw = key.split('_')[0].upper()
+                                break
                     
                 res_zone_raw = str(row.get("Zona Residencial", "")).strip()
                 res_zone = "Urbana" if res_zone_raw.lower() in ['urbana', 'u'] else "Rural" if res_zone_raw.lower() in ['rural', 'r'] else None
@@ -243,15 +274,28 @@ class ImportService:
                         
                     school_name = str(row.get("Unidade de Ensino", "")).strip()
                     class_name = str(row.get("Nome da Turma", "")).strip()
+                    school_inep = str(row.get("INEP da Escola", row.get("INEP", ""))).strip()
                     
-                    if not school_name or school_name == 'nan' or not class_name or class_name == 'nan':
+                    unit_id = None
+                    if school_inep and school_inep != 'nan':
+                        if school_inep.endswith('.0'):
+                            school_inep = school_inep[:-2]
+                        unit_id = schools_inep_cache.get(school_inep)
+                        
+                    if not unit_id:
+                        if not school_name or school_name == 'nan':
+                            errors.append(f"Linha {row_num}: Unidade e Turma são obrigatórios para alunos.")
+                            continue
+                        unit_id = schools_cache.get(school_name.lower())
+                        
+                    if not class_name or class_name == 'nan':
                          errors.append(f"Linha {row_num}: Unidade e Turma são obrigatórios para alunos.")
                          continue
                     
-                    unit_id = schools_cache.get(school_name.lower())
                     if not unit_id:
-                        errors.append(f"Linha {row_num}: Unidade de Ensino não encontrada ({school_name}).")
+                        errors.append(f"Linha {row_num}: Unidade de Ensino não encontrada (INEP: '{school_inep}', Nome: '{school_name}').")
                         continue
+                        
                     class_id = classes_cache.get((unit_id, class_name.lower()))
                     if not class_id:
                         errors.append(f"Linha {row_num}: Turma não encontrada na unidade ({class_name} - {school_name}).")
@@ -268,13 +312,22 @@ class ImportService:
                     dietary_list = []
                     if dietary_raw and dietary_raw.lower() != 'nan':
                         dietary_list = [d.strip() for d in dietary_raw.split(',') if d.strip()]
+                        
+                    is_quilombola_raw = str(row.get("É Quilombola?", "Não")).strip().lower()
+                    is_quilombola = True if is_quilombola_raw in ['sim', 's', 'true', '1'] else False
+                    
+                    quilombola_community_raw = str(row.get("Comunidade Quilombola", "")).strip()
+                    indigenous_people_raw = str(row.get("Povo Indígena", "")).strip()
 
                     item_data.update({
                         'teaching_unit_id': unit_id,
                         'class_id': class_id,
                         'special_needs': has_disability,
                         'bolsa_familia': has_bolsa,
-                        'dietary_restrictions': dietary_list
+                        'dietary_restrictions': dietary_list,
+                        'is_quilombola': is_quilombola,
+                        'quilombola_community_name': quilombola_community_raw if is_quilombola and quilombola_community_raw and quilombola_community_raw != 'nan' else None,
+                        'indigenous_people_name': indigenous_people_raw if race_val == 'Indigena' and indigenous_people_raw and indigenous_people_raw != 'nan' else None
                     })
                 
                 elif type == 'professor':

@@ -35,6 +35,11 @@
                         <strong>Campos Opcionais:</strong> E-mail, Código INEP, Cartão SUS, Nacionalidade, País nascimento, UF Naturalidade, Município Naturalidade, Zona Residencial, Localização Diferenciada de Residência<br><br>
                         <span class="text-info">* O sistema utiliza o CPF para garantir que não haja registros duplicados. E-mail único também é validado.</span>
                     </p>
+                    <div class="mb-3 d-flex justify-content-end">
+                        <a href="{{ url_for('professors.download_professor_layout') }}" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-download"></i> Baixar Layout de Exemplo
+                        </a>
+                    </div>
                     <div class="mb-3">
                         <label for="file" class="form-label">Arquivo Excel (.xlsx)</label>
                         <input type="file" class="form-control" id="file" name="file" accept=".xlsx, .xls" required>
@@ -63,8 +68,13 @@
                 <div class="modal-body">
                     <p class="small text-muted mb-3">
                         O arquivo Excel deve conter as colunas: <br>
-                        <strong>Unidade de Ensino, Nome da Turma, CPF, Componente</strong>
+                        <strong>INEP da Escola, Unidade de Ensino, Nome da Turma, CPF, Componente</strong>
                     </p>
+                    <div class="mb-3 d-flex justify-content-end">
+                        <a href="{{ url_for('professors.download_modulation_layout') }}" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-download"></i> Baixar Layout de Exemplo
+                        </a>
+                    </div>
                     <div class="mb-3">
                         <label for="file_mod" class="form-label">Arquivo Excel (.xlsx)</label>
                         <input type="file" class="form-control" id="file_mod" name="file" accept=".xlsx, .xls" required>
@@ -82,7 +92,7 @@
 <!-- Search -->
 <form method="GET" class="row g-3 mb-4">
     <div class="col-md-3">
-        <input type="text" name="search" class="form-control" placeholder="Nome..." value="{{ search or '' }}">
+        <input type="text" name="search" class="form-control" placeholder="Nome ou CPF..." value="{{ search or '' }}">
     </div>
     <div class="col-md-2">
         <select name="subject_id" class="form-select">

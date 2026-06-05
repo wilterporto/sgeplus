@@ -16,11 +16,12 @@ from sqlalchemy import func
 from markupsafe import Markup
 
 from app import db
-from app.models import TeachingUnit, SchoolYear, Subject, CurriculumStructure, Class, Enrollment, Evaluation, ImportJob, Student, Professor, TeachingAssignment, AbsenceReason, StudentResult, City
+from app.models import TeachingUnit, SchoolYear, Subject, CurriculumStructure, Class, Enrollment, Evaluation, ImportJob, Student, Professor, TeachingAssignment, AbsenceReason, StudentResult, City, QuilombolaCommunity, IndigenousPeople
 from app.utils.tenancy import filter_by_tenant, get_tenant_id
 from app.utils.timezone import get_brasilia_time
 from app.audit_utils import log_audit
 from app.import_utils import start_import_task, update_import_progress, finish_import_task, fail_import_task
+from app.forms import QuilombolaCommunityForm, IndigenousPeopleForm, ImportDefinitionForm
 
 academic_bp = Blueprint('academic', __name__)
 
@@ -88,7 +89,6 @@ class ImportClassForm(FlaskForm):
 class EvaluationForm(FlaskForm):
     name = StringField('Nome da Avaliação', validators=[DataRequired()])
     type = SelectField('Tipo', choices=[('Diagnóstica', 'Diagnóstica'), ('Formativa', 'Formativa'), ('Somativa', 'Somativa')], validators=[DataRequired()])
-    quantity = SelectField('Quantidade de Questões', choices=[(10, '10'), (15, '15'), (20, '20'), (25, '25'), (30, '30')], coerce=int, validators=[DataRequired()])
     logo = FileField('Logomarca (opcional)', validators=[FileAllowed(['jpg', 'jpeg', 'png', 'svg'], 'Apenas imagens são permitidas!')])
     multiple_components = SelectField('Múltiplos Componentes', choices=[('0', 'Não'), ('1', 'Sim')], default='0')
     submit = SubmitField('Salvar')
@@ -476,6 +476,8 @@ def download_units_template():
 def definitions():
     year_form = SchoolYearForm(prefix='year')
     subject_form = SubjectForm(prefix='subject')
+    quilombola_form = QuilombolaCommunityForm(prefix='quilombola')
+    indigenous_form = IndigenousPeopleForm(prefix='indigenous')
     
     if year_form.validate_on_submit() and year_form.submit.data:
         existing = SchoolYear.query.filter_by(name=year_form.name.data.strip(), tenant_id=get_tenant_id()).first()
@@ -501,10 +503,284 @@ def definitions():
             flash('Componente curricular adicionado com sucesso.', 'success')
         return redirect(url_for('academic.definitions'))
         
+    if quilombola_form.validate_on_submit() and quilombola_form.submit.data:
+        existing = QuilombolaCommunity.query.filter_by(name=quilombola_form.name.data.strip(), tenant_id=get_tenant_id()).first()
+        if existing:
+            flash('Esta comunidade quilombola já está cadastrada.', 'danger')
+        else:
+            qc = QuilombolaCommunity(name=quilombola_form.name.data.strip(), tenant_id=get_tenant_id())
+            db.session.add(qc)
+            db.session.commit()
+            log_audit('CREATE', 'QuilombolaCommunity', qc.id, f"Criou comunidade quilombola {qc.name}")
+            flash('Comunidade quilombola adicionada com sucesso.', 'success')
+        return redirect(url_for('academic.definitions'))
+        
+    if indigenous_form.validate_on_submit() and indigenous_form.submit.data:
+        existing = IndigenousPeople.query.filter_by(name=indigenous_form.name.data.strip(), tenant_id=get_tenant_id()).first()
+        if existing:
+            flash('Este povo indígena já está cadastrado.', 'danger')
+        else:
+            ip = IndigenousPeople(name=indigenous_form.name.data.strip(), tenant_id=get_tenant_id())
+            db.session.add(ip)
+            db.session.commit()
+            log_audit('CREATE', 'IndigenousPeople', ip.id, f"Criou povo indígena {ip.name}")
+            flash('Povo indígena adicionado com sucesso.', 'success')
+        return redirect(url_for('academic.definitions'))
+        
     years = filter_by_tenant(SchoolYear.query, SchoolYear).order_by(SchoolYear.name).all()
     subjects = filter_by_tenant(Subject.query, Subject).order_by(Subject.name).all()
+    quilombola_communities = filter_by_tenant(QuilombolaCommunity.query, QuilombolaCommunity).order_by(QuilombolaCommunity.name).all()
+    indigenous_peoples = filter_by_tenant(IndigenousPeople.query, IndigenousPeople).order_by(IndigenousPeople.name).all()
     
-    return render_template('academic/definitions.html', years=years, subjects=subjects, year_form=year_form, subject_form=subject_form)
+    import_quilombola_form = ImportDefinitionForm()
+    import_indigenous_form = ImportDefinitionForm()
+    
+    active_quilombola_job = ImportJob.query.filter_by(
+        tenant_id=get_tenant_id(),
+        import_type='Quilombola',
+        status='running'
+    ).first()
+    
+    active_indigenous_job = ImportJob.query.filter_by(
+        tenant_id=get_tenant_id(),
+        import_type='Indigenous',
+        status='running'
+    ).first()
+    
+    return render_template('academic/definitions.html', 
+        years=years, 
+        subjects=subjects, 
+        quilombola_communities=quilombola_communities,
+        indigenous_peoples=indigenous_peoples,
+        year_form=year_form, 
+        subject_form=subject_form,
+        quilombola_form=quilombola_form,
+        indigenous_form=indigenous_form,
+        import_quilombola_form=import_quilombola_form,
+        import_indigenous_form=import_indigenous_form,
+        active_quilombola_job=active_quilombola_job,
+        active_indigenous_job=active_indigenous_job
+    )
+
+@academic_bp.route('/quilombola/<int:id>/delete', methods=['POST'])
+@login_required
+def delete_quilombola(id):
+    qc = QuilombolaCommunity.query.get_or_404(id)
+    if qc.tenant_id != get_tenant_id():
+        flash('Acesso não autorizado.', 'danger')
+        return redirect(url_for('academic.definitions'))
+        
+    # Check for constraints
+    students = Student.query.filter_by(quilombola_community_id=qc.id).first()
+    if students:
+        flash('Não é possível excluir a comunidade quilombola, pois existem alunos vinculados a ela.', 'danger')
+        return redirect(url_for('academic.definitions'))
+        
+    db.session.delete(qc)
+    db.session.commit()
+    log_audit('DELETE', 'QuilombolaCommunity', id, f"Deletou comunidade quilombola {qc.name}")
+    flash('Comunidade quilombola excluída com sucesso.', 'success')
+    return redirect(url_for('academic.definitions'))
+
+@academic_bp.route('/indigenous/<int:id>/delete', methods=['POST'])
+@login_required
+def delete_indigenous(id):
+    ip = IndigenousPeople.query.get_or_404(id)
+    if ip.tenant_id != get_tenant_id():
+        flash('Acesso não autorizado.', 'danger')
+        return redirect(url_for('academic.definitions'))
+        
+    # Check for constraints
+    students = Student.query.filter_by(indigenous_people_id=ip.id).first()
+    if students:
+        flash('Não é possível excluir o povo indígena, pois existem alunos vinculados a ele.', 'danger')
+        return redirect(url_for('academic.definitions'))
+        
+    db.session.delete(ip)
+    db.session.commit()
+    log_audit('DELETE', 'IndigenousPeople', id, f"Deletou povo indígena {ip.name}")
+    flash('Povo indígena excluído com sucesso.', 'success')
+    return redirect(url_for('academic.definitions'))
+
+def _process_definition_import(app, job_id, filepath, task_id, def_type):
+    with app.app_context():
+        from app.services.import_service import ImportService
+        
+        job = ImportJob.query.get(job_id)
+        if not job: return
+        job.status = 'running'
+        db.session.commit()
+        
+        try:
+            with open(filepath, 'rb') as f:
+                result = ImportService.process_file(f, type=def_type)
+            
+            if not result['success']:
+                fail_import_task(task_id, result.get('error', 'Erro desconhecido.'))
+                job.status = 'failed'
+                job.error_message = result.get('error')
+                db.session.commit()
+                return
+                
+            data = result['data']
+            total = len(data)
+            
+            if task_id:
+                start_import_task(total, task_id=task_id)
+            
+            for i, row in enumerate(data):
+                if def_type == 'quilombola':
+                    existing = QuilombolaCommunity.query.filter_by(name=row['name'].strip(), tenant_id=job.tenant_id).first()
+                    if not existing:
+                        qc = QuilombolaCommunity(name=row['name'].strip(), tenant_id=job.tenant_id)
+                        db.session.add(qc)
+                elif def_type == 'indigenous':
+                    existing = IndigenousPeople.query.filter_by(name=row['name'].strip(), tenant_id=job.tenant_id).first()
+                    if not existing:
+                        ip = IndigenousPeople(name=row['name'].strip(), tenant_id=job.tenant_id)
+                        db.session.add(ip)
+                        
+                db.session.commit()
+                
+                if task_id and i % 5 == 0:
+                    update_import_progress(task_id, i + 1, total)
+            
+            update_import_progress(task_id, total, total)        
+            job.status = 'completed'
+            job.processed_rows = total
+            job.total_rows = total
+            job.completed_at = get_brasilia_time()
+            db.session.commit()
+            
+            finish_import_task(task_id)
+            
+        except Exception as e:
+            job.status = 'failed'
+            job.error_message = str(e)
+            db.session.commit()
+            fail_import_task(task_id, str(e))
+
+@academic_bp.route('/quilombola/import', methods=['POST'])
+@login_required
+def import_quilombola():
+    if current_user.role != 'admin':
+        return redirect(url_for('main.index'))
+        
+    if ImportJob.is_any_running():
+        flash('Já existe uma importação em andamento. Por favor, aguarde a conclusão.', 'warning')
+        return redirect(url_for('academic.definitions'))
+        
+    form = ImportDefinitionForm()
+    if form.validate_on_submit():
+        file = form.file.data
+        filename = secure_filename(file.filename)
+        task_id = request.form.get('X-Progress-ID')
+        
+        uploads_dir = os.path.join(current_app.root_path, '..', 'instance', 'uploads')
+        os.makedirs(uploads_dir, exist_ok=True)
+        filepath = os.path.join(uploads_dir, filename)
+        file.save(filepath)
+        
+        job = ImportJob(
+            user_id=current_user.id,
+            import_type='Quilombola',
+            filename=filename,
+            status='pending',
+            tenant_id=get_tenant_id()
+        )
+        db.session.add(job)
+        db.session.commit()
+        
+        thread = threading.Thread(
+            target=_process_definition_import,
+            args=(current_app._get_current_object(), job.id, filepath, task_id, 'quilombola')
+        )
+        thread.start()
+        
+        if task_id:
+            start_import_task(task_id, job.id)
+            
+        flash('Importação de comunidades quilombolas iniciada em segundo plano. Aguarde a conclusão.', 'info')
+    else:
+         flash('Erro no arquivo enviado.', 'danger')
+         
+    return redirect(url_for('academic.definitions'))
+
+@academic_bp.route('/indigenous/import', methods=['POST'])
+@login_required
+def import_indigenous():
+    if current_user.role != 'admin':
+        return redirect(url_for('main.index'))
+        
+    if ImportJob.is_any_running():
+        flash('Já existe uma importação em andamento. Por favor, aguarde a conclusão.', 'warning')
+        return redirect(url_for('academic.definitions'))
+        
+    form = ImportDefinitionForm()
+    if form.validate_on_submit():
+        file = form.file.data
+        filename = secure_filename(file.filename)
+        task_id = request.form.get('X-Progress-ID')
+        
+        uploads_dir = os.path.join(current_app.root_path, '..', 'instance', 'uploads')
+        os.makedirs(uploads_dir, exist_ok=True)
+        filepath = os.path.join(uploads_dir, filename)
+        file.save(filepath)
+        
+        job = ImportJob(
+            user_id=current_user.id,
+            import_type='Indigenous',
+            filename=filename,
+            status='pending',
+            tenant_id=get_tenant_id()
+        )
+        db.session.add(job)
+        db.session.commit()
+        
+        thread = threading.Thread(
+            target=_process_definition_import,
+            args=(current_app._get_current_object(), job.id, filepath, task_id, 'indigenous')
+        )
+        thread.start()
+        
+        if task_id:
+            start_import_task(task_id, job.id)
+            
+        flash('Importação de povos indígenas iniciada em segundo plano. Aguarde a conclusão.', 'info')
+    else:
+         flash('Erro no arquivo enviado.', 'danger')
+         
+    return redirect(url_for('academic.definitions'))
+
+@academic_bp.route('/quilombola/download-layout')
+@login_required
+def download_quilombola_layout():
+    data = {
+        'Nome': ['Comunidade Exemplo 1', 'Comunidade Exemplo 2']
+    }
+    df = pd.DataFrame(data)
+    output = io.BytesIO()
+    with pd.ExcelWriter(output, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False, sheet_name='Layout')
+        worksheet = writer.sheets['Layout']
+        worksheet.column_dimensions['A'].width = 30
+    output.seek(0)
+    return send_file(output, download_name='layout_quilombolas.xlsx', as_attachment=True, mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+
+@academic_bp.route('/indigenous/download-layout')
+@login_required
+def download_indigenous_layout():
+    data = {
+        'Nome': ['Povo Exemplo 1', 'Povo Exemplo 2']
+    }
+    df = pd.DataFrame(data)
+    output = io.BytesIO()
+    with pd.ExcelWriter(output, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False, sheet_name='Layout')
+        worksheet = writer.sheets['Layout']
+        worksheet.column_dimensions['A'].width = 30
+    output.seek(0)
+    return send_file(output, download_name='layout_povos_indigenas.xlsx', as_attachment=True, mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
 
 @academic_bp.route('/year/<int:id>/edit', methods=['GET', 'POST'])
 @login_required
@@ -923,17 +1199,19 @@ def _process_classes_import(app, job_id, filepath, task_id=None):
             errors = []
             
             # Lookups
-            schools = {s.name.strip().lower(): s for s in TeachingUnit.query.filter_by(tenant_id=job.tenant_id, type='Escola').all()}
+            schools_by_name = {s.name.strip().lower(): s for s in TeachingUnit.query.filter_by(tenant_id=job.tenant_id, type='Escola').all()}
+            schools_by_inep = {s.inep_code.strip(): s for s in TeachingUnit.query.filter_by(tenant_id=job.tenant_id, type='Escola').all() if s.inep_code}
             years = {y.name.strip().lower(): y for y in SchoolYear.query.filter_by(tenant_id=job.tenant_id).all()}
             structures = {s.name.strip().lower(): s for s in CurriculumStructure.query.filter_by(tenant_id=job.tenant_id).all()}
-            existing_classes = {c.name.strip().lower() for c in Class.query.filter_by(tenant_id=job.tenant_id).all()}
+            existing_classes = {(c.name.strip().lower(), c.teaching_unit_id) for c in Class.query.filter_by(tenant_id=job.tenant_id).all()}
             
             for index, row in df.iterrows():
-                name = str(row.get('Nome', '')).strip()
+                name = str(row.get('Nome da Turma', row.get('Nome', ''))).strip()
                 shift = str(row.get('Turno', '')).strip()
                 year_name = str(row.get('Ano Escolar', '')).strip()
                 structure_name = str(row.get('Estrutura Curricular', '')).strip()
-                school_name = str(row.get('Unidade Escolar', '')).strip()
+                school_name = str(row.get('Unidade de Ensino', row.get('Unidade Escolar', ''))).strip()
+                inep = str(row.get('INEP da Escola', row.get('INEP', ''))).strip()
                 
                 if not name or name.lower() == 'nan':
                     errors.append(f"Linha {index+2}: Nome da turma não informado.")
@@ -946,14 +1224,25 @@ def _process_classes_import(app, job_id, filepath, task_id=None):
                     continue
                     
                 name_l = name.lower()
-                if name_l in existing_classes:
-                    errors.append(f"Linha {index+2}: Turma '{name}' já existe neste tenant.")
+                
+                school_obj = None
+                if inep and inep != 'nan':
+                    # Sometimes pandas reads INEP as float like 12345678.0
+                    if inep.endswith('.0'):
+                        inep = inep[:-2]
+                    school_obj = schools_by_inep.get(inep)
+                    
+                if not school_obj:
+                    school_lower = school_name.lower()
+                    school_obj = schools_by_name.get(school_lower)
+                    
+                if not school_obj:
+                    errors.append(f"Linha {index+2}: Unidade Escolar não encontrada (INEP: '{inep}', Nome: '{school_name}').")
                     job.processed_rows += 1
                     continue
-                    
-                school_lower = school_name.lower()
-                if school_lower not in schools:
-                    errors.append(f"Linha {index+2}: Unidade Escolar '{school_name}' não encontrada.")
+
+                if (name_l, school_obj.id) in existing_classes:
+                    errors.append(f"Linha {index+2}: Turma '{name}' já existe nesta escola.")
                     job.processed_rows += 1
                     continue
                     
@@ -982,12 +1271,12 @@ def _process_classes_import(app, job_id, filepath, task_id=None):
                     shift=shift,
                     school_year_id=year_obj.id,
                     structure_id=struct_obj.id,
-                    teaching_unit_id=schools[school_lower].id,
+                    teaching_unit_id=school_obj.id,
                     tenant_id=job.tenant_id
                 )
                 
                 db.session.add(klass)
-                existing_classes.add(name_l)
+                existing_classes.add((name_l, school_obj.id))
                 success_count += 1
                 job.processed_rows += 1
                 
@@ -1022,6 +1311,42 @@ def _process_classes_import(app, job_id, filepath, task_id=None):
                     os.remove(filepath)
                 except:
                     pass
+
+@academic_bp.route('/classes/download-layout')
+@login_required
+def download_class_layout():
+    import pandas as pd
+    from io import BytesIO
+    from flask import send_file
+    
+    data = {
+        'INEP da Escola': ['12345678', ''],
+        'Unidade de Ensino': ['Escola Exemplo 1', 'Escola Exemplo 1'],
+        'Nome da Turma': ['101', '102'],
+        'Ano Escolar': ['1º Ano', '1º Ano'],
+        'Turno': ['Matutino', 'Vespertino'],
+        'Estrutura Curricular': ['Ensino Fundamental - Anos Iniciais', 'Ensino Fundamental - Anos Iniciais']
+    }
+    
+    df = pd.DataFrame(data)
+    output = BytesIO()
+    
+    with pd.ExcelWriter(output, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False, sheet_name='Layout Turmas')
+        # Adjust column widths
+        worksheet = writer.sheets['Layout Turmas']
+        for idx, col in enumerate(df.columns):
+            max_len = max(df[col].astype(str).map(len).max(), len(col)) + 2
+            worksheet.column_dimensions[chr(65 + idx)].width = max_len
+            
+    output.seek(0)
+    
+    return send_file(
+        output,
+        download_name='layout_importacao_turmas.xlsx',
+        as_attachment=True,
+        mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
 
 @academic_bp.route('/classes/import', methods=['POST'])
 @login_required

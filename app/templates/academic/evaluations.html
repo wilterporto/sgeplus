@@ -32,10 +32,6 @@
                             {{ form.type(class="form-select") }}
                         </div>
                         <div class="col-md-4 mb-3">
-                            {{ form.quantity.label(class="form-label required") }}
-                            {{ form.quantity(class="form-select", id="eval_quantity") }}
-                        </div>
-                        <div class="col-md-4 mb-3">
                             {{ form.multiple_components.label(class="form-label required") }}
                             {{ form.multiple_components(class="form-select", id="eval_multiple_components") }}
                         </div>
@@ -67,7 +63,6 @@
                                 <th style="width: 80px;">Logo</th>
                                 <th>Nome da Avaliação</th>
                                 <th>Tipo</th>
-                                <th class="text-center">Qtd. Questões</th>
                                 <th>Tipo Pontuação</th>
                                 <th class="text-center">Múltiplos Comp.</th>
                                 <th class="text-center">Provas Geradas</th>
@@ -90,7 +85,6 @@
                                 </td>
                                 <td class="fw-bold">{{ eval.name }}</td>
                                 <td>{{ eval.type }}</td>
-                                <td class="text-center">{{ eval.quantity }}</td>
                                 <td>
                                     {% if eval.scoring_type == 'fixed' %}Valor Fixo
                                     {% elif eval.scoring_type == 'total' %}Valor Total
@@ -107,7 +101,7 @@
                                 <td class="text-center">{{ eval.exams.count() }}</td>
                                 <td class="text-end px-4">
                                     <button type="button" class="btn btn-sm btn-outline-primary me-1"
-                                        onclick='editEvaluation({{ {"id": eval.id, "name": eval.name, "type": eval.type, "quantity": eval.quantity, "scoring_type": eval.scoring_type, "multiple_components": eval.multiple_components, "question_values": eval.question_values}|tojson|safe }})'>
+                                        onclick='editEvaluation({{ {"id": eval.id, "name": eval.name, "type": eval.type, "scoring_type": eval.scoring_type, "multiple_components": eval.multiple_components, "question_values": eval.question_values}|tojson|safe }})'>
                                         <i class="bi bi-pencil"></i>
                                     </button>
                                     <button type="button" class="btn btn-sm btn-outline-danger"
@@ -139,7 +133,6 @@
 <script>
     const evalForm = document.querySelector('#newEvaluationModal form');
     const evalModalTitle = document.querySelector('#newEvaluationModal .modal-title');
-    const evalQuantity = document.getElementById('eval_quantity');
 
     function editEvaluation(evalData) {
         evalModalTitle.textContent = 'Editar Avaliação';
@@ -148,7 +141,6 @@
         // Fill fields
         evalForm.querySelector('[name="name"]').value = evalData.name;
         evalForm.querySelector('[name="type"]').value = evalData.type;
-        evalForm.querySelector('[name="quantity"]').value = evalData.quantity;
         evalForm.querySelector('[name="multiple_components"]').value = evalData.multiple_components ? '1' : '0';
 
         const modal = new bootstrap.Modal(document.getElementById('newEvaluationModal'));

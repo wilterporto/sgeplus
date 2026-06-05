@@ -317,15 +317,24 @@
                 enctype="multipart/form-data">
                 <div class="modal-body">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                    <div class="mb-3 d-flex justify-content-between align-items-center">
+                        <div>
+                            <label for="file" class="form-label mb-0">Arquivo Excel (.xlsx)</label>
+                        </div>
+                        <a href="{{ url_for('academic.download_class_layout') }}" class="btn btn-sm btn-outline-success">
+                            <i class="bi bi-download"></i> Baixar Layout de Exemplo
+                        </a>
+                    </div>
                     <div class="mb-3">
-                        <label for="file" class="form-label">Arquivo Excel (.xlsx)</label>
                         <input class="form-control" type="file" id="file" name="file" required accept=".xlsx">
                     </div>
                     <div class="alert alert-info small">
+                        <strong>Colunas Recomendadas:</strong><br>
+                        - INEP da Escola (Facilita a identificação exata)<br><br>
                         <strong>Colunas Obrigatórias:</strong><br>
+                        - Unidade de Ensino (Nome exato se INEP não informado)<br>
                         - Nome da Turma<br>
                         - Ano Escolar (ex: 1º Ano)<br>
-                        - Unidade de Ensino (Nome exato)<br>
                         - Turno (Matutino, Vespertino, Noturno, Integral)<br>
                         - Estrutura Curricular (Nome exato)
                     </div>

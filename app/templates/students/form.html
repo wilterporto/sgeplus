@@ -49,17 +49,24 @@
                     </div>
 
                     <div class="row">
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-4 mb-3">
                             {{ form.sex.label(class="form-label") }} <span class="text-danger">*</span>
                             {{ form.sex(class="form-select") }}
                             {% for error in form.sex.errors %}
                             <div class="text-danger small">{{ error }}</div>
                             {% endfor %}
                         </div>
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-4 mb-3">
                             {{ form.race.label(class="form-label") }} <span class="text-danger">*</span>
-                            {{ form.race(class="form-select") }}
+                            {{ form.race(class="form-select", id="race", onchange="handleRaceChange()") }}
                             {% for error in form.race.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        <div class="col-md-4 mb-3" id="indigenous_people_container" style="display: none;">
+                            {{ form.indigenous_people_id.label(class="form-label") }} <span class="text-danger">*</span>
+                            {{ form.indigenous_people_id(class="form-select", id="indigenous_people_id") }}
+                            {% for error in form.indigenous_people_id.errors %}
                             <div class="text-danger small">{{ error }}</div>
                             {% endfor %}
                         </div>
@@ -129,13 +136,30 @@
                     </div>
 
                     <div class="row">
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-4 mb-3">
                             {{ form.residential_zone.label(class="form-label") }}
                             {{ form.residential_zone(class="form-select") }}
                         </div>
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-8 mb-3">
                             {{ form.differentiated_location.label(class="form-label") }}
                             {{ form.differentiated_location(class="form-select") }}
+                        </div>
+                    </div>
+                    
+                    <h5 class="text-muted border-bottom pb-2 mb-3 mt-4">Comunidades Tradicionais</h5>
+                    <div class="row align-items-center mb-3">
+                        <div class="col-md-4">
+                            <div class="form-check form-switch pt-4">
+                                {{ form.is_quilombola(class="form-check-input", id="is_quilombola", onchange="handleQuilombolaChange()") }}
+                                {{ form.is_quilombola.label(class="form-check-label") }}
+                            </div>
+                        </div>
+                        <div class="col-md-8" id="quilombola_community_container" style="display: none;">
+                            {{ form.quilombola_community_id.label(class="form-label") }} <span class="text-danger">*</span>
+                            {{ form.quilombola_community_id(class="form-select", id="quilombola_community_id") }}
+                            {% for error in form.quilombola_community_id.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
                         </div>
                     </div>
 
@@ -271,9 +295,33 @@
         }
     }
 
+    function handleRaceChange() {
+        const race = document.getElementById('race').value;
+        const indyContainer = document.getElementById('indigenous_people_container');
+        
+        if (race === 'Indigena') {
+            indyContainer.style.display = 'block';
+        } else {
+            indyContainer.style.display = 'none';
+        }
+    }
+    
+    function handleQuilombolaChange() {
+        const isQ = document.getElementById('is_quilombola').checked;
+        const qContainer = document.getElementById('quilombola_community_container');
+        
+        if (isQ) {
+            qContainer.style.display = 'block';
+        } else {
+            qContainer.style.display = 'none';
+        }
+    }
+
     // Call on load
     document.addEventListener("DOMContentLoaded", function() {
         handleNationalityChange();
+        handleRaceChange();
+        handleQuilombolaChange();
     });
 </script>
 

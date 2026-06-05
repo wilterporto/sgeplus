@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Relação de Escolas por Proficiência - {{ exam.title }}</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 2cm;
+            @frame header_frame {
+                -pdf-frame-content: header_content;
+                left: 50pt; width: 512pt; top: 50pt; height: 40pt;
+            }
+            @frame footer_frame {
+                -pdf-frame-content: footer_content;
+                left: 50pt; width: 512pt; top: 772pt; height: 20pt;
+            }
+        }
+        body { font-family: Helvetica, Arial, sans-serif; font-size: 10pt; }
+        h1 { font-size: 14pt; text-align: center; margin-bottom: 5px; }
+        h2 { font-size: 12pt; text-align: center; color: #555; margin-bottom: 20px; font-weight: normal; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ccc; padding: 5px; text-align: left; }
+        th { background-color: #f5f5f5; font-weight: bold; }
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+    </style>
+</head>
+<body>
+    <div id="header_content">
+        <!-- Cabeçalho (Opcional logo, etc) -->
+    </div>
+    
+    <h1>{{ exam.title }} ({{ exam.academic_year }})</h1>
+    <h2>Relação de Escolas com Proficiência {{ "Abaixo de" if prof_op == "<" else "Acima de" }} {{ prof_val|round(1) }}%</h2>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Escola</th>
+                <th>Município</th>
+                <th class="text-right">Proficiência (%)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for s in schools %}
+            <tr>
+                <td>{{ s.name }}</td>
+                <td>{{ s.municipio or 'Não informado' }}</td>
+                <td class="text-right">{{ s.score|round(1) }}%</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="3" class="text-center">Nenhuma escola encontrada para este critério.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div id="footer_content">
+        <div style="font-size: 8pt; color: #777;">
+            Gerado em {{ now.strftime('%d/%m/%Y às %H:%M') }} - SGE Plus
+        </div>
+        <div style="text-align: right; font-size: 8pt;">
+            Página <pdf:pagenumber> de <pdf:pagecount>
+        </div>
+    </div>
+</body>
+</html>

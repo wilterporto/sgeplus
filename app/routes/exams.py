@@ -17,6 +17,8 @@ import json
 import sqlalchemy as sa
 from xhtml2pdf import pisa
 from pypdf import PdfWriter, PdfReader
+import qrcode
+import base64
 
 # Global job tracker for PDF generation
 pdf_jobs = {}
@@ -125,12 +127,30 @@ def generate_exam():
     evaluation_query = Evaluation.query
     evaluation_query = filter_by_tenant(evaluation_query, Evaluation)
     form.evaluation_id.choices = [(0, 'Selecione...')] + [(e.id, e.name) for e in evaluation_query.order_by(Evaluation.name).all()]
-    form.matrix_id.choices = [(0, 'Selecione...')] + [(m.id, m.name) for m in ReferenceMatrix.query.all()]
+    matrix_query = filter_by_tenant(ReferenceMatrix.query, ReferenceMatrix)
+    form.matrix_id.choices = [(0, 'Selecione...')] + [(m.id, m.name) for m in matrix_query.order_by(ReferenceMatrix.name).all()]
     form.school_year_id.choices = [(0, 'Selecione...')] + [(y.id, y.name) for y in SchoolYear.query.order_by(SchoolYear.name).all()]
     form.subject_id.choices = [(0, 'Selecione...')] + [(s.id, s.name) for s in Subject.query.order_by(Subject.name).all()]
     form.subject_ids.choices = [(s.id, s.name) for s in Subject.query.order_by(Subject.name).all()]
     
     # Scoping choices
+    default_scopes = [
+        ('', 'Selecione...'),
+        ('global', 'Todas as Escolas'),
+        ('regional', 'Regional Específica'),
+        ('school', 'Escolas Específicas')
+    ]
+    if current_user.tenant.type == 'Estadual':
+        default_scopes.append(('city', 'Município Específico'))
+    form.scope_type.choices = default_scopes
+
+    if current_user.tenant.type == 'Estadual' and current_user.tenant.uf:
+        from app.models import City
+        cities = City.query.filter_by(uf=current_user.tenant.uf).order_by(City.name).all()
+        form.target_cities.choices = [(c.name, c.name) for c in cities]
+    else:
+        form.target_cities.choices = []
+
     if is_unidade:
         form.teaching_unit_id.choices = [(active_school_id, active_school_name)]
         form.regional_id.choices = []
@@ -141,7 +161,7 @@ def generate_exam():
         
         tu_query_esc = TeachingUnit.query.filter_by(type='Escola')
         tu_query_esc = filter_by_tenant(tu_query_esc, TeachingUnit)
-        form.teaching_unit_id.choices = [(tu.id, tu.name) for tu in tu_query_esc.all()]
+        form.teaching_unit_id.choices = [(tu.id, f"{tu.inep_code or 'S/INEP'} - {tu.name} - {tu.municipio or ''}") for tu in tu_query_esc.order_by(TeachingUnit.name).all()]
     
     # Determine if current user is ONLY a professor (not admin)
     is_teacher = 'professor' in current_user.get_roles() and not current_user.is_admin
@@ -204,6 +224,16 @@ def generate_exam():
             if not form.subject_ids.data:
                 form.subject_ids.errors.append('Selecione pelo menos um componente curricular.')
                 validation_failed = True
+            else:
+                total_qty = 0
+                for subj_id in form.subject_ids.data:
+                    try:
+                        total_qty += int(request.form.get(f'component_quantity_{subj_id}', '0'))
+                    except ValueError:
+                        pass
+                if total_qty != form.quantity.data:
+                    form.quantity.errors.append(f'A soma das questões por componente ({total_qty}) deve ser exatamente igual à quantidade total da prova ({form.quantity.data}).')
+                    validation_failed = True
         else:
             if not form.subject_id.data or form.subject_id.data == 0:
                 form.subject_id.errors.append('Selecione um componente curricular.')
@@ -217,58 +247,87 @@ def generate_exam():
             flash('Não é possível gerar provas enquanto houver uma importação em andamento. Por favor, aguarde a conclusão na Administração.', 'warning')
             return redirect(url_for('exams.list_exams'))
 
-        # Filtering Logic
-        query = Question.query
-        query = filter_by_tenant(query, Question)
+        # Base query that applies to all
+        base_query = Question.query
+        base_query = filter_by_tenant(base_query, Question)
         
         if is_unidade:
-            query = query.join(Question.validated_units).filter(TeachingUnit.id == active_school_id)
-        
-        # Matrix/Year/Subject Filters
-        if form.matrix_id.data and form.matrix_id.data != 0:
-            query = query.join(Question.descriptors).filter(Descriptor.matrix_id == form.matrix_id.data)
-            
-        if form.school_year_id.data and form.school_year_id.data != 0:
-            if not any(isinstance(j, sa.sql.selectable.Join) for j in query.get_execution_options().get('joins', [])):
-                query = query.join(Question.descriptors)
-            query = query.filter(Descriptor.school_year_id == form.school_year_id.data)
-
-        if is_multiple:
-            if form.subject_ids.data:
-                if not any(isinstance(j, sa.sql.selectable.Join) for j in query.get_execution_options().get('joins', [])):
-                    query = query.join(Question.descriptors)
-                query = query.filter(Descriptor.subject_id.in_(form.subject_ids.data))
-        else:
-            if form.subject_id.data and form.subject_id.data != 0:
-                if not (form.matrix_id.data and form.matrix_id.data != 0) and not (form.school_year_id.data and form.school_year_id.data != 0):
-                    query = query.join(Question.descriptors)
-                query = query.filter(Descriptor.subject_id == form.subject_id.data)
-
-        if (is_teacher or is_unidade) and not form.class_ids.data:
-            flash('Você deve selecionar pelo menos uma turma.', 'danger')
-            return render_template('exams/generate.html', form=form, is_teacher=is_teacher, is_unidade=is_unidade, evaluations=evaluations)
-        
-        # Descriptor IDs Filter (Exclusive)
-        if form.descriptor_ids.data:
-            if not any(isinstance(j, sa.sql.selectable.Join) for j in query.get_execution_options().get('joins', [])):
-                query = query.join(Question.descriptors)
-            query = query.filter(Descriptor.id.in_(form.descriptor_ids.data))
+            base_query = base_query.join(Question.validated_units).filter(TeachingUnit.id == active_school_id)
         
         # Difficulty Filter
         if form.difficulty.data != 'Any':
-            query = query.filter(db.func.lower(Question.difficulty) == form.difficulty.data.lower())
+            base_query = base_query.filter(db.func.lower(Question.difficulty) == form.difficulty.data.lower())
+
+        selected_questions = []
+
+        if is_multiple and form.subject_ids.data:
+            total_selected = 0
+            for subj_id in form.subject_ids.data:
+                qty_str = request.form.get(f'component_quantity_{subj_id}', '0')
+                try:
+                    qty = int(qty_str)
+                except ValueError:
+                    qty = 0
+
+                if qty <= 0:
+                    continue
+
+                q_query = base_query
+                # Needs descriptors join for subject filter
+                if not any(isinstance(j, sa.sql.selectable.Join) for j in q_query.get_execution_options().get('joins', [])):
+                    q_query = q_query.join(Question.descriptors)
+                q_query = q_query.filter(Descriptor.subject_id == subj_id)
+
+                if form.matrix_id.data and form.matrix_id.data != 0:
+                    q_query = q_query.filter(Descriptor.matrix_id == form.matrix_id.data)
+                    
+                if form.school_year_id.data and form.school_year_id.data != 0:
+                    q_query = q_query.filter(Descriptor.school_year_id == form.school_year_id.data)
+
+                if form.descriptor_ids.data:
+                    q_query = q_query.filter(Descriptor.id.in_(form.descriptor_ids.data))
+
+                available_for_subj = q_query.distinct().all()
+                if len(available_for_subj) < qty:
+                    flash(f'Não há questões suficientes para o componente selecionado ({len(available_for_subj)} disponíveis, {qty} solicitadas).', 'danger')
+                    return render_template('exams/generate.html', form=form, is_teacher=is_teacher, is_unidade=is_unidade, evaluations=evaluations)
+                
+                num_to_select = qty
+                selected_questions.extend(random.sample(available_for_subj, num_to_select))
+                total_selected += num_to_select
+                
+            if total_selected == 0:
+                flash('Não foi possível gerar a prova pois não há questões suficientes para os componentes selecionados.', 'danger')
+                return render_template('exams/generate.html', form=form, is_teacher=is_teacher, is_unidade=is_unidade, evaluations=evaluations)
+        else:
+            # Matrix/Year/Subject Filters
+            if form.matrix_id.data and form.matrix_id.data != 0:
+                base_query = base_query.join(Question.descriptors).filter(Descriptor.matrix_id == form.matrix_id.data)
+                
+            if form.school_year_id.data and form.school_year_id.data != 0:
+                if not any(isinstance(j, sa.sql.selectable.Join) for j in base_query.get_execution_options().get('joins', [])):
+                    base_query = base_query.join(Question.descriptors)
+                base_query = base_query.filter(Descriptor.school_year_id == form.school_year_id.data)
+
+            if form.subject_id.data and form.subject_id.data != 0:
+                if not (form.matrix_id.data and form.matrix_id.data != 0) and not (form.school_year_id.data and form.school_year_id.data != 0):
+                    base_query = base_query.join(Question.descriptors)
+                base_query = base_query.filter(Descriptor.subject_id == form.subject_id.data)
+
+            # Descriptor IDs Filter (Exclusive)
+            if form.descriptor_ids.data:
+                if not any(isinstance(j, sa.sql.selectable.Join) for j in base_query.get_execution_options().get('joins', [])):
+                    base_query = base_query.join(Question.descriptors)
+                base_query = base_query.filter(Descriptor.id.in_(form.descriptor_ids.data))
+                
+            available_questions = base_query.distinct().all()
             
-        available_questions = query.distinct().all()
-        
-        if len(available_questions) == 0:
-            flash('Nenhuma questão encontrada com os filtros selecionados.', 'danger')
-            return render_template('exams/generate.html', form=form, is_teacher=is_teacher, is_unidade=is_unidade, evaluations=evaluations)
-        
-        # Diagnostic Log
-        print(f"DEBUG: form.quantity.data={form.quantity.data}, available={len(available_questions)}")
-        
-        num_to_select = min(form.quantity.data, len(available_questions))
-        selected_questions = random.sample(available_questions, num_to_select)
+            if len(available_questions) < form.quantity.data:
+                flash(f'Não há questões suficientes no banco com os filtros selecionados ({len(available_questions)} disponíveis, {form.quantity.data} solicitadas).', 'danger')
+                return render_template('exams/generate.html', form=form, is_teacher=is_teacher, is_unidade=is_unidade, evaluations=evaluations)
+            
+            num_to_select = form.quantity.data
+            selected_questions = random.sample(available_questions, num_to_select)
         
         # Academic Year from date
         acad_year = str(form.application_date.data.year)
@@ -293,6 +352,11 @@ def generate_exam():
                 target_unit_ids = form.teaching_unit_id.data
             elif form.scope_type.data == 'regional' and form.regional_id.data:
                 schools_query = TeachingUnit.query.filter(TeachingUnit.parent_id.in_(form.regional_id.data), TeachingUnit.type == 'Escola')
+                schools_query = filter_by_tenant(schools_query, TeachingUnit)
+                schools = schools_query.all()
+                target_unit_ids = [s.id for s in schools]
+            elif form.scope_type.data == 'city' and form.target_cities.data:
+                schools_query = TeachingUnit.query.filter(TeachingUnit.municipio.in_(form.target_cities.data), TeachingUnit.type == 'Escola')
                 schools_query = filter_by_tenant(schools_query, TeachingUnit)
                 schools = schools_query.all()
                 target_unit_ids = [s.id for s in schools]
@@ -1759,6 +1823,18 @@ def download_exam_pdf(id):
         
         print(f"DEBUG: school_id={school_id}, class_id={class_id}, is_async={is_async}, font_size={font_size}, layout_columns={layout_columns}, blank_student={blank_student}, filters=[{exam.target_nationality}, {exam.target_special_needs}]")
         
+        def generate_qr(student_id):
+            if not student_id:
+                return None
+            qr = qrcode.QRCode(version=1, box_size=3, border=1)
+            qr.add_data(f"exam_id:{exam.id},student_id:{student_id}")
+            qr.make(fit=True)
+            img = qr.make_image(fill_color="black", back_color="white")
+            buffered = BytesIO()
+            img.save(buffered, format="PNG")
+            img_str = base64.b64encode(buffered.getvalue()).decode()
+            return f"data:image/png;base64,{img_str}"
+
         students_list = []
         
         def filter_enrollment(enrollment):
@@ -1808,7 +1884,8 @@ def download_exam_pdf(id):
                             'student_name': enrollment.student.name,
                             'school_name': target_class.teaching_unit.name,
                             'class_name': target_class.name,
-                            'shift': target_class.shift
+                            'shift': target_class.shift,
+                            'qr_code': generate_qr(enrollment.student.id)
                         })
         elif school_id:
             school_query = TeachingUnit.query.filter_by(id=school_id)
@@ -1825,7 +1902,8 @@ def download_exam_pdf(id):
                                 'student_name': enrollment.student.name,
                                 'school_name': school.name,
                                 'class_name': cls.name,
-                                'shift': cls.shift
+                                'shift': cls.shift,
+                                'qr_code': generate_qr(enrollment.student.id)
                             })
 
         if not students_list:

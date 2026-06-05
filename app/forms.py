@@ -62,9 +62,6 @@ class EvaluationForm(FlaskForm):
         ('Saida', 'Saída'),
         ('Indiferente', 'Indiferente')
     ], validators=[DataRequired()])
-    quantity = SelectField('Quantidade de Questões', choices=[
-        (0, 'Selecione...'), (5, '5'), (10, '10'), (15, '15'), (20, '20'), (30, '30'), (40, '40'), (50, '50')
-    ], coerce=int, validators=[DataRequired()])
     multiple_components = SelectField('Múltiplos componentes', choices=[
         ('0', 'Não'),
         ('1', 'Sim')
@@ -90,6 +87,7 @@ class ExamGeneratorForm(FlaskForm):
     ], validators=[Optional()])
     regional_id = SelectMultipleField('Regionais', coerce=int, validators=[Optional()], choices=[])
     teaching_unit_id = SelectMultipleField('Escolas', coerce=int, validators=[Optional()], choices=[])
+    target_cities = SelectMultipleField('Municípios', validators=[Optional()], choices=[])
     class_ids = SelectMultipleField('Turmas', coerce=int, validators=[Optional()], choices=[])
     descriptor_ids = SelectMultipleField('Descritores (Opcional)', coerce=int, validators=[Optional()], choices=[])
     difficulty = SelectField('Nível das questões', choices=[
@@ -100,7 +98,10 @@ class ExamGeneratorForm(FlaskForm):
         ('dificil', 'Difícil')
     ], validators=[DataRequired()])
     quantity = SelectField('Quantidade de Questões', choices=[
-        (0, 'Selecione...'), (5, '5'), (10, '10'), (15, '15'), (20, '20'), (30, '30')
+        (0, 'Selecione...'), (5, '5'), (10, '10'), (15, '15'), (20, '20'), (25, '25'), (30, '30'),
+        (35, '35'), (40, '40'), (45, '45'), (50, '50'), (55, '55'), (60, '60'),
+        (65, '65'), (70, '70'), (75, '75'), (80, '80'), (85, '85'), (90, '90'),
+        (95, '95'), (100, '100')
     ], coerce=int, validators=[DataRequired()])
     
     # Scoring options
@@ -269,6 +270,10 @@ class StudentForm(FlaskForm):
         ('Área onde se localizam povos e comunidades tradicionais', 'Área onde se localizam povos e comunidades tradicionais')
     ], default='Não está em área de localização diferenciada', validators=[Optional()])
     
+    is_quilombola = BooleanField('É Quilombola?', default=False)
+    quilombola_community_id = SelectField('Comunidade Quilombola', coerce=int, choices=[(0, 'Selecione...')], validators=[Optional()])
+    indigenous_people_id = SelectField('Povo Indígena', coerce=int, choices=[(0, 'Selecione...')], validators=[Optional()])
+    
     # Mandatory enrollment fields
     teaching_unit_id = SelectField('Escola', coerce=int, validators=[DataRequired()])
     class_id = SelectField('Turma', coerce=int, validators=[DataRequired()])
@@ -379,10 +384,25 @@ class DescriptorForm(FlaskForm):
 
 class ImportClassForm(FlaskForm):
     file = FileField('Arquivo Excel (.xlsx)', validators=[
-        FileRequired(),
-        FileAllowed(['xlsx'], 'Apenas arquivos Excel!')
+        DataRequired(),
+        FileAllowed(['xlsx', 'xls'], 'Apenas arquivos Excel são permitidos.')
     ])
-    submit = SubmitField('Importar Turmas')
+    submit = SubmitField('Importar')
+
+class QuilombolaCommunityForm(FlaskForm):
+    name = StringField('Nome da Comunidade', validators=[DataRequired()])
+    submit = SubmitField('Salvar Comunidade')
+
+class IndigenousPeopleForm(FlaskForm):
+    name = StringField('Nome do Povo', validators=[DataRequired()])
+    submit = SubmitField('Salvar Povo Indígena')
+
+class ImportDefinitionForm(FlaskForm):
+    file = FileField('Arquivo Excel (.xlsx)', validators=[
+        FileRequired(),
+        FileAllowed(['xlsx', 'xls'], 'Apenas arquivos Excel são permitidos.')
+    ])
+    submit = SubmitField('Importar')
 
 class ImportUnitForm(FlaskForm):
     file = FileField('Arquivo Excel (.xlsx)', validators=[
@@ -419,6 +439,9 @@ class SystemSettingsForm(FlaskForm):
     ])
     login_background = FileField('Imagem de Fundo Módulo Login', validators=[
         FileAllowed(['jpg', 'png', 'jpeg', 'gif'], 'Apenas imagens (JPG, PNG, GIF)!')
+    ])
+    favicon = FileField('Favicon do Sistema', validators=[
+        FileAllowed(['ico', 'png'], 'Apenas imagens (ICO, PNG)!')
     ])
     
     # SMTP Settings
@@ -483,6 +506,7 @@ class TenantForm(FlaskForm):
     ], validators=[DataRequired()])
     uf = SelectField('UF', choices=[('', 'Selecione a UF')], validators=[Optional()])
     municipio = SelectField('Município', choices=[('', 'Selecione o Município')], validators=[Optional()])
+    map_url = StringField('URL para o arquivo GeoJSON que você deseja usar', validators=[Optional(), Length(max=512)])
     submit = SubmitField('Salvar Cliente')
 
     def validate(self, extra_validators=None):

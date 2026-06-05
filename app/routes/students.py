@@ -96,7 +96,7 @@ def new_student():
 
     form = StudentForm()
     
-    from app.models import DietaryRestriction, City, Country, User
+    from app.models import DietaryRestriction, City, Country, User, QuilombolaCommunity, IndigenousPeople
     
     if active_role == 'unidade':
         form.teaching_unit_id.choices = [(active_school_id, active_school_name)]
@@ -119,6 +119,9 @@ def new_student():
         form.birth_city_id.choices = [(0, 'Selecione...')] + [(c.id, c.name) for c in City.query.filter_by(uf=request.form.get('birth_state')).order_by(City.name).all()]
     else:
         form.birth_city_id.choices = [(0, 'Selecione...')]
+        
+    form.quilombola_community_id.choices = [(0, 'Selecione...')] + [(q.id, q.name) for q in filter_by_tenant(QuilombolaCommunity.query, QuilombolaCommunity).order_by(QuilombolaCommunity.name).all()]
+    form.indigenous_people_id.choices = [(0, 'Selecione...')] + [(ip.id, ip.name) for ip in filter_by_tenant(IndigenousPeople.query, IndigenousPeople).order_by(IndigenousPeople.name).all()]
 
     if form.validate_on_submit():
         if form.teaching_unit_id.data == 0 or form.class_id.data == 0:
@@ -153,6 +156,9 @@ def new_student():
             birth_city_id=form.birth_city_id.data if form.birth_city_id.data and form.birth_city_id.data != 0 and form.nationality.data == 'Brasileiro' else None,
             residential_zone=form.residential_zone.data,
             differentiated_location=form.differentiated_location.data,
+            is_quilombola=form.is_quilombola.data,
+            quilombola_community_id=form.quilombola_community_id.data if form.is_quilombola.data and form.quilombola_community_id.data != 0 else None,
+            indigenous_people_id=form.indigenous_people_id.data if form.race.data == 'Indigena' and form.indigenous_people_id.data != 0 else None,
             tenant_id=current_user.tenant_id
         )
         selected_restrictions = filter_by_tenant(DietaryRestriction.query, DietaryRestriction).filter(DietaryRestriction.id.in_(form.dietary_restrictions.data)).all()
@@ -252,7 +258,7 @@ def edit_student(id):
         c_query = filter_by_tenant(c_query, Class)
         form.class_id.choices = [(0, 'Selecione...')] + [(c.id, c.name) for c in c_query.all()]
     
-    from app.models import City, Country
+    from app.models import City, Country, QuilombolaCommunity, IndigenousPeople
     form.birth_country.choices = [(c.name, c.name) for c in Country.query.order_by(Country.name).all()]
     if request.method == 'POST' and request.form.get('birth_state'):
         form.birth_city_id.choices = [(0, 'Selecione...')] + [(c.id, c.name) for c in City.query.filter_by(uf=request.form.get('birth_state')).order_by(City.name).all()]
@@ -260,6 +266,9 @@ def edit_student(id):
         form.birth_city_id.choices = [(0, 'Selecione...')] + [(c.id, c.name) for c in City.query.filter_by(uf=student.birth_state).order_by(City.name).all()]
     else:
         form.birth_city_id.choices = [(0, 'Selecione...')]
+
+    form.quilombola_community_id.choices = [(0, 'Selecione...')] + [(q.id, q.name) for q in filter_by_tenant(QuilombolaCommunity.query, QuilombolaCommunity).order_by(QuilombolaCommunity.name).all()]
+    form.indigenous_people_id.choices = [(0, 'Selecione...')] + [(ip.id, ip.name) for ip in filter_by_tenant(IndigenousPeople.query, IndigenousPeople).order_by(IndigenousPeople.name).all()]
 
     
     existing_rep_ids = [d.id for d in student.dietary_restrictions]
@@ -301,6 +310,9 @@ def edit_student(id):
             student.bolsa_familia = form.bolsa_familia.data
             student.residential_zone = form.residential_zone.data
             student.differentiated_location = form.differentiated_location.data
+            student.is_quilombola = form.is_quilombola.data
+            student.quilombola_community_id = form.quilombola_community_id.data if form.is_quilombola.data and form.quilombola_community_id.data != 0 else None
+            student.indigenous_people_id = form.indigenous_people_id.data if form.race.data == 'Indigena' and form.indigenous_people_id.data != 0 else None
             
             if form.nationality.data == 'Brasileiro':
                 student.birth_state = form.birth_state.data
@@ -404,6 +416,59 @@ def enroll_student(id):
     
     return render_template('students/enroll.html', form=form, student=student, enrollments=active_enrollments)
 
+@students_bp.route('/download-layout')
+@login_required
+def download_student_layout():
+    import pandas as pd
+    from io import BytesIO
+    from flask import send_file
+    
+    data = {
+        'INEP da Escola': ['12345678', ''],
+        'Unidade de Ensino': ['Escola Exemplo 1', 'Escola Exemplo 1'],
+        'Nome da Turma': ['101', '102'],
+        'Nome Completo': ['João Silva', 'Maria Souza'],
+        'Data de Nascimento': ['01/05/2010', '15/08/2010'],
+        'Sexo': ['M', 'F'],
+        'Cor/Raça': ['Branca', 'Parda'],
+        'CPF': ['111.222.333-44', '555.666.777-88'],
+        'Código INEP': ['123456789012', '987654321098'],
+        'Cartão SUS': ['123456789012345', ''],
+        'Nacionalidade': ['Brasileiro', 'Brasileiro'],
+        'País nascimento': ['Brasil', 'Brasil'],
+        'UF Naturalidade': ['SP', 'MG'],
+        'Município Naturalidade': ['São Paulo', 'Belo Horizonte'],
+        'Zona Residencial': ['Urbana', 'Rural'],
+        'Localização Diferenciada de Residência': ['Não está em área de localização diferenciada', 'Não está em área de localização diferenciada'],
+        'Deficiência': ['Não', 'Não'],
+        'E-mail': ['joao@email.com', 'maria@email.com'],
+        'Renda Familiar': ['1 a 2 SM', ''],
+        'Bolsa Família': ['Não', 'Sim'],
+        'Restrições Alimentares': ['Lactose, Amendoim', ''],
+        'É Quilombola?': ['Não', 'Sim'],
+        'Comunidade Quilombola': ['', 'Comunidade X'],
+        'Povo Indígena': ['', '']
+    }
+    
+    df = pd.DataFrame(data)
+    output = BytesIO()
+    
+    with pd.ExcelWriter(output, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False, sheet_name='Layout Alunos')
+        worksheet = writer.sheets['Layout Alunos']
+        for idx, col in enumerate(df.columns):
+            max_len = max(df[col].astype(str).map(len).max(), len(col)) + 2
+            worksheet.column_dimensions[chr(65 + idx)].width = max_len
+            
+    output.seek(0)
+    
+    return send_file(
+        output,
+        download_name='layout_importacao_alunos.xlsx',
+        as_attachment=True,
+        mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+
 @students_bp.route('/import', methods=['POST'])
 @login_required
 def import_students():
@@ -433,8 +498,15 @@ def import_students():
             import re
             def clean_val(v): return re.sub(r'[^0-9]', '', v) if v else ""
             
-            existing_students_by_cpf_clean = {clean_val(s.cpf): s for s in Student.query.all()}
-            existing_usernames = {u.username for u in User.query.with_entities(User.username).all()}
+            from app.models import DietaryRestriction, QuilombolaCommunity, IndigenousPeople
+            all_dr = filter_by_tenant(DietaryRestriction.query, DietaryRestriction).all()
+            dr_map = {d.name.lower(): d for d in all_dr}
+            
+            existing_students_by_cpf_clean = {clean_val(s.cpf): s for s in filter_by_tenant(Student.query, Student).all()}
+            existing_usernames = {u.username for u in filter_by_tenant(User.query.with_entities(User.username), User).all()}
+            
+            quilombola_cache = {q.name.lower(): q for q in filter_by_tenant(QuilombolaCommunity.query, QuilombolaCommunity).all()}
+            indigenous_cache = {ip.name.lower(): ip for ip in filter_by_tenant(IndigenousPeople.query, IndigenousPeople).all()}
             
             # Pre-calculate registration number sequence
             from datetime import datetime
@@ -480,6 +552,34 @@ def import_students():
                         else:
                             errors.append(f"Atenção: Restrição '{dr_name}' não encontrada (ignorada para aluno {item['name']}).")
                             
+                    # Quilombola Community
+                    qc_id = None
+                    if item.get('is_quilombola') and item.get('quilombola_community_name'):
+                        qc_name = item['quilombola_community_name']
+                        qc_name_lower = qc_name.lower()
+                        if qc_name_lower in quilombola_cache:
+                            qc_id = quilombola_cache[qc_name_lower].id
+                        else:
+                            new_qc = QuilombolaCommunity(name=qc_name, tenant_id=get_tenant_id())
+                            db.session.add(new_qc)
+                            db.session.flush()
+                            quilombola_cache[qc_name_lower] = new_qc
+                            qc_id = new_qc.id
+
+                    # Indigenous People
+                    ip_id = None
+                    if item.get('race') == 'Indigena' and item.get('indigenous_people_name'):
+                        ip_name = item['indigenous_people_name']
+                        ip_name_lower = ip_name.lower()
+                        if ip_name_lower in indigenous_cache:
+                            ip_id = indigenous_cache[ip_name_lower].id
+                        else:
+                            new_ip = IndigenousPeople(name=ip_name, tenant_id=get_tenant_id())
+                            db.session.add(new_ip)
+                            db.session.flush()
+                            indigenous_cache[ip_name_lower] = new_ip
+                            ip_id = new_ip.id
+                
                     # Check exist (In-memory, normalized)
                     curr_cpf_clean = item.get('cpf_clean') or clean_val(item['cpf'])
                     email_val = item.get('email')
@@ -503,7 +603,8 @@ def import_students():
                             'name', 'birth_date', 'sex', 'race', 
                             'inep_code', 'sus_card', 'nationality', 'birth_country',
                             'birth_state', 'birth_city_id', 'residential_zone', 
-                            'differentiated_location', 'special_needs', 'bolsa_familia', 'family_income'
+                            'differentiated_location', 'special_needs', 'bolsa_familia', 'family_income',
+                            'is_quilombola'
                         ]
                         for field in updateable_fields:
                             if field in item and item[field] is not None and getattr(student, field) != item[field]:
@@ -514,6 +615,14 @@ def import_students():
                         new_dr_ids = {d.id for d in dr_objs}
                         if current_dr_ids != new_dr_ids:
                             student.dietary_restrictions = dr_objs
+                            changed = True
+                            
+                        if student.quilombola_community_id != qc_id:
+                            student.quilombola_community_id = qc_id
+                            changed = True
+                            
+                        if student.indigenous_people_id != ip_id:
+                            student.indigenous_people_id = ip_id
                             changed = True
                         
                         if changed:
@@ -557,7 +666,10 @@ def import_students():
                             differentiated_location=item.get('differentiated_location'),
                             bolsa_familia=item.get('bolsa_familia', False),
                             family_income=item.get('family_income'),
-                            tenant_id=current_user.tenant_id
+                            is_quilombola=item.get('is_quilombola', False),
+                            quilombola_community_id=qc_id,
+                            indigenous_people_id=ip_id,
+                            tenant_id=get_tenant_id()
                         )
                         student.dietary_restrictions = dr_objs
                         
@@ -572,7 +684,7 @@ def import_students():
                                 roles='student',
                                 email=email_val,
                                 active=True,
-                                tenant_id=current_user.tenant_id
+                                tenant_id=get_tenant_id()
                             )
                             user.add_role('student')
                             user.set_password(dob_str)

@@ -17,6 +17,7 @@ class Tenant(db.Model):
     type = db.Column(db.String(50), nullable=False)
     uf = db.Column(db.String(2), nullable=True)
     municipio = db.Column(db.String(128), nullable=True)
+    map_url = db.Column(db.String(512), nullable=True)
     created_at = db.Column(db.DateTime, default=get_brasilia_time)
 
 class User(UserMixin, db.Model):
@@ -439,10 +440,15 @@ class Student(db.Model):
     birth_city_id = db.Column(db.Integer, db.ForeignKey('city.id'))
     residential_zone = db.Column(db.String(20))
     differentiated_location = db.Column(db.String(100))
+    is_quilombola = db.Column(db.Boolean, default=False)
+    quilombola_community_id = db.Column(db.Integer, db.ForeignKey('quilombola_community.id'), nullable=True)
+    indigenous_people_id = db.Column(db.Integer, db.ForeignKey('indigenous_people.id'), nullable=True)
     
     tenant = db.relationship('Tenant')
     user = db.relationship('User', backref=db.backref('student_profile', uselist=False))
     birth_city = db.relationship('City')
+    quilombola_community = db.relationship('QuilombolaCommunity')
+    indigenous_people = db.relationship('IndigenousPeople')
     enrollments = db.relationship('Enrollment', backref='student', lazy='dynamic')
     dietary_restrictions = db.relationship('DietaryRestriction', secondary=student_dietary_restrictions, lazy='subquery', backref=db.backref('students', lazy=True))
     
@@ -596,8 +602,23 @@ class ImportJob(db.Model):
 class City(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     ibge_code = db.Column(db.String(20), unique=True, nullable=False)
-    uf = db.Column(db.String(2), nullable=False)
     name = db.Column(db.String(128), nullable=False)
+    uf = db.Column(db.String(2), nullable=False)
+
+class QuilombolaCommunity(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    tenant_id = db.Column(db.Integer, db.ForeignKey('tenant.id'), nullable=True)
+    name = db.Column(db.String(128), nullable=False)
+    
+    tenant = db.relationship('Tenant')
+
+class IndigenousPeople(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    tenant_id = db.Column(db.Integer, db.ForeignKey('tenant.id'), nullable=True)
+    name = db.Column(db.String(128), nullable=False)
+    
+    tenant = db.relationship('Tenant')
+
 
 class Country(db.Model):
     id = db.Column(db.Integer, primary_key=True)

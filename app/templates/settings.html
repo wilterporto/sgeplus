@@ -70,6 +70,31 @@
                         </div>
                         {% endif %}
 
+                        <div class="mb-3">
+                            {{ form.favicon.label(class="form-label") }}
+                            {{ form.favicon(class="form-control") }}
+                            {% for error in form.favicon.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                            <div class="form-text">Envie um ícone (ICO, PNG) para ser usado como favicon do sistema.
+                            </div>
+                        </div>
+
+                        {% if current_favicon %}
+                        <div class="mb-3">
+                            <label class="form-label d-block">Favicon Atual:</label>
+                            <div class="d-flex align-items-center">
+                                <img src="{{ url_for('main.get_favicon') }}" alt="Favicon Atual" style="max-height: 32px;"
+                                    class="bg-dark p-2 rounded me-3">
+
+                                <button type="button" class="btn btn-outline-danger btn-sm"
+                                    onclick="if(confirm('Tem certeza que deseja remover o favicon do sistema?')) document.getElementById('remove-favicon-form').submit();">
+                                    <i class="bi bi-trash"></i> Remover Favicon
+                                </button>
+                            </div>
+                        </div>
+                        {% endif %}
+
                         <hr class="my-4">
                         <h5 class="mb-3">Configurações de E-mail (SMTP)</h5>
 
@@ -115,6 +140,10 @@
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                     </form>
                     <form id="remove-login-bg-form" action="{{ url_for('main.remove_login_bg') }}" method="POST"
+                        style="display: none;">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                    </form>
+                    <form id="remove-favicon-form" action="{{ url_for('main.remove_favicon') }}" method="POST"
                         style="display: none;">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                     </form>

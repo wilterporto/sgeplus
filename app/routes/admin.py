@@ -394,7 +394,8 @@ def new_tenant():
             name=form.name.data.strip(),
             type=form.type.data,
             uf=form.uf.data if form.uf.data else None,
-            municipio=form.municipio.data if form.municipio.data else None
+            municipio=form.municipio.data if form.municipio.data else None,
+            map_url=form.map_url.data.strip() if form.map_url.data else None
         )
         db.session.add(tenant)
         db.session.commit()
@@ -434,6 +435,7 @@ def edit_tenant(id):
         tenant.type = form.type.data
         tenant.uf = form.uf.data if form.uf.data else None
         tenant.municipio = form.municipio.data if form.municipio.data else None
+        tenant.map_url = form.map_url.data.strip() if form.map_url.data else None
         db.session.commit()
         
         log_audit('UPDATE', 'Tenant', tenant.id, f"Cliente {old_name} atualizado para {tenant.name} (Tipo: {tenant.type})")
