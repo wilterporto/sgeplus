@@ -583,6 +583,7 @@ def search_descriptors_api():
     subject_ids_str = request.args.get('subject_ids')
     
     query = Descriptor.query
+    query = filter_by_tenant(query, Descriptor)
     if matrix_id and matrix_id != 0:
         query = query.filter(Descriptor.matrix_id == matrix_id)
     if year_id and year_id != 0:
