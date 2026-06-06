@@ -44,6 +44,8 @@ def api_dashboard_data():
     deficiency = request.args.getlist('deficiency[]')
     bolsa = request.args.getlist('bolsa[]')
     dietary = request.args.getlist('dietary[]')
+    indigenous = request.args.getlist('indigenous[]')
+    quilombola = request.args.getlist('quilombola[]')
     
     data = get_dashboard_data(
         exam_id=exam_id, 
@@ -58,7 +60,9 @@ def api_dashboard_data():
         locations=locations,
         deficiency=deficiency,
         bolsa=bolsa,
-        dietary=dietary
+        dietary=dietary,
+        indigenous=indigenous,
+        quilombola=quilombola
     )
     return jsonify(data)
 

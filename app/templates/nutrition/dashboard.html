@@ -1,0 +1,231 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="mb-0"><i class="bi bi-heart-pulse me-2"></i>Dashboard - Nutrição Escolar</h4>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white shadow-sm h-100">
+                <div class="card-body">
+                    <h6 class="card-title text-white-50">Total de Alunos Aferidos</h6>
+                    <h2 class="mb-0">{{ stats.total }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white shadow-sm h-100">
+                <div class="card-body">
+                    <h6 class="card-title text-white-50">Faixa Etária</h6>
+                    <p class="mb-0"><strong>0 a 5 anos:</strong> {{ stats.by_age_group['0-5'] }}</p>
+                    <p class="mb-0"><strong>5 a 19 anos:</strong> {{ stats.by_age_group['5-19'] }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white shadow-sm h-100">
+                <div class="card-body">
+                    <h6 class="card-title text-white-50">Sexo</h6>
+                    <p class="mb-0"><strong>Masculino:</strong> {{ stats.by_sex['M'] }}</p>
+                    <p class="mb-0"><strong>Feminino:</strong> {{ stats.by_sex['F'] }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-dark shadow-sm h-100">
+                <div class="card-body">
+                    <h6 class="card-title text-muted">Ações</h6>
+                    <a href="{{ url_for('anthropometry.batch_entry') }}" class="btn btn-dark btn-sm w-100 mb-2"><i class="bi bi-plus-circle me-1"></i>Aferição em Lote</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex align-items-center mb-3">
+                <h5 class="mb-0 me-3">Análise de Dados Antropométricos</h5>
+                <button class="btn btn-sm btn-link text-decoration-none" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#advancedFilters">
+                    <i class="bi bi-sliders"></i> Filtros Avançados
+                </button>
+            </div>
+
+            <div class="collapse" id="advancedFilters">
+                <form method="GET" action="{{ url_for('nutrition.dashboard') }}" id="filterForm">
+                <div class="card card-body mb-3 border-0 shadow-sm bg-light">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold small">Cor/Raça</label>
+                            <select name="race" class="form-select form-select-sm" multiple style="height: 100px;">
+                                <option value="Branca" {% if 'Branca' in request.args.getlist('race') %}selected{% endif %}>Branca</option>
+                                <option value="Preta" {% if 'Preta' in request.args.getlist('race') %}selected{% endif %}>Preta</option>
+                                <option value="Parda" {% if 'Parda' in request.args.getlist('race') %}selected{% endif %}>Parda</option>
+                                <option value="Amarela" {% if 'Amarela' in request.args.getlist('race') %}selected{% endif %}>Amarela</option>
+                                <option value="Indígena" {% if 'Indígena' in request.args.getlist('race') %}selected{% endif %}>Indígena</option>
+                                <option value="Não declarado" {% if 'Não declarado' in request.args.getlist('race') %}selected{% endif %}>Não declarado</option>
+                            </select>
+                            <div class="form-text x-small">CTRL + Clique para múltipla</div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold small">Nacionalidade</label>
+                            <select name="nationality" class="form-select form-select-sm" multiple style="height: 100px;">
+                                <option value="Brasileiro" {% if 'Brasileiro' in request.args.getlist('nationality') %}selected{% endif %}>Brasileiro</option>
+                                <option value="Estrangeiro" {% if 'Estrangeiro' in request.args.getlist('nationality') %}selected{% endif %}>Estrangeiro</option>
+                                <option value="Brasileiro - naturalizado" {% if 'Brasileiro - naturalizado' in request.args.getlist('nationality') %}selected{% endif %}>Brasileiro - naturalizado</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold small">Renda Familiar</label>
+                            <select name="income" class="form-select form-select-sm" multiple style="height: 100px;">
+                                <option value="Ate 1 SM" {% if 'Ate 1 SM' in request.args.getlist('income') %}selected{% endif %}>Até 1 Salário Mínimo</option>
+                                <option value="1 a 2 SM" {% if '1 a 2 SM' in request.args.getlist('income') %}selected{% endif %}>1 a 2 Salários Mínimos</option>
+                                <option value="2 a 5 SM" {% if '2 a 5 SM' in request.args.getlist('income') %}selected{% endif %}>2 a 5 Salários Mínimos</option>
+                                <option value="5 a 10 SM" {% if '5 a 10 SM' in request.args.getlist('income') %}selected{% endif %}>5 a 10 Salários Mínimos</option>
+                                <option value="Mais de 10 SM" {% if 'Mais de 10 SM' in request.args.getlist('income') %}selected{% endif %}>Mais de 10 Salários Mínimos</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row g-3 mt-2">
+                        <div class="col-md-2">
+                            <label class="form-label fw-bold small">Zona Residencial</label>
+                            <select name="zone" class="form-select form-select-sm" multiple style="height: 100px;">
+                                <option value="Urbana" {% if 'Urbana' in request.args.getlist('zone') %}selected{% endif %}>Urbana</option>
+                                <option value="Rural" {% if 'Rural' in request.args.getlist('zone') %}selected{% endif %}>Rural</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold small">Localização Diferenciada</label>
+                            <select name="location" class="form-select form-select-sm" multiple style="height: 100px;">
+                                <option value="Área de assentamento" {% if 'Área de assentamento' in request.args.getlist('location') %}selected{% endif %}>Área de assentamento</option>
+                                <option value="Terra indígena" {% if 'Terra indígena' in request.args.getlist('location') %}selected{% endif %}>Terra indígena</option>
+                                <option value="Área remanescente de quilombos (quilombola)" {% if 'Área remanescente de quilombos (quilombola)' in request.args.getlist('location') %}selected{% endif %}>Área remanescente de quilombos (quilombola)</option>
+                                <option value="Não se aplica" {% if 'Não se aplica' in request.args.getlist('location') %}selected{% endif %}>Não se aplica</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label fw-bold small">Possui Deficiência</label>
+                            <select name="deficiency" class="form-select form-select-sm" multiple style="height: 100px;">
+                                <option value="Sim" {% if 'Sim' in request.args.getlist('deficiency') %}selected{% endif %}>Sim</option>
+                                <option value="Não" {% if 'Não' in request.args.getlist('deficiency') %}selected{% endif %}>Não</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label fw-bold small">Bolsa Família</label>
+                            <select name="bolsa" class="form-select form-select-sm" multiple style="height: 100px;">
+                                <option value="Sim" {% if 'Sim' in request.args.getlist('bolsa') %}selected{% endif %}>Sim</option>
+                                <option value="Não" {% if 'Não' in request.args.getlist('bolsa') %}selected{% endif %}>Não</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold small">Restrições Alimentares</label>
+                            <select name="dietary" class="form-select form-select-sm" multiple style="height: 100px;">
+                                <option value="Sim" {% if 'Sim' in request.args.getlist('dietary') %}selected{% endif %}>Sim</option>
+                                <option value="Não" {% if 'Não' in request.args.getlist('dietary') %}selected{% endif %}>Não</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mt-2 text-end">
+                        <button type="submit" class="btn btn-xs btn-outline-primary">Aplicar Filtros</button>
+                        <a href="{{ url_for('nutrition.dashboard') }}" class="btn btn-xs btn-outline-secondary">Limpar</a>
+                    </div>
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white">
+                    <h6 class="mb-0">Estado Nutricional (IMC)</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="nutritionalChart" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white">
+                    <h6 class="mb-0">Crescimento (Estatura)</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="growthChart" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const nutritionalData = {{ stats.nutritional_status | tojson }};
+    const growthData = {{ stats.growth_status | tojson }};
+    
+    // Nutricional Chart
+    const ctxNutri = document.getElementById('nutritionalChart').getContext('2d');
+    new Chart(ctxNutri, {
+        type: 'bar',
+        data: {
+            labels: Object.keys(nutritionalData),
+            datasets: [{
+                label: 'Alunos',
+                data: Object.values(nutritionalData),
+                backgroundColor: [
+                    '#28a745', '#ffc107', '#dc3545', '#17a2b8', '#6c757d', '#fd7e14'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { precision: 0 }
+                }
+            }
+        }
+    });
+
+    // Growth Chart
+    const ctxGrowth = document.getElementById('growthChart').getContext('2d');
+    new Chart(ctxGrowth, {
+        type: 'bar',
+        data: {
+            labels: Object.keys(growthData),
+            datasets: [{
+                label: 'Alunos',
+                data: Object.values(growthData),
+                backgroundColor: [
+                    '#28a745', '#ffc107', '#dc3545', '#6c757d'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { precision: 0 }
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

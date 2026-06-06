@@ -214,6 +214,105 @@
     </div>
 </div>
 
+{% if student %}
+<div class="row mt-4">
+    <div class="col-md-8 mx-auto">
+        <div class="card shadow">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Histórico Antropométrico</h5>
+                <div>
+                    <a href="{{ url_for('anthropometry.student_report', student_id=student.id) }}" class="btn btn-sm btn-outline-primary me-2">
+                        <i class="bi bi-graph-up"></i> Relatório Analítico
+                    </a>
+                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addAnthroModal">
+                        <i class="bi bi-plus-lg"></i> Nova Aferição
+                    </button>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Data</th>
+                                <th>Idade</th>
+                                <th>Peso</th>
+                                <th>Altura</th>
+                                <th>IMC / Status Nutricional</th>
+                                <th>Crescimento</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for rec in student.anthropometric_records.order_by(student.anthropometric_records.property.mapper.class_.date.desc()).all() %}
+                            <tr>
+                                <td>{{ rec.date.strftime('%d/%m/%Y') }}</td>
+                                <td>{{ ((rec.date - student.birth_date).days / 365.25)|int }} anos</td>
+                                <td>{{ rec.weight }} kg</td>
+                                <td>{{ rec.height }} cm</td>
+                                <td>
+                                    <strong>{{ rec.bmi }}</strong> <br>
+                                    <span class="badge {% if rec.nutritional_status == 'Eutrofia' %}bg-success{% elif 'Sobrepeso' in rec.nutritional_status or 'Obesidade' in rec.nutritional_status %}bg-warning text-dark{% else %}bg-danger{% endif %}">{{ rec.nutritional_status }}</span>
+                                </td>
+                                <td>
+                                    <span class="badge {% if rec.growth_status == 'Estatura Adequada' %}bg-success{% else %}bg-warning text-dark{% endif %}">{{ rec.growth_status }}</span>
+                                </td>
+                                <td>
+                                    <form method="POST" action="{{ url_for('anthropometry.delete_record', record_id=rec.id) }}" class="d-inline" onsubmit="return confirm('Deseja realmente apagar esta aferição?');">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="7" class="text-center text-muted py-3">Nenhum registro antropométrico encontrado.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Nova Aferição -->
+<div class="modal fade" id="addAnthroModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Nova Aferição Antropométrica</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ url_for('anthropometry.add_record', student_id=student.id) }}">
+                <div class="modal-body">
+                    {{ anthropometric_form.csrf_token }}
+                    <div class="mb-3">
+                        {{ anthropometric_form.date.label(class="form-label") }}
+                        <input type="date" name="date" class="form-control" required value="{{ now.strftime('%Y-%m-%d') }}">
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ anthropometric_form.weight.label(class="form-label") }}
+                            <input type="number" step="0.01" name="weight" class="form-control" required placeholder="0.00">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ anthropometric_form.height.label(class="form-label") }}
+                            <input type="number" step="0.1" name="height" class="form-control" required placeholder="0.0">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    {{ anthropometric_form.submit(class="btn btn-primary") }}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+
 <script>
     function maskCPF(input) {
         let v = input.value.replace(/\D/g, '');

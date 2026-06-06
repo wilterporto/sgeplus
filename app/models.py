@@ -624,3 +624,29 @@ class Country(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     ibge_code = db.Column(db.String(10), unique=True, nullable=False)
     name = db.Column(db.String(128), nullable=False)
+
+
+class WHOLmsData(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    indicator = db.Column(db.String(50), nullable=False)
+    sex = db.Column(db.String(1), nullable=False)
+    age_months = db.Column(db.Integer, nullable=False)
+    l_value = db.Column(db.Float, nullable=False)
+    m_value = db.Column(db.Float, nullable=False)
+    s_value = db.Column(db.Float, nullable=False)
+
+class AnthropometricRecord(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    tenant_id = db.Column(db.Integer, db.ForeignKey('tenant.id'), nullable=True)
+    student_id = db.Column(db.Integer, db.ForeignKey('student.id'), nullable=False)
+    date = db.Column(db.Date, nullable=False)
+    weight = db.Column(db.Numeric(5, 2), nullable=False)
+    height = db.Column(db.Numeric(5, 2), nullable=False)
+    bmi = db.Column(db.Numeric(5, 2))
+    bmi_zscore = db.Column(db.Float)
+    height_zscore = db.Column(db.Float)
+    nutritional_status = db.Column(db.String(50))
+    growth_status = db.Column(db.String(50))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    student = db.relationship('Student', backref=db.backref('anthropometric_records', lazy='dynamic', cascade='all, delete-orphan'))

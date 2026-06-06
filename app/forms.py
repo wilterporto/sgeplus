@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, TextAreaField, SelectField, BooleanField, SubmitField, FormField, FieldList, DateField, SelectMultipleField, PasswordField, IntegerField, HiddenField
+from wtforms import FloatField, DateField, StringField, TextAreaField, SelectField, BooleanField, SubmitField, FormField, FieldList, DateField, SelectMultipleField, PasswordField, IntegerField, HiddenField
 from flask_wtf.file import FileField, FileRequired, FileAllowed
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError, Optional
 from app.models import User, Subject, TeachingUnit, Class
@@ -528,3 +528,17 @@ class TenantForm(FlaskForm):
                 success = False
                 
         return success
+
+
+class AnthropometricForm(FlaskForm):
+    date = DateField('Data da Aferição', validators=[DataRequired()])
+    weight = FloatField('Peso (Kg)', validators=[DataRequired()])
+    height = FloatField('Altura (cm)', validators=[DataRequired()])
+    submit = SubmitField('Salvar')
+
+class AnthropometricBatchForm(FlaskForm):
+    regional_id = SelectField('Regional', coerce=int, validators=[DataRequired()], choices=[])
+    teaching_unit_id = SelectField('Unidade de Ensino', coerce=int, validators=[DataRequired()], choices=[])
+    class_id = SelectField('Turma', coerce=int, validators=[DataRequired()], choices=[])
+    date = DateField('Data da Aferição', validators=[DataRequired()])
+    submit = SubmitField('Buscar Turma')

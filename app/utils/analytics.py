@@ -138,12 +138,15 @@ def get_dashboard_data(exam_id, regional_ids=None, unit_ids=None, class_ids=None
                 'Medio': {'correct_perc': 0.0, 'total_answers': 0, 'correct_answers': 0},
                 'Dificil': {'correct_perc': 0.0, 'total_answers': 0, 'correct_answers': 0}
             },
+            'radar_labels': [],
+            'radar_data': [],
             'rankings': {
                 'schools': [],
                 'classes': [],
                 'students': [],
                 'professors': []
             },
+            'map_data': {'schools': [], 'missing_coords_count': 0},
             'current_exam_title': current_display
         }
 
@@ -596,8 +599,9 @@ def get_rankings_data(exam_id, regional_ids=None, unit_ids=None, class_ids=None,
         elif 'Não' in dietary and 'Sim' not in dietary:
             base_query = base_query.filter(~Student.dietary_restrictions.any())
 
-    result_ids = [r[0] for r in base_query.all()]
-    if not result_ids:
+    # Instead of fetching 10k+ ids into Python which makes SQLite choke on huge IN clauses, 
+    # we use base_query directly as a subquery.
+    if base_query.first() is None:
         return {'schools': [], 'classes': [], 'students': [], 'professors': []}
 
     # Schools Ranking
@@ -606,7 +610,7 @@ def get_rankings_data(exam_id, regional_ids=None, unit_ids=None, class_ids=None,
         .join(Enrollment, Enrollment.class_id == Class.id)\
         .join(Student, Student.id == Enrollment.student_id)\
         .join(StudentResult, StudentResult.student_id == Student.id)\
-        .filter(StudentResult.id.in_(result_ids))\
+        .filter(StudentResult.id.in_(base_query))\
         .group_by(TeachingUnit.name, TeachingUnit.municipio).order_by(sa.desc('score')).all()
 
     # Classes Ranking
@@ -615,27 +619,26 @@ def get_rankings_data(exam_id, regional_ids=None, unit_ids=None, class_ids=None,
         .join(Enrollment, Enrollment.class_id == Class.id)\
         .join(Student, Student.id == Enrollment.student_id)\
         .join(StudentResult, StudentResult.student_id == Student.id)\
-        .filter(StudentResult.id.in_(result_ids))\
+        .filter(StudentResult.id.in_(base_query))\
         .group_by(Class.id, TeachingUnit.name).order_by(sa.desc('score')).all()
 
     # Students Ranking
-    students_ranking = db.session.query(Student.name, StudentResult.score_percentage.label('score'), TeachingUnit.name, Class.name.label('class_name'))\
-        .join(StudentResult, StudentResult.student_id == Student.id)\
-        .join(Enrollment, Enrollment.student_id == Student.id).filter(Enrollment.active == True)\
+    students_ranking = db.session.query(Student.name, StudentResult.score_percentage.label('score'), TeachingUnit.name, Class.name)\
+        .join(Enrollment, Enrollment.student_id == Student.id)\
         .join(Class, Class.id == Enrollment.class_id)\
         .join(TeachingUnit, TeachingUnit.id == Class.teaching_unit_id)\
-        .filter(StudentResult.id.in_(result_ids))\
-        .order_by(sa.desc('score')).all()
+        .join(StudentResult, StudentResult.student_id == Student.id)\
+        .filter(StudentResult.id.in_(base_query))\
+        .order_by(sa.desc('score')).limit(50).all()
 
-    # Join results -> students -> enrollments -> classes -> assignments -> professors
-    # Filter by exam subject if available
+    # Professors Ranking
     prof_query = db.session.query(Professor.name, func.avg(StudentResult.score_percentage).label('score'))\
         .join(TeachingAssignment, TeachingAssignment.professor_id == Professor.id)\
-        .join(Class, TeachingAssignment.class_id == Class.id)\
+        .join(Class, Class.id == TeachingAssignment.class_id)\
         .join(Enrollment, Enrollment.class_id == Class.id)\
         .join(Student, Student.id == Enrollment.student_id)\
         .join(StudentResult, StudentResult.student_id == Student.id)\
-        .filter(StudentResult.id.in_(result_ids))
+        .filter(StudentResult.id.in_(base_query))
     
     if exam.subject_id:
         prof_query = prof_query.filter(TeachingAssignment.subject_id == exam.subject_id)

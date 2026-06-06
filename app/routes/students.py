@@ -3,7 +3,7 @@ from flask_login import login_required, current_user
 from app.utils.tenancy import filter_by_tenant, get_tenant_id
 from app import db
 from app.models import Student, Class, Enrollment, TeachingUnit, ImportJob
-from app.forms import StudentForm, EnrollmentForm
+from app.forms import StudentForm, EnrollmentForm, AnthropometricForm
 from datetime import datetime
 import re
 import random
@@ -374,7 +374,9 @@ def edit_student(id):
             flash('Aluno atualizado.', 'success')
             return redirect(url_for('students.list_students'))
             
-    return render_template('students/form.html', form=form, title="Editar Aluno")
+    from datetime import datetime
+    anthropometric_form = AnthropometricForm()
+    return render_template('students/form.html', form=form, title="Editar Aluno", student=student, anthropometric_form=anthropometric_form, now=datetime.now)
 
 # Enrollment Logic
 @students_bp.route('/<int:id>/enroll', methods=['GET', 'POST'])

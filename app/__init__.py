@@ -75,6 +75,12 @@ def create_app(config_class=Config):
     
     from app.routes.audit import audit_bp
     app.register_blueprint(audit_bp, url_prefix='/audit')
+
+    from app.routes.anthropometry import anthropometry_bp
+    app.register_blueprint(anthropometry_bp)
+
+    from app.routes.nutrition import nutrition_bp
+    app.register_blueprint(nutrition_bp)
     
     # Context Processor for Version
     @app.context_processor

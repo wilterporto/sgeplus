@@ -116,6 +116,22 @@
                         </select>
                     </div>
                 </div>
+                <div class="row g-3 mt-2">
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold small">Povo Indígena</label>
+                        <select id="filterIndigenous" class="form-select form-select-sm" multiple style="height: 100px;">
+                            <option value="Sim">Sim</option>
+                            <option value="Não">Não</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold small">Quilombola</label>
+                        <select id="filterQuilombola" class="form-select form-select-sm" multiple style="height: 100px;">
+                            <option value="Sim">Sim</option>
+                            <option value="Não">Não</option>
+                        </select>
+                    </div>
+                </div>
                 <div class="mt-2 text-end">
                     <button class="btn btn-xs btn-outline-primary" onclick="loadDashboardData()">Aplicar
                         Filtros</button>
@@ -936,6 +952,8 @@
         const deficiency = Array.from(document.getElementById('filterDeficiency').selectedOptions).map(o => o.value);
         const bolsa = Array.from(document.getElementById('filterBolsa').selectedOptions).map(o => o.value);
         const dietary = Array.from(document.getElementById('filterDietary').selectedOptions).map(o => o.value);
+        const indigenous = Array.from(document.getElementById('filterIndigenous').selectedOptions).map(o => o.value);
+        const quilombola = Array.from(document.getElementById('filterQuilombola').selectedOptions).map(o => o.value);
 
         races.forEach(r => qs += `&races[]=${encodeURIComponent(r)}`);
         nationalities.forEach(n => qs += `&nationalities[]=${encodeURIComponent(n)}`);
@@ -945,6 +963,8 @@
         deficiency.forEach(d => qs += `&deficiency[]=${encodeURIComponent(d)}`);
         bolsa.forEach(b => qs += `&bolsa[]=${encodeURIComponent(b)}`);
         dietary.forEach(dt => qs += `&dietary[]=${encodeURIComponent(dt)}`);
+        indigenous.forEach(dt => qs += `&indigenous[]=${encodeURIComponent(dt)}`);
+        quilombola.forEach(dt => qs += `&quilombola[]=${encodeURIComponent(dt)}`);
         
         return qs;
     }
