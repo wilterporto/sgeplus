@@ -129,9 +129,12 @@ def generate_exam():
     form.evaluation_id.choices = [(0, 'Selecione...')] + [(e.id, e.name) for e in evaluation_query.order_by(Evaluation.name).all()]
     matrix_query = filter_by_tenant(ReferenceMatrix.query, ReferenceMatrix)
     form.matrix_id.choices = [(0, 'Selecione...')] + [(m.id, m.name) for m in matrix_query.order_by(ReferenceMatrix.name).all()]
-    form.school_year_id.choices = [(0, 'Selecione...')] + [(y.id, y.name) for y in SchoolYear.query.order_by(SchoolYear.name).all()]
-    form.subject_id.choices = [(0, 'Selecione...')] + [(s.id, s.name) for s in Subject.query.order_by(Subject.name).all()]
-    form.subject_ids.choices = [(s.id, s.name) for s in Subject.query.order_by(Subject.name).all()]
+    school_year_query = filter_by_tenant(SchoolYear.query, SchoolYear)
+    form.school_year_id.choices = [(0, 'Selecione...')] + [(y.id, y.name) for y in school_year_query.order_by(SchoolYear.name).all()]
+    
+    subject_query = filter_by_tenant(Subject.query, Subject)
+    form.subject_id.choices = [(0, 'Selecione...')] + [(s.id, s.name) for s in subject_query.order_by(Subject.name).all()]
+    form.subject_ids.choices = [(s.id, s.name) for s in subject_query.order_by(Subject.name).all()]
     
     # Scoping choices
     default_scopes = [
