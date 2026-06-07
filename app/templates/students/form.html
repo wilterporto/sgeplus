@@ -244,7 +244,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for rec in student.anthropometric_records.order_by(student.anthropometric_records.property.mapper.class_.date.desc()).all() %}
+                            {% for rec in student.anthropometric_records.all() | sort(attribute='date', reverse=True) %}
                             <tr>
                                 <td>{{ rec.date.strftime('%d/%m/%Y') }}</td>
                                 <td>{{ ((rec.date - student.birth_date).days / 365.25)|int }} anos</td>

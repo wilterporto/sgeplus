@@ -4,40 +4,53 @@
 <div class="container-fluid py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h4 class="mb-0"><i class="bi bi-heart-pulse me-2"></i>Dashboard - Nutrição Escolar</h4>
+        <div>
+            <button class="btn btn-outline-warning me-2" onclick="exportUnmeasuredReport()">
+                <i class="bi bi-file-earmark-excel me-1"></i> Não Aferidos
+            </button>
+            <button class="btn btn-outline-success" onclick="exportRiskReport()">
+                <i class="bi bi-file-earmark-excel me-1"></i> Risco Nutricional
+            </button>
+        </div>
     </div>
 
     <div class="row mb-4">
-        <div class="col-md-3">
+        <div class="col-md-4">
             <div class="card bg-primary text-white shadow-sm h-100">
                 <div class="card-body">
-                    <h6 class="card-title text-white-50">Total de Alunos Aferidos</h6>
-                    <h2 class="mb-0">{{ stats.total }}</h2>
+                    <h6 class="card-title text-white-50">Total de alunos</h6>
+                    <h2 class="mb-0">{{ stats.total }} <span class="fs-6 text-white-50 fw-normal">aferidos</span></h2>
+                    <p class="mb-0 mt-2 text-white-50"><small>{{ stats.total_nao_aferidos }} não aferidos</small></p>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-4">
             <div class="card bg-info text-white shadow-sm h-100">
                 <div class="card-body">
                     <h6 class="card-title text-white-50">Faixa Etária</h6>
-                    <p class="mb-0"><strong>0 a 5 anos:</strong> {{ stats.by_age_group['0-5'] }}</p>
-                    <p class="mb-0"><strong>5 a 19 anos:</strong> {{ stats.by_age_group['5-19'] }}</p>
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="mb-0"><strong>0 a 5 anos:</strong> {{ stats.by_age_group['0-5'] }}</span>
+                        <span>{{ stats.pct_age['0-5'] }}%</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span class="mb-0"><strong>5 a 19 anos:</strong> {{ stats.by_age_group['5-19'] }}</span>
+                        <span>{{ stats.pct_age['5-19'] }}%</span>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-4">
             <div class="card bg-success text-white shadow-sm h-100">
                 <div class="card-body">
                     <h6 class="card-title text-white-50">Sexo</h6>
-                    <p class="mb-0"><strong>Masculino:</strong> {{ stats.by_sex['M'] }}</p>
-                    <p class="mb-0"><strong>Feminino:</strong> {{ stats.by_sex['F'] }}</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card bg-warning text-dark shadow-sm h-100">
-                <div class="card-body">
-                    <h6 class="card-title text-muted">Ações</h6>
-                    <a href="{{ url_for('anthropometry.batch_entry') }}" class="btn btn-dark btn-sm w-100 mb-2"><i class="bi bi-plus-circle me-1"></i>Aferição em Lote</a>
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="mb-0"><strong>Masculino:</strong> {{ stats.by_sex['M'] }}</span>
+                        <span>{{ stats.pct_sex['M'] }}%</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span class="mb-0"><strong>Feminino:</strong> {{ stats.by_sex['F'] }}</span>
+                        <span>{{ stats.pct_sex['F'] }}%</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -164,23 +177,344 @@
 
     {% if stats.total > 0 %}
     <div class="row">
+        <div class="col-12 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0">
+                        {% if not request.args.get('drill_regional') %}
+                            Quantitativo por Regional
+                        {% elif request.args.get('drill_regional') and not request.args.get('drill_municipio') %}
+                            Municípios da Regional: {{ request.args.get('drill_regional') }}
+                        {% else %}
+                            Escolas do Município: {{ request.args.get('drill_municipio') }}
+                        {% endif %}
+                    </h6>
+                    {% if request.args.get('drill_regional') %}
+                        <button class="btn btn-sm btn-outline-secondary" onclick="drillUp();">Voltar</button>
+                    {% endif %}
+                </div>
+                <div class="card-body p-0">
+                    <ul class="nav nav-tabs px-3 pt-3" id="drillDownTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="sexo-faixa-tab" data-bs-toggle="tab" data-bs-target="#sexo-faixa" type="button" role="tab" aria-controls="sexo-faixa" aria-selected="true">Por sexo e faixa etária</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="nutricional-faixa-tab" data-bs-toggle="tab" data-bs-target="#nutricional-faixa" type="button" role="tab" aria-controls="nutricional-faixa" aria-selected="false">Por Estado Nutricional</button>
+                        </li>
+                    </ul>
+                    <div class="tab-content border-0" id="drillDownTabsContent">
+                        <div class="tab-pane fade show active" id="sexo-faixa" role="tabpanel" aria-labelledby="sexo-faixa-tab">
+                            <div class="table-responsive">
+                                <table class="table table-hover table-striped mb-0 text-center">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="text-start">
+                                        {% if not request.args.get('drill_regional') %}
+                                            Regional
+                                        {% elif not request.args.get('drill_municipio') %}
+                                            Município
+                                        {% else %}
+                                            Escola
+                                        {% endif %}
+                                    </th>
+                                    <th>0 a 5 anos</th>
+                                    <th>5 a 19 anos</th>
+                                    <th>Masculino</th>
+                                    <th>Feminino</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for group_key, data in stats.drill_down.items()|sort(attribute='0') %}
+                                <tr>
+                                    <td class="text-start">
+                                        {% if not request.args.get('drill_municipio') %}
+                                            <a href="#" onclick="drillDown('{{ group_key }}'); return false;">{{ group_key }}</a>
+                                        {% else %}
+                                            {{ group_key }}
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ data['0-5'] }}</td>
+                                    <td>{{ data['5-19'] }}</td>
+                                    <td>{{ data['M'] }}</td>
+                                    <td>{{ data['F'] }}</td>
+                                    <td class="fw-bold">{{ data['total'] }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot class="table-light fw-bold">
+                                <tr>
+                                    <td class="text-start">Total Geral</td>
+                                    <td>{{ stats.by_age_group['0-5'] }}</td>
+                                    <td>{{ stats.by_age_group['5-19'] }}</td>
+                                    <td>{{ stats.by_sex['M'] }}</td>
+                                    <td>{{ stats.by_sex['F'] }}</td>
+                                    <td>{{ stats.total }}</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="nutricional-faixa" role="tabpanel" aria-labelledby="nutricional-faixa-tab">
+                            <div class="table-responsive">
+                                <table class="table table-hover table-striped table-bordered mb-0 text-center align-middle" style="font-size: 0.9em;">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th rowspan="2" class="text-start align-middle" style="min-width: 150px;">
+                                                {% if not request.args.get('drill_regional') %}
+                                                    Regional
+                                                {% elif not request.args.get('drill_municipio') %}
+                                                    Município
+                                                {% else %}
+                                                    Escola
+                                                {% endif %}
+                                            </th>
+                                            <th colspan="{{ stats.nutritional_status|length }}">0 a 5 anos</th>
+                                            <th colspan="{{ stats.nutritional_status|length }}">5 a 19 anos</th>
+                                        </tr>
+                                        <tr>
+                                            {% for _ in range(2) %}
+                                                {% for status in stats.nutritional_status.keys() %}
+                                                <th><small>{{ status }}</small></th>
+                                                {% endfor %}
+                                            {% endfor %}
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for group_key, data in stats.drill_down.items()|sort(attribute='0') %}
+                                        <tr>
+                                            <td class="text-start text-nowrap">
+                                                {% if not request.args.get('drill_municipio') %}
+                                                    <a href="#" onclick="drillDown('{{ group_key }}'); return false;">{{ group_key }}</a>
+                                                {% else %}
+                                                    {{ group_key }}
+                                                {% endif %}
+                                            </td>
+                                            {% for age_key in ['0-5', '5-19'] %}
+                                                {% for status in stats.nutritional_status.keys() %}
+                                                <td>{{ data.nutritional_by_age[age_key].get(status, 0) }}</td>
+                                                {% endfor %}
+                                            {% endfor %}
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                    <tfoot class="table-light fw-bold">
+                                        <tr>
+                                            <td class="text-start">Total Geral</td>
+                                            {% for age_key in ['0-5', '5-19'] %}
+                                                {% for status in stats.nutritional_status.keys() %}
+                                                <td>{{ stats.nutritional_by_age[age_key].get(status, 0) }}</td>
+                                                {% endfor %}
+                                            {% endfor %}
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white">
+                    <h6 class="mb-0">Quantitativo por Faixa Etária</h6>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped mb-0 text-center">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="text-start">Estado Nutricional</th>
+                                    <th>0 a 5 anos</th>
+                                    <th>5 a 19 anos</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for ns, total_ns in stats.nutritional_status.items() %}
+                                {% set count_0_5 = stats.nutritional_by_age['0-5'].get(ns, 0) %}
+                                {% set total_0_5 = stats.by_age_group['0-5'] %}
+                                {% set pct_0_5 = (count_0_5 / total_0_5 * 100) if total_0_5 > 0 else 0 %}
+                                
+                                {% set count_5_19 = stats.nutritional_by_age['5-19'].get(ns, 0) %}
+                                {% set total_5_19 = stats.by_age_group['5-19'] %}
+                                {% set pct_5_19 = (count_5_19 / total_5_19 * 100) if total_5_19 > 0 else 0 %}
+                                
+                                {% set pct_total = (total_ns / stats.total * 100) if stats.total > 0 else 0 %}
+                                <tr>
+                                    <td class="text-start">{{ ns }}</td>
+                                    <td>{{ count_0_5 }} <small class="text-muted">({{ pct_0_5|round(1) }}%)</small></td>
+                                    <td>{{ count_5_19 }} <small class="text-muted">({{ pct_5_19|round(1) }}%)</small></td>
+                                    <td class="fw-bold">{{ total_ns }} <small class="text-muted fw-normal">({{ pct_total|round(1) }}%)</small></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot class="table-light fw-bold">
+                                <tr>
+                                    <td class="text-start">Total Geral</td>
+                                    <td>{{ stats.by_age_group['0-5'] }} <small class="text-muted fw-normal">(100%)</small></td>
+                                    <td>{{ stats.by_age_group['5-19'] }} <small class="text-muted fw-normal">(100%)</small></td>
+                                    <td>{{ stats.total }} <small class="text-muted fw-normal">(100%)</small></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white">
+                    <h6 class="mb-0">Quantitativo por Sexo</h6>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped mb-0 text-center">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="text-start">Estado Nutricional</th>
+                                    <th>Masculino</th>
+                                    <th>Feminino</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for ns, total_ns in stats.nutritional_status.items() %}
+                                {% set count_M = stats.nutritional_by_sex['M'].get(ns, 0) %}
+                                {% set total_M = stats.by_sex['M'] %}
+                                {% set pct_M = (count_M / total_M * 100) if total_M > 0 else 0 %}
+                                
+                                {% set count_F = stats.nutritional_by_sex['F'].get(ns, 0) %}
+                                {% set total_F = stats.by_sex['F'] %}
+                                {% set pct_F = (count_F / total_F * 100) if total_F > 0 else 0 %}
+                                
+                                {% set pct_total = (total_ns / stats.total * 100) if stats.total > 0 else 0 %}
+                                <tr>
+                                    <td class="text-start">{{ ns }}</td>
+                                    <td>{{ count_M }} <small class="text-muted">({{ pct_M|round(1) }}%)</small></td>
+                                    <td>{{ count_F }} <small class="text-muted">({{ pct_F|round(1) }}%)</small></td>
+                                    <td class="fw-bold">{{ total_ns }} <small class="text-muted fw-normal">({{ pct_total|round(1) }}%)</small></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot class="table-light fw-bold">
+                                <tr>
+                                    <td class="text-start">Total Geral</td>
+                                    <td>{{ stats.by_sex['M'] }} <small class="text-muted fw-normal">(100%)</small></td>
+                                    <td>{{ stats.by_sex['F'] }} <small class="text-muted fw-normal">(100%)</small></td>
+                                    <td>{{ stats.total }} <small class="text-muted fw-normal">(100%)</small></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
         <div class="col-md-6 mb-4">
             <div class="card shadow-sm h-100">
                 <div class="card-header bg-white">
-                    <h6 class="mb-0">Estado Nutricional (IMC)</h6>
+                    <h6 class="mb-0">Estado Nutricional (IMC/Idade)</h6>
                 </div>
                 <div class="card-body">
-                    <canvas id="nutritionalChart" height="250"></canvas>
+                    <div style="position: relative; height: 300px;">
+                        <canvas id="nutritionalChart"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="col-md-6 mb-4">
             <div class="card shadow-sm h-100">
                 <div class="card-header bg-white">
-                    <h6 class="mb-0">Crescimento (Estatura)</h6>
+                    <h6 class="mb-0">Estatura/Idade</h6>
                 </div>
                 <div class="card-body">
-                    <canvas id="growthChart" height="250"></canvas>
+                    <div style="position: relative; height: 300px;">
+                        <canvas id="growthChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-12 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white">
+                    <h6 class="mb-0">Estado Nutricional Por Faixa Etária</h6>
+                </div>
+                <div class="card-body">
+                    <div style="position: relative; height: 350px;">
+                        <canvas id="nutritionalByAgeChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white">
+                    <h6 class="mb-0">Estado Nutricional Por Sexo</h6>
+                </div>
+                <div class="card-body">
+                    <div style="position: relative; height: 350px;">
+                        <canvas id="nutritionalBySexChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white">
+                    <h6 class="mb-0">Estatura/Idade Por Faixa Etária</h6>
+                </div>
+                <div class="card-body">
+                    <div style="position: relative; height: 350px;">
+                        <canvas id="growthByAgeChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white">
+                    <h6 class="mb-0">Estatura/Idade Por Sexo</h6>
+                </div>
+                <div class="card-body">
+                    <div style="position: relative; height: 350px;">
+                        <canvas id="growthBySexChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white">
+                    <h6 class="mb-0">Comparativo Nutricional — Masculino vs Feminino (%)</h6>
+                </div>
+                <div class="card-body d-flex justify-content-center">
+                    <div style="position: relative; height: 450px; width: 100%; max-width: 600px;">
+                        <canvas id="nutritionalRadarChart"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
@@ -189,7 +523,7 @@
     <div class="row">
         <div class="col-12 text-center py-5 text-muted">
             <i class="bi bi-inbox fs-1"></i>
-            <p class="mt-3">Nenhum dado antropométrico registrado ainda para exibir nos gráficos.</p>
+            <p class="mt-3">Nenhum dado antropométrico registrado ainda para exibir.</p>
         </div>
     </div>
     {% endif %}
@@ -200,21 +534,25 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const nutritionalData = {{ stats.nutritional_status | tojson }};
-    const growthData = {{ stats.growth_status | tojson }};
-    
     {% if stats.total > 0 %}
-    // Nutricional Chart
+    const nutritionalData = {{ stats.nutritional_status | tojson }};
+    const total = {{ stats.total }};
+    
+    const labels = Object.keys(nutritionalData).map(key => {
+        let pct = ((nutritionalData[key] / total) * 100).toFixed(1);
+        return `${key} (${pct}%)`;
+    });
+    
     const ctxNutri = document.getElementById('nutritionalChart').getContext('2d');
     new Chart(ctxNutri, {
         type: 'pie',
         data: {
-            labels: Object.keys(nutritionalData),
+            labels: labels,
             datasets: [{
                 label: 'Alunos',
                 data: Object.values(nutritionalData),
                 backgroundColor: [
-                    '#28a745', '#ffc107', '#dc3545', '#17a2b8', '#6c757d', '#fd7e14'
+                    '#28a745', '#ffc107', '#dc3545', '#17a2b8', '#6c757d', '#fd7e14', '#e83e8c', '#6610f2'
                 ]
             }]
         },
@@ -227,17 +565,22 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Growth Chart
+    const growthData = {{ stats.growth_status | tojson }};
+    const growthLabels = Object.keys(growthData).map(key => {
+        let pct = ((growthData[key] / total) * 100).toFixed(1);
+        return `${key} (${pct}%)`;
+    });
+    
     const ctxGrowth = document.getElementById('growthChart').getContext('2d');
     new Chart(ctxGrowth, {
         type: 'pie',
         data: {
-            labels: Object.keys(growthData),
+            labels: growthLabels,
             datasets: [{
                 label: 'Alunos',
                 data: Object.values(growthData),
                 backgroundColor: [
-                    '#28a745', '#ffc107', '#dc3545', '#6c757d'
+                    '#28a745', '#ffc107', '#dc3545', '#17a2b8', '#6c757d', '#fd7e14', '#e83e8c', '#6610f2'
                 ]
             }]
         },
@@ -249,7 +592,257 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
+
+    const nutriByAge = {{ stats.nutritional_by_age | tojson }};
+    const nutriCategories = Object.keys(nutritionalData);
+    
+    const ageDatasets = nutriCategories.map((cat, index) => {
+        const colors = ['#28a745', '#ffc107', '#dc3545', '#17a2b8', '#6c757d', '#fd7e14', '#e83e8c', '#6610f2'];
+        return {
+            label: cat,
+            data: [
+                nutriByAge['0-5'][cat] || 0,
+                nutriByAge['5-19'][cat] || 0
+            ],
+            backgroundColor: colors[index % colors.length]
+        };
+    });
+
+    const ctxNutriAge = document.getElementById('nutritionalByAgeChart').getContext('2d');
+    new Chart(ctxNutriAge, {
+        type: 'bar',
+        data: {
+            labels: ['0 a 5 anos', '5 a 19 anos'],
+            datasets: ageDatasets
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'top' }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Quantidade de Alunos'
+                    }
+                }
+            }
+        }
+    });
+
+    const nutriBySex = {{ stats.nutritional_by_sex | tojson }};
+    const sexDatasets = nutriCategories.map((cat, index) => {
+        const colors = ['#28a745', '#ffc107', '#dc3545', '#17a2b8', '#6c757d', '#fd7e14', '#e83e8c', '#6610f2'];
+        return {
+            label: cat,
+            data: [
+                nutriBySex['M'][cat] || 0,
+                nutriBySex['F'][cat] || 0
+            ],
+            backgroundColor: colors[index % colors.length]
+        };
+    });
+
+    const ctxNutriSex = document.getElementById('nutritionalBySexChart').getContext('2d');
+    new Chart(ctxNutriSex, {
+        type: 'bar',
+        data: {
+            labels: ['Masculino', 'Feminino'],
+            datasets: sexDatasets
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'top' }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Quantidade de Alunos'
+                    }
+                }
+            }
+        }
+    });
+
+    const growthByAge = {{ stats.growth_by_age | tojson }};
+    const growthCategories = Object.keys(growthData);
+    
+    const growthAgeDatasets = growthCategories.map((cat, index) => {
+        const colors = ['#28a745', '#ffc107', '#dc3545', '#17a2b8', '#6c757d', '#fd7e14', '#e83e8c', '#6610f2'];
+        return {
+            label: cat,
+            data: [
+                growthByAge['0-5'][cat] || 0,
+                growthByAge['5-19'][cat] || 0
+            ],
+            backgroundColor: colors[index % colors.length]
+        };
+    });
+
+    const ctxGrowthAge = document.getElementById('growthByAgeChart').getContext('2d');
+    new Chart(ctxGrowthAge, {
+        type: 'bar',
+        data: {
+            labels: ['0 a 5 anos', '5 a 19 anos'],
+            datasets: growthAgeDatasets
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'top' }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Quantidade de Alunos'
+                    }
+                }
+            }
+        }
+    });
+
+    const growthBySex = {{ stats.growth_by_sex | tojson }};
+    const growthSexDatasets = growthCategories.map((cat, index) => {
+        const colors = ['#28a745', '#ffc107', '#dc3545', '#17a2b8', '#6c757d', '#fd7e14', '#e83e8c', '#6610f2'];
+        return {
+            label: cat,
+            data: [
+                growthBySex['M'][cat] || 0,
+                growthBySex['F'][cat] || 0
+            ],
+            backgroundColor: colors[index % colors.length]
+        };
+    });
+
+    const ctxGrowthSex = document.getElementById('growthBySexChart').getContext('2d');
+    new Chart(ctxGrowthSex, {
+        type: 'bar',
+        data: {
+            labels: ['Masculino', 'Feminino'],
+            datasets: growthSexDatasets
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'top' }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Quantidade de Alunos'
+                    }
+                }
+            }
+        }
+    });
+
+    const totalM = {{ stats.by_sex['M'] }};
+    const totalF = {{ stats.by_sex['F'] }};
+    
+    const radarDataM = nutriCategories.map(cat => {
+        const count = nutriBySex['M'][cat] || 0;
+        return totalM > 0 ? ((count / totalM) * 100).toFixed(1) : 0;
+    });
+    const radarDataF = nutriCategories.map(cat => {
+        const count = nutriBySex['F'][cat] || 0;
+        return totalF > 0 ? ((count / totalF) * 100).toFixed(1) : 0;
+    });
+
+    const ctxRadar = document.getElementById('nutritionalRadarChart').getContext('2d');
+    new Chart(ctxRadar, {
+        type: 'radar',
+        data: {
+            labels: nutriCategories,
+            datasets: [
+                {
+                    label: 'Masculino (%)',
+                    data: radarDataM,
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    pointBackgroundColor: 'rgba(54, 162, 235, 1)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgba(54, 162, 235, 1)'
+                },
+                {
+                    label: 'Feminino (%)',
+                    data: radarDataF,
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    pointBackgroundColor: 'rgba(255, 99, 132, 1)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgba(255, 99, 132, 1)'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'top' }
+            },
+            scales: {
+                r: {
+                    angleLines: {
+                        display: true
+                    },
+                    suggestedMin: 0,
+                    ticks: {
+                        callback: function(value) {
+                            return value + '%';
+                        }
+                    }
+                }
+            }
+        }
+    });
     {% endif %}
 });
+
+function drillDown(value) {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (!urlParams.has('drill_regional')) {
+        urlParams.set('drill_regional', value);
+    } else if (!urlParams.has('drill_municipio')) {
+        urlParams.set('drill_municipio', value);
+    }
+    window.location.search = urlParams.toString();
+}
+
+function drillUp() {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('drill_municipio')) {
+        urlParams.delete('drill_municipio');
+    } else if (urlParams.has('drill_regional')) {
+        urlParams.delete('drill_regional');
+    }
+    window.location.search = urlParams.toString();
+}
+
+function exportRiskReport() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const exportUrl = "{{ url_for('nutrition.export_risk_report') }}?" + urlParams.toString();
+    window.location.href = exportUrl;
+}
+
+function exportUnmeasuredReport() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const exportUrl = "{{ url_for('nutrition.export_unmeasured_report') }}?" + urlParams.toString();
+    window.location.href = exportUrl;
+}
 </script>
 {% endblock %}

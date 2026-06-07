@@ -376,7 +376,7 @@ def edit_student(id):
             
     from datetime import datetime
     anthropometric_form = AnthropometricForm()
-    return render_template('students/form.html', form=form, title="Editar Aluno", student=student, anthropometric_form=anthropometric_form, now=datetime.now)
+    return render_template('students/form.html', form=form, title="Editar Aluno", student=student, anthropometric_form=anthropometric_form, now=datetime.now())
 
 # Enrollment Logic
 @students_bp.route('/<int:id>/enroll', methods=['GET', 'POST'])

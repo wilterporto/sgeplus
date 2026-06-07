@@ -7,6 +7,9 @@
         <a href="{{ url_for('academic.list_classes') }}" class="btn btn-outline-secondary me-2">
             <i class="bi bi-arrow-left"></i> Voltar
         </a>
+        <a href="{{ url_for('anthropometry.batch_entry', class_id=klass.id) }}" class="btn btn-outline-success me-2">
+            <i class="bi bi-rulers"></i> Lançamento Antropométrico
+        </a>
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addStudentModal">
             <i class="bi bi-plus-lg"></i> Novo Aluno
         </button>

@@ -71,6 +71,16 @@ def batch_entry():
     students = []
     selected_class = None
     
+    class_id_get = request.args.get('class_id', type=int)
+    if request.method == 'GET' and class_id_get:
+        selected_class = Class.query.get(class_id_get)
+        if selected_class and selected_class.tenant_id == get_tenant_id():
+            form.class_id.data = selected_class.id
+            form.teaching_unit_id.data = selected_class.teaching_unit_id
+            form.regional_id.data = selected_class.teaching_unit.parent_id if selected_class.teaching_unit.parent_id else 0
+            enrollments = filter_by_tenant(Enrollment.query, Enrollment).filter_by(class_id=selected_class.id).all()
+            students = [e.student for e in enrollments if e.student]
+    
     if request.method == 'POST' and form.validate_on_submit():
         if form.class_id.data and form.class_id.data != 0:
             selected_class = Class.query.get(form.class_id.data)
@@ -185,6 +195,9 @@ def student_report(student_id):
         chart_data['actual_bmi'].append(r.bmi)
         
         # Calculate age in months exactly as in process_anthropometric_data
+        if not student.birth_date:
+            continue
+            
         days = (r.date - student.birth_date).days
         age_months = int(days / 30.4375)
         
@@ -204,18 +217,18 @@ def student_report(student_id):
             elif z == 1.036: k = 'P85'
             elif z == 1.881: k = 'P97'
             
-            chart_data['who_weight'][k].append(calc_who_percentile(w_lms.l, w_lms.m, w_lms.s, z) if w_lms else None)
-            chart_data['who_height'][k].append(calc_who_percentile(h_lms.l, h_lms.m, h_lms.s, z) if h_lms else None)
-            chart_data['who_bmi'][k].append(calc_who_percentile(b_lms.l, b_lms.m, b_lms.s, z) if b_lms else None)
+            chart_data['who_weight'][k].append(calc_who_percentile(w_lms.l_value, w_lms.m_value, w_lms.s_value, z) if w_lms else None)
+            chart_data['who_height'][k].append(calc_who_percentile(h_lms.l_value, h_lms.m_value, h_lms.s_value, z) if h_lms else None)
+            chart_data['who_bmi'][k].append(calc_who_percentile(b_lms.l_value, b_lms.m_value, b_lms.s_value, z) if b_lms else None)
             
     # Radar Data based on latest record vs P50
     if latest_record and latest_lms:
         if latest_lms['w']:
-            radar_data['weight_pct'] = min(150, max(50, (latest_record.weight / latest_lms['w'].m) * 100))
-        if latest_lms['h']:
-            radar_data['height_pct'] = min(150, max(50, (latest_record.height / latest_lms['h'].m) * 100))
-        if latest_lms['b']:
-            radar_data['bmi_pct'] = min(150, max(50, (latest_record.bmi / latest_lms['b'].m) * 100))
+            radar_data['weight_pct'] = min(150, max(50, (float(latest_record.weight) / float(latest_lms['w'].m_value)) * 100))
+        if latest_lms['h'] and float(latest_lms['h'].m_value) > 0:
+            radar_data['height_pct'] = min(150, max(50, (float(latest_record.height) / float(latest_lms['h'].m_value)) * 100))
+        if latest_lms['b'] and float(latest_lms['b'].m_value) > 0:
+            radar_data['bmi_pct'] = min(150, max(50, (float(latest_record.bmi) / float(latest_lms['b'].m_value)) * 100))
 
     return render_template('anthropometry/student_report.html', student=student, records=records, chart_data=chart_data, radar_data=radar_data)
 
