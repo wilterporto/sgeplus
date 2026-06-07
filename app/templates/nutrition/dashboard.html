@@ -127,6 +127,31 @@
                             </select>
                         </div>
                     </div>
+                    <div class="row g-3 mt-2">
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold small">Povo Indígena</label>
+                            <select name="indigenous" class="form-select form-select-sm" multiple style="height: 100px;">
+                                {% for ip in indigenous %}
+                                    <option value="{{ ip.id }}" {% if ip.id|string in request.args.getlist('indigenous') %}selected{% endif %}>{{ ip.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold small">Quilombola</label>
+                            <select name="quilombola" class="form-select form-select-sm" multiple style="height: 100px;">
+                                <option value="Sim" {% if 'Sim' in request.args.getlist('quilombola') %}selected{% endif %}>Sim</option>
+                                <option value="Não" {% if 'Não' in request.args.getlist('quilombola') or 'N\u00e3o' in request.args.getlist('quilombola') %}selected{% endif %}>Não</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold small">Comunidade Quilombola</label>
+                            <select name="quilombolaCommunity" class="form-select form-select-sm" multiple style="height: 100px;">
+                                {% for qc in quilombolas %}
+                                    <option value="{{ qc.id }}" {% if qc.id|string in request.args.getlist('quilombolaCommunity') %}selected{% endif %}>{{ qc.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
                     <div class="mt-2 text-end">
                         <button type="submit" class="btn btn-xs btn-outline-primary">Aplicar Filtros</button>
                         <a href="{{ url_for('nutrition.dashboard') }}" class="btn btn-xs btn-outline-secondary">Limpar</a>
@@ -137,6 +162,7 @@
         </div>
     </div>
 
+    {% if stats.total > 0 %}
     <div class="row">
         <div class="col-md-6 mb-4">
             <div class="card shadow-sm h-100">
@@ -159,6 +185,14 @@
             </div>
         </div>
     </div>
+    {% else %}
+    <div class="row">
+        <div class="col-12 text-center py-5 text-muted">
+            <i class="bi bi-inbox fs-1"></i>
+            <p class="mt-3">Nenhum dado antropométrico registrado ainda para exibir nos gráficos.</p>
+        </div>
+    </div>
+    {% endif %}
 </div>
 {% endblock %}
 
@@ -169,10 +203,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const nutritionalData = {{ stats.nutritional_status | tojson }};
     const growthData = {{ stats.growth_status | tojson }};
     
+    {% if stats.total > 0 %}
     // Nutricional Chart
     const ctxNutri = document.getElementById('nutritionalChart').getContext('2d');
     new Chart(ctxNutri, {
-        type: 'bar',
+        type: 'pie',
         data: {
             labels: Object.keys(nutritionalData),
             datasets: [{
@@ -187,13 +222,7 @@ document.addEventListener('DOMContentLoaded', function() {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-                legend: { display: false }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: { precision: 0 }
-                }
+                legend: { position: 'right' }
             }
         }
     });
@@ -201,7 +230,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Growth Chart
     const ctxGrowth = document.getElementById('growthChart').getContext('2d');
     new Chart(ctxGrowth, {
-        type: 'bar',
+        type: 'pie',
         data: {
             labels: Object.keys(growthData),
             datasets: [{
@@ -216,16 +245,11 @@ document.addEventListener('DOMContentLoaded', function() {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-                legend: { display: false }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: { precision: 0 }
-                }
+                legend: { position: 'right' }
             }
         }
     });
+    {% endif %}
 });
 </script>
 {% endblock %}

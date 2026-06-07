@@ -613,10 +613,11 @@ def _process_definition_import(app, job_id, filepath, task_id, def_type):
         
         try:
             with open(filepath, 'rb') as f:
-                result = ImportService.process_file(f, type=def_type)
+                result = ImportService.process_file(f, type=def_type, task_id=task_id)
             
             if not result['success']:
-                fail_import_task(task_id, result.get('error', 'Erro desconhecido.'))
+                if task_id:
+                    fail_import_task(task_id, result.get('error', 'Erro desconhecido.'))
                 job.status = 'failed'
                 job.error_message = result.get('error')
                 db.session.commit()
@@ -625,40 +626,57 @@ def _process_definition_import(app, job_id, filepath, task_id, def_type):
             data = result['data']
             total = len(data)
             
-            if task_id:
-                start_import_task(total, task_id=task_id)
+            # Extract unique names
+            names_in_file = {str(row.get('name', row.get('Nome', ''))).strip() for row in data if row.get('name') or row.get('Nome')}
             
-            for i, row in enumerate(data):
-                if def_type == 'quilombola':
-                    existing = QuilombolaCommunity.query.filter_by(name=row['name'].strip(), tenant_id=job.tenant_id).first()
-                    if not existing:
-                        qc = QuilombolaCommunity(name=row['name'].strip(), tenant_id=job.tenant_id)
-                        db.session.add(qc)
-                elif def_type == 'indigenous':
-                    existing = IndigenousPeople.query.filter_by(name=row['name'].strip(), tenant_id=job.tenant_id).first()
-                    if not existing:
-                        ip = IndigenousPeople(name=row['name'].strip(), tenant_id=job.tenant_id)
-                        db.session.add(ip)
+            if def_type == 'quilombola':
+                existing_records = QuilombolaCommunity.query.filter(
+                    QuilombolaCommunity.name.in_(names_in_file),
+                    QuilombolaCommunity.tenant_id == job.tenant_id
+                ).all()
+            elif def_type == 'indigenous':
+                existing_records = IndigenousPeople.query.filter(
+                    IndigenousPeople.name.in_(names_in_file),
+                    IndigenousPeople.tenant_id == job.tenant_id
+                ).all()
+            else:
+                existing_records = []
+                
+            existing_names = {rec.name for rec in existing_records}
+            
+            new_records = []
+            
+            for i, name in enumerate(names_in_file):
+                if name not in existing_names:
+                    if def_type == 'quilombola':
+                        new_records.append(QuilombolaCommunity(name=name, tenant_id=job.tenant_id))
+                    elif def_type == 'indigenous':
+                        new_records.append(IndigenousPeople(name=name, tenant_id=job.tenant_id))
                         
+                if task_id and i % 50 == 0:
+                    update_import_progress(task_id, i + 1, message=f"Inserindo registros ({i + 1}/{total})...")
+            
+            if new_records:
+                db.session.bulk_save_objects(new_records)
                 db.session.commit()
                 
-                if task_id and i % 5 == 0:
-                    update_import_progress(task_id, i + 1, total)
-            
-            update_import_progress(task_id, total, total)        
+            if task_id:
+                update_import_progress(task_id, total, message="Concluído")        
             job.status = 'completed'
             job.processed_rows = total
             job.total_rows = total
             job.completed_at = get_brasilia_time()
             db.session.commit()
             
-            finish_import_task(task_id)
+            if task_id:
+                finish_import_task(task_id)
             
         except Exception as e:
+            if task_id:
+                fail_import_task(task_id, str(e))
             job.status = 'failed'
             job.error_message = str(e)
             db.session.commit()
-            fail_import_task(task_id, str(e))
 
 @academic_bp.route('/quilombola/import', methods=['POST'])
 @login_required
@@ -697,9 +715,6 @@ def import_quilombola():
         )
         thread.start()
         
-        if task_id:
-            start_import_task(task_id, job.id)
-            
         flash('Importação de comunidades quilombolas iniciada em segundo plano. Aguarde a conclusão.', 'info')
     else:
          flash('Erro no arquivo enviado.', 'danger')
@@ -743,9 +758,6 @@ def import_indigenous():
         )
         thread.start()
         
-        if task_id:
-            start_import_task(task_id, job.id)
-            
         flash('Importação de povos indígenas iniciada em segundo plano. Aguarde a conclusão.', 'info')
     else:
          flash('Erro no arquivo enviado.', 'danger')

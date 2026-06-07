@@ -305,7 +305,7 @@
             queryParams += `&subject_ids=${selectedSubjects.join(',')}`;
         } else {
             const subjectId = subjectSelect.value;
-            if (!matrixId || matrixId == '0' || !yearId || yearId == '0' || !subjectId || subjectId == '0') {
+            if (!matrixId || matrixId == '0' || !yearId || yearId == '0') {
                 descriptorSelect.innerHTML = '';
                 return;
             }

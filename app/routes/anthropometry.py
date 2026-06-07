@@ -4,7 +4,7 @@ from app import db
 from app.models import AnthropometricRecord, Student, Class, SchoolYear, TeachingUnit, Enrollment
 from app.forms import AnthropometricForm, AnthropometricBatchForm
 from app.utils.anthropometry import process_anthropometric_data
-from app.utils.tenancy import filter_by_tenant
+from app.utils.tenancy import filter_by_tenant, get_tenant_id
 from datetime import datetime
 
 anthropometry_bp = Blueprint('anthropometry', __name__)
@@ -13,14 +13,14 @@ anthropometry_bp = Blueprint('anthropometry', __name__)
 @login_required
 def add_record(student_id):
     student = Student.query.get_or_404(student_id)
-    if student.tenant_id != current_user.tenant_id:
+    if student.tenant_id != get_tenant_id():
         flash('Acesso negado.', 'danger')
         return redirect(url_for('main.index'))
         
     form = AnthropometricForm()
     if form.validate_on_submit():
         record = AnthropometricRecord(
-            tenant_id=current_user.tenant_id,
+            tenant_id=get_tenant_id(),
             student_id=student.id,
             date=form.date.data,
             weight=form.weight.data,
@@ -41,7 +41,7 @@ def add_record(student_id):
 @login_required
 def delete_record(record_id):
     record = AnthropometricRecord.query.get_or_404(record_id)
-    if record.tenant_id != current_user.tenant_id:
+    if record.tenant_id != get_tenant_id():
         flash('Acesso negado.', 'danger')
         return redirect(url_for('main.index'))
         
@@ -74,7 +74,7 @@ def batch_entry():
     if request.method == 'POST' and form.validate_on_submit():
         if form.class_id.data and form.class_id.data != 0:
             selected_class = Class.query.get(form.class_id.data)
-            if selected_class and selected_class.tenant_id == current_user.tenant_id:
+            if selected_class and selected_class.tenant_id == get_tenant_id():
                 # Get enrolled students
                 enrollments = filter_by_tenant(Enrollment.query, Enrollment).filter_by(class_id=selected_class.id).all()
                 students = [e.student for e in enrollments if e.student]
@@ -109,9 +109,9 @@ def batch_save():
                     
                     # Verify student belongs to tenant
                     student = Student.query.get(int(student_id))
-                    if student and student.tenant_id == current_user.tenant_id:
+                    if student and student.tenant_id == get_tenant_id():
                         record = AnthropometricRecord(
-                            tenant_id=current_user.tenant_id,
+                            tenant_id=get_tenant_id(),
                             student_id=student.id,
                             date=afericao_date,
                             weight=weight,

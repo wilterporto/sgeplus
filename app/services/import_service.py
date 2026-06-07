@@ -42,6 +42,9 @@ class ImportService:
         
         # Total count for reference
         total = len(df)
+        
+        if task_id:
+            start_import_task(total, task_id=task_id)
 
         schools_cache = {}
         schools_inep_cache = {}
@@ -86,6 +89,9 @@ class ImportService:
         for index, row in df.iterrows():
             row_num = index + 2 
             item_data = {}
+            
+            if task_id and index % 10 == 0:
+                update_import_progress(task_id, index, message=f"Lendo e validando registro {index} de {total}...")
             
             if type in ['quilombola', 'indigenous']:
                 name = str(row.get("Nome", "")).strip()

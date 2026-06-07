@@ -451,7 +451,7 @@
         
         {% if active_quilombola_job %}
         const qPoll = setInterval(() => {
-            fetch("{{ url_for('admin.import_status', id=active_quilombola_job.id) }}")
+            fetch("{{ url_for('admin.get_import_status', id=active_quilombola_job.id) }}")
                 .then(r => r.json())
                 .then(data => {
                     const bar = document.getElementById('quilombola-bar');
@@ -468,7 +468,7 @@
         
         {% if active_indigenous_job %}
         const iPoll = setInterval(() => {
-            fetch("{{ url_for('admin.import_status', id=active_indigenous_job.id) }}")
+            fetch("{{ url_for('admin.get_import_status', id=active_indigenous_job.id) }}")
                 .then(r => r.json())
                 .then(data => {
                     const bar = document.getElementById('indigenous-bar');

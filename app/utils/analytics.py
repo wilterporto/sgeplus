@@ -2,6 +2,7 @@ from app.models import db, StudentResult, Student, Enrollment, Class, TeachingUn
 from sqlalchemy import func
 import sqlalchemy as sa
 import json
+from app.utils.tenancy import get_tenant_id
 
 def get_exam_selectors():
     """Returns list of exams formatted as 'Title - Year - School Year - Subject'"""
@@ -35,7 +36,7 @@ def get_exam_selectors():
         results.append({'id': e.id, 'display': display})
     return results
 
-def get_dashboard_data(exam_id, regional_ids=None, unit_ids=None, class_ids=None, school_year_ids=None, races=None, nationalities=None, incomes=None, zones=None, locations=None, deficiency=None, bolsa=None, dietary=None):
+def get_dashboard_data(exam_id, regional_ids=None, unit_ids=None, class_ids=None, school_year_ids=None, races=None, nationalities=None, incomes=None, zones=None, locations=None, deficiency=None, bolsa=None, dietary=None, indigenous=None, quilombola=None, quilombola_community=None):
     """
     Aggregates performance data based on hierarchical and demographic filters.
     """
@@ -58,8 +59,8 @@ def get_dashboard_data(exam_id, regional_ids=None, unit_ids=None, class_ids=None
                  .join(Class, Enrollment.class_id == Class.id)\
                  .join(TeachingUnit, Class.teaching_unit_id == TeachingUnit.id)
                  
-    if current_user.is_authenticated and current_user.tenant_id:
-        query = query.filter(Student.tenant_id == current_user.tenant_id)
+    if current_user.is_authenticated and get_tenant_id():
+        query = query.filter(Student.tenant_id == get_tenant_id())
 
     # Apply hierarchical filters
     if class_ids:
@@ -104,6 +105,16 @@ def get_dashboard_data(exam_id, regional_ids=None, unit_ids=None, class_ids=None
             query = query.filter(Student.dietary_restrictions.any())
         elif 'Não' in dietary and 'Sim' not in dietary:
             query = query.filter(~Student.dietary_restrictions.any())
+    if indigenous and len(indigenous) > 0:
+        query = query.filter(Student.indigenous_people_id.in_(indigenous))
+    if quilombola and len(quilombola) > 0:
+        if 'Sim' in quilombola and 'Não' not in quilombola and 'Nǐo' not in quilombola and 'Nào' not in quilombola:
+            query = query.filter(Student.is_quilombola == True)
+        elif ('Não' in quilombola or 'Nǐo' in quilombola or 'Nào' in quilombola) and 'Sim' not in quilombola:
+            query = query.filter(Student.is_quilombola == False)
+    if quilombola_community and len(quilombola_community) > 0:
+        query = query.filter(Student.quilombola_community_id.in_(quilombola_community))
+
 
     query = query.with_entities(
         StudentResult.score_percentage,
@@ -182,7 +193,10 @@ def get_dashboard_data(exam_id, regional_ids=None, unit_ids=None, class_ids=None
         locations=locations,
         deficiency=deficiency,
         bolsa=bolsa,
-        dietary=dietary
+        dietary=dietary,
+        indigenous=indigenous,
+        quilombola=quilombola,
+        quilombola_community=quilombola_community
     )
     
     # Engagement and Completion logic - filter for finished exams for averages
@@ -382,7 +396,10 @@ def get_dashboard_data(exam_id, regional_ids=None, unit_ids=None, class_ids=None
         locations=locations,
         deficiency=deficiency,
         bolsa=bolsa,
-        dietary=dietary
+        dietary=dietary,
+        indigenous=indigenous,
+        quilombola=quilombola,
+        quilombola_community=quilombola_community
     )
 
     # 5. Desempenho por Componente (para provas de múltiplos componentes)
@@ -438,7 +455,10 @@ def get_dashboard_data(exam_id, regional_ids=None, unit_ids=None, class_ids=None
         locations=locations,
         deficiency=deficiency,
         bolsa=bolsa,
-        dietary=dietary
+        dietary=dietary,
+        indigenous=indigenous,
+        quilombola=quilombola,
+        quilombola_community=quilombola_community
     )
 
     # 7. Map Data
@@ -537,7 +557,7 @@ def get_dashboard_data(exam_id, regional_ids=None, unit_ids=None, class_ids=None
         'current_exam_title': current_display
     }
 
-def get_rankings_data(exam_id, regional_ids=None, unit_ids=None, class_ids=None, school_year_ids=None, races=None, nationalities=None, incomes=None, zones=None, locations=None, deficiency=None, bolsa=None, dietary=None):
+def get_rankings_data(exam_id, regional_ids=None, unit_ids=None, class_ids=None, school_year_ids=None, races=None, nationalities=None, incomes=None, zones=None, locations=None, deficiency=None, bolsa=None, dietary=None, indigenous=None, quilombola=None, quilombola_community=None):
     """
     Returns top and bottom performers for various categories.
     """
@@ -558,8 +578,8 @@ def get_rankings_data(exam_id, regional_ids=None, unit_ids=None, class_ids=None,
                            .join(Class, Enrollment.class_id == Class.id)\
                            .join(TeachingUnit, Class.teaching_unit_id == TeachingUnit.id)
                            
-    if current_user.is_authenticated and current_user.tenant_id:
-        base_query = base_query.filter(Student.tenant_id == current_user.tenant_id)
+    if current_user.is_authenticated and get_tenant_id():
+        base_query = base_query.filter(Student.tenant_id == get_tenant_id())
 
     if class_ids:
         base_query = base_query.filter(Class.id.in_(class_ids))
@@ -599,60 +619,66 @@ def get_rankings_data(exam_id, regional_ids=None, unit_ids=None, class_ids=None,
         elif 'Não' in dietary and 'Sim' not in dietary:
             base_query = base_query.filter(~Student.dietary_restrictions.any())
 
-    # Instead of fetching 10k+ ids into Python which makes SQLite choke on huge IN clauses, 
-    # we use base_query directly as a subquery.
-    if base_query.first() is None:
-        return {'schools': [], 'classes': [], 'students': [], 'professors': []}
-
-    # Schools Ranking
-    schools_ranking = db.session.query(TeachingUnit.name, func.avg(StudentResult.score_percentage).label('score'), TeachingUnit.municipio)\
-        .join(Class, Class.teaching_unit_id == TeachingUnit.id)\
-        .join(Enrollment, Enrollment.class_id == Class.id)\
-        .join(Student, Student.id == Enrollment.student_id)\
-        .join(StudentResult, StudentResult.student_id == Student.id)\
-        .filter(StudentResult.id.in_(base_query))\
-        .group_by(TeachingUnit.name, TeachingUnit.municipio).order_by(sa.desc('score')).all()
+        # Schools Ranking
+    schools_ranking = base_query.with_entities(TeachingUnit.name, db.func.avg(StudentResult.score_percentage).label('score'), TeachingUnit.municipio)\
+        .group_by(TeachingUnit.name, TeachingUnit.municipio).order_by(db.desc('score')).all()
 
     # Classes Ranking
-    classes_ranking = db.session.query(Class.name, TeachingUnit.name, func.avg(StudentResult.score_percentage).label('score'))\
-        .join(TeachingUnit, Class.teaching_unit_id == TeachingUnit.id)\
-        .join(Enrollment, Enrollment.class_id == Class.id)\
-        .join(Student, Student.id == Enrollment.student_id)\
-        .join(StudentResult, StudentResult.student_id == Student.id)\
-        .filter(StudentResult.id.in_(base_query))\
-        .group_by(Class.id, TeachingUnit.name).order_by(sa.desc('score')).all()
+    classes_ranking = base_query.with_entities(
+        Class.id, 
+        Class.name, 
+        TeachingUnit.name, 
+        db.func.avg(StudentResult.score_percentage).label('score'),
+        db.func.count(StudentResult.id).label('student_count'),
+        db.func.sum(StudentResult.score_percentage).label('total_score')
+    ).group_by(Class.id, TeachingUnit.name).order_by(db.desc('score')).all()
 
     # Students Ranking
-    students_ranking = db.session.query(Student.name, StudentResult.score_percentage.label('score'), TeachingUnit.name, Class.name)\
-        .join(Enrollment, Enrollment.student_id == Student.id)\
-        .join(Class, Class.id == Enrollment.class_id)\
-        .join(TeachingUnit, TeachingUnit.id == Class.teaching_unit_id)\
-        .join(StudentResult, StudentResult.student_id == Student.id)\
-        .filter(StudentResult.id.in_(base_query))\
-        .order_by(sa.desc('score')).limit(50).all()
+    students_ranking = base_query.with_entities(Student.name, StudentResult.score_percentage.label('score'), TeachingUnit.name, Class.name)\
+        .order_by(db.desc('score')).limit(50).all()
 
     # Professors Ranking
-    prof_query = db.session.query(Professor.name, func.avg(StudentResult.score_percentage).label('score'))\
-        .join(TeachingAssignment, TeachingAssignment.professor_id == Professor.id)\
-        .join(Class, Class.id == TeachingAssignment.class_id)\
-        .join(Enrollment, Enrollment.class_id == Class.id)\
-        .join(Student, Student.id == Enrollment.student_id)\
-        .join(StudentResult, StudentResult.student_id == Student.id)\
-        .filter(StudentResult.id.in_(base_query))
+    class_ids = [r[0] for r in classes_ranking] if classes_ranking else []
     
-    if exam.subject_id:
-        prof_query = prof_query.filter(TeachingAssignment.subject_id == exam.subject_id)
-        
-    professors_ranking = prof_query.group_by(Professor.id).order_by(sa.desc('score')).all()
+    prof_assignments = []
+    if class_ids:
+        # Fetch chunked to avoid 999 limit if class_ids > 999 (though unlikely for one exam)
+        chunk_size = 900
+        for i in range(0, len(class_ids), chunk_size):
+            chunk = class_ids[i:i+chunk_size]
+            q = db.session.query(TeachingAssignment.class_id, Professor.name)\
+                .join(Professor, Professor.id == TeachingAssignment.professor_id)\
+                .filter(TeachingAssignment.class_id.in_(chunk))
+            if exam.subject_id:
+                q = q.filter(TeachingAssignment.subject_id == exam.subject_id)
+            prof_assignments.extend(q.all())
+            
+    prof_scores = {}
+    for class_id, prof_name in prof_assignments:
+        if prof_name not in prof_scores:
+            prof_scores[prof_name] = {'total': 0, 'count': 0}
+            
+        class_data = next((r for r in classes_ranking if r[0] == class_id), None)
+        if class_data:
+            prof_scores[prof_name]['total'] += (class_data[5] or 0)
+            prof_scores[prof_name]['count'] += (class_data[4] or 0)
+            
+    professors_ranking = []
+    for prof_name, stats in prof_scores.items():
+        if stats['count'] > 0:
+            avg_score = stats['total'] / stats['count']
+            professors_ranking.append({'name': prof_name, 'score': round(avg_score, 2)})
+            
+    professors_ranking.sort(key=lambda x: x['score'], reverse=True)
 
     return {
         'schools': [{'name': r[0], 'score': round(r[1] or 0, 2), 'municipio': r[2]} for r in schools_ranking],
-        'classes': [{'name': r[0], 'sub': r[1], 'score': round(r[2] or 0, 2)} for r in classes_ranking],
+        'classes': [{'name': r[1], 'sub': r[2], 'score': round(r[3] or 0, 2)} for r in classes_ranking],
         'students': [{'name': r[0], 'sub': r[2], 'score': round(r[1] or 0, 2), 'class_name': r[3]} for r in students_ranking],
-        'professors': [{'name': r[0], 'score': round(r[1] or 0, 2)} for r in professors_ranking]
+        'professors': professors_ranking
     }
 
-def _get_total_students_count(exam, regional_ids=None, unit_ids=None, class_ids=None, school_year_ids=None, races=None, nationalities=None, incomes=None, zones=None, locations=None, deficiency=None, bolsa=None, dietary=None):
+def _get_total_students_count(exam, regional_ids=None, unit_ids=None, class_ids=None, school_year_ids=None, races=None, nationalities=None, incomes=None, zones=None, locations=None, deficiency=None, bolsa=None, dietary=None, indigenous=None, quilombola=None, quilombola_community=None):
     """Calculates potential participants based on exam scope and filters"""
     from flask_login import current_user
     from app.utils.tenancy import filter_by_tenant
@@ -731,6 +757,16 @@ def _get_total_students_count(exam, regional_ids=None, unit_ids=None, class_ids=
             query = query.filter(Student.dietary_restrictions.any())
         elif 'Não' in dietary and 'Sim' not in dietary:
             query = query.filter(~Student.dietary_restrictions.any())
+    if indigenous and len(indigenous) > 0:
+        query = query.filter(Student.indigenous_people_id.in_(indigenous))
+    if quilombola and len(quilombola) > 0:
+        if 'Sim' in quilombola and 'Não' not in quilombola and 'Nǐo' not in quilombola and 'Nào' not in quilombola:
+            query = query.filter(Student.is_quilombola == True)
+        elif ('Não' in quilombola or 'Nǐo' in quilombola or 'Nào' in quilombola) and 'Sim' not in quilombola:
+            query = query.filter(Student.is_quilombola == False)
+    if quilombola_community and len(quilombola_community) > 0:
+        query = query.filter(Student.quilombola_community_id.in_(quilombola_community))
+
             
     return query.count()
 
@@ -759,8 +795,8 @@ def _get_group_performance(exam_id, group_by, regional_ids=None, unit_ids=None, 
          .filter(StudentResult.exam_id == exam_id)\
          .filter(ParentUnit.type == 'Regional')
          
-        if current_user.is_authenticated and current_user.tenant_id:
-            avg_query = avg_query.filter(Student.tenant_id == current_user.tenant_id)
+        if current_user.is_authenticated and get_tenant_id():
+            avg_query = avg_query.filter(Student.tenant_id == get_tenant_id())
             
         avg_query = avg_query.group_by(ParentUnit.id)
          
@@ -795,8 +831,8 @@ def _get_group_performance(exam_id, group_by, regional_ids=None, unit_ids=None, 
             avg_query = avg_query.join(TeachingUnit, Class.teaching_unit_id == TeachingUnit.id)\
                                  .filter(TeachingUnit.parent_id.in_(regional_ids))
                                  
-        if current_user.is_authenticated and current_user.tenant_id:
-            avg_query = avg_query.filter(Student.tenant_id == current_user.tenant_id)
+        if current_user.is_authenticated and get_tenant_id():
+            avg_query = avg_query.filter(Student.tenant_id == get_tenant_id())
             
         avg_query = avg_query.group_by(Class.teaching_unit_id)
         averages = {row.unit_id: row.avg_score for row in avg_query.all()}
@@ -812,8 +848,8 @@ def _get_group_performance(exam_id, group_by, regional_ids=None, unit_ids=None, 
         year_query = db.session.query(SchoolYear.id, SchoolYear.name).join(Class)
         if unit_ids:
             year_query = year_query.filter(Class.teaching_unit_id.in_(unit_ids))
-        if current_user.is_authenticated and current_user.tenant_id:
-            year_query = year_query.filter(Class.tenant_id == current_user.tenant_id)
+        if current_user.is_authenticated and get_tenant_id():
+            year_query = year_query.filter(Class.tenant_id == get_tenant_id())
         years = year_query.distinct().all()
         
         # Buscar médias agrupadas por ano escolar
@@ -830,8 +866,8 @@ def _get_group_performance(exam_id, group_by, regional_ids=None, unit_ids=None, 
         if unit_ids:
             avg_query = avg_query.filter(Class.teaching_unit_id.in_(unit_ids))
             
-        if current_user.is_authenticated and current_user.tenant_id:
-            avg_query = avg_query.filter(Student.tenant_id == current_user.tenant_id)
+        if current_user.is_authenticated and get_tenant_id():
+            avg_query = avg_query.filter(Student.tenant_id == get_tenant_id())
             
         avg_query = avg_query.group_by(Class.school_year_id)
         averages = {row.school_year_id: row.avg_score for row in avg_query.all()}
@@ -869,8 +905,8 @@ def _get_group_performance(exam_id, group_by, regional_ids=None, unit_ids=None, 
             if school_year_ids:
                 avg_query = avg_query.filter(Class.school_year_id.in_(school_year_ids))
                 
-        if current_user.is_authenticated and current_user.tenant_id:
-            avg_query = avg_query.filter(Student.tenant_id == current_user.tenant_id)
+        if current_user.is_authenticated and get_tenant_id():
+            avg_query = avg_query.filter(Student.tenant_id == get_tenant_id())
             
         avg_query = avg_query.group_by(Enrollment.class_id)
         averages = {row.class_id: row.avg_score for row in avg_query.all()}
@@ -887,7 +923,7 @@ def _get_group_performance(exam_id, group_by, regional_ids=None, unit_ids=None, 
 def get_absence_reasons_data(exam_id, regional_ids=None, unit_ids=None, class_ids=None,
                              school_year_ids=None, races=None, nationalities=None,
                              incomes=None, zones=None, locations=None,
-                             deficiency=None, bolsa=None, dietary=None):
+                             deficiency=None, bolsa=None, dietary=None, indigenous=None, quilombola=None, quilombola_community=None):
     """
     Agrega contagens e percentuais de motivos de ausência respeitando os filtros
     hierárquicos do dashboard.
@@ -916,8 +952,8 @@ def get_absence_reasons_data(exam_id, regional_ids=None, unit_ids=None, class_id
      .join(TeachingUnit, Class.teaching_unit_id == TeachingUnit.id)\
      .filter(StudentResult.exam_id == exam_id)
 
-    if current_user.is_authenticated and current_user.tenant_id:
-        query = query.filter(Student.tenant_id == current_user.tenant_id)
+    if current_user.is_authenticated and get_tenant_id():
+        query = query.filter(Student.tenant_id == get_tenant_id())
 
     # Filtros hierárquicos
     if class_ids:
@@ -952,6 +988,15 @@ def get_absence_reasons_data(exam_id, regional_ids=None, unit_ids=None, class_id
             query = query.filter(Student.dietary_restrictions.any())
         elif 'Não' in dietary and 'Sim' not in dietary:
             query = query.filter(~Student.dietary_restrictions.any())
+    if indigenous and len(indigenous) > 0:
+        query = query.filter(Student.indigenous_people_id.in_(indigenous))
+    if quilombola and len(quilombola) > 0:
+        if 'Sim' in quilombola and 'Não' not in quilombola and 'Não' not in quilombola and 'No' not in quilombola:
+            query = query.filter(Student.is_quilombola == True)
+        elif ('Não' in quilombola or 'Não' in quilombola or 'No' in quilombola) and 'Sim' not in quilombola:
+            query = query.filter(Student.is_quilombola == False)
+    if quilombola_community and len(quilombola_community) > 0:
+        query = query.filter(Student.quilombola_community_id.in_(quilombola_community))
 
     query = query.group_by(AbsenceReason.id, AbsenceReason.name)
     rows = query.all()
@@ -970,8 +1015,8 @@ def get_absence_reasons_data(exam_id, regional_ids=None, unit_ids=None, class_id
 def get_exam_stats(exam_id):
     """Returns average success, failure and absent percentages for an exam"""
     from flask_login import current_user
-    if current_user.is_authenticated and current_user.tenant_id:
-        exists = Exam.query.filter_by(id=exam_id, tenant_id=current_user.tenant_id).first()
+    if current_user.is_authenticated and get_tenant_id():
+        exists = Exam.query.filter_by(id=exam_id, tenant_id=get_tenant_id()).first()
         if not exists:
             return {'success': 0.0, 'failure': 0.0, 'absent': 0.0}
             

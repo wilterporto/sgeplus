@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request
 from flask_login import login_required, current_user
 from app.models import AnthropometricRecord, Student
-from app.utils.tenancy import filter_by_tenant
+from app.utils.tenancy import filter_by_tenant, get_tenant_id
 from app import db
 from sqlalchemy import func
 
@@ -12,7 +12,7 @@ nutrition_bp = Blueprint('nutrition', __name__)
 def dashboard():
     # Filter by tenant
     query = db.session.query(AnthropometricRecord).join(Student).filter(
-        AnthropometricRecord.tenant_id == current_user.tenant_id
+        AnthropometricRecord.tenant_id == get_tenant_id()
     )
 
     races = request.args.getlist('race')
@@ -57,6 +57,22 @@ def dashboard():
             query = query.filter(~Student.dietary_restrictions.any())
 
     
+
+    indigenous_ids = request.args.getlist('indigenous', type=int)
+    if indigenous_ids:
+        query = query.filter(Student.indigenous_people_id.in_(indigenous_ids))
+        
+    quilombola_vals = request.args.getlist('quilombola')
+    if len(quilombola_vals) == 1:
+        if quilombola_vals[0] == 'Sim':
+            query = query.filter(Student.is_quilombola == True)
+        elif quilombola_vals[0] == 'Nǜo' or quilombola_vals[0] == 'No' or quilombola_vals[0] == 'Não':
+            query = query.filter(Student.is_quilombola == False)
+
+    quilombola_community_ids = request.args.getlist('quilombolaCommunity', type=int)
+    if quilombola_community_ids:
+        query = query.filter(Student.quilombola_community_id.in_(quilombola_community_ids))
+
     # Simple analytics (can be optimized later using subqueries to get only the latest record per student)
     # Let's fetch all and process in python for simplicity since datasets aren't huge
     records = query.all()
@@ -99,4 +115,9 @@ def dashboard():
         gs = r.growth_status or 'N/A'
         stats['growth_status'][gs] = stats['growth_status'].get(gs, 0) + 1
 
-    return render_template('nutrition/dashboard.html', stats=stats)
+    from app.models import IndigenousPeople, QuilombolaCommunity
+    from app.utils.tenancy import filter_by_tenant
+    indigenous_list = filter_by_tenant(IndigenousPeople.query, IndigenousPeople).all()
+    quilombolas_list = filter_by_tenant(QuilombolaCommunity.query, QuilombolaCommunity).all()
+
+    return render_template('nutrition/dashboard.html', stats=stats, indigenous=indigenous_list, quilombolas=quilombolas_list)

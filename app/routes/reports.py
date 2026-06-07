@@ -18,8 +18,14 @@ def dashboard():
         flash('Acesso restrito.', 'danger')
         return redirect(url_for('main.index'))
         
+    from app.models import IndigenousPeople, QuilombolaCommunity
+    from app.utils.tenancy import filter_by_tenant
+    
     exams = get_exam_selectors()
-    return render_template('reports/dashboard.html', exams=exams)
+    indigenous = filter_by_tenant(IndigenousPeople.query, IndigenousPeople).all()
+    quilombolas = filter_by_tenant(QuilombolaCommunity.query, QuilombolaCommunity).all()
+    
+    return render_template('reports/dashboard.html', exams=exams, indigenous=indigenous, quilombolas=quilombolas)
 
 @reports_bp.route('/data')
 @login_required
@@ -44,8 +50,9 @@ def api_dashboard_data():
     deficiency = request.args.getlist('deficiency[]')
     bolsa = request.args.getlist('bolsa[]')
     dietary = request.args.getlist('dietary[]')
-    indigenous = request.args.getlist('indigenous[]')
+    indigenous = request.args.getlist('indigenous[]', type=int)
     quilombola = request.args.getlist('quilombola[]')
+    quilombola_community = request.args.getlist('quilombolaCommunity[]', type=int)
     
     data = get_dashboard_data(
         exam_id=exam_id, 
@@ -62,7 +69,8 @@ def api_dashboard_data():
         bolsa=bolsa,
         dietary=dietary,
         indigenous=indigenous,
-        quilombola=quilombola
+        quilombola=quilombola,
+        quilombola_community=quilombola_community
     )
     return jsonify(data)
 

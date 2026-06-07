@@ -120,8 +120,9 @@
                     <div class="col-md-3">
                         <label class="form-label fw-bold small">Povo Indígena</label>
                         <select id="filterIndigenous" class="form-select form-select-sm" multiple style="height: 100px;">
-                            <option value="Sim">Sim</option>
-                            <option value="Não">Não</option>
+                            {% for ip in indigenous %}
+                                <option value="{{ ip.id }}">{{ ip.name }}</option>
+                            {% endfor %}
                         </select>
                     </div>
                     <div class="col-md-3">
@@ -129,6 +130,14 @@
                         <select id="filterQuilombola" class="form-select form-select-sm" multiple style="height: 100px;">
                             <option value="Sim">Sim</option>
                             <option value="Não">Não</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold small">Comunidade Quilombola</label>
+                        <select id="filterQuilombolaCommunity" class="form-select form-select-sm" multiple style="height: 100px;">
+                            {% for qc in quilombolas %}
+                                <option value="{{ qc.id }}">{{ qc.name }}</option>
+                            {% endfor %}
                         </select>
                     </div>
                 </div>
@@ -954,6 +963,7 @@
         const dietary = Array.from(document.getElementById('filterDietary').selectedOptions).map(o => o.value);
         const indigenous = Array.from(document.getElementById('filterIndigenous').selectedOptions).map(o => o.value);
         const quilombola = Array.from(document.getElementById('filterQuilombola').selectedOptions).map(o => o.value);
+        const quilombolaCommunity = Array.from(document.getElementById('filterQuilombolaCommunity').selectedOptions).map(o => o.value);
 
         races.forEach(r => qs += `&races[]=${encodeURIComponent(r)}`);
         nationalities.forEach(n => qs += `&nationalities[]=${encodeURIComponent(n)}`);
@@ -965,6 +975,7 @@
         dietary.forEach(dt => qs += `&dietary[]=${encodeURIComponent(dt)}`);
         indigenous.forEach(dt => qs += `&indigenous[]=${encodeURIComponent(dt)}`);
         quilombola.forEach(dt => qs += `&quilombola[]=${encodeURIComponent(dt)}`);
+        quilombolaCommunity.forEach(dt => qs += `&quilombolaCommunity[]=${encodeURIComponent(dt)}`);
         
         return qs;
     }
@@ -1152,7 +1163,7 @@
     }
 
     function clearAdvancedFilters() {
-        ['filterRace', 'filterNationality', 'filterIncome', 'filterZone', 'filterLocation', 'filterDeficiency', 'filterBolsa', 'filterDietary'].forEach(id => {
+        ['filterRace', 'filterNationality', 'filterIncome', 'filterZone', 'filterLocation', 'filterDeficiency', 'filterBolsa', 'filterDietary', 'filterIndigenous', 'filterQuilombola', 'filterQuilombolaCommunity'].forEach(id => {
             const el = document.getElementById(id);
             if (el) {
                 for (let i = 0; i < el.options.length; i++) {

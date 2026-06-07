@@ -535,7 +535,6 @@
                     </button>
                     <!-- Navigation texts -->
                     <div class="navbar-text me-auto d-flex align-items-center">
-                        <span id="nav-phrase-text" class="text-secondary fst-italic ms-2 d-none d-md-inline" style="transition: opacity 0.8s; opacity: 0; font-size: 0.9rem;"></span>
                     </div>
 
                     <!-- Alternador de Tema Claro/Escuro -->
@@ -783,35 +782,7 @@
                 });
             }
             
-            // Phrase logic in navbar
-            const phrases = [
-                "Transformando dados em evidências e evidências em futuro.",
-                "Onde a tecnologia encontra o propósito pedagógico para o sucesso de cada aluno.",
-                "Inteligência para gerir, sensibilidade para ensinar, excelência para evoluir.",
-                "Facilitando o presente da gestão pedagógica para garantir o futuro da educação pública.",
-                "A ponte entre o diagnóstico preciso e a aprendizagem de excelência."
-            ];
-            let currentIdx = -1;
-            const navPhraseEl = document.getElementById('nav-phrase-text');
-            
-            function showNextPhrase() {
-                if (!navPhraseEl) return;
-                let nextIdx;
-                if (phrases.length > 1) {
-                    do { nextIdx = Math.floor(Math.random() * phrases.length); } while (nextIdx === currentIdx);
-                } else { nextIdx = 0; }
-                currentIdx = nextIdx;
-                
-                navPhraseEl.style.opacity = '0';
-                setTimeout(() => {
-                    navPhraseEl.textContent = `"${phrases[currentIdx]}"`;
-                    navPhraseEl.style.opacity = '1';
-                }, 800);
-            }
-            if(navPhraseEl) {
-                showNextPhrase();
-                setInterval(showNextPhrase, 5000);
-            }
+
 
             // Garante que todo campo obrigatório tenha a classe "required" em seu label correspondente
             document.querySelectorAll('input[required], select[required], textarea[required]').forEach(function(el) {
