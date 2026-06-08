@@ -442,6 +442,14 @@
                         <i class="bi bi-list-check me-2"></i> <span class="sidebar-text">Definições</span>
                     </a>
                 </li>
+                {% if active_tenant and active_tenant.type == 'Estadual' %}
+                <li>
+                    <a href="{{ url_for('academic.map_regionals') }}"
+                        class="nav-link {% if 'map_regionals' in request.endpoint %}active{% endif %}">
+                        <i class="bi bi-geo-alt me-2"></i> <span class="sidebar-text">Mapeamento Geográfico</span>
+                    </a>
+                </li>
+                {% endif %}
                 <li>
                     <a href="{{ url_for('academic.list_absence_reasons') }}"
                         class="nav-link {% if 'absence_reasons' in request.endpoint %}active{% endif %}">

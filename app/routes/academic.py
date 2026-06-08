@@ -16,12 +16,12 @@ from sqlalchemy import func
 from markupsafe import Markup
 
 from app import db
-from app.models import TeachingUnit, SchoolYear, Subject, CurriculumStructure, Class, Enrollment, Evaluation, ImportJob, Student, Professor, TeachingAssignment, AbsenceReason, StudentResult, City, QuilombolaCommunity, IndigenousPeople
+from app.models import TeachingUnit, SchoolYear, Subject, CurriculumStructure, Class, Enrollment, Evaluation, ImportJob, Student, Professor, TeachingAssignment, AbsenceReason, StudentResult, City, QuilombolaCommunity, IndigenousPeople, SchoolClassification, ElectricalEnergySource, Region, SubRegion, CityRegionalMapping
 from app.utils.tenancy import filter_by_tenant, get_tenant_id
 from app.utils.timezone import get_brasilia_time
 from app.audit_utils import log_audit
 from app.import_utils import start_import_task, update_import_progress, finish_import_task, fail_import_task
-from app.forms import QuilombolaCommunityForm, IndigenousPeopleForm, ImportDefinitionForm
+from app.forms import QuilombolaCommunityForm, IndigenousPeopleForm, ImportDefinitionForm, SchoolClassificationForm, ElectricalEnergySourceForm, RegionForm, SubRegionForm
 
 academic_bp = Blueprint('academic', __name__)
 
@@ -32,6 +32,10 @@ class TeachingUnitForm(FlaskForm):
     type = SelectField('Tipo', choices=[('Regional', 'Regional'), ('Escola', 'Escola')], validators=[DataRequired()])
     parent_id = SelectField('Regional Superior (Opcional)', coerce=int, default=0)
     inep_code = StringField('Código INEP', validators=[Optional(), Length(max=20)])
+    classification_id = SelectField('Classificação da Unidade', coerce=int, choices=[(0, 'Selecione...')], validators=[Optional()])
+    energy_source_id = SelectField('Fonte de Energia Elétrica', coerce=int, choices=[(0, 'Selecione...')], validators=[Optional()])
+    region_id = SelectField('Região', coerce=int, choices=[(0, 'Selecione...')], validators=[Optional()])
+    sub_region_id = SelectField('Sub Região', coerce=int, choices=[(0, 'Selecione...')], validators=[Optional()])
     uf = SelectField('UF', choices=[('', 'Selecione a UF')], validators=[Optional()])
     municipio = SelectField('Município', choices=[('', 'Selecione o Município')], validators=[Optional()])
     residential_zone = SelectField('Localização', choices=[
@@ -107,6 +111,7 @@ def list_units():
     
     page = request.args.get('page', 1, type=int)
     search = request.args.get('search', '').strip()
+    regional_filter = request.args.get('regional_id', '')
     
     # Exclude parent_id self choice during save inside form populating
     reg_choices = [(0, 'Nenhuma')]
@@ -114,6 +119,11 @@ def list_units():
     regionals = filter_by_tenant(regionals, TeachingUnit).order_by(TeachingUnit.name).all()
     reg_choices.extend([(r.id, r.name) for r in regionals])
     form.parent_id.choices = reg_choices
+    
+    form.classification_id.choices = [(0, 'Selecione...')] + [(c.id, c.name) for c in filter_by_tenant(SchoolClassification.query, SchoolClassification).order_by(SchoolClassification.name).all()]
+    form.energy_source_id.choices = [(0, 'Selecione...')] + [(e.id, e.name) for e in filter_by_tenant(ElectricalEnergySource.query, ElectricalEnergySource).order_by(ElectricalEnergySource.name).all()]
+    form.region_id.choices = [(0, 'Selecione...')] + [(r.id, r.name) for r in filter_by_tenant(Region.query, Region).order_by(Region.name).all()]
+    form.sub_region_id.choices = [(0, 'Selecione...')] + [(s.id, s.name) for s in filter_by_tenant(SubRegion.query, SubRegion).order_by(SubRegion.name).all()]
     
     ufs = db.session.query(City.uf).distinct().order_by(City.uf).all()
     form.uf.choices = [('', 'Selecione a UF')] + [(u[0], u[0]) for u in ufs]
@@ -127,6 +137,12 @@ def list_units():
     if search:
         query = query.filter(TeachingUnit.name.ilike(f'%{search}%'))
         
+    if regional_filter:
+        if regional_filter == 'none':
+            query = query.filter(TeachingUnit.parent_id.is_(None))
+        else:
+            query = query.filter(TeachingUnit.parent_id == int(regional_filter))
+            
     units = query.order_by(TeachingUnit.name).paginate(page=page, per_page=30)
     
     active_job = ImportJob.query.filter_by(
@@ -146,7 +162,11 @@ def list_units():
             residential_zone=form.residential_zone.data if form.residential_zone.data else None,
             differentiated_location=form.differentiated_location.data if form.differentiated_location.data else None,
             latitude=form.latitude.data.strip() if form.latitude.data else None,
-            longitude=form.longitude.data.strip() if form.longitude.data else None
+            longitude=form.longitude.data.strip() if form.longitude.data else None,
+            classification_id=form.classification_id.data if form.classification_id.data != 0 else None,
+            energy_source_id=form.energy_source_id.data if form.energy_source_id.data != 0 else None,
+            region_id=form.region_id.data if form.region_id.data != 0 else None,
+            sub_region_id=form.sub_region_id.data if form.sub_region_id.data != 0 else None
         )
         if form.parent_id.data != 0:
             unit.parent_id = form.parent_id.data
@@ -158,7 +178,7 @@ def list_units():
         flash('Unidade de ensino cadastrada com sucesso.', 'success')
         return redirect(url_for('academic.list_units'))
         
-    return render_template('academic/units.html', units=units, form=form, import_form=import_form, search=search, active_job=active_job)
+    return render_template('academic/units.html', units=units, form=form, import_form=import_form, search=search, regional_filter=regional_filter, active_job=active_job, regionals=regionals)
 
 @academic_bp.route('/units/<int:id>/edit', methods=['GET', 'POST'])
 @login_required
@@ -180,6 +200,11 @@ def edit_unit(id):
         regionals = [r for r in regionals if r.id != unit.id]
     reg_choices.extend([(r.id, r.name) for r in regionals])
     form.parent_id.choices = reg_choices
+    
+    form.classification_id.choices = [(0, 'Selecione...')] + [(c.id, c.name) for c in filter_by_tenant(SchoolClassification.query, SchoolClassification).order_by(SchoolClassification.name).all()]
+    form.energy_source_id.choices = [(0, 'Selecione...')] + [(e.id, e.name) for e in filter_by_tenant(ElectricalEnergySource.query, ElectricalEnergySource).order_by(ElectricalEnergySource.name).all()]
+    form.region_id.choices = [(0, 'Selecione...')] + [(r.id, r.name) for r in filter_by_tenant(Region.query, Region).order_by(Region.name).all()]
+    form.sub_region_id.choices = [(0, 'Selecione...')] + [(s.id, s.name) for s in filter_by_tenant(SubRegion.query, SubRegion).order_by(SubRegion.name).all()]
     
     ufs = db.session.query(City.uf).distinct().order_by(City.uf).all()
     form.uf.choices = [('', 'Selecione a UF')] + [(u[0], u[0]) for u in ufs]
@@ -205,6 +230,10 @@ def edit_unit(id):
         unit.differentiated_location = form.differentiated_location.data if form.differentiated_location.data else None
         unit.latitude = form.latitude.data.strip() if form.latitude.data else None
         unit.longitude = form.longitude.data.strip() if form.longitude.data else None
+        unit.classification_id = form.classification_id.data if form.classification_id.data != 0 else None
+        unit.energy_source_id = form.energy_source_id.data if form.energy_source_id.data != 0 else None
+        unit.region_id = form.region_id.data if form.region_id.data != 0 else None
+        unit.sub_region_id = form.sub_region_id.data if form.sub_region_id.data != 0 else None
         
         db.session.commit()
         log_audit('UPDATE', 'TeachingUnit', unit.id, f"Atualizou unidade de ensino {unit.name}")
@@ -213,6 +242,10 @@ def edit_unit(id):
         
     if request.method == 'GET':
         form.parent_id.data = unit.parent_id if unit.parent_id else 0
+        form.classification_id.data = unit.classification_id if unit.classification_id else 0
+        form.energy_source_id.data = unit.energy_source_id if unit.energy_source_id else 0
+        form.region_id.data = unit.region_id if unit.region_id else 0
+        form.sub_region_id.data = unit.sub_region_id if unit.sub_region_id else 0
         
     return render_template('academic/unit_edit.html', form=form, unit=unit)
 
@@ -479,6 +512,13 @@ def definitions():
     quilombola_form = QuilombolaCommunityForm(prefix='quilombola')
     indigenous_form = IndigenousPeopleForm(prefix='indigenous')
     
+    class_form = SchoolClassificationForm(prefix='classification')
+    energy_form = ElectricalEnergySourceForm(prefix='energy')
+    region_form = RegionForm(prefix='region')
+    sub_region_form = SubRegionForm(prefix='sub_region')
+    
+    sub_region_form.region_id.choices = [(0, 'Selecione...')] + [(r.id, r.name) for r in filter_by_tenant(Region.query, Region).order_by(Region.name).all()]
+    
     if year_form.validate_on_submit() and year_form.submit.data:
         existing = SchoolYear.query.filter_by(name=year_form.name.data.strip(), tenant_id=get_tenant_id()).first()
         if existing:
@@ -527,10 +567,63 @@ def definitions():
             flash('Povo indígena adicionado com sucesso.', 'success')
         return redirect(url_for('academic.definitions'))
         
+    if class_form.validate_on_submit() and class_form.submit.data:
+        existing = SchoolClassification.query.filter_by(name=class_form.name.data.strip(), tenant_id=get_tenant_id()).first()
+        if existing:
+            flash('Esta classificação já está cadastrada.', 'danger')
+        else:
+            obj = SchoolClassification(name=class_form.name.data.strip(), tenant_id=get_tenant_id())
+            db.session.add(obj)
+            db.session.commit()
+            log_audit('CREATE', 'SchoolClassification', obj.id, f"Criou classificação {obj.name}")
+            flash('Classificação adicionada com sucesso.', 'success')
+        return redirect(url_for('academic.definitions'))
+        
+    if energy_form.validate_on_submit() and energy_form.submit.data:
+        existing = ElectricalEnergySource.query.filter_by(name=energy_form.name.data.strip(), tenant_id=get_tenant_id()).first()
+        if existing:
+            flash('Esta fonte de energia já está cadastrada.', 'danger')
+        else:
+            obj = ElectricalEnergySource(name=energy_form.name.data.strip(), tenant_id=get_tenant_id())
+            db.session.add(obj)
+            db.session.commit()
+            log_audit('CREATE', 'ElectricalEnergySource', obj.id, f"Criou fonte de energia {obj.name}")
+            flash('Fonte de energia adicionada com sucesso.', 'success')
+        return redirect(url_for('academic.definitions'))
+        
+    if region_form.validate_on_submit() and region_form.submit.data:
+        existing = Region.query.filter_by(name=region_form.name.data.strip(), tenant_id=get_tenant_id()).first()
+        if existing:
+            flash('Esta região já está cadastrada.', 'danger')
+        else:
+            obj = Region(name=region_form.name.data.strip(), tenant_id=get_tenant_id())
+            db.session.add(obj)
+            db.session.commit()
+            log_audit('CREATE', 'Region', obj.id, f"Criou região {obj.name}")
+            flash('Região adicionada com sucesso.', 'success')
+        return redirect(url_for('academic.definitions'))
+        
+    if sub_region_form.validate_on_submit() and sub_region_form.submit.data:
+        existing = SubRegion.query.filter_by(name=sub_region_form.name.data.strip(), region_id=sub_region_form.region_id.data, tenant_id=get_tenant_id()).first()
+        if existing:
+            flash('Esta sub-região já está cadastrada nesta região.', 'danger')
+        else:
+            obj = SubRegion(name=sub_region_form.name.data.strip(), region_id=sub_region_form.region_id.data, tenant_id=get_tenant_id())
+            db.session.add(obj)
+            db.session.commit()
+            log_audit('CREATE', 'SubRegion', obj.id, f"Criou sub-região {obj.name}")
+            flash('Sub-região adicionada com sucesso.', 'success')
+        return redirect(url_for('academic.definitions'))
+        
     years = filter_by_tenant(SchoolYear.query, SchoolYear).order_by(SchoolYear.name).all()
     subjects = filter_by_tenant(Subject.query, Subject).order_by(Subject.name).all()
     quilombola_communities = filter_by_tenant(QuilombolaCommunity.query, QuilombolaCommunity).order_by(QuilombolaCommunity.name).all()
     indigenous_peoples = filter_by_tenant(IndigenousPeople.query, IndigenousPeople).order_by(IndigenousPeople.name).all()
+    
+    classifications = filter_by_tenant(SchoolClassification.query, SchoolClassification).order_by(SchoolClassification.name).all()
+    energies = filter_by_tenant(ElectricalEnergySource.query, ElectricalEnergySource).order_by(ElectricalEnergySource.name).all()
+    regions = filter_by_tenant(Region.query, Region).order_by(Region.name).all()
+    sub_regions = filter_by_tenant(SubRegion.query, SubRegion).order_by(SubRegion.name).all()
     
     import_quilombola_form = ImportDefinitionForm()
     import_indigenous_form = ImportDefinitionForm()
@@ -556,6 +649,14 @@ def definitions():
         subject_form=subject_form,
         quilombola_form=quilombola_form,
         indigenous_form=indigenous_form,
+        class_form=class_form,
+        energy_form=energy_form,
+        region_form=region_form,
+        sub_region_form=sub_region_form,
+        classifications=classifications,
+        energies=energies,
+        regions=regions,
+        sub_regions=sub_regions,
         import_quilombola_form=import_quilombola_form,
         import_indigenous_form=import_indigenous_form,
         active_quilombola_job=active_quilombola_job,
@@ -600,6 +701,82 @@ def delete_indigenous(id):
     db.session.commit()
     log_audit('DELETE', 'IndigenousPeople', id, f"Deletou povo indígena {ip.name}")
     flash('Povo indígena excluído com sucesso.', 'success')
+    return redirect(url_for('academic.definitions'))
+
+@academic_bp.route('/classification/<int:id>/delete', methods=['POST'])
+@login_required
+def delete_classification(id):
+    obj = SchoolClassification.query.get_or_404(id)
+    if obj.tenant_id != get_tenant_id():
+        flash('Acesso não autorizado.', 'danger')
+        return redirect(url_for('academic.definitions'))
+    
+    units = TeachingUnit.query.filter_by(classification_id=obj.id).first()
+    if units:
+        flash('Não é possível excluir, pois existem escolas vinculadas.', 'danger')
+        return redirect(url_for('academic.definitions'))
+        
+    db.session.delete(obj)
+    db.session.commit()
+    log_audit('DELETE', 'SchoolClassification', id, f"Deletou classificação {obj.name}")
+    flash('Classificação excluída com sucesso.', 'success')
+    return redirect(url_for('academic.definitions'))
+
+@academic_bp.route('/energy/<int:id>/delete', methods=['POST'])
+@login_required
+def delete_energy(id):
+    obj = ElectricalEnergySource.query.get_or_404(id)
+    if obj.tenant_id != get_tenant_id():
+        flash('Acesso não autorizado.', 'danger')
+        return redirect(url_for('academic.definitions'))
+    
+    units = TeachingUnit.query.filter_by(energy_source_id=obj.id).first()
+    if units:
+        flash('Não é possível excluir, pois existem escolas vinculadas.', 'danger')
+        return redirect(url_for('academic.definitions'))
+        
+    db.session.delete(obj)
+    db.session.commit()
+    log_audit('DELETE', 'ElectricalEnergySource', id, f"Deletou fonte de energia {obj.name}")
+    flash('Fonte de energia excluída com sucesso.', 'success')
+    return redirect(url_for('academic.definitions'))
+
+@academic_bp.route('/region/<int:id>/delete', methods=['POST'])
+@login_required
+def delete_region(id):
+    obj = Region.query.get_or_404(id)
+    if obj.tenant_id != get_tenant_id():
+        flash('Acesso não autorizado.', 'danger')
+        return redirect(url_for('academic.definitions'))
+    
+    units = TeachingUnit.query.filter_by(region_id=obj.id).first()
+    if units or obj.sub_regions.count() > 0:
+        flash('Não é possível excluir a região, pois existem escolas ou sub-regiões vinculadas.', 'danger')
+        return redirect(url_for('academic.definitions'))
+        
+    db.session.delete(obj)
+    db.session.commit()
+    log_audit('DELETE', 'Region', id, f"Deletou região {obj.name}")
+    flash('Região excluída com sucesso.', 'success')
+    return redirect(url_for('academic.definitions'))
+
+@academic_bp.route('/sub_region/<int:id>/delete', methods=['POST'])
+@login_required
+def delete_sub_region(id):
+    obj = SubRegion.query.get_or_404(id)
+    if obj.tenant_id != get_tenant_id():
+        flash('Acesso não autorizado.', 'danger')
+        return redirect(url_for('academic.definitions'))
+    
+    units = TeachingUnit.query.filter_by(sub_region_id=obj.id).first()
+    if units:
+        flash('Não é possível excluir, pois existem escolas vinculadas.', 'danger')
+        return redirect(url_for('academic.definitions'))
+        
+    db.session.delete(obj)
+    db.session.commit()
+    log_audit('DELETE', 'SubRegion', id, f"Deletou sub-região {obj.name}")
+    flash('Sub-região excluída com sucesso.', 'success')
     return redirect(url_for('academic.definitions'))
 
 def _process_definition_import(app, job_id, filepath, task_id, def_type):
@@ -1467,7 +1644,7 @@ def list_evaluations():
         evaluation = Evaluation(
             name=form.name.data.strip(),
             type=form.type.data,
-            quantity=form.quantity.data,
+            quantity=form.quantity.data if hasattr(form, 'quantity') and form.quantity.data else 10,
             logo_path=logo_path,
             scoring_type='none',
             question_values=None,
@@ -1500,10 +1677,9 @@ def edit_evaluation(id):
     quantity = request.form.get('quantity', type=int)
     multiple_components = request.form.get('multiple_components') == '1'
     
-    if name and type_val and quantity:
+    if name and type_val:
         evaluation.name = name
         evaluation.type = type_val
-        evaluation.quantity = quantity
         evaluation.multiple_components = multiple_components
         
         # Handle optional logo
@@ -1823,3 +1999,82 @@ def delete_absence_reason(id):
     log_audit('DELETE', 'AbsenceReason', id, f"Excluiu motivo de ausência {name}")
     flash('Motivo de Ausência excluído com sucesso.', 'success_delete')
     return redirect(url_for('academic.list_absence_reasons'))
+@academic_bp.route('/map-regionals', methods=['GET', 'POST'])
+@login_required
+def map_regionals():
+    if not current_user.is_admin:
+        flash('Acesso negado. Apenas administradores podem acessar esta página.', 'danger')
+        return redirect(url_for('main.index'))
+        
+    tenant_id = get_tenant_id()
+    from app.models import Tenant
+    active_tenant = Tenant.query.get(tenant_id)
+    
+    if not active_tenant or active_tenant.type != 'Estadual':
+        flash('Este recurso está disponível apenas para clientes Estaduais.', 'warning')
+        return redirect(url_for('main.index'))
+        
+    if not active_tenant.uf:
+        flash('O estado (UF) do cliente não está configurado. Configure no menu de administração primeiro.', 'warning')
+        return redirect(url_for('academic.definitions'))
+        
+    # Get all cities for the tenant's UF
+    cities = City.query.filter_by(uf=active_tenant.uf).order_by(City.name).all()
+    
+    # Get all regionals for the tenant
+    regionals = TeachingUnit.query.filter_by(
+        tenant_id=tenant_id,
+        type='Regional'
+    ).order_by(TeachingUnit.name).all()
+    
+    if request.method == 'POST':
+        # the form will send inputs like: city_123=456 (city_id=regional_id)
+        # where 456 is the teaching_unit_id or empty string
+        updated_count = 0
+        for key, val in request.form.items():
+            if key.startswith('city_'):
+                try:
+                    city_id = int(key.split('_')[1])
+                    regional_id_str = val.strip()
+                    
+                    mapping = CityRegionalMapping.query.filter_by(
+                        tenant_id=tenant_id,
+                        city_id=city_id
+                    ).first()
+                    
+                    if regional_id_str:
+                        regional_id = int(regional_id_str)
+                        if mapping:
+                            if mapping.regional_id != regional_id:
+                                mapping.regional_id = regional_id
+                                updated_count += 1
+                        else:
+                            new_mapping = CityRegionalMapping(
+                                tenant_id=tenant_id,
+                                city_id=city_id,
+                                regional_id=regional_id
+                            )
+                            db.session.add(new_mapping)
+                            updated_count += 1
+                    else:
+                        # Clear mapping if selected empty
+                        if mapping:
+                            db.session.delete(mapping)
+                            updated_count += 1
+                except ValueError:
+                    continue
+                    
+        if updated_count > 0:
+            db.session.commit()
+            log_audit('UPDATE', 'CityRegionalMapping', None, f'Atualizou {updated_count} municípios')
+            flash(f'Mapeamento atualizado com sucesso! {updated_count} municípios alterados.', 'success')
+        else:
+            flash('Nenhuma alteração foi realizada.', 'info')
+            
+        return redirect(url_for('academic.map_regionals'))
+        
+    # Get current mappings
+    current_mappings = CityRegionalMapping.query.filter_by(tenant_id=tenant_id).all()
+    mapping_dict = {m.city_id: m.regional_id for m in current_mappings}
+    
+    return render_template('academic/map_regionals.html', cities=cities, regionals=regionals, mapping_dict=mapping_dict)

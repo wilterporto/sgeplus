@@ -67,6 +67,22 @@
                             {{ form.differentiated_location(class="form-select") }}
                         </div>
                         <div class="col-md-6 mb-3">
+                            {{ form.classification_id.label(class="form-label") }}
+                            {{ form.classification_id(class="form-select") }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.energy_source_id.label(class="form-label") }}
+                            {{ form.energy_source_id(class="form-select") }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.region_id.label(class="form-label") }}
+                            {{ form.region_id(class="form-select") }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.sub_region_id.label(class="form-label") }}
+                            {{ form.sub_region_id(class="form-select") }}
+                        </div>
+                        <div class="col-md-6 mb-3">
                             {{ form.latitude.label(class="form-label") }}
                             {{ form.latitude(class="form-control") }}
                         </div>

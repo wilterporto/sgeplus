@@ -220,7 +220,12 @@ def dashboard():
         stats['pct_sex']['F'] = round((stats['by_sex']['F'] / stats['total']) * 100, 1)
 
     from app.models import IndigenousPeople, QuilombolaCommunity
-    if drill_regional or drill_municipio:
+    classification_ids = request.args.getlist('classification', type=int)
+    energy_ids = request.args.getlist('energy', type=int)
+    region_ids = request.args.getlist('region', type=int)
+    sub_region_ids = request.args.getlist('sub_region', type=int)
+    
+    if drill_regional or drill_municipio or classification_ids or energy_ids or region_ids or sub_region_ids:
         student_query = student_query.outerjoin(Enrollment, (Enrollment.student_id == Student.id) & (Enrollment.active == True))\
                                      .outerjoin(Class, Enrollment.class_id == Class.id)\
                                      .outerjoin(SchoolUnit, Class.teaching_unit_id == SchoolUnit.id)\
@@ -229,6 +234,14 @@ def dashboard():
             student_query = student_query.filter(RegionalUnit.name == drill_regional)
         if drill_municipio:
             student_query = student_query.filter(SchoolUnit.municipio == drill_municipio)
+        if classification_ids:
+            student_query = student_query.filter(SchoolUnit.classification_id.in_(classification_ids))
+        if energy_ids:
+            student_query = student_query.filter(SchoolUnit.energy_source_id.in_(energy_ids))
+        if region_ids:
+            student_query = student_query.filter(SchoolUnit.region_id.in_(region_ids))
+        if sub_region_ids:
+            student_query = student_query.filter(SchoolUnit.sub_region_id.in_(sub_region_ids))
     
     # Base query joined with the subquery to get only the latest records
     query = db.session.query(
@@ -258,6 +271,15 @@ def dashboard():
         query = query.filter(RegionalUnit.name == drill_regional)
     if drill_municipio:
         query = query.filter(SchoolUnit.municipio == drill_municipio)
+        
+    if classification_ids:
+        query = query.filter(SchoolUnit.classification_id.in_(classification_ids))
+    if energy_ids:
+        query = query.filter(SchoolUnit.energy_source_id.in_(energy_ids))
+    if region_ids:
+        query = query.filter(SchoolUnit.region_id.in_(region_ids))
+    if sub_region_ids:
+        query = query.filter(SchoolUnit.sub_region_id.in_(sub_region_ids))
 
     races = request.args.getlist('race')
     if races:
@@ -405,12 +427,14 @@ def dashboard():
         if group_key not in stats['drill_down']:
             stats['drill_down'][group_key] = {
                 '0-5': 0, '5-19': 0, 'M': 0, 'F': 0, 'total': 0,
-                'nutritional_by_age': {'0-5': {}, '5-19': {}}
+                'nutritional_by_age': {'0-5': {}, '5-19': {}},
+                'growth_by_age': {'0-5': {}, '5-19': {}}
             }
         stats['drill_down'][group_key][age_key] += 1
         stats['drill_down'][group_key][sex_char] += 1
         stats['drill_down'][group_key]['total'] += 1
         stats['drill_down'][group_key]['nutritional_by_age'][age_key][ns] = stats['drill_down'][group_key]['nutritional_by_age'][age_key].get(ns, 0) + 1
+        stats['drill_down'][group_key]['growth_by_age'][age_key][gs] = stats['drill_down'][group_key]['growth_by_age'][age_key].get(gs, 0) + 1
         
     if stats['total'] > 0:
         stats['pct_age']['0-5'] = round((stats['by_age_group']['0-5'] / stats['total']) * 100, 1)
@@ -418,12 +442,67 @@ def dashboard():
         stats['pct_sex']['M'] = round((stats['by_sex']['M'] / stats['total']) * 100, 1)
         stats['pct_sex']['F'] = round((stats['by_sex']['F'] / stats['total']) * 100, 1)
 
-    from app.models import IndigenousPeople, QuilombolaCommunity
+    from app.models import IndigenousPeople, QuilombolaCommunity, SchoolClassification, ElectricalEnergySource, Region, SubRegion
     from app.utils.tenancy import filter_by_tenant
     indigenous_list = filter_by_tenant(IndigenousPeople.query, IndigenousPeople).all()
     quilombolas_list = filter_by_tenant(QuilombolaCommunity.query, QuilombolaCommunity).all()
+    class_list = filter_by_tenant(SchoolClassification.query, SchoolClassification).order_by(SchoolClassification.name).all()
+    energy_list = filter_by_tenant(ElectricalEnergySource.query, ElectricalEnergySource).order_by(ElectricalEnergySource.name).all()
+    region_list = filter_by_tenant(Region.query, Region).order_by(Region.name).all()
+    sub_region_list = filter_by_tenant(SubRegion.query, SubRegion).order_by(SubRegion.name).all()
 
-    return render_template('nutrition/dashboard.html', stats=stats, indigenous=indigenous_list, quilombolas=quilombolas_list)
+    map_data = {}
+    map_url = None
+    from app.models import Tenant
+    active_tenant_id = get_tenant_id()
+    active_tenant = Tenant.query.get(active_tenant_id) if active_tenant_id else None
+
+    if active_tenant and active_tenant.type == 'Estadual' and active_tenant.map_url:
+        map_url = active_tenant.map_url
+        from app.models import City
+        cities = City.query.filter_by(uf=active_tenant.uf).all()
+        city_ibge_map = {c.name.strip().upper(): c.ibge_code for c in cities}
+        
+        regional_risk_counts = {}
+        municipio_risk_counts = {}
+        for row_id, row in latest_records.items():
+            _, _, _, _, ns, _, regional_name, municipio_name, _ = row
+            if ns and 'Eutrofia' not in ns:
+                regional_risk_counts[regional_name] = regional_risk_counts.get(regional_name, 0) + 1
+                if municipio_name:
+                    m_key = municipio_name.strip().upper()
+                    municipio_risk_counts[m_key] = municipio_risk_counts.get(m_key, 0) + 1
+                    
+        # 1. Load explicit mappings
+        from app.models import CityRegionalMapping
+        mappings = CityRegionalMapping.query.filter_by(tenant_id=active_tenant_id).all()
+        for mapping in mappings:
+            city = mapping.city
+            regional = mapping.regional
+            if city and regional:
+                m_key = city.name.strip().upper()
+                map_data[city.ibge_code] = {
+                    'regional': regional.name,
+                    'risk_count': regional_risk_counts.get(regional.name, 0),
+                    'municipio_risk_count': municipio_risk_counts.get(m_key, 0)
+                }
+                
+        # 2. Fallback for unmapped cities that have schools (so we don't lose risk data)
+        for row_id, row in latest_records.items():
+            _, _, _, _, _, _, regional_name, municipio_name, _ = row
+            if municipio_name:
+                m_key = municipio_name.strip().upper()
+                ibge_code = city_ibge_map.get(m_key)
+                if ibge_code and ibge_code not in map_data:
+                    map_data[ibge_code] = {
+                        'regional': regional_name,
+                        'risk_count': regional_risk_counts.get(regional_name, 0),
+                        'municipio_risk_count': municipio_risk_counts.get(m_key, 0)
+                    }
+
+    return render_template('nutrition/dashboard.html', stats=stats, indigenous=indigenous_list, quilombolas=quilombolas_list,
+                           classifications=class_list, energies=energy_list, regions=region_list, sub_regions=sub_region_list,
+                           map_data=map_data, map_url=map_url)
 
 @nutrition_bp.route('/nutrition/export-risk-report')
 @login_required

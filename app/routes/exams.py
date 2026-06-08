@@ -611,7 +611,9 @@ def search_descriptors_api():
 @login_required
 def get_curriculum_subjects(year_id):
     from app.models import CurriculumStructure
-    structures = CurriculumStructure.query.filter_by(school_year_id=year_id).all()
+    query = CurriculumStructure.query.filter_by(school_year_id=year_id)
+    query = filter_by_tenant(query, CurriculumStructure)
+    structures = query.all()
     subjects = []
     seen = set()
     for struct in structures:
@@ -620,7 +622,8 @@ def get_curriculum_subjects(year_id):
                 seen.add(s.id)
                 subjects.append(s)
     if not subjects:
-        subjects = Subject.query.order_by(Subject.name).all()
+        subjects_query = filter_by_tenant(Subject.query, Subject)
+        subjects = subjects_query.order_by(Subject.name).all()
     return jsonify([{'id': s.id, 'name': s.name} for s in subjects])
 
 @exams_bp.route('/<int:id>')

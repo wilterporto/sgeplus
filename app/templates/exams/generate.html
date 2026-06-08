@@ -252,14 +252,7 @@
             return;
         }
 
-        const yearId = yearSelect.value;
-        const subjectIdsSelect = document.getElementById('subject_ids');
-        
-        if (!yearId || yearId == '0') {
-            if (subjectIdsSelect) subjectIdsSelect.innerHTML = '';
-            descriptorSelect.innerHTML = '';
-            return;
-        }
+        const yearId = yearSelect.value || '0';
         
         const url = `{{ url_for('exams.get_curriculum_subjects', year_id=0) }}`.replace('0', yearId);
         fetch(url)
@@ -285,6 +278,7 @@
     const matrixSelect = document.getElementById('matrix_id');
     const yearSelect = document.getElementById('school_year_id');
     const subjectSelect = document.getElementById('subject_id');
+    const subjectIdsSelect = document.getElementById('subject_ids');
     const descriptorSelect = document.getElementById('descriptor_ids');
 
     function updateDescriptors() {
@@ -295,7 +289,6 @@
         let queryParams = `matrix_id=${matrixId}&year_id=${yearId}`;
         
         if (isMultiple) {
-            const subjectIdsSelect = document.getElementById('subject_ids');
             if (!subjectIdsSelect) return;
             const selectedSubjects = Array.from(subjectIdsSelect.selectedOptions).map(opt => opt.value);
             if (!matrixId || matrixId == '0' || !yearId || yearId == '0' || selectedSubjects.length === 0) {

@@ -75,12 +75,21 @@
 
 <!-- Search -->
 <form method="GET" class="row g-3 mb-4">
-    <div class="col-md-6">
+    <div class="col-md-5">
+        <input type="text" name="search" class="form-control" placeholder="Buscar por nome ou regional..."
+            value="{{ search or '' }}">
+    </div>
+    <div class="col-md-5">
         <div class="input-group">
-            <input type="text" name="search" class="form-control" placeholder="Buscar por nome ou regional..."
-                value="{{ search or '' }}">
+            <select name="regional_id" class="form-select">
+                <option value="">Todas as Regionais</option>
+                <option value="none" {% if regional_filter == 'none' %}selected{% endif %}>Vazio (Sem Regional)</option>
+                {% for r in regionals %}
+                <option value="{{ r.id }}" {% if regional_filter == r.id|string %}selected{% endif %}>{{ r.name }}</option>
+                {% endfor %}
+            </select>
             <button class="btn btn-outline-secondary" type="submit"><i class="bi bi-search"></i></button>
-            {% if search %}
+            {% if search or regional_filter %}
             <a href="{{ url_for('academic.list_units') }}" class="btn btn-outline-danger"><i class="bi bi-x"></i></a>
             {% endif %}
         </div>
@@ -149,6 +158,22 @@
                         <div class="col-md-6 mb-3">
                             {{ form.differentiated_location.label(class="form-label") }}
                             {{ form.differentiated_location(class="form-select") }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.classification_id.label(class="form-label") }}
+                            {{ form.classification_id(class="form-select") }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.energy_source_id.label(class="form-label") }}
+                            {{ form.energy_source_id(class="form-select") }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.region_id.label(class="form-label") }}
+                            {{ form.region_id(class="form-select") }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.sub_region_id.label(class="form-label") }}
+                            {{ form.sub_region_id(class="form-select") }}
                         </div>
                         <div class="col-md-6 mb-3">
                             {{ form.latitude.label(class="form-label") }}

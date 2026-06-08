@@ -137,6 +137,10 @@ class TeachingUnitForm(FlaskForm):
     parent_id = SelectField('Regional', coerce=int, choices=[(0, 'Nenhuma')]) # 0 for None handling
     
     inep_code = StringField('Código INEP', validators=[Length(max=20)])
+    classification_id = SelectField('Classificação da Unidade', coerce=int, choices=[(0, 'Selecione...')], validators=[Optional()])
+    energy_source_id = SelectField('Fonte de Energia Elétrica', coerce=int, choices=[(0, 'Selecione...')], validators=[Optional()])
+    region_id = SelectField('Região', coerce=int, choices=[(0, 'Selecione...')], validators=[Optional()])
+    sub_region_id = SelectField('Sub Região', coerce=int, choices=[(0, 'Selecione...')], validators=[Optional()])
     uf = SelectField('UF', choices=[('', 'Selecione...'), ('AC', 'Acre'), ('AL', 'Alagoas'), ('AP', 'Amapá'), ('AM', 'Amazonas'), ('BA', 'Bahia'), ('CE', 'Ceará'), ('DF', 'Distrito Federal'), ('ES', 'Espírito Santo'), ('GO', 'Goiás'), ('MA', 'Maranhão'), ('MT', 'Mato Grosso'), ('MS', 'Mato Grosso do Sul'), ('MG', 'Minas Gerais'), ('PA', 'Pará'), ('PB', 'Paraíba'), ('PR', 'Paraná'), ('PE', 'Pernambuco'), ('PI', 'Piauí'), ('RJ', 'Rio de Janeiro'), ('RN', 'Rio Grande do Norte'), ('RS', 'Rio Grande do Sul'), ('RO', 'Rondônia'), ('RR', 'Roraima'), ('SC', 'Santa Catarina'), ('SP', 'São Paulo'), ('SE', 'Sergipe'), ('TO', 'Tocantins')])
     municipio = SelectField('Município', choices=[])
     residential_zone = SelectField('Localização', choices=[
@@ -396,6 +400,23 @@ class QuilombolaCommunityForm(FlaskForm):
 class IndigenousPeopleForm(FlaskForm):
     name = StringField('Nome do Povo', validators=[DataRequired()])
     submit = SubmitField('Salvar Povo Indígena')
+
+class SchoolClassificationForm(FlaskForm):
+    name = StringField('Classificação', validators=[DataRequired()])
+    submit = SubmitField('Salvar Classificação')
+
+class ElectricalEnergySourceForm(FlaskForm):
+    name = StringField('Fonte de Energia', validators=[DataRequired()])
+    submit = SubmitField('Salvar Fonte de Energia')
+
+class RegionForm(FlaskForm):
+    name = StringField('Nome da Região', validators=[DataRequired()])
+    submit = SubmitField('Salvar Região')
+
+class SubRegionForm(FlaskForm):
+    name = StringField('Nome da Sub Região', validators=[DataRequired()])
+    region_id = SelectField('Região Pertencente', coerce=int, validators=[DataRequired()])
+    submit = SubmitField('Salvar Sub Região')
 
 class ImportDefinitionForm(FlaskForm):
     file = FileField('Arquivo Excel (.xlsx)', validators=[

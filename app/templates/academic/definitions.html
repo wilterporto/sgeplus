@@ -219,6 +219,116 @@
     </div>
 </div>
 
+<div class="row">
+    <!-- Classifications -->
+    <div class="col-md-6 mb-4">
+        <div class="card shadow h-100">
+            <div class="card-header py-3 bg-light d-flex justify-content-between align-items-center">
+                <h6 class="m-0 font-weight-bold text-dark">Classificações da Unidade Escolar</h6>
+                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#newClassificationModal">
+                    <i class="bi bi-plus-lg"></i> Novo
+                </button>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    {% for item in classifications %}
+                    <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
+                        {{ item.name }}
+                        <form id="delete-class-form-{{ item.id }}" action="{{ url_for('academic.delete_classification', id=item.id) }}" method="POST" class="d-inline">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                            <button type="button" class="btn btn-sm btn-outline-danger border-0" title="Excluir" onclick="handleDelete('delete-class-form-{{ item.id }}', 'Excluir classificação?')"><i class="bi bi-trash"></i></button>
+                        </form>
+                    </li>
+                    {% else %}
+                    <li class="list-group-item text-muted">Nenhuma classificação cadastrada.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- Energy Sources -->
+    <div class="col-md-6 mb-4">
+        <div class="card shadow h-100">
+            <div class="card-header py-3 bg-light d-flex justify-content-between align-items-center">
+                <h6 class="m-0 font-weight-bold text-dark">Fontes de Energia Elétrica</h6>
+                <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#newEnergyModal">
+                    <i class="bi bi-plus-lg"></i> Novo
+                </button>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    {% for item in energies %}
+                    <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
+                        {{ item.name }}
+                        <form id="delete-energy-form-{{ item.id }}" action="{{ url_for('academic.delete_energy', id=item.id) }}" method="POST" class="d-inline">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                            <button type="button" class="btn btn-sm btn-outline-danger border-0" title="Excluir" onclick="handleDelete('delete-energy-form-{{ item.id }}', 'Excluir fonte de energia?')"><i class="bi bi-trash"></i></button>
+                        </form>
+                    </li>
+                    {% else %}
+                    <li class="list-group-item text-muted">Nenhuma fonte cadastrada.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Regions -->
+    <div class="col-md-6 mb-4">
+        <div class="card shadow h-100">
+            <div class="card-header py-3 bg-light d-flex justify-content-between align-items-center">
+                <h6 class="m-0 font-weight-bold text-dark">Regiões</h6>
+                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#newRegionModal">
+                    <i class="bi bi-plus-lg"></i> Novo
+                </button>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    {% for item in regions %}
+                    <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
+                        {{ item.name }}
+                        <form id="delete-region-form-{{ item.id }}" action="{{ url_for('academic.delete_region', id=item.id) }}" method="POST" class="d-inline">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                            <button type="button" class="btn btn-sm btn-outline-danger border-0" title="Excluir" onclick="handleDelete('delete-region-form-{{ item.id }}', 'Excluir região?')"><i class="bi bi-trash"></i></button>
+                        </form>
+                    </li>
+                    {% else %}
+                    <li class="list-group-item text-muted">Nenhuma região cadastrada.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- Sub Regions -->
+    <div class="col-md-6 mb-4">
+        <div class="card shadow h-100">
+            <div class="card-header py-3 bg-light d-flex justify-content-between align-items-center">
+                <h6 class="m-0 font-weight-bold text-dark">Sub Regiões</h6>
+                <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#newSubRegionModal">
+                    <i class="bi bi-plus-lg"></i> Novo
+                </button>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    {% for item in sub_regions %}
+                    <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
+                        <div>{{ item.name }} <span class="badge bg-secondary ms-2">{{ item.region.name if item.region else '' }}</span></div>
+                        <form id="delete-sub-region-form-{{ item.id }}" action="{{ url_for('academic.delete_sub_region', id=item.id) }}" method="POST" class="d-inline">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                            <button type="button" class="btn btn-sm btn-outline-danger border-0" title="Excluir" onclick="handleDelete('delete-sub-region-form-{{ item.id }}', 'Excluir sub região?')"><i class="bi bi-trash"></i></button>
+                        </form>
+                    </li>
+                    {% else %}
+                    <li class="list-group-item text-muted">Nenhuma sub-região cadastrada.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- New Year Modal -->
 <div class="modal fade" id="newYearModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
@@ -338,6 +448,53 @@
     </div>
 </div>
 
+<!-- Modals for new domains -->
+<div class="modal fade" id="newClassificationModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog"><div class="modal-content">
+        <div class="modal-header"><h5 class="modal-title">Nova Classificação</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+        <form method="POST"><div class="modal-body">
+            {{ class_form.hidden_tag() }}
+            <div class="mb-3">{{ class_form.name.label(class="form-label required") }}{{ class_form.name(class="form-control") }}
+            {% for error in class_form.name.errors %}<span class="text-danger small">{{ error }}</span>{% endfor %}</div>
+        </div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>{{ class_form.submit(class="btn btn-primary") }}</div></form>
+    </div></div>
+</div>
+
+<div class="modal fade" id="newEnergyModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog"><div class="modal-content">
+        <div class="modal-header"><h5 class="modal-title">Nova Fonte de Energia</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+        <form method="POST"><div class="modal-body">
+            {{ energy_form.hidden_tag() }}
+            <div class="mb-3">{{ energy_form.name.label(class="form-label required") }}{{ energy_form.name(class="form-control") }}
+            {% for error in energy_form.name.errors %}<span class="text-danger small">{{ error }}</span>{% endfor %}</div>
+        </div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>{{ energy_form.submit(class="btn btn-success") }}</div></form>
+    </div></div>
+</div>
+
+<div class="modal fade" id="newRegionModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog"><div class="modal-content">
+        <div class="modal-header"><h5 class="modal-title">Nova Região</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+        <form method="POST"><div class="modal-body">
+            {{ region_form.hidden_tag() }}
+            <div class="mb-3">{{ region_form.name.label(class="form-label required") }}{{ region_form.name(class="form-control") }}
+            {% for error in region_form.name.errors %}<span class="text-danger small">{{ error }}</span>{% endfor %}</div>
+        </div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>{{ region_form.submit(class="btn btn-primary") }}</div></form>
+    </div></div>
+</div>
+
+<div class="modal fade" id="newSubRegionModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog"><div class="modal-content">
+        <div class="modal-header"><h5 class="modal-title">Nova Sub Região</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+        <form method="POST"><div class="modal-body">
+            {{ sub_region_form.hidden_tag() }}
+            <div class="mb-3">{{ sub_region_form.name.label(class="form-label required") }}{{ sub_region_form.name(class="form-control") }}
+            {% for error in sub_region_form.name.errors %}<span class="text-danger small">{{ error }}</span>{% endfor %}</div>
+            <div class="mb-3">{{ sub_region_form.region_id.label(class="form-label required") }}{{ sub_region_form.region_id(class="form-select") }}
+            {% for error in sub_region_form.region_id.errors %}<span class="text-danger small">{{ error }}</span>{% endfor %}</div>
+        </div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>{{ sub_region_form.submit(class="btn btn-success") }}</div></form>
+    </div></div>
+</div>
+
 <!-- Import Quilombola Modal -->
 <div class="modal fade" id="importQuilombolaModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
@@ -417,7 +574,11 @@
 <div id="form-errors" data-year-errors="{{ 'true' if year_form.errors else 'false' }}"
     data-subject-errors="{{ 'true' if subject_form.errors else 'false' }}"
     data-quilombola-errors="{{ 'true' if quilombola_form.errors else 'false' }}"
-    data-indigenous-errors="{{ 'true' if indigenous_form.errors else 'false' }}">
+    data-indigenous-errors="{{ 'true' if indigenous_form.errors else 'false' }}"
+    data-class-errors="{{ 'true' if class_form.errors else 'false' }}"
+    data-energy-errors="{{ 'true' if energy_form.errors else 'false' }}"
+    data-region-errors="{{ 'true' if region_form.errors else 'false' }}"
+    data-sub-region-errors="{{ 'true' if sub_region_form.errors else 'false' }}">
 </div>
 
 <script>
@@ -441,6 +602,23 @@
 
         if (errorContainer.dataset.indigenousErrors === 'true') {
             var myModal = new bootstrap.Modal(document.getElementById('newIndigenousModal'));
+            myModal.show();
+        }
+        
+        if (errorContainer.dataset.classErrors === 'true') {
+            var myModal = new bootstrap.Modal(document.getElementById('newClassificationModal'));
+            myModal.show();
+        }
+        if (errorContainer.dataset.energyErrors === 'true') {
+            var myModal = new bootstrap.Modal(document.getElementById('newEnergyModal'));
+            myModal.show();
+        }
+        if (errorContainer.dataset.regionErrors === 'true') {
+            var myModal = new bootstrap.Modal(document.getElementById('newRegionModal'));
+            myModal.show();
+        }
+        if (errorContainer.dataset.subRegionErrors === 'true') {
+            var myModal = new bootstrap.Modal(document.getElementById('newSubRegionModal'));
             myModal.show();
         }
         

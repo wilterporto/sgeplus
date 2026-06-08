@@ -5,6 +5,9 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h4 class="mb-0"><i class="bi bi-heart-pulse me-2"></i>Dashboard - Nutrição Escolar</h4>
         <div>
+            <button class="btn btn-outline-info me-2" data-bs-toggle="modal" data-bs-target="#manualCalculoModal">
+                <i class="bi bi-book me-1"></i> Manual de Cálculos
+            </button>
             <button class="btn btn-outline-warning me-2" onclick="exportUnmeasuredReport()">
                 <i class="bi bi-file-earmark-excel me-1"></i> Não Aferidos
             </button>
@@ -165,6 +168,40 @@
                             </select>
                         </div>
                     </div>
+                    <div class="row g-3 mt-2">
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold small">Classificação da Escola</label>
+                            <select name="classification" class="form-select form-select-sm" multiple style="height: 100px;">
+                                {% for cls in classifications %}
+                                    <option value="{{ cls.id }}" {% if cls.id|string in request.args.getlist('classification') %}selected{% endif %}>{{ cls.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold small">Fonte de Energia</label>
+                            <select name="energy" class="form-select form-select-sm" multiple style="height: 100px;">
+                                {% for en in energies %}
+                                    <option value="{{ en.id }}" {% if en.id|string in request.args.getlist('energy') %}selected{% endif %}>{{ en.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold small">Região</label>
+                            <select name="region" class="form-select form-select-sm" multiple style="height: 100px;">
+                                {% for r in regions %}
+                                    <option value="{{ r.id }}" {% if r.id|string in request.args.getlist('region') %}selected{% endif %}>{{ r.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold small">Sub Região</label>
+                            <select name="sub_region" class="form-select form-select-sm" multiple style="height: 100px;">
+                                {% for sr in sub_regions %}
+                                    <option value="{{ sr.id }}" {% if sr.id|string in request.args.getlist('sub_region') %}selected{% endif %}>{{ sr.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
                     <div class="mt-2 text-end">
                         <button type="submit" class="btn btn-xs btn-outline-primary">Aplicar Filtros</button>
                         <a href="{{ url_for('nutrition.dashboard') }}" class="btn btn-xs btn-outline-secondary">Limpar</a>
@@ -174,6 +211,21 @@
             </div>
         </div>
     </div>
+    {% if map_url %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0"><i class="bi bi-map me-2"></i> Risco Nutricional por Regional (Fora de Eutrofia)</h6>
+                </div>
+                <div class="card-body p-0">
+                    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+                    <div id="dashboardMap" style="height: 450px; width: 100%; border-bottom-left-radius: 0.25rem; border-bottom-right-radius: 0.25rem;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 
     {% if stats.total > 0 %}
     <div class="row">
@@ -200,6 +252,9 @@
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="nutricional-faixa-tab" data-bs-toggle="tab" data-bs-target="#nutricional-faixa" type="button" role="tab" aria-controls="nutricional-faixa" aria-selected="false">Por Estado Nutricional</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="estatura-faixa-tab" data-bs-toggle="tab" data-bs-target="#estatura-faixa" type="button" role="tab" aria-controls="estatura-faixa" aria-selected="false">Por Estatura/Idade</button>
                         </li>
                     </ul>
                     <div class="tab-content border-0" id="drillDownTabsContent">
@@ -292,7 +347,8 @@
                                             </td>
                                             {% for age_key in ['0-5', '5-19'] %}
                                                 {% for status in stats.nutritional_status.keys() %}
-                                                <td>{{ data.nutritional_by_age[age_key].get(status, 0) }}</td>
+                                                {% set count = data.nutritional_by_age[age_key].get(status, 0) %}
+                                                <td{% if count >= 1 and 'Eutrofia' not in status %} class="bg-danger text-white fw-bold"{% endif %}>{{ count }}</td>
                                                 {% endfor %}
                                             {% endfor %}
                                         </tr>
@@ -303,7 +359,64 @@
                                             <td class="text-start">Total Geral</td>
                                             {% for age_key in ['0-5', '5-19'] %}
                                                 {% for status in stats.nutritional_status.keys() %}
-                                                <td>{{ stats.nutritional_by_age[age_key].get(status, 0) }}</td>
+                                                {% set count_total = stats.nutritional_by_age[age_key].get(status, 0) %}
+                                                <td{% if count_total >= 1 and 'Eutrofia' not in status %} class="bg-danger text-white"{% endif %}>{{ count_total }}</td>
+                                                {% endfor %}
+                                            {% endfor %}
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="estatura-faixa" role="tabpanel" aria-labelledby="estatura-faixa-tab">
+                            <div class="table-responsive">
+                                <table class="table table-hover table-striped table-bordered mb-0 text-center align-middle" style="font-size: 0.9em;">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th rowspan="2" class="text-start align-middle" style="min-width: 150px;">
+                                                {% if not request.args.get('drill_regional') %}
+                                                    Regional
+                                                {% elif not request.args.get('drill_municipio') %}
+                                                    Município
+                                                {% else %}
+                                                    Escola
+                                                {% endif %}
+                                            </th>
+                                            <th colspan="{{ stats.growth_status|length }}">0 a 5 anos</th>
+                                            <th colspan="{{ stats.growth_status|length }}">5 a 19 anos</th>
+                                        </tr>
+                                        <tr>
+                                            {% for _ in range(2) %}
+                                                {% for status in stats.growth_status.keys() %}
+                                                <th><small>{{ status }}</small></th>
+                                                {% endfor %}
+                                            {% endfor %}
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for group_key, data in stats.drill_down.items()|sort(attribute='0') %}
+                                        <tr>
+                                            <td class="text-start text-nowrap">
+                                                {% if not request.args.get('drill_municipio') %}
+                                                    <a href="#" onclick="drillDown('{{ group_key }}'); return false;">{{ group_key }}</a>
+                                                {% else %}
+                                                    {{ group_key }}
+                                                {% endif %}
+                                            </td>
+                                            {% for age_key in ['0-5', '5-19'] %}
+                                                {% for status in stats.growth_status.keys() %}
+                                                <td>{{ data.growth_by_age[age_key].get(status, 0) }}</td>
+                                                {% endfor %}
+                                            {% endfor %}
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                    <tfoot class="table-light fw-bold">
+                                        <tr>
+                                            <td class="text-start">Total Geral</td>
+                                            {% for age_key in ['0-5', '5-19'] %}
+                                                {% for status in stats.growth_status.keys() %}
+                                                <td>{{ stats.growth_by_age[age_key].get(status, 0) }}</td>
                                                 {% endfor %}
                                             {% endfor %}
                                         </tr>
@@ -528,6 +641,95 @@
     </div>
     {% endif %}
 </div>
+
+<!-- Modal Manual de Cálculos -->
+<div class="modal fade" id="manualCalculoModal" tabindex="-1" aria-labelledby="manualCalculoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header bg-light">
+                <h5 class="modal-title" id="manualCalculoModalLabel"><i class="bi bi-book text-info me-2"></i>Manual de Cálculos Nutricionais</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body">
+                <h6>Metodologia Utilizada</h6>
+                <p>
+                    O sistema utiliza os <strong>Padrões de Crescimento da OMS (Organização Mundial da Saúde)</strong> para realizar o diagnóstico nutricional dos alunos.
+                    O cálculo baseia-se no método <strong>Escore-Z (Z-Score)</strong> aplicando a fórmula LMS (L=Box-Cox, M=Mediana, S=Coeficiente de Variação).
+                </p>
+                <hr>
+                
+                <h6>1. Estado Nutricional (IMC por Idade)</h6>
+                <p>O Índice de Massa Corporal (IMC) é calculado pela fórmula: <code>Peso (kg) / Altura² (m)</code>. Em seguida, o valor é comparado com as curvas da OMS para a idade (em meses completos) e sexo do aluno, gerando o Z-Score.</p>
+                
+                <p class="mb-1 fw-bold">Para crianças de 0 a 5 anos:</p>
+                <ul class="mb-3">
+                    <li><strong>Magreza Acentuada:</strong> Z-Score < -3</li>
+                    <li><strong>Magreza:</strong> Z-Score < -2</li>
+                    <li><strong>Eutrofia (Adequado):</strong> Z-Score ≤ +1</li>
+                    <li><strong>Risco de Sobrepeso:</strong> Z-Score ≤ +2</li>
+                    <li><strong>Sobrepeso:</strong> Z-Score ≤ +3</li>
+                    <li><strong>Obesidade:</strong> Z-Score > +3</li>
+                </ul>
+                
+                <p class="mb-1 fw-bold">Para crianças e adolescentes de 5 a 19 anos:</p>
+                <ul class="mb-3">
+                    <li><strong>Magreza Acentuada:</strong> Z-Score < -3</li>
+                    <li><strong>Magreza:</strong> Z-Score < -2</li>
+                    <li><strong>Eutrofia (Adequado):</strong> Z-Score ≤ +1</li>
+                    <li><strong>Sobrepeso:</strong> Z-Score ≤ +2</li>
+                    <li><strong>Obesidade:</strong> Z-Score ≤ +3</li>
+                    <li><strong>Obesidade Grave:</strong> Z-Score > +3</li>
+                </ul>
+
+                <hr>
+                
+                <h6>2. Estatura (Estatura por Idade)</h6>
+                <p>A avaliação da estatura também leva em consideração a idade exata e o sexo do aluno, calculando o Z-Score de Estatura/Idade pelas curvas da OMS.</p>
+                
+                <p class="mb-1 fw-bold">Para todas as faixas etárias:</p>
+                <ul>
+                    <li><strong>Muito Baixa Estatura:</strong> Z-Score < -3</li>
+                    <li><strong>Baixa Estatura:</strong> Z-Score < -2</li>
+                    <li><strong>Estatura Adequada:</strong> Z-Score ≥ -2</li>
+                </ul>
+
+                <hr>
+                
+                <h6>3. Exemplo Prático de Cálculo</h6>
+                <div class="bg-light p-3 border rounded shadow-sm mb-3">
+                    <p class="mb-2"><strong>Aluno:</strong> Sexo Masculino, 10 anos exatos (120 meses)</p>
+                    <p class="mb-2"><strong>Medidas:</strong> Peso = 35 kg, Altura = 1,40 m</p>
+                    
+                    <p class="mb-1 mt-3"><strong>Passo 1: Encontrar o Índice (ex: IMC)</strong></p>
+                    <p class="mb-2"><code>IMC = Peso / Altura² = 35 / (1.40 × 1.40) = 17,86</code></p>
+                    
+                    <p class="mb-1 mt-3"><strong>Passo 2: Consultar as Tabelas da OMS</strong></p>
+                    <p class="mb-2">O sistema busca na base de dados da OMS os fatores <strong>L</strong>, <strong>M</strong> e <strong>S</strong> exatos para <em>Meninos com 120 meses</em>. Supondo que os valores oficiais sejam:<br>
+                    <code>L = -1,1560</code> | <code>M = 16,5815</code> | <code>S = 0,1287</code></p>
+                    
+                    <p class="mb-1 mt-3"><strong>Passo 3: Aplicar a Fórmula LMS</strong></p>
+                    <p class="mb-2 text-muted small"><code>Z-Score = [ (IMC / M)^L - 1 ] / (L × S)</code></p>
+                    <p class="mb-2">
+                        <code>Z-Score = [ (17,86 / 16,5815)^-1,1560 - 1 ] / (-1,1560 × 0,1287)</code><br>
+                        <code>Z-Score ≈ 0,56</code>
+                    </p>
+                    
+                    <p class="mb-1 mt-3"><strong>Passo 4: Classificação</strong></p>
+                    <p class="mb-0">Como o aluno tem 10 anos (faixa 5 a 19 anos) e o Z-Score resultou em <strong>+0,56</strong>, ele se enquadra na regra <code>≤ +1</code>, recebendo a condição de <strong>Eutrofia (Adequado)</strong>.</p>
+                </div>
+
+                <div class="alert alert-info mt-4" role="alert">
+                    <i class="bi bi-info-circle me-2"></i>
+                    <strong>Nota:</strong> Alunos sem data de nascimento, peso ou altura registrados não terão seu Estado Nutricional ou Estatura calculados, constando como "Não Aferidos" no relatório.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
 
 {% block scripts %}
@@ -844,5 +1046,172 @@ function exportUnmeasuredReport() {
     const exportUrl = "{{ url_for('nutrition.export_unmeasured_report') }}?" + urlParams.toString();
     window.location.href = exportUrl;
 }
+
+{% if map_url %}
+document.addEventListener('DOMContentLoaded', function() {
+    const mapUrl = "{{ map_url }}";
+    const mapData = {{ map_data | tojson | safe }};
+    
+    // Initialize Leaflet map
+    const map = L.map('dashboardMap', {
+        zoomControl: false,
+        scrollWheelZoom: false,
+        dragging: false,
+        doubleClickZoom: false,
+        boxZoom: false,
+        keyboard: false,
+        touchZoom: false
+    }).setView([-14.235, -51.925], 4);
+    
+    // Force white background instead of tiles
+    document.getElementById('dashboardMap').style.backgroundColor = '#ffffff';
+
+    let geojsonLayer;
+
+    // Helper to get color based on risk_count
+    function getColor(risk) {
+        return risk > 500 ? '#800026' :
+               risk > 200  ? '#BD0026' :
+               risk > 100  ? '#E31A1C' :
+               risk > 50  ? '#FC4E2A' :
+               risk > 20   ? '#FD8D3C' :
+               risk > 0   ? '#FEB24C' :
+                            '#FFEDA0';
+    }
+
+
+    // Load GeoJSON
+    fetch(mapUrl)
+        .then(response => {
+            if (!response.ok) throw new Error("Network response was not ok");
+            return response.json();
+        })
+        .then(data => {
+            // Build regionalSums and assign regionalName to properties
+            let regionalSums = {};
+            let regionalDetails = {};
+            data.features.forEach(feature => {
+                const ibgeCode = feature.properties.id;
+                let rName = 'Sem Regional';
+                let rCount = 0;
+                let muniName = feature.properties.name || feature.properties.NM_MUNICIP || feature.properties.NOME || 'Município Desconhecido';
+                let muniCount = 0;
+                
+                if (mapData && mapData[ibgeCode]) {
+                    rName = mapData[ibgeCode].regional;
+                    if (rName === 'Sem Regional') {
+                        rName = muniName;
+                        rCount = mapData[ibgeCode].municipio_risk_count || 0;
+                        feature.properties.isMunicipio = true;
+                    } else {
+                        rCount = mapData[ibgeCode].risk_count || 0;
+                        muniCount = mapData[ibgeCode].municipio_risk_count || 0;
+                    }
+                } else {
+                    rName = muniName;
+                    rCount = 0;
+                    feature.properties.isMunicipio = true;
+                }
+                
+                feature.properties.regionalName = rName;
+                regionalSums[rName] = rCount;
+                
+                if (!feature.properties.isMunicipio) {
+                    if (!regionalDetails[rName]) {
+                        regionalDetails[rName] = [];
+                    }
+                    if (!regionalDetails[rName].find(m => m.name === muniName)) {
+                        regionalDetails[rName].push({
+                            name: muniName,
+                            count: muniCount
+                        });
+                    }
+                }
+            });
+
+            // Dissolve the polygons using Turf.js
+            let dissolvedData = turf.dissolve(data, {propertyName: 'regionalName'});
+
+            geojsonLayer = L.geoJSON(dissolvedData, {
+                style: function(feature) {
+                    let rName = feature.properties.regionalName;
+                    let risk = regionalSums[rName] || 0;
+                    return {
+                        fillColor: getColor(risk),
+                        weight: 2,
+                        opacity: 1,
+                        color: 'white',
+                        dashArray: '',
+                        fillOpacity: risk > 0 ? 0.7 : 0.2
+                    };
+                },
+                onEachFeature: function(feature, layer) {
+                    let rName = feature.properties.regionalName;
+                    let risk = regionalSums[rName] || 0;
+                    let isMuni = feature.properties.isMunicipio;
+                    
+                    let popupContent = `<div style="max-height: 250px; overflow-y: auto;">`;
+                    popupContent += `<strong>${isMuni ? 'Município' : 'Regional'}: ${rName}</strong><br/>`;
+                    popupContent += `Alunos fora de Eutrofia: <strong>${risk}</strong>`;
+                    
+                    if (!isMuni && regionalDetails[rName] && regionalDetails[rName].length > 0) {
+                        popupContent += `<hr style="margin: 8px 0;"/>`;
+                        popupContent += `<ul style="margin:0; padding-left:20px; font-size:0.9em;">`;
+                        
+                        // Sort by count descending
+                        regionalDetails[rName].sort((a, b) => b.count - a.count);
+                        
+                        regionalDetails[rName].forEach(muni => {
+                            let pct = risk > 0 ? ((muni.count / risk) * 100).toFixed(1) : 0;
+                            popupContent += `<li>${muni.name}: <strong>${muni.count}</strong> <span class="text-muted">(${pct}%)</span></li>`;
+                        });
+                        popupContent += `</ul>`;
+                    }
+                    popupContent += `</div>`;
+                    
+                    layer.bindPopup(popupContent, { autoPan: false });
+                }
+            }).addTo(map);
+
+            // Add legend
+            const legend = L.control({position: 'bottomright'});
+            legend.onAdd = function (map) {
+                const div = L.DomUtil.create('div', 'info legend');
+                div.style.backgroundColor = 'white';
+                div.style.padding = '10px';
+                div.style.borderRadius = '5px';
+                div.style.boxShadow = '0 0 15px rgba(0,0,0,0.2)';
+                div.style.lineHeight = '24px';
+                div.style.color = '#555';
+                div.style.fontSize = '12px';
+
+                div.innerHTML += '<strong style="display:block; margin-bottom:5px; font-size:13px;">Qtd de Alunos<br>Fora de Eutrofia</strong>';
+                
+                div.innerHTML += '<i style="background:' + getColor(0) + '; width: 18px; height: 18px; float: left; margin-right: 8px; opacity: 0.2; border: 1px solid #ccc;"></i> 0<br>';
+                div.innerHTML += '<i style="background:' + getColor(1) + '; width: 18px; height: 18px; float: left; margin-right: 8px; opacity: 0.7;"></i> 1 &ndash; 20<br>';
+                div.innerHTML += '<i style="background:' + getColor(21) + '; width: 18px; height: 18px; float: left; margin-right: 8px; opacity: 0.7;"></i> 21 &ndash; 50<br>';
+                div.innerHTML += '<i style="background:' + getColor(51) + '; width: 18px; height: 18px; float: left; margin-right: 8px; opacity: 0.7;"></i> 51 &ndash; 100<br>';
+                div.innerHTML += '<i style="background:' + getColor(101) + '; width: 18px; height: 18px; float: left; margin-right: 8px; opacity: 0.7;"></i> 101 &ndash; 200<br>';
+                div.innerHTML += '<i style="background:' + getColor(201) + '; width: 18px; height: 18px; float: left; margin-right: 8px; opacity: 0.7;"></i> 201 &ndash; 500<br>';
+                div.innerHTML += '<i style="background:' + getColor(501) + '; width: 18px; height: 18px; float: left; margin-right: 8px; opacity: 0.7;"></i> Mais de 500';
+
+                return div;
+            };
+            legend.addTo(map);
+
+            if (geojsonLayer.getBounds().isValid()) {
+                map.fitBounds(geojsonLayer.getBounds(), {padding: [20, 20]});
+            }
+        })
+        .catch(error => {
+            console.error('Error loading GeoJSON for dashboard:', error);
+            document.getElementById('dashboardMap').innerHTML = `<div class="d-flex h-100 align-items-center justify-content-center text-muted">
+                <p><i class="bi bi-exclamation-triangle me-2"></i> Não foi possível carregar os dados do mapa. Verifique a URL configurada no cliente.</p>
+            </div>`;
+        });
+});
+{% endif %}
 </script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
 {% endblock %}

@@ -286,6 +286,16 @@ class TeachingUnit(db.Model):
     latitude = db.Column(db.String(50), nullable=True)
     longitude = db.Column(db.String(50), nullable=True)
     
+    classification_id = db.Column(db.Integer, db.ForeignKey('school_classification.id'), nullable=True)
+    energy_source_id = db.Column(db.Integer, db.ForeignKey('electrical_energy_source.id'), nullable=True)
+    region_id = db.Column(db.Integer, db.ForeignKey('region.id'), nullable=True)
+    sub_region_id = db.Column(db.Integer, db.ForeignKey('sub_region.id'), nullable=True)
+    
+    classification = db.relationship('SchoolClassification')
+    energy_source = db.relationship('ElectricalEnergySource')
+    region = db.relationship('Region')
+    sub_region = db.relationship('SubRegion')
+    
     tenant = db.relationship('Tenant')
     parent = db.relationship('TeachingUnit', remote_side=[id], backref='children')
     classes = db.relationship('Class', backref='teaching_unit', lazy='dynamic')
@@ -604,6 +614,46 @@ class City(db.Model):
     ibge_code = db.Column(db.String(20), unique=True, nullable=False)
     name = db.Column(db.String(128), nullable=False)
     uf = db.Column(db.String(2), nullable=False)
+
+class CityRegionalMapping(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    tenant_id = db.Column(db.Integer, db.ForeignKey('tenant.id'), nullable=False)
+    city_id = db.Column(db.Integer, db.ForeignKey('city.id'), nullable=False)
+    regional_id = db.Column(db.Integer, db.ForeignKey('teaching_unit.id'), nullable=False)
+    
+    tenant = db.relationship('Tenant')
+    city = db.relationship('City')
+    regional = db.relationship('TeachingUnit')
+    
+    __table_args__ = (
+        db.UniqueConstraint('tenant_id', 'city_id', name='uq_city_regional_tenant_city'),
+    )
+
+class SchoolClassification(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    tenant_id = db.Column(db.Integer, db.ForeignKey('tenant.id'), nullable=True)
+    name = db.Column(db.String(128), nullable=False)
+    tenant = db.relationship('Tenant')
+
+class ElectricalEnergySource(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    tenant_id = db.Column(db.Integer, db.ForeignKey('tenant.id'), nullable=True)
+    name = db.Column(db.String(128), nullable=False)
+    tenant = db.relationship('Tenant')
+
+class Region(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    tenant_id = db.Column(db.Integer, db.ForeignKey('tenant.id'), nullable=True)
+    name = db.Column(db.String(128), nullable=False)
+    tenant = db.relationship('Tenant')
+    sub_regions = db.relationship('SubRegion', backref='region', lazy='dynamic', cascade='all, delete-orphan')
+
+class SubRegion(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    tenant_id = db.Column(db.Integer, db.ForeignKey('tenant.id'), nullable=True)
+    region_id = db.Column(db.Integer, db.ForeignKey('region.id'), nullable=False)
+    name = db.Column(db.String(128), nullable=False)
+    tenant = db.relationship('Tenant')
 
 class QuilombolaCommunity(db.Model):
     id = db.Column(db.Integer, primary_key=True)

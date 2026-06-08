@@ -36,7 +36,9 @@
             <div class="card-header bg-white fw-bold">Radar Analítico (Aluno vs Mediana OMS)</div>
             <div class="card-body">
                 {% if records|length > 0 %}
-                <canvas id="radarChart" height="250"></canvas>
+                <div style="position: relative; height: 250px; width: 100%; overflow: hidden;">
+                    <canvas id="radarChart"></canvas>
+                </div>
                 <p class="text-muted small text-center mt-3">Compara a última medição do aluno com o percentil P50 da OMS (considerado 100%).</p>
                 {% else %}
                 <p class="text-center text-muted py-5">Sem dados suficientes.</p>
@@ -94,7 +96,9 @@
         <div class="card shadow-sm border-0">
             <div class="card-header bg-white fw-bold">Curva de Crescimento - Estatura (cm)</div>
             <div class="card-body">
-                <canvas id="heightChart" height="300"></canvas>
+                <div style="position: relative; height: 300px; width: 100%;">
+                    <canvas id="heightChart"></canvas>
+                </div>
             </div>
         </div>
     </div>
@@ -102,7 +106,9 @@
         <div class="card shadow-sm border-0">
             <div class="card-header bg-white fw-bold">Curva de Evolução - Peso (kg)</div>
             <div class="card-body">
-                <canvas id="weightChart" height="300"></canvas>
+                <div style="position: relative; height: 300px; width: 100%;">
+                    <canvas id="weightChart"></canvas>
+                </div>
             </div>
         </div>
     </div>
@@ -110,7 +116,9 @@
         <div class="card shadow-sm border-0">
             <div class="card-header bg-white fw-bold">Curva de Evolução Nutricional - IMC</div>
             <div class="card-body">
-                <canvas id="bmiChart" height="300"></canvas>
+                <div style="position: relative; height: 300px; width: 100%;">
+                    <canvas id="bmiChart"></canvas>
+                </div>
             </div>
         </div>
     </div>
@@ -208,6 +216,11 @@ document.addEventListener('DOMContentLoaded', function() {
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            onResize: function(chart, size) {
+                // Prevent infinite resize loops in some browsers
+                chart.canvas.style.height = '250px';
+                chart.canvas.style.width = '100%';
+            },
             scales: {
                 r: {
                     angleLines: { display: true },

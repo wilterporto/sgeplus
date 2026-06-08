@@ -104,7 +104,12 @@ def create_app(config_class=Config):
         except:
             config = {'system_name': 'SGE Plus', 'logo_filename': None, 'login_bg_filename': None}
             
-        return dict(system_version=version, system_config=config)
+        from app.utils.tenancy import get_tenant_id
+        from app.models import Tenant
+        tenant_id = get_tenant_id()
+        active_tenant = Tenant.query.get(tenant_id) if tenant_id else None
+            
+        return dict(system_version=version, system_config=config, active_tenant=active_tenant)
 
     @app.before_request
     def require_login():
