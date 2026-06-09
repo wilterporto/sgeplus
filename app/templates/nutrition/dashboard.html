@@ -622,11 +622,48 @@
         <div class="col-12 mb-4">
             <div class="card shadow-sm h-100">
                 <div class="card-header bg-white">
-                    <h6 class="mb-0">Comparativo Nutricional — Masculino vs Feminino (%)</h6>
+                    <h6 class="mb-0">Comparativo Nutricional por Sexo (%)</h6>
                 </div>
-                <div class="card-body d-flex justify-content-center">
-                    <div style="position: relative; height: 450px; width: 100%; max-width: 600px;">
-                        <canvas id="nutritionalRadarChart"></canvas>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 d-flex justify-content-center border-end">
+                            <div style="position: relative; height: 350px; width: 100%; max-width: 500px;">
+                                <h6 class="text-center text-primary mb-3">Masculino</h6>
+                                <canvas id="nutritionalRadarChartM"></canvas>
+                            </div>
+                        </div>
+                        <div class="col-md-6 d-flex justify-content-center">
+                            <div style="position: relative; height: 350px; width: 100%; max-width: 500px;">
+                                <h6 class="text-center text-danger mb-3">Feminino</h6>
+                                <canvas id="nutritionalRadarChartF"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white">
+                    <h6 class="mb-0">Comparativo Estatura por Sexo (%)</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 d-flex justify-content-center border-end">
+                            <div style="position: relative; height: 350px; width: 100%; max-width: 500px;">
+                                <h6 class="text-center text-primary mb-3">Masculino</h6>
+                                <canvas id="growthRadarChartM"></canvas>
+                            </div>
+                        </div>
+                        <div class="col-md-6 d-flex justify-content-center">
+                            <div style="position: relative; height: 350px; width: 100%; max-width: 500px;">
+                                <h6 class="text-center text-danger mb-3">Feminino</h6>
+                                <canvas id="growthRadarChartF"></canvas>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -874,7 +911,14 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     const growthByAge = {{ stats.growth_by_age | tojson }};
-    const growthCategories = Object.keys(growthData);
+    let growthCategories = Object.keys(growthData);
+    
+    // Sort so "Estatura Adequada" is always first
+    const topGrowthCat = "Estatura Adequada";
+    if (growthCategories.includes(topGrowthCat)) {
+        growthCategories = growthCategories.filter(cat => cat !== topGrowthCat);
+        growthCategories.unshift(topGrowthCat);
+    }
     
     const growthAgeDatasets = growthCategories.map((cat, index) => {
         const colors = ['#28a745', '#ffc107', '#dc3545', '#17a2b8', '#6c757d', '#fd7e14', '#e83e8c', '#6610f2'];
@@ -963,54 +1007,106 @@ document.addEventListener('DOMContentLoaded', function() {
         return totalF > 0 ? ((count / totalF) * 100).toFixed(1) : 0;
     });
 
-    const ctxRadar = document.getElementById('nutritionalRadarChart').getContext('2d');
-    new Chart(ctxRadar, {
-        type: 'radar',
-        data: {
-            labels: nutriCategories,
-            datasets: [
-                {
-                    label: 'Masculino (%)',
-                    data: radarDataM,
-                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    pointBackgroundColor: 'rgba(54, 162, 235, 1)',
-                    pointBorderColor: '#fff',
-                    pointHoverBackgroundColor: '#fff',
-                    pointHoverBorderColor: 'rgba(54, 162, 235, 1)'
-                },
-                {
-                    label: 'Feminino (%)',
-                    data: radarDataF,
-                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                    borderColor: 'rgba(255, 99, 132, 1)',
-                    pointBackgroundColor: 'rgba(255, 99, 132, 1)',
-                    pointBorderColor: '#fff',
-                    pointHoverBackgroundColor: '#fff',
-                    pointHoverBorderColor: 'rgba(255, 99, 132, 1)'
-                }
-            ]
+    const optionsRadar = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { display: false }
         },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { position: 'top' }
-            },
-            scales: {
-                r: {
-                    angleLines: {
-                        display: true
-                    },
-                    suggestedMin: 0,
-                    ticks: {
-                        callback: function(value) {
-                            return value + '%';
-                        }
-                    }
+        scales: {
+            r: {
+                angleLines: { display: true },
+                suggestedMin: 0,
+                ticks: {
+                    callback: function(value) { return value + '%'; }
                 }
             }
         }
+    };
+
+    const ctxRadarM = document.getElementById('nutritionalRadarChartM').getContext('2d');
+    new Chart(ctxRadarM, {
+        type: 'radar',
+        data: {
+            labels: nutriCategories,
+            datasets: [{
+                label: 'Masculino (%)',
+                data: radarDataM,
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                pointBackgroundColor: 'rgba(54, 162, 235, 1)',
+                pointBorderColor: '#fff',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: 'rgba(54, 162, 235, 1)'
+            }]
+        },
+        options: optionsRadar
+    });
+
+    const ctxRadarF = document.getElementById('nutritionalRadarChartF').getContext('2d');
+    new Chart(ctxRadarF, {
+        type: 'radar',
+        data: {
+            labels: nutriCategories,
+            datasets: [{
+                label: 'Feminino (%)',
+                data: radarDataF,
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                pointBackgroundColor: 'rgba(255, 99, 132, 1)',
+                pointBorderColor: '#fff',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: 'rgba(255, 99, 132, 1)'
+            }]
+        },
+        options: optionsRadar
+    });
+
+    const growthRadarDataM = growthCategories.map(cat => {
+        const count = growthBySex['M'][cat] || 0;
+        return totalM > 0 ? ((count / totalM) * 100).toFixed(1) : 0;
+    });
+    const growthRadarDataF = growthCategories.map(cat => {
+        const count = growthBySex['F'][cat] || 0;
+        return totalF > 0 ? ((count / totalF) * 100).toFixed(1) : 0;
+    });
+
+    const ctxGrowthRadarM = document.getElementById('growthRadarChartM').getContext('2d');
+    new Chart(ctxGrowthRadarM, {
+        type: 'radar',
+        data: {
+            labels: growthCategories,
+            datasets: [{
+                label: 'Masculino (%)',
+                data: growthRadarDataM,
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                pointBackgroundColor: 'rgba(54, 162, 235, 1)',
+                pointBorderColor: '#fff',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: 'rgba(54, 162, 235, 1)'
+            }]
+        },
+        options: optionsRadar
+    });
+
+    const ctxGrowthRadarF = document.getElementById('growthRadarChartF').getContext('2d');
+    new Chart(ctxGrowthRadarF, {
+        type: 'radar',
+        data: {
+            labels: growthCategories,
+            datasets: [{
+                label: 'Feminino (%)',
+                data: growthRadarDataF,
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                pointBackgroundColor: 'rgba(255, 99, 132, 1)',
+                pointBorderColor: '#fff',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: 'rgba(255, 99, 132, 1)'
+            }]
+        },
+        options: optionsRadar
     });
     {% endif %}
 });
@@ -1054,9 +1150,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize Leaflet map
     const map = L.map('dashboardMap', {
-        zoomControl: false,
+        zoomControl: true,
         scrollWheelZoom: false,
-        dragging: false,
+        dragging: true,
         doubleClickZoom: false,
         boxZoom: false,
         keyboard: false,
@@ -1169,7 +1265,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                     popupContent += `</div>`;
                     
-                    layer.bindPopup(popupContent, { autoPan: false });
+                    layer.bindPopup(popupContent, { autoPanPaddingTopLeft: [10, 10], autoPanPaddingBottomRight: [10, 10] });
                 }
             }).addTo(map);
 

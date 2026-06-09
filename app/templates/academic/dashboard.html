@@ -82,48 +82,93 @@
 
 <div class="row g-3 mb-4">
     <!-- Regional Stats -->
-    <div class="col-md-8">
+    <div class="col-12">
         <div class="card shadow-sm h-100">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <span>Indicadores por Regional</span>
-                <i class="bi bi-geo-alt text-muted"></i>
+                <span>
+                    {% if drill_regional and drill_municipio %}
+                        Escolas de {{ drill_municipio }}
+                    {% elif drill_regional %}
+                        Municípios da Regional {{ drill_regional }}
+                    {% else %}
+                        Indicadores por Regional
+                    {% endif %}
+                </span>
+                <div>
+                    {% if drill_regional or drill_municipio %}
+                    <a href="{{ url_for('academic.academic_dashboard') }}" class="btn btn-sm btn-outline-secondary me-2">
+                        <i class="bi bi-arrow-left me-1"></i>Voltar
+                    </a>
+                    {% endif %}
+                    <i class="bi bi-geo-alt text-muted"></i>
+                </div>
             </div>
             <div class="card-body p-0">
-                <table class="table table-hover mb-0">
-                    <thead>
-                        <tr>
-                            <th>Regional</th>
-                            <th class="text-center">Escolas (%)</th>
-                            <th class="text-center">Turmas (%)</th>
-                            <th class="text-center">Alunos (%)</th>
-                            <th class="text-center">Média/Turma</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for reg in regionals %}
-                        <tr>
-                            <td class="fw-bold">{{ reg.name }}</td>
-                            <td class="text-center">
-                                {{ reg.schools }} 
-                                <span class="text-muted small ms-1" style="font-size: 0.75rem;">({{ reg.schools_perc }}%)</span>
-                            </td>
-                            <td class="text-center">
-                                {{ reg.classes }} 
-                                <span class="text-muted small ms-1" style="font-size: 0.75rem;">({{ reg.classes_perc }}%)</span>
-                            </td>
-                            <td class="text-center">
-                                {{ reg.students }} 
-                                <span class="text-muted small ms-1" style="font-size: 0.75rem;">({{ reg.students_perc }}%)</span>
-                            </td>
-                            <td class="text-center">
-                                {% if reg.classes > 0 %}
-                                {{ (reg.students / reg.classes)|round(1) }}
-                                {% else %} 0 {% endif %}
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>
+                                    {% if drill_regional and drill_municipio %}Escola
+                                    {% elif drill_regional %}Município
+                                    {% else %}Regional
+                                    {% endif %}
+                                </th>
+                                <th class="text-center">Escolas (%)</th>
+                                <th class="text-center">Turmas (%)</th>
+                                <th class="text-center">Alunos (%)</th>
+                                <th class="text-center">Masc. (%)</th>
+                                <th class="text-center">Fem. (%)</th>
+                                <th class="text-center">Deficiência (%)</th>
+                                <th class="text-center">Média/Turma</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for reg in regionals %}
+                                <tr>
+                                <td class="fw-bold">
+                                    {% if drill_regional and drill_municipio %}
+                                        {{ reg.name }}
+                                    {% elif drill_regional %}
+                                        <a href="{{ url_for('academic.academic_dashboard', drill_regional=drill_regional, drill_municipio=reg.name) }}" class="text-decoration-none">{{ reg.name }}</a>
+                                    {% else %}
+                                        <a href="{{ url_for('academic.academic_dashboard', drill_regional=reg.name) }}" class="text-decoration-none">{{ reg.name }}</a>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center">
+                                    {{ reg.schools }} 
+                                    <span class="text-muted small ms-1" style="font-size: 0.75rem;">({{ reg.schools_perc }}%)</span>
+                                </td>
+                                <td class="text-center">
+                                    {{ reg.classes }} 
+                                    <span class="text-muted small ms-1" style="font-size: 0.75rem;">({{ reg.classes_perc }}%)</span>
+                                </td>
+                                <td class="text-center">
+                                    {{ reg.students }} 
+                                    <span class="text-muted small ms-1" style="font-size: 0.75rem;">({{ reg.students_perc }}%)</span>
+                                </td>
+                                <td class="text-center">
+                                    {{ reg.male }} 
+                                    <span class="text-muted small ms-1" style="font-size: 0.75rem;">({{ reg.male_perc }}%)</span>
+                                </td>
+                                <td class="text-center">
+                                    {{ reg.female }} 
+                                    <span class="text-muted small ms-1" style="font-size: 0.75rem;">({{ reg.female_perc }}%)</span>
+                                </td>
+                                <td class="text-center text-danger">
+                                    {{ reg.deficiency }} 
+                                    <span class="text-muted small ms-1" style="font-size: 0.75rem;">({{ reg.deficiency_perc }}%)</span>
+                                </td>
+                                <td class="text-center">
+                                    {% if reg.classes > 0 %}
+                                    {{ (reg.students / reg.classes)|round(1) }}
+                                    {% else %} 0 {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>

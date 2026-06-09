@@ -1727,38 +1727,106 @@ def delete_evaluation(id):
 @login_required
 
 def academic_dashboard():
+    drill_regional = request.args.get('drill_regional')
+    drill_municipio = request.args.get('drill_municipio')
+
+    # Helper base queries to support Drill Down filtering
+    RegionalUnit = db.aliased(TeachingUnit)
+    SchoolUnit = db.aliased(TeachingUnit)
+
+    base_student_q = db.session.query(Student)
+    base_prof_q = db.session.query(Professor)
+    base_class_q = db.session.query(Class)
+    base_school_q = db.session.query(SchoolUnit).filter_by(type='Escola')
+
+    if drill_regional or drill_municipio:
+        # Join path for students
+        base_student_q = base_student_q.outerjoin(Enrollment, (Enrollment.student_id == Student.id) & (Enrollment.active == True)) \
+                                       .outerjoin(Class, Enrollment.class_id == Class.id) \
+                                       .outerjoin(SchoolUnit, Class.teaching_unit_id == SchoolUnit.id) \
+                                       .outerjoin(RegionalUnit, SchoolUnit.parent_id == RegionalUnit.id)
+        
+        # Join path for professors (through TeachingAssignment -> Class -> SchoolUnit -> RegionalUnit)
+        base_prof_q = base_prof_q.outerjoin(TeachingAssignment, TeachingAssignment.professor_id == Professor.id) \
+                                 .outerjoin(Class, TeachingAssignment.class_id == Class.id) \
+                                 .outerjoin(SchoolUnit, Class.teaching_unit_id == SchoolUnit.id) \
+                                 .outerjoin(RegionalUnit, SchoolUnit.parent_id == RegionalUnit.id)
+                                 
+        # Join path for classes
+        base_class_q = base_class_q.outerjoin(SchoolUnit, Class.teaching_unit_id == SchoolUnit.id) \
+                                   .outerjoin(RegionalUnit, SchoolUnit.parent_id == RegionalUnit.id)
+                                   
+        # Join path for schools
+        base_school_q = base_school_q.outerjoin(RegionalUnit, SchoolUnit.parent_id == RegionalUnit.id)
+
+        if drill_regional:
+            base_student_q = base_student_q.filter(RegionalUnit.name == drill_regional)
+            base_prof_q = base_prof_q.filter(RegionalUnit.name == drill_regional)
+            base_class_q = base_class_q.filter(RegionalUnit.name == drill_regional)
+            base_school_q = base_school_q.filter(RegionalUnit.name == drill_regional)
+            
+        if drill_municipio:
+            base_student_q = base_student_q.filter(SchoolUnit.municipio == drill_municipio)
+            base_prof_q = base_prof_q.filter(SchoolUnit.municipio == drill_municipio)
+            base_class_q = base_class_q.filter(SchoolUnit.municipio == drill_municipio)
+            base_school_q = base_school_q.filter(SchoolUnit.municipio == drill_municipio)
+
     # Helper context summaries
-    total_schools = filter_by_tenant(TeachingUnit.query.filter_by(type='Escola'), TeachingUnit).count()
-    total_classes = filter_by_tenant(Class.query, Class).count()
-    total_students = filter_by_tenant(Student.query, Student).count()
+    total_schools = filter_by_tenant(base_school_q, SchoolUnit).with_entities(func.count(func.distinct(SchoolUnit.id))).scalar() or 0
+    total_classes = filter_by_tenant(base_class_q, Class).with_entities(func.count(func.distinct(Class.id))).scalar() or 0
+    total_students = filter_by_tenant(base_student_q, Student).with_entities(func.count(func.distinct(Student.id))).scalar() or 0
     
-    prof_q = filter_by_tenant(Professor.query, Professor)
-    total_professors = prof_q.count()
+    prof_q_tmp = filter_by_tenant(base_prof_q, Professor)
+    total_professors = prof_q_tmp.with_entities(func.count(func.distinct(Professor.id))).scalar() or 0
     
     avg_students = total_students / total_classes if total_classes > 0 else 0
     
     # Active unmodulated items
-    professors_unmodulated = filter_by_tenant(Professor.query, Professor).filter(
+    professors_unmodulated = filter_by_tenant(base_prof_q, Professor).filter(
         ~Professor.id.in_(db.session.query(TeachingAssignment.professor_id))
-    ).count()
+    ).with_entities(func.count(func.distinct(Professor.id))).scalar() or 0
     
-    classes_unmodulated = filter_by_tenant(Class.query, Class).filter(
+    classes_unmodulated = filter_by_tenant(base_class_q, Class).filter(
         ~Class.id.in_(db.session.query(TeachingAssignment.class_id))
-    ).count()
+    ).with_entities(func.count(func.distinct(Class.id))).scalar() or 0
+    
+
+    from sqlalchemy import case
     
     # Regionals consolidated breakdown (Fast SQL aggregation)
     school_alias = db.aliased(TeachingUnit)
     regional_alias = db.aliased(TeachingUnit)
     
+    if drill_regional and drill_municipio:
+        grouping_col = func.coalesce(school_alias.name, 'Sem Escola')
+    elif drill_regional:
+        grouping_col = func.coalesce(school_alias.municipio, 'Sem Município')
+    else:
+        grouping_col = func.coalesce(regional_alias.name, 'Sem Regional')
+    
     reg_q = db.session.query(
-        regional_alias.name,
+        grouping_col.label('grouping_name'),
         func.count(func.distinct(school_alias.id)),
         func.count(func.distinct(Class.id)),
-        func.count(Enrollment.id)
-    ).select_from(regional_alias)     .outerjoin(school_alias, (school_alias.parent_id == regional_alias.id) & (school_alias.type == 'Escola'))     .outerjoin(Class, Class.teaching_unit_id == school_alias.id)     .outerjoin(Enrollment, (Enrollment.class_id == Class.id))     .filter(regional_alias.type == 'Regional')
+        func.count(Enrollment.id),
+        func.count(case((Student.sex.ilike('m%'), 1))),
+        func.count(case((Student.sex.ilike('f%'), 1))),
+        func.count(case((Student.special_needs == True, 1)))
+    ).select_from(regional_alias) \
+     .outerjoin(school_alias, (school_alias.parent_id == regional_alias.id) & (school_alias.type == 'Escola')) \
+     .outerjoin(Class, Class.teaching_unit_id == school_alias.id) \
+     .outerjoin(Enrollment, (Enrollment.class_id == Class.id) & (Enrollment.active == True)) \
+     .outerjoin(Student, Enrollment.student_id == Student.id) \
+     .filter(regional_alias.type == 'Regional')
+     
+    if drill_regional:
+        reg_q = reg_q.filter(regional_alias.name == drill_regional)
+    if drill_municipio:
+        reg_q = reg_q.filter(school_alias.municipio == drill_municipio)
+        
     reg_q = filter_by_tenant(reg_q, regional_alias)
      
-    regionals_data_raw = reg_q.group_by(regional_alias.id, regional_alias.name)                              .order_by(regional_alias.name).all()
+    regionals_data_raw = reg_q.group_by(grouping_col).order_by(grouping_col).all()
                               
     total_schools_all = total_schools or 1
     total_classes_all = total_classes or 1
@@ -1766,6 +1834,7 @@ def academic_dashboard():
     
     regionals_data = []
     for row in regionals_data_raw:
+        total_students_regional = row[3] or 1
         regionals_data.append({
             'name': row[0],
             'schools': row[1],
@@ -1773,7 +1842,13 @@ def academic_dashboard():
             'classes': row[2],
             'classes_perc': round(row[2] / total_classes_all * 100, 2),
             'students': row[3],
-            'students_perc': round(row[3] / total_students_all * 100, 2)
+            'students_perc': round(row[3] / total_students_all * 100, 2),
+            'male': row[4],
+            'male_perc': round(row[4] / total_students_regional * 100, 2) if row[3] else 0,
+            'female': row[5],
+            'female_perc': round(row[5] / total_students_regional * 100, 2) if row[3] else 0,
+            'deficiency': row[6],
+            'deficiency_perc': round(row[6] / total_students_regional * 100, 2) if row[3] else 0
         })
         
     # School Years Distribution
@@ -1799,21 +1874,21 @@ def academic_dashboard():
     shifts_data = [{'shift': row[0] or 'Não informado', 'classes': row[1], 'students': row[2]} for row in shifts_data_raw]
     
     # Student Demographics
-    student_sex_q = filter_by_tenant(db.session.query(Student.sex, func.count(Student.id)), Student).group_by(Student.sex)
+    student_sex_q = filter_by_tenant(base_student_q.with_entities(Student.sex, func.count(func.distinct(Student.id))), Student).group_by(Student.sex)
     student_sex_raw = student_sex_q.all()
     student_sex_stats = []
     for sex, count in student_sex_raw:
         perc = round(count / total_students * 100, 2) if total_students > 0 else 0
         student_sex_stats.append({'name': sex or 'Não informado', 'count': count, 'perc': perc})
         
-    student_race_q = filter_by_tenant(db.session.query(Student.race, func.count(Student.id)), Student).group_by(Student.race)
+    student_race_q = filter_by_tenant(base_student_q.with_entities(Student.race, func.count(func.distinct(Student.id))), Student).group_by(Student.race)
     student_race_raw = student_race_q.all()
     student_race_stats = []
     for race, count in student_race_raw:
         student_race_stats.append((race or 'Não informado', count))
         
     # Student Nationalities (Clean aggregation)
-    nationality_q = filter_by_tenant(db.session.query(Student.nationality, func.count(Student.id)), Student).group_by(Student.nationality)
+    nationality_q = filter_by_tenant(base_student_q.with_entities(Student.nationality, func.count(func.distinct(Student.id))), Student).group_by(Student.nationality)
     nationality_raw = nationality_q.all()
         
     br_count = 0
@@ -1831,17 +1906,17 @@ def academic_dashboard():
         'foreign_perc': round(foreign_count / total_students * 100, 2) if total_students > 0 else 0
     }
     
-    student_country_q = filter_by_tenant(db.session.query(Student.birth_country, func.count(Student.id).label('total')), Student)        .filter(Student.nationality.notilike('%Brasileiro%'), Student.birth_country != None)        .group_by(Student.birth_country)        .order_by(func.count(Student.id).desc())        .limit(5)
+    student_country_q = filter_by_tenant(base_student_q.with_entities(Student.birth_country, func.count(func.distinct(Student.id)).label('total')), Student)        .filter(Student.nationality.notilike('%Brasileiro%'), Student.birth_country != None)        .group_by(Student.birth_country)        .order_by(func.count(Student.id).desc())        .limit(5)
     student_country_stats = student_country_q.all()
         
-    student_zone_q = filter_by_tenant(db.session.query(Student.residential_zone, func.count(Student.id)), Student).group_by(Student.residential_zone)
+    student_zone_q = filter_by_tenant(base_student_q.with_entities(Student.residential_zone, func.count(func.distinct(Student.id))), Student).group_by(Student.residential_zone)
     student_zone_raw = student_zone_q.all()
     student_zone_stats = []
     for zone, count in student_zone_raw:
         perc = round(count / total_students * 100, 2) if total_students > 0 else 0
         student_zone_stats.append({'name': zone or 'Não informado', 'count': count, 'perc': perc})
         
-    student_location_q = filter_by_tenant(db.session.query(Student.differentiated_location, func.count(Student.id)), Student).group_by(Student.differentiated_location)
+    student_location_q = filter_by_tenant(base_student_q.with_entities(Student.differentiated_location, func.count(func.distinct(Student.id))), Student).group_by(Student.differentiated_location)
     student_location_raw = student_location_q.all()
     student_location_stats = []
     for loc, count in student_location_raw:
@@ -1849,10 +1924,10 @@ def academic_dashboard():
         student_location_stats.append({'name': loc or 'Não informado', 'count': count, 'perc': perc})
         
     # Social Benefits and Special Needs
-    bolsa_count = filter_by_tenant(Student.query.filter_by(bolsa_familia=True), Student).count()
+    bolsa_count = filter_by_tenant(base_student_q.filter(Student.bolsa_familia==True), Student).with_entities(func.count(func.distinct(Student.id))).scalar() or 0
     bolsa_perc = round(bolsa_count / total_students * 100, 2) if total_students > 0 else 0
     
-    special_needs_count = filter_by_tenant(Student.query.filter_by(special_needs=True), Student).count()
+    special_needs_count = filter_by_tenant(base_student_q.filter(Student.special_needs==True), Student).with_entities(func.count(func.distinct(Student.id))).scalar() or 0
     special_needs_perc = round(special_needs_count / total_students * 100, 2) if total_students > 0 else 0
     
     student_social_stats = {
@@ -1863,14 +1938,14 @@ def academic_dashboard():
     }
     
     # Professor Demographics
-    prof_sex_q = filter_by_tenant(db.session.query(Professor.sex, func.count(Professor.id)), Professor).group_by(Professor.sex)
+    prof_sex_q = filter_by_tenant(base_prof_q.with_entities(Professor.sex, func.count(func.distinct(Professor.id))), Professor).group_by(Professor.sex)
     prof_sex_raw = prof_sex_q.all()
     professor_sex_stats = []
     for sex, count in prof_sex_raw:
         perc = round(count / total_professors * 100, 2) if total_professors > 0 else 0
         professor_sex_stats.append({'name': sex or 'Não informado', 'count': count, 'perc': perc})
         
-    prof_race_q = filter_by_tenant(db.session.query(Professor.race, func.count(Professor.id)), Professor).group_by(Professor.race)
+    prof_race_q = filter_by_tenant(base_prof_q.with_entities(Professor.race, func.count(func.distinct(Professor.id))), Professor).group_by(Professor.race)
     prof_race_raw = prof_race_q.all()
     professor_race_stats = []
     for race, count in prof_race_raw:
@@ -1888,6 +1963,8 @@ def academic_dashboard():
             'classes_unmodulated': classes_unmodulated
         },
         regionals=regionals_data,
+        drill_regional=drill_regional,
+        drill_municipio=drill_municipio,
         years=years_data,
         shifts=shifts_data,
         student_demographics={
