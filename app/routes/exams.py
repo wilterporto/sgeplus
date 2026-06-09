@@ -391,6 +391,7 @@ def generate_exam():
             'total_value': form.total_value.data,
             'application_date': form.application_date.data,
             'allow_teacher_entry': form.allow_teacher_entry.data,
+            'allow_teacher_view_answers': form.allow_teacher_view_answers.data,
             'target_nationality': form.target_nationality.data,
             'special_needs_filter': form.special_needs_filter.data,
             'evaluation_id': evaluation.id if evaluation else None,
@@ -477,6 +478,7 @@ def async_generate_exams(app_obj, job_id, form_data):
                     teaching_unit_id=unit_id,
                     created_by_id=form_data['user_id'],
                     allow_teacher_entry=form_data['allow_teacher_entry'] if not is_teacher else True,
+                    allow_teacher_view_answers=form_data['allow_teacher_view_answers'] if not is_teacher else True,
                     scoring_type=scoring_type,
                     total_value=total_val if scoring_type == 'total' else (total_val * len(selected_questions) if scoring_type == 'fixed' else 0.0),
                     target_nationality=form_data['target_nationality'],
@@ -967,7 +969,7 @@ def record_answers(id):
         if professor:
             class_ids = [a.class_id for a in professor.assignments]
             # Check if exam is linked to any of the professor's classes
-            if exam.classes.any(Class.id.in_(class_ids)):
+            if exam.classes.filter(Class.id.in_(class_ids)).first() is not None:
                 is_assigned_teacher = True
             # Or if the exam is global/regional but matches the professor's school year/subject
             # (Logic depends on business rules, stricter rule: must be creator or assigned)
@@ -1241,7 +1243,7 @@ def scan_answers(id):
         if 'professor' in current_user.get_roles():
             professor = current_user.professor_profile
             class_ids = [a.class_id for a in professor.assignments] if professor else []
-            if exam.classes.any(Class.id.in_(class_ids)):
+            if exam.classes.filter(Class.id.in_(class_ids)).first() is not None:
                 is_assigned_teacher = True
 
         can_record = is_admin or is_creator or exam.allow_teacher_entry or is_assigned_teacher

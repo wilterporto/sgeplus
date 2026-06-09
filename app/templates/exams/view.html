@@ -94,7 +94,7 @@
 
 <!-- Modal Download Custom -->
 <div class="modal fade" id="downloadModal" tabindex="-1" aria-labelledby="downloadModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="downloadModalLabel">Baixar PDF Customizado</h5>
@@ -268,9 +268,13 @@
 
     {% if mode == 'teacher' %}
     <!-- TEACHER VIEW: Standard Order, Highlight Correct -->
+    {% set can_view_answers = current_user.is_admin or current_user.id == exam.created_by_id or exam.allow_teacher_view_answers %}
     {% for item in exam.items %}
     <div class="mb-4 break-inside-avoid">
         <p><strong>{{ loop.index }}.</strong>
+            {% if exam.total_value and exam.total_value > 0.0 %}
+                <span class="badge bg-secondary me-1" title="Valor da questão">{{ "%.2f"|format(item.value) }} pts</span>
+            {% endif %}
             ({% for d in item.question.descriptors %}{{ d.code }}{% if not loop.last %}, {% endif %}{% endfor %})
             {{ item.question.statement }}
         </p>
@@ -278,10 +282,8 @@
             {% set alts = item.question.get_alternatives() %}
             {% for key, val in alts.items() %}
             <div class="form-check">
-                <input class="form-check-input" type="radio" disabled {% if key==item.question.correct_alternative
-                    %}checked{% endif %}>
-                <label
-                    class="form-check-label {% if key == item.question.correct_alternative %}text-success fw-bold{% endif %}">
+                <input class="form-check-input" type="radio" disabled {% if can_view_answers and key==item.question.correct_alternative %}checked{% endif %}>
+                <label class="form-check-label {% if can_view_answers and key == item.question.correct_alternative %}text-success fw-bold{% endif %}">
                     {{ key }}) {{ val }}
                 </label>
             </div>

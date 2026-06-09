@@ -114,6 +114,7 @@ class ExamGeneratorForm(FlaskForm):
     total_value = StringField('Valor (Total ou por Questão)', validators=[Optional()])
     
     allow_teacher_entry = BooleanField('Permitir que o professor registre as respostas dos alunos', default=True)
+    allow_teacher_view_answers = BooleanField('Permitir que o professor veja as respostas corretas?', default=True)
     
     target_nationality = SelectField('Público por Nacionalidade', choices=[
         ('Todos', 'Todos os Alunos'),

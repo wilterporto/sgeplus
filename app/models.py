@@ -200,6 +200,10 @@ class Question(db.Model):
         except:
             return {}
 
+    def set_alternatives(self, alts_dict):
+        import json
+        self.alternatives = json.dumps(alts_dict)
+
 class Evaluation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     tenant_id = db.Column(db.Integer, db.ForeignKey('tenant.id'), nullable=True)
@@ -229,6 +233,7 @@ class Exam(db.Model):
     status = db.Column(db.String(20), default='Rascunho', nullable=False)
     authorized_by_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
     allow_teacher_entry = db.Column(db.Boolean, default=False)
+    allow_teacher_view_answers = db.Column(db.Boolean, default=True)
     subject_id = db.Column(db.Integer, db.ForeignKey('subject.id'), nullable=True)
     school_year_id = db.Column(db.Integer, db.ForeignKey('school_year.id'), nullable=True)
     scoring_type = db.Column(db.String(20), default='none')

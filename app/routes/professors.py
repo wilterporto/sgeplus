@@ -61,9 +61,14 @@ def list_professors():
     
     professors = query.distinct().order_by(Professor.name).paginate(page=page, per_page=30)
     
-    from app.models import SchoolYear, Subject
-    years = SchoolYear.query.order_by(SchoolYear.name).all()
+    from app.models import SchoolYear, Subject, TeachingUnit
+    years = filter_by_tenant(SchoolYear.query, SchoolYear).order_by(SchoolYear.name).all()
     subjects = filter_by_tenant(Subject.query, Subject).order_by(Subject.name).all()
+    
+    if active_role == 'unidade':
+        schools = TeachingUnit.query.filter_by(id=active_school_id).all()
+    else:
+        schools = filter_by_tenant(TeachingUnit.query.filter_by(type='Escola'), TeachingUnit).order_by(TeachingUnit.name).all()
     
     active_job = ImportJob.query.filter_by(
         tenant_id=get_tenant_id(),
@@ -79,6 +84,7 @@ def list_professors():
                           unit_id=unit_id,
                           subjects=subjects, 
                           years=years,
+                          schools=schools,
                           active_job=active_job)
 
 
@@ -221,10 +227,10 @@ def edit_professor(id):
         schools = TeachingUnit.query.filter_by(id=active_school_id).all()
         form.teaching_unit_id.choices = [(active_school_id, active_school_name)]
     else:
-        schools = TeachingUnit.query.filter_by(type='Escola').all()
+        schools = filter_by_tenant(TeachingUnit.query.filter_by(type='Escola'), TeachingUnit).order_by(TeachingUnit.name).all()
         form.teaching_unit_id.choices = [(0, 'Selecione...')] + [(u.id, u.name) for u in schools]
         
-    subjects = Subject.query.all()
+    subjects = filter_by_tenant(Subject.query, Subject).order_by(Subject.name).all()
 
     from app.models import City, Country
     form.birth_country.choices = [(c.name, c.name) for c in Country.query.order_by(Country.name).all()]
@@ -740,62 +746,60 @@ def dashboard():
         
     professor = flask_login.current_user.professor_profile
     
-    # Group by Class?
-    # Dict: Class -> [Subjects]
+    # Group by School -> Class
+    schools_map = {}
     
-    classes_map = {}
     for assignment in professor.assignments:
         c = assignment.enrolled_class
-        # Robustness check: Ensure class exists and has teaching unit
         if not c or not c.teaching_unit:
             continue
             
-        if c.id not in classes_map:
-            classes_map[c.id] = {
-                'id': c.id,
-                'name': c.name,
-                'school': c.teaching_unit.name,
-                'subjects': []
-            }
+        school_name = c.teaching_unit.name
+        if school_name not in schools_map:
+            schools_map[school_name] = {}
+            
+        if c.id not in schools_map[school_name]:
+            schools_map[school_name][c.id] = c.name
+            
+    sorted_schools = []
+    for school_name in sorted(schools_map.keys()):
+        sorted_classes = [{'id': cid, 'name': cname} for cid, cname in sorted(schools_map[school_name].items(), key=lambda x: x[1])]
+        sorted_schools.append({'name': school_name, 'classes': sorted_classes})
         
-        if assignment.subject:
-             classes_map[c.id]['subjects'].append(assignment.subject.name)
+    class_id = request.args.get('class_id', type=int)
+    students_pagination = None
+    klass = None
+    
+    if class_id:
+        has_access = False
+        for a in professor.assignments:
+            if a.class_id == class_id:
+                has_access = True
+                break
+                
+        if not has_access:
+            flask.flash('Você não tem acesso a esta turma.', 'danger')
+            return flask.redirect(url_for('professors.dashboard'))
+            
+        from app.models import Class, Student, Enrollment
+        class_query = Class.query.filter_by(id=class_id)
+        class_query = filter_by_tenant(class_query, Class)
+        klass = class_query.first_or_404()
         
-    return flask.render_template('professors/dashboard.html', classes=classes_map.values())
+        page = request.args.get('page', 1, type=int)
+        students_query = Student.query.join(Enrollment)\
+            .filter(Enrollment.class_id == class_id, Enrollment.active == True)
+        students_query = filter_by_tenant(students_query, Student)
+        students_pagination = students_query.order_by(Student.name)\
+            .paginate(page=page, per_page=30)
+            
+    return flask.render_template('professors/dashboard.html', 
+                                 schools=sorted_schools, 
+                                 selected_class_id=class_id,
+                                 klass=klass,
+                                 students=students_pagination)
 
 @professors_bp.route('/class/<int:class_id>/students')
 @flask_login.login_required
 def class_students(class_id):
-    from flask import session
-    if not flask_login.current_user.professor_profile or session.get('active_role') != 'professor':
-        flask.flash('Acesso restrito a professores.', 'danger')
-        return flask.redirect(url_for('main.index'))
-        
-    professor = flask_login.current_user.professor_profile
-    
-    # Verify access: Does this professor have ANY assignment in this class?
-    has_access = False
-    for a in professor.assignments:
-        if a.class_id == class_id:
-            has_access = True
-            break
-            
-    if not has_access:
-        flask.flash('Você não tem acesso a esta turma.', 'danger')
-        return flask.redirect(url_for('professors.dashboard'))
-        
-    from app.models import Class
-    class_query = Class.query.filter_by(id=class_id)
-    class_query = filter_by_tenant(class_query, Class)
-    klass = class_query.first_or_404()
-    
-    # Get active students through enrollment relationship
-    page = request.args.get('page', 1, type=int)
-    from app.models import Enrollment
-    students_query = Student.query.join(Enrollment)\
-        .filter(Enrollment.class_id == class_id, Enrollment.active == True)
-    students_query = filter_by_tenant(students_query, Student)
-    students_pagination = students_query.order_by(Student.name)\
-        .paginate(page=page, per_page=30)
-    
-    return flask.render_template('professors/class_students.html', klass=klass, students=students_pagination)
+    return redirect(url_for('professors.dashboard', class_id=class_id))

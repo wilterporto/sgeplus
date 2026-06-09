@@ -64,9 +64,13 @@
                         </div>
 
                         {% if not is_teacher and not is_unidade %}
-                        <div class="form-check">
+                        <div class="form-check mb-2">
                             {{ form.allow_teacher_entry(class="form-check-input") }}
                             {{ form.allow_teacher_entry.label(class="form-check-label") }}
+                        </div>
+                        <div class="form-check mb-3">
+                            {{ form.allow_teacher_view_answers(class="form-check-input") }}
+                            {{ form.allow_teacher_view_answers.label(class="form-check-label") }}
                         </div>
                         {% endif %}
                     </div>
