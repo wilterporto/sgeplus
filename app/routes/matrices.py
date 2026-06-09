@@ -190,12 +190,18 @@ def api_themes_by_matrix(matrix_id):
 @login_required
 def list_descriptors():
     matrix_id = request.args.get('matrix_id', type=int)
+    subject_id = request.args.get('subject_id', type=int)
+    school_year_id = request.args.get('school_year_id', type=int)
     
     query = Descriptor.query
     query = filter_by_tenant(query, Descriptor)
     
     if matrix_id:
         query = query.filter_by(matrix_id=matrix_id)
+    if subject_id:
+        query = query.filter_by(subject_id=subject_id)
+    if school_year_id:
+        query = query.filter_by(school_year_id=school_year_id)
         
     page = request.args.get('page', 1, type=int)
     pagination = query.order_by(Descriptor.code).paginate(page=page, per_page=30)
@@ -245,6 +251,9 @@ def list_descriptors():
         flash('Item criado com sucesso.', 'success')
         return redirect(url_for('matrices.list_descriptors', matrix_id=descriptor.matrix_id))
         
+    subjects = filter_by_tenant(Subject.query, Subject).order_by(Subject.name).all()
+    years = filter_by_tenant(SchoolYear.query, SchoolYear).order_by(SchoolYear.name).all()
+    
     return render_template(
         'matrices/descriptors.html',
         descriptors=descriptors,
@@ -253,7 +262,11 @@ def list_descriptors():
         current_matrix_id=matrix_id,
         form=form,
         import_form=import_form,
-        active_job=active_job
+        active_job=active_job,
+        subjects=subjects,
+        years=years,
+        current_subject_id=subject_id,
+        current_year_id=school_year_id
     )
 
 @matrices_bp.route('/descriptors/<int:id>/edit', methods=['GET', 'POST'])

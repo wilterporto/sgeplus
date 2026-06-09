@@ -112,6 +112,9 @@ def list_questions():
         return redirect(url_for('questions.list_questions'))
 
     page = request.args.get('page', 1, type=int)
+    filter_subject = request.args.get('subject_id', type=int)
+    filter_matrix = request.args.get('matrix_id', type=int)
+    filter_year = request.args.get('school_year_id', type=int)
     
     if active_role == 'unidade':
         from app.models import Professor, TeachingAssignment, Class
@@ -126,6 +129,16 @@ def list_questions():
         questions_query = Question.query
 
     questions_query = filter_by_tenant(questions_query, Question)
+    
+    if filter_subject or filter_matrix or filter_year:
+        questions_query = questions_query.join(Question.descriptors)
+        if filter_subject:
+            questions_query = questions_query.filter(Descriptor.subject_id == filter_subject)
+        if filter_matrix:
+            questions_query = questions_query.filter(Descriptor.matrix_id == filter_matrix)
+        if filter_year:
+            questions_query = questions_query.filter(Descriptor.school_year_id == filter_year)
+
     questions = questions_query.order_by(Question.created_at.desc()).paginate(page=page, per_page=30)
     
     # Prepare Descriptors JSON for Frontend Filter
@@ -151,13 +164,24 @@ def list_questions():
     active_job = filter_by_tenant(ImportJob.query, ImportJob).filter_by(import_type='Questions', status='running').first()
     import_form = ImportQuestionForm()
 
+    from app.models import Subject, ReferenceMatrix, SchoolYear
+    subjects = filter_by_tenant(Subject.query, Subject).order_by(Subject.name).all()
+    matrices = filter_by_tenant(ReferenceMatrix.query, ReferenceMatrix).order_by(ReferenceMatrix.name).all()
+    years = filter_by_tenant(SchoolYear.query, SchoolYear).order_by(SchoolYear.name).all()
+
     return render_template('questions/list.html', 
                          questions=questions, 
                          form=form, 
                          import_form=import_form,
                          descriptors_json=descriptors_data_json,
                          stats=counts_map,
-                         active_job=active_job)
+                         active_job=active_job,
+                         subjects=subjects,
+                         matrices=matrices,
+                         years=years,
+                         filter_subject=filter_subject,
+                         filter_matrix=filter_matrix,
+                         filter_year=filter_year)
 
 def _process_questions_import(app, job_id, filepath, task_id=None):
     with app.app_context():
