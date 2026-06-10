@@ -609,6 +609,66 @@ def search_descriptors_api():
         'subject_name': d.subject.name if d.subject else ''
     } for d in descriptors])
 
+@exams_bp.route('/api/matrix_years/<int:matrix_id>')
+@login_required
+def get_matrix_years(matrix_id):
+    from app.models import SchoolYear, Descriptor
+    from app.utils.tenancy import filter_by_tenant
+    
+    query = SchoolYear.query.join(Descriptor, Descriptor.school_year_id == SchoolYear.id)\
+        .filter(Descriptor.matrix_id == matrix_id)
+    query = filter_by_tenant(query, SchoolYear)
+    
+    years = query.distinct().order_by(SchoolYear.name).all()
+    return jsonify([{'id': y.id, 'name': y.name} for y in years])
+
+@exams_bp.route('/api/matrix_year_subjects')
+@login_required
+def get_matrix_year_subjects():
+    from app.models import Subject, Descriptor, Question, question_descriptors, TeachingUnit
+    from app.utils.tenancy import get_tenant_id
+    from flask import request, session
+    from sqlalchemy import func
+    import sqlalchemy as sa
+    
+    matrix_id = request.args.get('matrix_id', type=int)
+    year_id = request.args.get('year_id', type=int)
+    
+    if not matrix_id or not year_id:
+        return jsonify([])
+        
+    tenant_id = get_tenant_id()
+    active_role = session.get('active_role')
+    active_school_id = session.get('active_school_id')
+    is_unidade = (active_role == 'unidade')
+
+    # Subquery to count active distinct questions per descriptor
+    q_query = db.session.query(
+        question_descriptors.c.descriptor_id,
+        func.count(db.distinct(Question.id)).label('q_count')
+    ).join(Question, Question.id == question_descriptors.c.question_id)
+
+    if is_unidade:
+        q_query = q_query.join(Question.validated_units).filter(TeachingUnit.id == active_school_id)
+
+    q_query = q_query.filter(Question.tenant_id == tenant_id)\
+        .group_by(question_descriptors.c.descriptor_id).subquery()
+        
+    # Main query
+    query = db.session.query(
+        Subject.id,
+        Subject.name,
+        func.coalesce(func.sum(q_query.c.q_count), 0).label('total_questions')
+    ).join(Descriptor, Descriptor.subject_id == Subject.id)\
+     .outerjoin(q_query, q_query.c.descriptor_id == Descriptor.id)\
+     .filter(Descriptor.matrix_id == matrix_id, Descriptor.school_year_id == year_id)\
+     .filter(Subject.tenant_id == tenant_id)\
+     .group_by(Subject.id, Subject.name)\
+     .order_by(Subject.name)
+     
+    results = query.all()
+    return jsonify([{'id': r.id, 'name': r.name, 'question_count': int(r.total_questions)} for r in results])
+
 @exams_bp.route('/api/curriculum_subjects/<int:year_id>')
 @login_required
 def get_curriculum_subjects(year_id):

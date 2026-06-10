@@ -99,15 +99,15 @@
                                 {{ form.matrix_id.label(class="form-label required") }}
                                 {{ form.matrix_id(class="form-select") }}
                             </div>
-                            <div class="col-md-6 mb-3">
+                            <div class="col-md-12 mb-3">
                                 {{ form.school_year_id.label(class="form-label required") }}
                                 {{ form.school_year_id(class="form-select", id="school_year_id") }}
                             </div>
-                            <div class="col-md-6 mb-3" id="div_subject_id">
+                            <div class="col-md-12 mb-3" id="div_subject_id">
                                 {{ form.subject_id.label(class="form-label required") }}
                                 {{ form.subject_id(class="form-select", id="subject_id") }}
                             </div>
-                            <div class="col-md-6 mb-3" id="div_subject_ids" style="display:none;">
+                            <div class="col-md-12 mb-3" id="div_subject_ids" style="display:none;">
                                 {{ form.subject_ids.label(class="form-label required") }}
                                 {{ form.subject_ids(class="form-select", id="subject_ids", multiple=True, style="height: 100px;") }}
                                 <div class="form-text text-primary small">
@@ -248,42 +248,101 @@
         }
     }
 
-    // Dynamic curriculum subjects loader for multiple components mode
-    function updateCurriculumSubjects() {
-        const isMultiple = checkMultipleComponents();
-        if (!isMultiple) {
-            updateDescriptors();
-            return;
-        }
-
-        const yearId = yearSelect.value || '0';
-        
-        const url = `{{ url_for('exams.get_curriculum_subjects', year_id=0) }}`.replace('0', yearId);
-        fetch(url)
-            .then(response => response.json())
-            .then(data => {
-                const currentSelection = Array.from(subjectIdsSelect.selectedOptions).map(opt => opt.value);
-                subjectIdsSelect.innerHTML = '';
-                data.forEach(s => {
-                    const option = document.createElement('option');
-                    option.value = s.id;
-                    option.textContent = s.name;
-                    if (currentSelection.includes(s.id.toString())) {
-                        option.selected = true;
-                    }
-                    subjectIdsSelect.appendChild(option);
-                });
-                updateDescriptors();
-            })
-            .catch(error => console.error('Error fetching curriculum subjects:', error));
-    }
-
     // Dynamic Descriptors logic
     const matrixSelect = document.getElementById('matrix_id');
     const yearSelect = document.getElementById('school_year_id');
     const subjectSelect = document.getElementById('subject_id');
     const subjectIdsSelect = document.getElementById('subject_ids');
     const descriptorSelect = document.getElementById('descriptor_ids');
+
+    // Dynamic Years loader
+    function updateYears() {
+        const matrixId = matrixSelect.value;
+        if (!matrixId || matrixId == '0') {
+            yearSelect.innerHTML = '<option value="0">Selecione...</option>';
+            yearSelect.disabled = true;
+            updateSubjects();
+            return;
+        }
+
+        const url = `{{ url_for('exams.get_matrix_years', matrix_id=0) }}`.replace('0', matrixId);
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                const currentSelection = yearSelect.value;
+                yearSelect.innerHTML = '<option value="0">Selecione...</option>';
+                data.forEach(y => {
+                    const option = document.createElement('option');
+                    option.value = y.id;
+                    option.textContent = y.name;
+                    if (currentSelection === y.id.toString()) {
+                        option.selected = true;
+                    }
+                    yearSelect.appendChild(option);
+                });
+                yearSelect.disabled = false;
+                
+                // If it was already selected and just re-rendered, update subjects
+                updateSubjects();
+            })
+            .catch(error => console.error('Error fetching years:', error));
+    }
+
+    // Dynamic Subjects loader with counts
+    function updateSubjects() {
+        const matrixId = matrixSelect.value;
+        const yearId = yearSelect.value;
+        const isMultiple = checkMultipleComponents();
+        
+        if (!matrixId || matrixId == '0' || !yearId || yearId == '0') {
+            if (subjectSelect) {
+                subjectSelect.innerHTML = '<option value="0">Selecione o Ano Escolar primeiro</option>';
+                subjectSelect.disabled = true;
+            }
+            if (subjectIdsSelect) {
+                subjectIdsSelect.innerHTML = '';
+                subjectIdsSelect.disabled = true;
+            }
+            updateDescriptors();
+            return;
+        }
+
+        const url = `{{ url_for('exams.get_matrix_year_subjects') }}?matrix_id=${matrixId}&year_id=${yearId}`;
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                if (!isMultiple) {
+                    const currentSelection = subjectSelect.value;
+                    subjectSelect.innerHTML = '<option value="0">Selecione...</option>';
+                    data.forEach(s => {
+                        const option = document.createElement('option');
+                        option.value = s.id;
+                        option.textContent = `${s.name} (${s.question_count})`;
+                        if (currentSelection === s.id.toString()) {
+                            option.selected = true;
+                        }
+                        subjectSelect.appendChild(option);
+                    });
+                    subjectSelect.disabled = false;
+                } else {
+                    const currentSelection = Array.from(subjectIdsSelect.selectedOptions).map(opt => opt.value);
+                    subjectIdsSelect.innerHTML = '';
+                    data.forEach(s => {
+                        const option = document.createElement('option');
+                        option.value = s.id;
+                        option.textContent = `${s.name} (${s.question_count})`;
+                        if (currentSelection.includes(s.id.toString())) {
+                            option.selected = true;
+                        }
+                        subjectIdsSelect.appendChild(option);
+                    });
+                    subjectIdsSelect.disabled = false;
+                    updateComponentQuantities();
+                }
+                updateDescriptors();
+            })
+            .catch(error => console.error('Error fetching subjects:', error));
+    }
 
     function updateDescriptors() {
         const matrixId = matrixSelect.value;
@@ -435,29 +494,33 @@
     if (evalSelect) {
         evalSelect.addEventListener('change', function() {
             toggleSubjectFields();
-            updateCurriculumSubjects();
-            updateComponentQuantities();
+            updateSubjects();
         });
     }
 
     yearSelect.addEventListener('change', function() {
-        updateCurriculumSubjects();
+        updateSubjects();
     });
 
     if (subjectSelect) {
         subjectSelect.addEventListener('change', updateDescriptors);
     }
 
-    matrixSelect.addEventListener('change', updateDescriptors);
+    matrixSelect.addEventListener('change', updateYears);
 
     // Initial load configurations
     toggleSubjectFields();
-    if (checkMultipleComponents()) {
-        updateCurriculumSubjects();
-        setTimeout(updateComponentQuantities, 500); // Give time for subjects to load
+    if (matrixSelect.value && matrixSelect.value != '0') {
+        updateYears();
     } else {
-        if (matrixSelect.value != '0') {
-            updateDescriptors();
+        if (yearSelect) yearSelect.disabled = true;
+        if (subjectSelect) {
+            subjectSelect.innerHTML = '<option value="0">Selecione o Ano Escolar primeiro</option>';
+            subjectSelect.disabled = true;
+        }
+        if (subjectIdsSelect) {
+            subjectIdsSelect.innerHTML = '';
+            subjectIdsSelect.disabled = true;
         }
     }
 
