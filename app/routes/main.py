@@ -9,22 +9,32 @@ def index():
 
 @main_bp.route('/setup-db-render')
 def setup_db_render():
-    import threading
-    from flask import current_app
+    from app import db
+    from app.models import User
+    from werkzeug.security import generate_password_hash
     
-    def run_migration_job(app):
-        from scripts.migrate_to_postgres import run_migration
-        try:
-            run_migration()
-        except Exception as e:
-            app.logger.error(f"Erro na migração de teste via URL: {e}")
-
-    thread = threading.Thread(
-        target=run_migration_job,
-        args=(current_app._get_current_object(),)
-    )
-    thread.start()
-    return "<h2>Migração iniciada no Render em segundo plano!</h2><p>Aguarde de 1 a 3 minutos e depois tente fazer o <a href='/auth/login'>Login</a>. Você pode acompanhar o progresso na aba Logs do painel do Render.</p>"
+    try:
+        # Cria as estruturas de tabelas vazias no banco de dados
+        db.create_all()
+        
+        # Verifica se o usuário master já existe, caso não, cria
+        admin = User.query.filter_by(username='admin').first()
+        if not admin:
+            admin = User(
+                username='admin',
+                password_hash=generate_password_hash('admin'),
+                name='Administrador do Sistema',
+                role='admin',
+                is_system_admin=True,
+                active=True
+            )
+            db.session.add(admin)
+            db.session.commit()
+            
+        return "<h2>Banco de dados inicializado com sucesso!</h2><p>As tabelas foram criadas e o usuário mestre foi configurado.</p><p>Acesse o <a href='/auth/login'>Login</a> utilizando:<br>Usuário: <b>admin</b><br>Senha: <b>admin</b></p><p>Após o login, acesse a área de Administração para iniciar a migração completa dos dados de teste pelo painel.</p>"
+    except Exception as e:
+        import traceback
+        return f"<h2>Erro ao inicializar o banco de dados:</h2><pre>{str(e)}</pre><br><pre>{traceback.format_exc()}</pre>"
 
 def get_current_version():
     try:
