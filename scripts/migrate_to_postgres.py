@@ -6,6 +6,7 @@ basedir = os.path.abspath(os.path.join('.', ''))
 sys.path.append(basedir)
 
 from app import create_app, db
+from app.models import SystemConfig
 from sqlalchemy import create_engine, MetaData, text
 
 logging.basicConfig(level=logging.INFO)
@@ -21,6 +22,10 @@ def run_migration():
             
         # Cria as tabelas no banco de destino caso não existam
         db.create_all()
+
+        SystemConfig.set_value('migration_status', 'running')
+        SystemConfig.set_value('migration_percent', '0')
+        SystemConfig.set_value('migration_message', 'Preparando arquivos de banco de dados...')
 
         # Configura a conexão com o banco de origem (SQLite de teste)
         sqlite_db_path = os.path.join(basedir, 'app', 'static', 'data', 'idebmais_test.db')
@@ -47,8 +52,13 @@ def run_migration():
                         shutil.copyfileobj(f_in, f_out)
             else:
                 logger.error(f"Arquivo {sqlite_gz_path} e suas partes nao encontrados!")
+                SystemConfig.set_value('migration_status', 'error')
+                SystemConfig.set_value('migration_message', 'Arquivo de banco de dados não encontrado.')
                 return
             
+        SystemConfig.set_value('migration_percent', '10')
+        SystemConfig.set_value('migration_message', 'Limpando dados antigos no PostgreSQL...')
+        
         sqlite_uri = f'sqlite:///{sqlite_db_path}'
         sqlite_engine = create_engine(sqlite_uri)
         
@@ -66,11 +76,17 @@ def run_migration():
                 db.session.rollback()
                 logger.error(f"Erro ao limpar tabela {table.name}: {e}")
 
+        SystemConfig.set_value('migration_percent', '20')
         logger.info("Iniciando migracao dos dados SQLite -> PostgreSQL")
         
+        total_tables = len(tables)
+        
         with sqlite_engine.connect() as sqlite_conn:
-            for table in tables:
+            for idx, table in enumerate(tables):
                 logger.info(f"Processando tabela: {table.name}")
+                percent = 20 + int((idx / total_tables) * 80)
+                SystemConfig.set_value('migration_percent', str(percent))
+                SystemConfig.set_value('migration_message', f'Migrando tabela {table.name} ({idx+1}/{total_tables})...')
                 
                 # Ler do SQLite
                 try:
@@ -112,7 +128,18 @@ def run_migration():
                             db.session.rollback()
                             logger.warning(f"  Aviso ao atualizar sequencia de {table.name} (talvez nao tenha auto-incremento): {e}")
 
+        SystemConfig.set_value('migration_percent', '100')
+        SystemConfig.set_value('migration_message', 'Migração concluída com sucesso!')
+        SystemConfig.set_value('migration_status', 'completed')
         logger.info("Migracao concluida com sucesso!")
+    except Exception as e:
+        logger.error(f"Erro inesperado na migração: {e}")
+        try:
+            with app.app_context():
+                SystemConfig.set_value('migration_status', 'error')
+                SystemConfig.set_value('migration_message', f'Erro: {str(e)}')
+        except:
+            pass
 
 if __name__ == '__main__':
     run_migration()

@@ -558,3 +558,20 @@ def migrate_test_data():
     
     flash('Migração de dados para o Neon PostgreSQL iniciada em segundo plano. Verifique os logs do servidor para acompanhar o progresso.', 'info')
     return redirect(url_for('admin.list_tenants'))
+
+@admin_bp.route('/migrate-status')
+@login_required
+def migrate_status():
+    if not current_user.is_system_admin:
+        abort(403)
+        
+    from app.models import SystemConfig
+    status = SystemConfig.get_value('migration_status', 'idle')
+    percent = SystemConfig.get_value('migration_percent', '0')
+    message = SystemConfig.get_value('migration_message', '')
+    
+    return jsonify({
+        'status': status,
+        'percent': int(percent) if percent.isdigit() else 0,
+        'message': message
+    })
