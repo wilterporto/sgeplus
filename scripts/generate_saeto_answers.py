@@ -86,11 +86,22 @@ def generate_answers():
                     else:
                         absence_reason_id = 11 # Motivo de viagem
                         
+                # Calculate Score Percentage
+                score_percentage = 0.0
+                if not absence_reason_id and len(items) > 0 and answers_dict:
+                    correct_count = 0
+                    for item in items:
+                        qid_str = str(item.question.id)
+                        if answers_dict.get(qid_str) == item.question.correct_alternative:
+                            correct_count += 1
+                    score_percentage = (correct_count / len(items)) * 100
+
                 res = StudentResult(
                     exam_id=exam.id,
                     student_id=enr.student_id,
                     absence_reason_id=absence_reason_id,
-                    answers=json.dumps(answers_dict) if not absence_reason_id else None
+                    answers=json.dumps(answers_dict) if not absence_reason_id else None,
+                    score_percentage=score_percentage
                 )
                 results_batch.append(res)
                 inserted += 1

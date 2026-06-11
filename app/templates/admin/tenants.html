@@ -4,6 +4,12 @@
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
     <h1 class="h2">Clientes do Sistema</h1>
     <div class="btn-toolbar mb-2 mb-md-0">
+        <form action="{{ url_for('admin.migrate_test_data') }}" method="POST" class="d-inline me-2" onsubmit="return confirm('ATENÇÃO: Este processo apaga dados atuais e copia o banco de testes (SQLite) embutido no repositório para o PostgreSQL. Pode demorar vários minutos. Tem certeza?');">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+            <button type="submit" class="btn btn-warning">
+                <i class="bi bi-database-fill-down"></i> Migrar Dados de Teste (Neon)
+            </button>
+        </form>
         <a href="{{ url_for('admin.new_tenant') }}" class="btn btn-primary">
             <i class="bi bi-plus-lg"></i> Novo Cliente
         </a>

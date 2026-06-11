@@ -534,3 +534,27 @@ def deauthenticate_tenant():
     
     flash(f'Conexão encerrada com: {tenant_name}', 'info')
     return redirect(url_for('admin.list_tenants'))
+
+@admin_bp.route('/migrate-test-data', methods=['POST'])
+@login_required
+def migrate_test_data():
+    if not current_user.is_system_admin:
+        abort(403)
+        
+    def run_migration_job(app):
+        from scripts.migrate_to_postgres import run_migration
+        try:
+            # Re-initialize within app context to allow DB ops
+            run_migration()
+        except Exception as e:
+            app.logger.error(f"Erro na migração de teste: {e}")
+
+    # Fire and forget thread
+    thread = threading.Thread(
+        target=run_migration_job,
+        args=(current_app._get_current_object(),)
+    )
+    thread.start()
+    
+    flash('Migração de dados para o Neon PostgreSQL iniciada em segundo plano. Verifique os logs do servidor para acompanhar o progresso.', 'info')
+    return redirect(url_for('admin.list_tenants'))
