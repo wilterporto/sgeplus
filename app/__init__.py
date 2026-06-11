@@ -120,7 +120,7 @@ def create_app(config_class=Config):
         # static: for css/js/images
         # auth.login: to allow logging in
         # auth.forgot_password, auth.reset_password: for recovery
-        whitelist_endpoints = ['auth.login', 'auth.forgot_password', 'auth.reset_password', 'static', 'main.get_logo', 'main.get_login_bg', 'main.serve_sw', 'main.serve_manifest']
+        whitelist_endpoints = ['auth.login', 'auth.forgot_password', 'auth.reset_password', 'static', 'main.get_logo', 'main.get_login_bg', 'main.serve_sw', 'main.serve_manifest', 'main.setup_db_render']
         
         if not current_user.is_authenticated:
             if request.endpoint and \

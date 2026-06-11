@@ -7,6 +7,25 @@ from flask import render_template, request, redirect, url_for
 def index():
     return render_template('index.html')
 
+@main_bp.route('/setup-db-render')
+def setup_db_render():
+    import threading
+    from flask import current_app
+    
+    def run_migration_job(app):
+        from scripts.migrate_to_postgres import run_migration
+        try:
+            run_migration()
+        except Exception as e:
+            app.logger.error(f"Erro na migração de teste via URL: {e}")
+
+    thread = threading.Thread(
+        target=run_migration_job,
+        args=(current_app._get_current_object(),)
+    )
+    thread.start()
+    return "<h2>Migração iniciada no Render em segundo plano!</h2><p>Aguarde de 1 a 3 minutos e depois tente fazer o <a href='/auth/login'>Login</a>. Você pode acompanhar o progresso na aba Logs do painel do Render.</p>"
+
 def get_current_version():
     try:
         with open('app/version.txt', 'r') as f:
