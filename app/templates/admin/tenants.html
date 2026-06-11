@@ -129,7 +129,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let pollingInterval = null;
     
     function checkMigrationStatus() {
-        fetch("{{ url_for('admin.migrate_status') }}")
+        fetch("{{ url_for('admin.migrate_status') }}?t=" + new Date().getTime())
             .then(response => response.json())
             .then(data => {
                 if(data.status === 'running' || data.status === 'completed' || data.status === 'error') {
