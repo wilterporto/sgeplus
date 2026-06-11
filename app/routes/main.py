@@ -17,6 +17,14 @@ def setup_db_render():
         # Cria as estruturas de tabelas vazias no banco de dados
         db.create_all()
         
+        # Garante que a coluna password_hash tenha espaço suficiente para o novo padrão scrypt
+        from sqlalchemy import text
+        try:
+            db.session.execute(text('ALTER TABLE "user" ALTER COLUMN password_hash TYPE VARCHAR(256);'))
+            db.session.commit()
+        except:
+            db.session.rollback()
+        
         # Verifica se o usuário master já existe, caso não, cria
         admin = User.query.filter_by(username='admin').first()
         if not admin:
