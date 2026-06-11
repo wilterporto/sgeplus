@@ -9,6 +9,8 @@ services:
         value: wsgi.py
       - key: FLASK_ENV
         value: production
+      - key: PYTHON_VERSION
+        value: 3.11.8
       - key: DATABASE_URL
         sync: false
       - key: SECRET_KEY
