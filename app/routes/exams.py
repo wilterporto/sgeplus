@@ -776,8 +776,10 @@ def suggest_reinforcement(id):
 
     descriptor_scores = {} # descriptor_id -> {total_correct, total_answers}
     for res in results:
-        answers = json.loads(res.answers)
+        answers = json.loads(res.answers) if res.answers else {}
         for item in exam.items:
+            if not item.question:
+                continue
             q = item.question
             ans = answers.get(str(q.id))
             if ans:
@@ -833,6 +835,8 @@ def student_view(id):
     rng = random.Random(id) 
     
     for item in exam.items:
+        if not item.question:
+            continue
         q = item.question
         alts = q.get_alternatives()
         
@@ -1102,6 +1106,8 @@ def record_answers(id):
             
             # Retrieve answer for each question
             for item in exam.items:
+                if not item.question:
+                    continue
                 qid_str = str(item.question.id)
                 selected_option = request.form.get(f'q_{item.question.id}')
                 
@@ -1138,6 +1144,8 @@ def record_answers(id):
                 # Creating a simpler loop for percentage to be robust
                 correct_count = 0
                 for item in exam.items:
+                    if not item.question:
+                        continue
                     qid_str = str(item.question.id)
                     if answers.get(qid_str) == item.question.correct_alternative:
                         correct_count += 1
@@ -1491,6 +1499,8 @@ def take_exam(id):
         total_value = exam.total_value or 0
         
         for item in exam.items:
+            if not item.question:
+                continue
             field_name = f"q_{item.question.id}"
             selected = request.form.get(field_name)
             answers[str(item.question.id)] = selected
@@ -1605,11 +1615,13 @@ def intervention_plan(id):
 
     import json
     for item in exam.items:
+        if not item.question:
+            continue
         correct_count = 0
         total_results = 0
         
         for res in results:
-            answers = json.loads(res.answers)
+            answers = json.loads(res.answers) if res.answers else {}
             selected = answers.get(str(item.question.id))
             if selected:
                 total_results += 1
@@ -1715,12 +1727,14 @@ def class_diagnosis(id):
     
     import json
     for item in exam.items:
+        if not item.question:
+            continue
         q_id_str = str(item.question.id)
         q_correct = 0
         q_total = 0
         
         for res in results:
-            answers = json.loads(res.answers)
+            answers = json.loads(res.answers) if res.answers else {}
             selected = answers.get(q_id_str)
             if selected:
                 q_total += 1
@@ -1746,8 +1760,10 @@ def class_diagnosis(id):
     heatmap_data = []
     for res in results:
         student_row = {'name': res.student.name, 'answers': [], 'score': res.score_percentage}
-        answers = json.loads(res.answers)
+        answers = json.loads(res.answers) if res.answers else {}
         for item in exam.items:
+            if not item.question:
+                continue
             selected = answers.get(str(item.question.id))
             is_correct = (selected == item.question.correct_alternative) if selected else None
             student_row['answers'].append({
@@ -1762,10 +1778,12 @@ def class_diagnosis(id):
     # 3. Recommended Actions
     critical_questions = []
     for idx, item in enumerate(exam.items):
+        if not item.question:
+            continue
         correct_in_class = 0
         total_in_class = 0
         for res in results:
-            ans = json.loads(res.answers).get(str(item.question.id))
+            ans = (json.loads(res.answers) if res.answers else {}).get(str(item.question.id))
             if ans:
                 total_in_class += 1
                 if ans == item.question.correct_alternative:

@@ -433,7 +433,7 @@
         <div class="col-12 mb-4">
             <div class="card shadow-sm h-100">
                 <div class="card-header bg-white">
-                    <h6 class="mb-0">Quantitativo por Faixa Etária</h6>
+                    <h6 class="mb-0">Quantitativo por Faixa Etária e Sexo</h6>
                 </div>
                 <div class="card-body p-0">
                     <div class="table-responsive">
@@ -443,6 +443,8 @@
                                     <th class="text-start">Estado Nutricional</th>
                                     <th>0 a 5 anos</th>
                                     <th>5 a 19 anos</th>
+                                    <th>Masculino</th>
+                                    <th>Feminino</th>
                                     <th>Total</th>
                                 </tr>
                             </thead>
@@ -456,49 +458,6 @@
                                 {% set total_5_19 = stats.by_age_group['5-19'] %}
                                 {% set pct_5_19 = (count_5_19 / total_5_19 * 100) if total_5_19 > 0 else 0 %}
                                 
-                                {% set pct_total = (total_ns / stats.total * 100) if stats.total > 0 else 0 %}
-                                <tr>
-                                    <td class="text-start">{{ ns }}</td>
-                                    <td>{{ count_0_5 }} <small class="text-muted">({{ pct_0_5|round(1) }}%)</small></td>
-                                    <td>{{ count_5_19 }} <small class="text-muted">({{ pct_5_19|round(1) }}%)</small></td>
-                                    <td class="fw-bold">{{ total_ns }} <small class="text-muted fw-normal">({{ pct_total|round(1) }}%)</small></td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                            <tfoot class="table-light fw-bold">
-                                <tr>
-                                    <td class="text-start">Total Geral</td>
-                                    <td>{{ stats.by_age_group['0-5'] }} <small class="text-muted fw-normal">(100%)</small></td>
-                                    <td>{{ stats.by_age_group['5-19'] }} <small class="text-muted fw-normal">(100%)</small></td>
-                                    <td>{{ stats.total }} <small class="text-muted fw-normal">(100%)</small></td>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-12 mb-4">
-            <div class="card shadow-sm h-100">
-                <div class="card-header bg-white">
-                    <h6 class="mb-0">Quantitativo por Sexo</h6>
-                </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-hover table-striped mb-0 text-center">
-                            <thead class="table-light">
-                                <tr>
-                                    <th class="text-start">Estado Nutricional</th>
-                                    <th>Masculino</th>
-                                    <th>Feminino</th>
-                                    <th>Total</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for ns, total_ns in stats.nutritional_status.items() %}
                                 {% set count_M = stats.nutritional_by_sex['M'].get(ns, 0) %}
                                 {% set total_M = stats.by_sex['M'] %}
                                 {% set pct_M = (count_M / total_M * 100) if total_M > 0 else 0 %}
@@ -510,6 +469,8 @@
                                 {% set pct_total = (total_ns / stats.total * 100) if stats.total > 0 else 0 %}
                                 <tr>
                                     <td class="text-start">{{ ns }}</td>
+                                    <td>{{ count_0_5 }} <small class="text-muted">({{ pct_0_5|round(1) }}%)</small></td>
+                                    <td>{{ count_5_19 }} <small class="text-muted">({{ pct_5_19|round(1) }}%)</small></td>
                                     <td>{{ count_M }} <small class="text-muted">({{ pct_M|round(1) }}%)</small></td>
                                     <td>{{ count_F }} <small class="text-muted">({{ pct_F|round(1) }}%)</small></td>
                                     <td class="fw-bold">{{ total_ns }} <small class="text-muted fw-normal">({{ pct_total|round(1) }}%)</small></td>
@@ -519,6 +480,8 @@
                             <tfoot class="table-light fw-bold">
                                 <tr>
                                     <td class="text-start">Total Geral</td>
+                                    <td>{{ stats.by_age_group['0-5'] }} <small class="text-muted fw-normal">(100%)</small></td>
+                                    <td>{{ stats.by_age_group['5-19'] }} <small class="text-muted fw-normal">(100%)</small></td>
                                     <td>{{ stats.by_sex['M'] }} <small class="text-muted fw-normal">(100%)</small></td>
                                     <td>{{ stats.by_sex['F'] }} <small class="text-muted fw-normal">(100%)</small></td>
                                     <td>{{ stats.total }} <small class="text-muted fw-normal">(100%)</small></td>
@@ -592,7 +555,7 @@
         <div class="col-12 mb-4">
             <div class="card shadow-sm h-100">
                 <div class="card-header bg-white">
-                    <h6 class="mb-0">Estatura/Idade Por Faixa Etária</h6>
+                    <h6 class="mb-0">Estatura Por Faixa Etária</h6>
                 </div>
                 <div class="card-body">
                     <div style="position: relative; height: 350px;">
@@ -607,7 +570,7 @@
         <div class="col-12 mb-4">
             <div class="card shadow-sm h-100">
                 <div class="card-header bg-white">
-                    <h6 class="mb-0">Estatura/Idade Por Sexo</h6>
+                    <h6 class="mb-0">Estatura Por Sexo</h6>
                 </div>
                 <div class="card-body">
                     <div style="position: relative; height: 350px;">

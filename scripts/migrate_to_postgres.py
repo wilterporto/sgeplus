@@ -132,14 +132,7 @@ def run_migration():
         SystemConfig.set_value('migration_message', 'Migração concluída com sucesso!')
         SystemConfig.set_value('migration_status', 'completed')
         logger.info("Migracao concluida com sucesso!")
-    except Exception as e:
-        logger.error(f"Erro inesperado na migração: {e}")
-        try:
-            with app.app_context():
-                SystemConfig.set_value('migration_status', 'error')
-                SystemConfig.set_value('migration_message', f'Erro: {str(e)}')
-        except:
-            pass
+
 
 if __name__ == '__main__':
     run_migration()
