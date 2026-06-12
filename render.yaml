@@ -3,7 +3,7 @@ services:
     name: sgeplus
     env: python
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn run:app
+    startCommand: gunicorn run:app --bind 0.0.0.0:$PORT --timeout 120 --workers 2
     envVars:
       - key: FLASK_APP
         value: run.py
