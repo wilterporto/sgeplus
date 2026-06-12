@@ -451,9 +451,7 @@ def async_generate_exams(app_obj, job_id, form_data):
             
             for unit_id in target_unit_ids:
                 if is_multiple:
-                    subjects = Subject.query.filter(Subject.id.in_(form_data['subject_ids'])).all()
-                    subjects_names = ", ".join([s.name for s in subjects])
-                    exam_title = form_data['evaluation_name'] if form_data['evaluation_name'] else f"{subjects_names} - {school_year.name} - {form_data['application_date'].strftime('%d/%m/%Y')}"
+                    exam_title = form_data['evaluation_name'] if form_data['evaluation_name'] else f"Multidisciplinar - {school_year.name} - {form_data['application_date'].strftime('%d/%m/%Y')}"
                     subject_id_val = None
                 else:
                     subject = Subject.query.get(form_data['subject_id'])

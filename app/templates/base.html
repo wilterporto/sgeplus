@@ -545,22 +545,23 @@
                     <div class="navbar-text me-auto d-flex align-items-center">
                     </div>
 
-                    <!-- Alternador de Tema Claro/Escuro -->
-                    <button class="btn btn-link nav-link me-3 text-secondary p-0 border-0" id="themeToggle" title="Alternar tema" style="font-size: 1.25rem; transition: transform 0.2s; box-shadow: none;">
-                        <i class="bi bi-sun" id="themeIcon"></i>
-                    </button>
-
                     <!-- Cliente ativo para o Super Admin -->
                     {% if current_user.is_authenticated and current_user.is_system_admin and session.get('active_tenant_id') %}
-                    <div class="d-flex align-items-center me-3 p-2 bg-info bg-opacity-10 border border-info rounded text-info" style="font-size: 0.85rem;">
+                    <div class="position-absolute start-50 translate-middle-x d-flex align-items-center p-2 bg-info bg-opacity-10 border border-info rounded text-info" style="font-size: 0.85rem; z-index: 1050;">
                         <i class="bi bi-briefcase-fill me-2 text-info"></i>
                         <span class="fw-bold me-2">Acessando: {{ session.get('active_tenant_name') }}</span>
                         <a href="{{ url_for('admin.deauthenticate_tenant') }}" class="btn btn-sm btn-danger py-0 px-2 fw-bold text-white ms-1" style="font-size: 0.75rem;">Sair</a>
                     </div>
                     {% endif %}
 
-                    <!-- User Menu Moved Here -->
-                    <div class="dropdown">
+                    <div class="d-flex align-items-center">
+                        <!-- Alternador de Tema Claro/Escuro -->
+                        <button class="btn btn-link nav-link me-3 text-secondary p-0 border-0" id="themeToggle" title="Alternar tema" style="font-size: 1.25rem; transition: transform 0.2s; box-shadow: none;">
+                            <i class="bi bi-sun" id="themeIcon"></i>
+                        </button>
+
+                        <!-- User Menu Moved Here -->
+                        <div class="dropdown">
                         {% if current_user.is_authenticated %}
                         <a href="#" class="d-flex align-items-center text-dark text-decoration-none dropdown-toggle"
                             id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
@@ -621,6 +622,7 @@
                             <i class="bi bi-box-arrow-in-right me-2"></i> Entrar
                         </a>
                         {% endif %}
+                    </div>
                     </div>
 
                 </div>

@@ -29,8 +29,15 @@ def get_exam_selectors():
         school_year = school_year or "N/A"
         subject = subject or "N/A"
         
+        # Determine if it's a multiple components exam
+        is_multiple = False
+        if e.evaluation and getattr(e.evaluation, 'multiple_components', False):
+            is_multiple = True
+        elif e.subject_id is None:
+            is_multiple = True
+            
         display = f"{e.title} - {e.academic_year} - {school_year}"
-        if "multidisciplinar" not in e.title.lower():
+        if not is_multiple and "multidisciplinar" not in e.title.lower():
             display += f" - {subject}"
             
         results.append({'id': e.id, 'display': display})
