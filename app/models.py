@@ -45,6 +45,10 @@ class User(UserMixin, db.Model):
         return [self.role] if self.role else []
         
     @property
+    def display_name(self):
+        return self.name or self.username
+        
+    @property
     def is_admin(self):
         return self.is_system_admin or self.role == 'admin' or 'admin' in self.get_roles()
         
