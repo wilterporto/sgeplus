@@ -149,7 +149,8 @@ def create_app(config_class=Config):
                         'admin.deauthenticate_tenant',
                         'users.profile', 
                         'auth.logout',
-                        'students.get_cities_by_uf'
+                        'students.get_cities_by_uf',
+                        'main.settings'
                     ]
                     if request.endpoint and \
                        request.endpoint not in allowed_admin_endpoints and \

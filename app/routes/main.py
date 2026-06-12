@@ -106,10 +106,15 @@ def confirm_update():
 
 @main_bp.route('/settings', methods=['GET', 'POST'])
 def settings():
+    from flask_login import current_user
+    from flask import redirect, url_for, flash, current_app, abort
+    
+    if not current_user.is_authenticated or not getattr(current_user, 'is_system_admin', False):
+        abort(403)
+        
     from app.forms import SystemSettingsForm
     from app.models import SystemConfig
     from app.utils.file_utils import allowed_file, ALLOWED_IMAGE_EXTENSIONS, ALLOWED_IMPORT_EXTENSIONS
-    from flask import redirect, url_for, flash, current_app
     from werkzeug.utils import secure_filename
     import os
 

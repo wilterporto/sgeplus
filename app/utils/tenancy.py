@@ -26,6 +26,10 @@ def filter_by_tenant(query, model):
                 # Se autenticado em um tenant, filtra os dados por ele
                 if hasattr(model, 'tenant_id'):
                     return query.filter(model.tenant_id == active_tenant_id)
+            else:
+                # Global context: no tenant selected
+                if model.__name__ == 'User':
+                    return query.filter(model.tenant_id == None)
             return query
             
         # Tratamento de usuários comuns do tenant

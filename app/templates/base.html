@@ -607,7 +607,7 @@
                             {% endfor %}
                             {% endif %}
 
-                            {% if current_user.is_admin and session.get('active_role') == 'admin' %}
+                            {% if current_user.is_system_admin %}
                             <li><a class="dropdown-item" href="{{ url_for('main.settings') }}">Configurações</a></li>
                             {% endif %}
 
