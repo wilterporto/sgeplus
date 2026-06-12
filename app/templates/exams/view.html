@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">{{ exam.title }}</h1>
-    <div>
+<div class="pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2 mb-3">{{ exam.title }}</h1>
+    <div class="d-flex flex-wrap gap-2">
         {% if mode == 'teacher' %}
         <div class="btn-group">
             <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
@@ -33,10 +33,9 @@
                 onclick="setAnalysisAction('intervention')">
                 <i class="bi bi-graph-up"></i> Plano de Intervenção
             </button>
-            <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
-                data-bs-target="#analysisModal" onclick="setAnalysisAction('diagnosis')">
+            <a href="{{ url_for('exams.classes_diagnosis', id=exam.id) }}" class="btn btn-sm btn-outline-danger">
                 <i class="bi bi-pie-chart"></i> Diagnóstico da Turma
-            </button>
+            </a>
             <button type="button" class="btn btn-sm btn-outline-success" data-bs-toggle="modal"
                 data-bs-target="#analysisModal" onclick="setAnalysisAction('reinforcement')">
                 <i class="bi bi-plus-circle"></i> Sugerir Reforço

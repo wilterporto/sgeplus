@@ -1687,6 +1687,122 @@ def intervention_plan(id):
                      as_attachment=True,
                      mimetype='application/pdf')
 
+@exams_bp.route('/<int:id>/classes-diagnosis')
+@login_required
+def classes_diagnosis(id):
+    if current_user.role == 'student':
+        abort(403)
+        
+    exam_query = Exam.query.filter_by(id=id)
+    exam_query = filter_by_tenant(exam_query, Exam)
+    exam = exam_query.first_or_404()
+    
+    regional_id = request.args.get('regional_id', type=int)
+    municipio = request.args.get('municipio', type=str)
+    school_id = request.args.get('school_id', type=int)
+    shift = request.args.get('shift', type=str)
+
+    # Restriction for professor
+    if 'professor' in current_user.get_roles() and not current_user.is_admin and 'regional_manager' not in current_user.get_roles():
+        prof_profile = current_user.professor_profile
+        prof_class_ids = [a.class_id for a in prof_profile.assignments] if prof_profile else []
+    else:
+        prof_class_ids = None
+
+    # Construct the query
+    query = db.session.query(
+        Class.id,
+        Class.name,
+        TeachingUnit.id.label('school_id'),
+        TeachingUnit.name.label('school_name'),
+        TeachingUnit.inep_code,
+        TeachingUnit.municipio,
+        db.func.count(StudentResult.id).label('total_students'),
+        db.func.sum(db.case((StudentResult.absence_reason_id.isnot(None), 1), else_=0)).label('absences'),
+        db.func.sum(db.case((StudentResult.absence_reason_id.is_(None), 1), else_=0)).label('present'),
+        db.func.avg(StudentResult.score_percentage).label('avg_score')
+    ).select_from(StudentResult)\
+    .join(Student, StudentResult.student_id == Student.id)\
+    .join(Enrollment, (Enrollment.student_id == Student.id) & (Enrollment.active == True))\
+    .join(Class, Enrollment.class_id == Class.id)\
+    .join(TeachingUnit, Class.teaching_unit_id == TeachingUnit.id)\
+    .filter(StudentResult.exam_id == exam.id)
+
+    if regional_id:
+        query = query.filter(TeachingUnit.parent_id == regional_id)
+    if municipio:
+        query = query.filter(TeachingUnit.municipio == municipio)
+    if school_id:
+        query = query.filter(TeachingUnit.id == school_id)
+    if shift:
+        query = query.filter(Class.shift == shift)
+
+    if prof_class_ids is not None:
+        query = query.filter(Class.id.in_(prof_class_ids))
+
+    classes_stats = query.group_by(Class.id, Class.name, TeachingUnit.id, TeachingUnit.name, TeachingUnit.inep_code, TeachingUnit.municipio)\
+                         .order_by(TeachingUnit.name, Class.name).all()
+
+    stats_list = []
+    for row in classes_stats:
+        avg_score = row.avg_score or 0
+        # Consider errors as percentage of present students only? Wait, avg_score is calculated based on present students.
+        error_rate = 100 - avg_score
+        absence_perc = (row.absences / row.total_students * 100) if row.total_students > 0 else 0
+        stats_list.append({
+            'class_id': row.id,
+            'class_name': row.name,
+            'school_id': row.school_id,
+            'school_name': row.school_name,
+            'inep_code': row.inep_code,
+            'municipio': row.municipio,
+            'total_students': row.total_students,
+            'absences': row.absences,
+            'present': row.present,
+            'avg_score': avg_score,
+            'error_rate': error_rate,
+            'absence_perc': absence_perc
+        })
+
+    # Prepare filter choices
+    # Regionals
+    regionals = filter_by_tenant(TeachingUnit.query.filter_by(type='Regional'), TeachingUnit).order_by(TeachingUnit.name).all()
+    
+    # Municipios (only if Estadual)
+    municipios = []
+    if exam.tenant.type == 'Estadual':
+        mun_query = db.session.query(TeachingUnit.municipio).filter(TeachingUnit.type != 'Regional', TeachingUnit.municipio != None)
+        mun_query = filter_by_tenant(mun_query, TeachingUnit)
+        if regional_id:
+            mun_query = mun_query.filter(TeachingUnit.parent_id == regional_id)
+        municipios = [m[0] for m in mun_query.distinct().order_by(TeachingUnit.municipio).all()]
+
+    # Schools (Filtered to only targets of this exam)
+    schools_query = db.session.query(TeachingUnit)\
+        .join(Class, Class.teaching_unit_id == TeachingUnit.id)\
+        .join(Enrollment, Enrollment.class_id == Class.id)\
+        .join(Student, Enrollment.student_id == Student.id)\
+        .join(StudentResult, StudentResult.student_id == Student.id)\
+        .filter(StudentResult.exam_id == exam.id, Enrollment.active == True)
+        
+    if regional_id:
+        schools_query = schools_query.filter(TeachingUnit.parent_id == regional_id)
+    if municipio:
+        schools_query = schools_query.filter(TeachingUnit.municipio == municipio)
+        
+    schools = schools_query.distinct().order_by(TeachingUnit.name).all()
+
+    return render_template('exams/classes_diagnosis.html', 
+                           exam=exam, 
+                           classes_stats=stats_list,
+                           regionals=regionals,
+                           municipios=municipios,
+                           schools=schools,
+                           current_regional_id=regional_id,
+                           current_municipio=municipio,
+                           current_school_id=school_id,
+                           current_shift=shift)
+
 @exams_bp.route('/<int:id>/diagnosis')
 @login_required
 def class_diagnosis(id):
@@ -1699,6 +1815,15 @@ def class_diagnosis(id):
     
     school_id = request.args.get('school_id', type=int)
     class_id = request.args.get('class_id', type=int)
+    
+    school_name = None
+    class_name = None
+    if school_id:
+        school = TeachingUnit.query.get(school_id)
+        if school: school_name = school.name
+    if class_id:
+        cls = Class.query.get(class_id)
+        if cls: class_name = cls.name
 
     # Restriction for professor
     if 'professor' in current_user.get_roles() and not current_user.is_admin and 'regional_manager' not in current_user.get_roles():
@@ -1811,7 +1936,9 @@ def class_diagnosis(id):
                            radar_data=radar_data,
                            heatmap_data=heatmap_data,
                            critical_questions=critical_questions,
-                           low_performers=low_performers)
+                           low_performers=low_performers,
+                           school_name=school_name,
+                           class_name=class_name)
 
 def generate_pdf_worker(app, job_id, exam_id, students_list, evaluation_id, logo_url, font_size='12pt', layout_columns='1'):
     with app.app_context():

@@ -637,8 +637,9 @@ def get_rankings_data(exam_id, regional_ids=None, unit_ids=None, class_ids=None,
         TeachingUnit.name, 
         db.func.avg(StudentResult.score_percentage).label('score'),
         db.func.count(StudentResult.id).label('student_count'),
-        db.func.sum(StudentResult.score_percentage).label('total_score')
-    ).group_by(Class.id, TeachingUnit.name).order_by(db.desc('score')).all()
+        db.func.sum(StudentResult.score_percentage).label('total_score'),
+        TeachingUnit.id
+    ).group_by(Class.id, TeachingUnit.name, TeachingUnit.id).order_by(db.desc('score')).all()
 
     # Students Ranking
     students_ranking = base_query.with_entities(Student.name, StudentResult.score_percentage.label('score'), TeachingUnit.name, Class.name)\
@@ -680,7 +681,7 @@ def get_rankings_data(exam_id, regional_ids=None, unit_ids=None, class_ids=None,
 
     return {
         'schools': [{'name': r[0], 'score': round(r[1] or 0, 2), 'municipio': r[2]} for r in schools_ranking],
-        'classes': [{'name': r[1], 'sub': r[2], 'score': round(r[3] or 0, 2)} for r in classes_ranking],
+        'classes': [{'class_id': r[0], 'name': r[1], 'sub': r[2], 'score': round(r[3] or 0, 2), 'school_id': r[6]} for r in classes_ranking],
         'students': [{'name': r[0], 'sub': r[2], 'score': round(r[1] or 0, 2), 'class_name': r[3]} for r in students_ranking],
         'professors': professors_ranking
     }

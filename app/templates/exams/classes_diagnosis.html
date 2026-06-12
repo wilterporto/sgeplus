@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <div>
+        <h1 class="h2">Diagnóstico por Turma</h1>
+        <h6 class="text-muted"><i class="bi bi-file-earmark-text"></i> {{ exam.title }}</h6>
+    </div>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{{ url_for('exams.view_exam', id=exam.id) }}" class="btn btn-sm btn-outline-primary">
+            <i class="bi bi-arrow-left"></i> Voltar para Prova
+        </a>
+    </div>
+</div>
+
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-body">
+        <form method="GET" action="{{ url_for('exams.classes_diagnosis', id=exam.id) }}" class="row g-3 align-items-end" id="filterForm">
+            {% if exam.tenant.type == 'Estadual' %}
+            <div class="col-md-3">
+                <label for="regional_id" class="form-label">Regional</label>
+                <select name="regional_id" id="regional_id" class="form-select" onchange="document.getElementById('municipio').value=''; document.getElementById('school_id').value=''; document.getElementById('filterForm').submit();">
+                    <option value="">Todas as Regionais</option>
+                    {% for regional in regionals %}
+                    <option value="{{ regional.id }}" {% if current_regional_id == regional.id %}selected{% endif %}>{{ regional.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label for="municipio" class="form-label">Município</label>
+                <select name="municipio" id="municipio" class="form-select" onchange="document.getElementById('school_id').value=''; document.getElementById('filterForm').submit();">
+                    <option value="">Todos</option>
+                    {% for mun in municipios %}
+                    <option value="{{ mun }}" {% if current_municipio == mun %}selected{% endif %}>{{ mun }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4">
+            {% else %}
+            <div class="col-md-4">
+                <label for="regional_id" class="form-label">Regional</label>
+                <select name="regional_id" id="regional_id" class="form-select" onchange="document.getElementById('school_id').value=''; document.getElementById('filterForm').submit();">
+                    <option value="">Todas as Regionais</option>
+                    {% for regional in regionals %}
+                    <option value="{{ regional.id }}" {% if current_regional_id == regional.id %}selected{% endif %}>{{ regional.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4">
+            {% endif %}
+                <label for="school_id" class="form-label">Escola</label>
+                <select name="school_id" id="school_id" class="form-select">
+                    <option value="">Todas as Escolas</option>
+                    {% for school in schools %}
+                    <option value="{{ school.id }}" {% if current_school_id == school.id %}selected{% endif %}>{{ school.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            {% if exam.tenant.type == 'Estadual' %}
+            <div class="col-md-2">
+            {% else %}
+            <div class="col-md-3">
+            {% endif %}
+                <label for="shift" class="form-label">Turno</label>
+                <select name="shift" id="shift" class="form-select">
+                    <option value="">Todos os Turnos</option>
+                    <option value="Matutino" {% if current_shift == 'Matutino' %}selected{% endif %}>Matutino</option>
+                    <option value="Vespertino" {% if current_shift == 'Vespertino' %}selected{% endif %}>Vespertino</option>
+                    <option value="Noturno" {% if current_shift == 'Noturno' %}selected{% endif %}>Noturno</option>
+                    <option value="Integral" {% if current_shift == 'Integral' %}selected{% endif %}>Integral</option>
+                </select>
+            </div>
+            <div class="col-md-1">
+                <button type="submit" class="btn btn-primary w-100"><i class="bi bi-search"></i></button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Escola</th>
+                        <th>Turma</th>
+                        <th class="text-center">Total Alunos</th>
+                        <th class="text-center">Ausências</th>
+                        <th style="min-width: 150px;">Acertos / Erros</th>
+                        <th class="text-end">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for stat in classes_stats %}
+                    <tr>
+                        <td>
+                            {% if exam.tenant.type == 'Estadual' %}
+                                <span class="fw-bold text-dark">
+                                    {% if stat.municipio %}{{ stat.municipio }} - {% endif %}
+                                    {% if stat.inep_code %}{{ stat.inep_code }} - {% endif %}
+                                    {{ stat.school_name }}
+                                </span>
+                            {% else %}
+                                <span class="fw-bold text-dark">
+                                    {% if stat.inep_code %}{{ stat.inep_code }} - {% endif %}
+                                    {{ stat.school_name }}
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="badge bg-secondary">{{ stat.class_name }}</span>
+                        </td>
+                        <td class="text-center">
+                            {{ stat.total_students }}
+                        </td>
+                        <td class="text-center">
+                            {% if stat.absence_perc > 0 %}
+                            <span class="text-danger fw-bold">{{ stat.absences }} ({{ "%.1f"|format(stat.absence_perc) }}%)</span>
+                            {% else %}
+                            <span class="text-success">0 (0%)</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="d-flex justify-content-between x-small mb-1">
+                                <span class="text-success fw-bold">{{ "%.1f"|format(stat.avg_score) }}% Acertos</span>
+                                <span class="text-danger fw-bold">{{ "%.1f"|format(stat.error_rate) }}% Erros</span>
+                            </div>
+                            <div class="progress" style="height: 6px;">
+                                <div class="progress-bar bg-success" role="progressbar" style="width: {{ stat.avg_score }}%;" aria-valuenow="{{ stat.avg_score }}" aria-valuemin="0" aria-valuemax="100" title="Acertos"></div>
+                                <div class="progress-bar bg-danger" role="progressbar" style="width: {{ stat.error_rate }}%;" aria-valuenow="{{ stat.error_rate }}" aria-valuemin="0" aria-valuemax="100" title="Erros"></div>
+                            </div>
+                        </td>
+                        <td class="text-end">
+                            <a href="{{ url_for('exams.class_diagnosis', id=exam.id, school_id=stat.school_id, class_id=stat.class_id) }}" class="btn btn-sm btn-outline-info" title="Ver Gráficos">
+                                <i class="bi bi-pie-chart"></i> Ver Gráficos
+                            </a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-4">Nenhuma turma com resultados finalizados para esta prova.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -2,7 +2,16 @@
 
 {% block content %}
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">Diagnóstico da Turma: {{ exam.title }}</h1>
+    <div>
+        <h1 class="h2">Diagnóstico da Turma: {{ exam.title }}</h1>
+        {% if school_name or class_name %}
+        <h6 class="text-muted">
+            {% if school_name %}<i class="bi bi-building"></i> {{ school_name }}{% endif %}
+            {% if school_name and class_name %} <span class="mx-2">|</span> {% endif %}
+            {% if class_name %}<i class="bi bi-people"></i> Turma: {{ class_name }}{% endif %}
+        </h6>
+        {% endif %}
+    </div>
     <div class="btn-toolbar mb-2 mb-md-0">
         <a href="{{ url_for('exams.view_exam', id=exam.id) }}" class="btn btn-sm btn-outline-primary">
             <i class="bi bi-arrow-left"></i> Voltar para Prova

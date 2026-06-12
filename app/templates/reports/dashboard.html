@@ -1129,11 +1129,11 @@
         const top = data.slice(0, 10);
         const bottom = data.length > 10 ? data.slice(-10).reverse() : []; // Reverse to show worst at top if displaying in Bottom list
 
-        renderList(topContainer, top);
-        renderList(bottomContainer, bottom);
+        renderList(topContainer, top, category);
+        renderList(bottomContainer, bottom, category);
     }
 
-    function renderList(container, list) {
+    function renderList(container, list, category) {
         list.forEach((item, index) => {
             const div = document.createElement('div');
             div.className = 'mb-3';
@@ -1142,13 +1142,21 @@
             if (item.score >= 70) dynamicColor = 'bg-success';
             else if (item.score >= 50) dynamicColor = 'bg-warning text-dark';
 
+            let actionBtn = '';
+            if (category === 'classes' && item.school_id && item.class_id) {
+                actionBtn = `<a href="/exams/${dashboardState.exam_id}/diagnosis?school_id=${item.school_id}&class_id=${item.class_id}" class="btn btn-sm btn-outline-info ms-2 py-0 px-1" title="Diagnóstico da Turma"><i class="bi bi-pie-chart" style="font-size: 0.8rem;"></i></a>`;
+            }
+
             div.innerHTML = `
                 <div class="d-flex justify-content-between align-items-center mb-1">
-                    <div class="d-flex flex-column text-truncate" style="max-width: 80%;">
+                    <div class="d-flex flex-column text-truncate" style="max-width: 75%;">
                         <span class="small fw-bold" title="${item.name}">${item.name}</span>
                         ${item.sub ? `<span class="x-small text-muted">${item.sub}</span>` : ''}
                     </div>
-                    <span class="small fw-bold">${Number(item.score).toFixed(2)}%</span>
+                    <div class="d-flex align-items-center">
+                        <span class="small fw-bold">${Number(item.score).toFixed(2)}%</span>
+                        ${actionBtn}
+                    </div>
                 </div>
                 <div class="progress" style="height: 4px;">
                     <div class="progress-bar ${dynamicColor}" style="width: ${item.score}%"></div>
