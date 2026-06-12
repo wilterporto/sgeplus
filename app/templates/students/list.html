@@ -75,19 +75,51 @@
     </div>
 </div>
 
-<!-- Search -->
-<form method="GET" class="row g-3 mb-4">
-    <div class="col-md-6">
-        <div class="input-group">
-            <input type="text" name="search" class="form-control" placeholder="Buscar por nome..."
-                value="{{ search or '' }}">
-            <button class="btn btn-outline-secondary" type="submit"><i class="bi bi-search"></i></button>
-            {% if search %}
-            <a href="{{ url_for('students.list_students') }}" class="btn btn-outline-danger"><i class="bi bi-x"></i></a>
-            {% endif %}
-        </div>
+<!-- Filters -->
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <form method="GET" class="row g-3">
+            <div class="col-md-3">
+                <label for="school_id" class="form-label">Escola</label>
+                <select name="school_id" id="school_id" class="form-select" onchange="this.form.submit()">
+                    <option value="">Todas as Escolas</option>
+                    {% for school in schools %}
+                    <option value="{{ school.id }}" {% if school_id == school.id %}selected{% endif %}>{{ school.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="school_year_id" class="form-label">Ano Escolar</label>
+                <select name="school_year_id" id="school_year_id" class="form-select" onchange="this.form.submit()">
+                    <option value="">Todos os Anos</option>
+                    {% for year in school_years %}
+                    <option value="{{ year.id }}" {% if school_year_id == year.id %}selected{% endif %}>{{ year.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="class_id" class="form-label">Turma</label>
+                <select name="class_id" id="class_id" class="form-select" onchange="this.form.submit()">
+                    <option value="">Todas as Turmas</option>
+                    {% for c in classes %}
+                    <option value="{{ c.id }}" {% if class_id == c.id %}selected{% endif %}>{{ c.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="search" class="form-label">Pesquisar</label>
+                <div class="input-group">
+                    <input type="text" name="search" class="form-control" placeholder="Nome, matrícula ou CPF..."
+                        value="{{ search or '' }}">
+                    <button class="btn btn-outline-secondary" type="submit"><i class="bi bi-search"></i></button>
+                    {% if search or school_id or class_id or school_year_id %}
+                    <a href="{{ url_for('students.list_students') }}" class="btn btn-outline-danger" title="Limpar Filtros"><i class="bi bi-x"></i></a>
+                    {% endif %}
+                </div>
+            </div>
+        </form>
     </div>
-</form>
+</div>
 
 <div class="table-responsive bg-white shadow-sm">
     <table class="table table-hover mb-0">

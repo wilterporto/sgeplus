@@ -386,9 +386,13 @@ class Professor(db.Model):
     
     @property
     def formatted_cpf(self):
-        if self.cpf and len(self.cpf) == 11:
-            return f"{self.cpf[:3]}.{self.cpf[3:6]}.{self.cpf[6:9]}-{self.cpf[9:]}"
-        return self.cpf or ""
+        if not self.cpf:
+            return ""
+        import re
+        clean_cpf = re.sub(r'[^0-9]', '', self.cpf)
+        if len(clean_cpf) == 11:
+            return f"{clean_cpf[:3]}.{clean_cpf[3:6]}.{clean_cpf[6:9]}-{clean_cpf[9:]}"
+        return self.cpf
         
     @property
     def primary_school(self):
@@ -469,9 +473,13 @@ class Student(db.Model):
     
     @property
     def formatted_cpf(self):
-        if self.cpf and len(self.cpf) == 11:
-            return f"{self.cpf[:3]}.{self.cpf[3:6]}.{self.cpf[6:9]}-{self.cpf[9:]}"
-        return self.cpf or ""
+        if not self.cpf:
+            return ""
+        import re
+        clean_cpf = re.sub(r'[^0-9]', '', self.cpf)
+        if len(clean_cpf) == 11:
+            return f"{clean_cpf[:3]}.{clean_cpf[3:6]}.{clean_cpf[6:9]}-{clean_cpf[9:]}"
+        return self.cpf
         
     @staticmethod
     def generate_registration_number():

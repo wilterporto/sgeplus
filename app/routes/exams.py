@@ -109,7 +109,10 @@ def list_exams():
             'can_record': can_record
         })
         
-    return render_template('exams/list.html', exams_with_stats=exams_with_stats)
+    schools = TeachingUnit.query.filter_by(type='Escola')
+    schools = filter_by_tenant(schools, TeachingUnit).order_by(TeachingUnit.name).all()
+        
+    return render_template('exams/list.html', exams_with_stats=exams_with_stats, schools=schools)
 
 @exams_bp.route('/generate', methods=['GET', 'POST'])
 def generate_exam():
@@ -702,6 +705,10 @@ def view_exam(id):
     if exam.classes.count() > 0:
         scoped_school_ids = [c.teaching_unit_id for c in exam.classes]
         schools_query = schools_query.filter(TeachingUnit.id.in_(scoped_school_ids))
+    elif exam.teaching_unit_id:
+        schools_query = schools_query.filter(TeachingUnit.id == exam.teaching_unit_id)
+    elif exam.regional_id:
+        schools_query = schools_query.filter(TeachingUnit.parent_id == exam.regional_id)
         
     # Restrict schools to professor's assignments if not admin
     if 'professor' in current_user.get_roles() and not current_user.is_admin and 'regional_manager' not in current_user.get_roles():

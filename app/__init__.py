@@ -120,7 +120,7 @@ def create_app(config_class=Config):
         # static: for css/js/images
         # auth.login: to allow logging in
         # auth.forgot_password, auth.reset_password: for recovery
-        whitelist_endpoints = ['auth.login', 'auth.forgot_password', 'auth.reset_password', 'static', 'main.get_logo', 'main.get_login_bg', 'main.serve_sw', 'main.serve_manifest', 'main.setup_db_render', 'main.confirm_update']
+        whitelist_endpoints = ['auth.login', 'auth.forgot_password', 'auth.reset_password', 'static', 'main.get_logo', 'main.get_login_bg', 'main.get_favicon', 'main.serve_sw', 'main.serve_manifest', 'main.setup_db_render', 'main.confirm_update']
         
         if not current_user.is_authenticated:
             if request.endpoint and \
@@ -150,7 +150,10 @@ def create_app(config_class=Config):
                         'users.profile', 
                         'auth.logout',
                         'students.get_cities_by_uf',
-                        'main.settings'
+                        'main.settings',
+                        'main.remove_logo',
+                        'main.remove_login_bg',
+                        'main.remove_favicon'
                     ]
                     if request.endpoint and \
                        request.endpoint not in allowed_admin_endpoints and \

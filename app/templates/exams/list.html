@@ -87,10 +87,11 @@
                             <i class="bi bi-camera"></i>
                         </a>
                         {% if exam.results.count() > 0 %}
-                        <a href="{{ url_for('exams.class_diagnosis', id=exam.id) }}"
-                            class="btn btn-sm btn-outline-danger" title="Diagnóstico da Turma">
+                        <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
+                            data-bs-target="#diagnosisModal" data-bs-id="{{ exam.id }}"
+                            title="Diagnóstico da Turma">
                             <i class="bi bi-pie-chart"></i>
-                        </a>
+                        </button>
                         {% endif %}
                         {% endif %}
 
@@ -145,6 +146,46 @@
     </table>
 </div>
 
+<!-- Modal de Diagnóstico -->
+<div class="modal fade" id="diagnosisModal" tabindex="-1" aria-labelledby="diagnosisModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="diagnosisModalLabel">Diagnóstico da Turma</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted small">Para uma análise precisa, selecione a escola e a turma desejada.</p>
+                <div class="mb-3">
+                    <label for="diagnosis_school_id" class="form-label">Escola</label>
+                    <select id="diagnosis_school_id" class="form-select" required>
+                        <option value="">Selecione uma escola...</option>
+                        {% for school in schools %}
+                        <option value="{{ school.id }}">{{ school.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="diagnosis_class_id" class="form-label">Turma</label>
+                    <select id="diagnosis_class_id" class="form-select" required disabled>
+                        <option value="">Selecione uma escola primeiro...</option>
+                    </select>
+                </div>
+                <div id="diagnosis-loading" class="spinner-border spinner-border-sm text-primary d-none mt-2"
+                    role="status">
+                    <span class="visually-hidden">Carregando...</span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                <button type="button" class="btn btn-primary" id="btnConfirmDiagnosis">
+                    <i class="bi bi-pie-chart me-1"></i> Gerar Diagnóstico
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Modal de Justificativa de Inativação -->
 <div class="modal fade" id="inactivateModal" tabindex="-1" aria-labelledby="inactivateModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -189,6 +230,77 @@
                 titleDisplay.textContent = examTitle;
 
                 inactivateModal.querySelector('#reason').value = '';
+            });
+        }
+        
+        var diagnosisModal = document.getElementById('diagnosisModal');
+        var diagnosisSchoolSelect = document.getElementById('diagnosis_school_id');
+        var diagnosisClassSelect = document.getElementById('diagnosis_class_id');
+        var btnConfirmDiagnosis = document.getElementById('btnConfirmDiagnosis');
+        var currentExamId = null;
+
+        if (diagnosisModal) {
+            diagnosisModal.addEventListener('show.bs.modal', function (event) {
+                var button = event.relatedTarget;
+                currentExamId = button.getAttribute('data-bs-id');
+                
+                diagnosisSchoolSelect.innerHTML = '<option value="">Carregando escolas...</option>';
+                diagnosisSchoolSelect.disabled = true;
+                diagnosisClassSelect.innerHTML = '<option value="">Selecione uma escola primeiro...</option>';
+                diagnosisClassSelect.disabled = true;
+                
+                fetch(`/exams/api/schools_for_exam/${currentExamId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        let options = '<option value="">Selecione uma escola...</option>';
+                        data.forEach(s => {
+                            options += `<option value="${s.id}">${s.name}</option>`;
+                        });
+                        diagnosisSchoolSelect.innerHTML = options;
+                        diagnosisSchoolSelect.disabled = false;
+                    })
+                    .catch(err => {
+                        diagnosisSchoolSelect.innerHTML = '<option value="">Erro ao carregar escolas</option>';
+                    });
+            });
+            
+            diagnosisSchoolSelect.addEventListener('change', function () {
+                const schoolId = this.value;
+                if (!schoolId) {
+                    diagnosisClassSelect.innerHTML = '<option value="">Selecione uma escola primeiro...</option>';
+                    diagnosisClassSelect.disabled = true;
+                    return;
+                }
+
+                document.getElementById('diagnosis-loading').classList.remove('d-none');
+                diagnosisClassSelect.disabled = true;
+
+                fetch(`/exams/api/classes_for_school/${schoolId}?exam_id=${currentExamId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        let options = '<option value="">Selecione a Turma...</option>';
+                        data.forEach(c => {
+                            options += `<option value="${c.id}">${c.name}</option>`;
+                        });
+                        diagnosisClassSelect.innerHTML = options;
+                        diagnosisClassSelect.disabled = false;
+                    })
+                    .finally(() => {
+                        document.getElementById('diagnosis-loading').classList.add('d-none');
+                    });
+            });
+
+            btnConfirmDiagnosis.addEventListener('click', function () {
+                const schoolId = diagnosisSchoolSelect.value;
+                const classId = diagnosisClassSelect.value;
+
+                if (!schoolId || !classId) {
+                    alert('A seleção da escola e da turma é obrigatória para gerar o diagnóstico.');
+                    return;
+                }
+
+                let url = `/exams/${currentExamId}/diagnosis?school_id=${schoolId}&class_id=${classId}`;
+                window.location.href = url;
             });
         }
     });

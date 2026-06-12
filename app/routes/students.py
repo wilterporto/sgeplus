@@ -47,15 +47,37 @@ def list_students():
     active_school_id = session.get('active_school_id')
 
     page = request.args.get('page', 1, type=int)
+    search = request.args.get('search', '')
+    school_id = request.args.get('school_id', type=int)
+    class_id = request.args.get('class_id', type=int)
+    school_year_id = request.args.get('school_year_id', type=int)
     
+    from app.models import SchoolYear
+
     if active_role == 'unidade':
-        students_query = Student.query.join(Enrollment).join(Class).filter(Class.teaching_unit_id == active_school_id).order_by(Student.name)
-    else:
-        students_query = Student.query.order_by(Student.name)
-        
+        school_id = active_school_id
+
+    students_query = Student.query.order_by(Student.name)
     students_query = filter_by_tenant(students_query, Student)
-    
-    search = request.args.get('search')
+
+    # We use a subquery or any() to avoid multiplying rows if multiple enrollments exist, 
+    # but since we want to filter by class/school, joining is standard. 
+    # But since a student might be in multiple classes over years, let's use joins with distinct().
+    needs_class_join = school_id or class_id or school_year_id
+    if needs_class_join:
+        students_query = students_query.join(Enrollment).join(Class)
+
+    if school_id:
+        students_query = students_query.filter(Class.teaching_unit_id == school_id)
+    if class_id:
+        students_query = students_query.filter(Enrollment.class_id == class_id)
+    if school_year_id:
+        students_query = students_query.filter(Class.school_year_id == school_year_id)
+
+    # To avoid duplicates if multiple enrollments match
+    if needs_class_join:
+        students_query = students_query.distinct()
+
     if search:
         from sqlalchemy import or_
         date_filter = None
@@ -68,8 +90,10 @@ def list_students():
         search_filter = or_(
             Student.name.ilike(f'%{search}%'),
             Student.registration_number.ilike(f'%{search}%'),
-            Student.cpf.ilike(f'%{clean_search}%')
         )
+        if clean_search:
+            search_filter = or_(search_filter, Student.cpf.ilike(f'%{clean_search}%'))
+        
         if date_filter:
             search_filter = or_(search_filter, Student.birth_date == date_filter)
             
@@ -77,13 +101,37 @@ def list_students():
         
     students = students_query.paginate(page=page, per_page=30)
     
+    # Fetch options for filters
+    schools_query = TeachingUnit.query.filter_by(type='Escola')
+    schools_query = filter_by_tenant(schools_query, TeachingUnit)
+    if active_role == 'unidade':
+        schools_query = schools_query.filter_by(id=active_school_id)
+    schools = schools_query.order_by(TeachingUnit.name).all()
+
+    classes_query = Class.query
+    classes_query = filter_by_tenant(classes_query, Class)
+    if school_id:
+        classes_query = classes_query.filter_by(teaching_unit_id=school_id)
+    classes = classes_query.order_by(Class.name).all()
+
+    school_years = filter_by_tenant(SchoolYear.query, SchoolYear).order_by(SchoolYear.name).all()
+
     active_job = ImportJob.query.filter_by(
         tenant_id=get_tenant_id(),
         import_type='Students',
         status='running'
     ).first()
     
-    return render_template('students/list.html', students=students, active_job=active_job)
+    return render_template('students/list.html', 
+                           students=students, 
+                           active_job=active_job,
+                           schools=schools,
+                           classes=classes,
+                           school_years=school_years,
+                           school_id=school_id,
+                           class_id=class_id,
+                           school_year_id=school_year_id,
+                           search=search)
 
 
 @students_bp.route('/new', methods=['GET', 'POST'])
