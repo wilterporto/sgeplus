@@ -65,16 +65,23 @@ def run_migration():
         metadata = db.metadata
         tables = metadata.sorted_tables
         
-        # Limpar banco de destino antes de importar (opcional, porem recomendado para importacao completa)
-        # Apagando na ordem inversa das chaves estrangeiras
+        # Limpar banco de destino antes de importar
         logger.info("Limpando dados existentes no PostgreSQL (pode demorar)...")
-        for table in reversed(tables):
-            try:
-                db.session.execute(table.delete())
-                db.session.commit()
-            except Exception as e:
-                db.session.rollback()
-                logger.error(f"Erro ao limpar tabela {table.name}: {e}")
+        if is_postgres:
+            for table in tables:
+                if table.name != 'alembic_version':
+                    try:
+                        db.session.execute(text(f'TRUNCATE TABLE "{table.name}" CASCADE'))
+                        db.session.commit()
+                    except Exception as e:
+                        db.session.rollback()
+        else:
+            for table in reversed(tables):
+                try:
+                    db.session.execute(table.delete())
+                    db.session.commit()
+                except Exception as e:
+                    db.session.rollback()
 
         SystemConfig.set_value('migration_percent', '20')
         logger.info("Iniciando migracao dos dados SQLite -> PostgreSQL")
@@ -100,8 +107,16 @@ def run_migration():
                 if not rows:
                     continue
                     
-                # Converter para lista de dicionarios
-                dicts = [dict(zip(keys, row)) for row in rows]
+                # Converter para lista de dicionarios e TRUNCAR STRINGS
+                dicts = []
+                for row in rows:
+                    row_dict = dict(zip(keys, row))
+                    for col in table.columns:
+                        val = row_dict.get(col.name)
+                        if isinstance(val, str) and hasattr(col.type, 'length') and col.type.length:
+                            if len(val) > col.type.length:
+                                row_dict[col.name] = val[:col.type.length]
+                    dicts.append(row_dict)
                 
                 # Inserir no Postgres em lotes (chunks)
                 chunk_size = 5000

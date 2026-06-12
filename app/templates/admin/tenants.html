@@ -3,27 +3,9 @@
 {% block content %}
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
     <h1 class="h2">Clientes do Sistema</h1>
-    <div class="btn-toolbar mb-2 mb-md-0">
-        <form action="{{ url_for('admin.migrate_test_data') }}" method="POST" class="d-inline me-2" id="migrateForm" onsubmit="return confirm('ATENÇÃO: Este processo apaga dados atuais e copia o banco de testes (SQLite) embutido no repositório para o PostgreSQL. Pode demorar vários minutos. Tem certeza?');">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-            <button type="submit" class="btn btn-warning" id="btnMigrate">
-                <i class="bi bi-database-fill-down"></i> Migrar Dados de Teste (Neon)
-            </button>
-        </form>
         <a href="{{ url_for('admin.new_tenant') }}" class="btn btn-primary">
             <i class="bi bi-plus-lg"></i> Novo Cliente
         </a>
-    </div>
-</div>
-
-<!-- Barra de Progresso da Migração -->
-<div id="migrationProgressContainer" class="card shadow-sm mb-4 border-warning" style="display: none;">
-    <div class="card-body">
-        <h5 class="card-title text-warning"><i class="bi bi-gear-wide-connected spin"></i> Migração em Andamento...</h5>
-        <p id="migrationMessage" class="text-muted small mb-2">Iniciando processo...</p>
-        <div class="progress" style="height: 25px;">
-            <div id="migrationProgressBar" class="progress-bar progress-bar-striped progress-bar-animated bg-warning text-dark fw-bold" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
-        </div>
     </div>
 </div>
 
@@ -124,52 +106,5 @@
     </div>
 </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    let pollingInterval = null;
-    
-    function checkMigrationStatus() {
-        fetch("{{ url_for('admin.migrate_status') }}?t=" + new Date().getTime())
-            .then(response => response.json())
-            .then(data => {
-                if(data.status === 'running' || data.status === 'completed' || data.status === 'error') {
-                    if(data.status === 'running') {
-                        document.getElementById('migrateForm').style.display = 'none';
-                        document.getElementById('migrationProgressContainer').style.display = 'block';
-                        
-                        document.getElementById('migrationProgressBar').style.width = data.percent + '%';
-                        document.getElementById('migrationProgressBar').innerText = data.percent + '%';
-                        document.getElementById('migrationProgressBar').setAttribute('aria-valuenow', data.percent);
-                        document.getElementById('migrationMessage').innerText = data.message;
-                    } 
-                    else if (data.status === 'completed') {
-                        clearInterval(pollingInterval);
-                        document.getElementById('migrationProgressBar').classList.replace('bg-warning', 'bg-success');
-                        document.getElementById('migrationProgressBar').classList.remove('progress-bar-animated');
-                        document.getElementById('migrationProgressBar').style.width = '100%';
-                        document.getElementById('migrationProgressBar').innerText = '100%';
-                        document.getElementById('migrationMessage').innerText = 'Migração concluída com sucesso! Atualizando página...';
-                        setTimeout(() => window.location.reload(), 2000);
-                    }
-                    else if (data.status === 'error') {
-                        clearInterval(pollingInterval);
-                        document.getElementById('migrationProgressBar').classList.replace('bg-warning', 'bg-danger');
-                        document.getElementById('migrationProgressBar').classList.remove('progress-bar-animated');
-                        document.getElementById('migrationMessage').innerHTML = '<span class="text-danger fw-bold">Falha na migração: ' + data.message + '</span>';
-                        document.getElementById('migrateForm').style.display = 'inline-block';
-                    }
-                }
-            })
-            .catch(error => console.error("Erro ao verificar status da migração:", error));
-    }
 
-    // Iniciar verificação automática
-    checkMigrationStatus();
-    pollingInterval = setInterval(checkMigrationStatus, 3000);
-    
-    document.getElementById('migrateForm').addEventListener('submit', function() {
-        setTimeout(checkMigrationStatus, 2000);
-    });
-});
-</script>
 {% endblock %}
