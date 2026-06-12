@@ -153,7 +153,7 @@ def list_questions():
         
     status_counts_data = status_counts_query.group_by(Question.status).all()
         
-    counts_map = {s: c for s, c in status_counts_data}
+    counts_map = {s.lower() if s else 'desconhecido': c for s, c in status_counts_data}
     
     # Ensure all statuses are present in the dictionary
     for s_label in ['rascunho', 'pendente', 'aprovada', 'inativa']:
