@@ -128,7 +128,17 @@ def run_migration():
                         logger.info(f"  Inseridas {len(chunk)} linhas em {table.name} (Total: {min(i+chunk_size, len(dicts))}/{len(dicts)})")
                     except Exception as e:
                         db.session.rollback()
-                        logger.error(f"  Erro ao inserir lote na tabela {table.name}: {e}")
+                        logger.error(f"  Erro ao inserir lote na tabela {table.name}, tentando linha por linha... Erro original: {e}")
+                        # Fallback: tentar linha por linha
+                        success_count = 0
+                        for row in chunk:
+                            try:
+                                db.session.execute(table.insert(), [row])
+                                db.session.commit()
+                                success_count += 1
+                            except Exception as row_err:
+                                db.session.rollback()
+                        logger.info(f"  Recuperadas {success_count} de {len(chunk)} linhas em {table.name} usando insercao individual.")
                 
                 # Sincronizar as sequencias no PostgreSQL (auto-incremento)
                 if is_postgres:

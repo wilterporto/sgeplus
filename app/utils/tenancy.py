@@ -13,7 +13,7 @@ def filter_by_tenant(query, model):
             return query
             
         # Ocultação automática de Super Admins globais em listagens de usuários do tenant
-        if model.__name__ == 'User':
+        if getattr(model, '__name__', '') == 'User':
             # Se for usuário comum do tenant, ou Super Admin autenticado em algum tenant
             is_sys_admin = hasattr(current_user, 'is_system_admin') and current_user.is_system_admin
             if not is_sys_admin or session.get('active_tenant_id'):
@@ -28,7 +28,7 @@ def filter_by_tenant(query, model):
                     return query.filter(model.tenant_id == active_tenant_id)
             else:
                 # Global context: no tenant selected
-                if model.__name__ == 'User':
+                if getattr(model, '__name__', '') == 'User':
                     return query.filter(model.tenant_id == None)
             return query
             
