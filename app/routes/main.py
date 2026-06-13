@@ -1,11 +1,18 @@
 from app.routes import main_bp
 from app.utils.file_utils import allowed_file, ALLOWED_IMAGE_EXTENSIONS, ALLOWED_IMPORT_EXTENSIONS
-from flask import render_template, request, redirect, url_for
+from flask import render_template, request, redirect, url_for, current_app
 
 @main_bp.route('/')
 @main_bp.route('/index')
 def index():
     return render_template('index.html')
+@main_bp.route('/manifest.json')
+def manifest():
+    return current_app.send_static_file('manifest.json')
+
+@main_bp.route('/sw.js')
+def sw():
+    return current_app.send_static_file('sw.js')
 
 @main_bp.route('/setup-db-render')
 def setup_db_render():
