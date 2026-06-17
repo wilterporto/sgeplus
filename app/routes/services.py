@@ -9,7 +9,7 @@ from werkzeug.security import generate_password_hash
 
 from app import db
 from app.models import Supplier, SupplierContact, ServiceType, ServiceOrder, ServiceOrderAttachment, TeachingUnit, User
-from app.forms.services import SupplierForm, SupplierContactForm, ServiceTypeForm, ServiceOrderForm, ScheduleServiceOrderForm
+from app.forms import SupplierForm, SupplierContactForm, ServiceTypeForm, ServiceOrderForm, ScheduleServiceOrderForm
 from app.utils.tenancy import get_tenant_id
 
 services_bp = Blueprint('services', __name__)
