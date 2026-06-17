@@ -717,3 +717,70 @@ class AnthropometricRecord(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     student = db.relationship('Student', backref=db.backref('anthropometric_records', lazy='dynamic', cascade='all, delete-orphan'))
+
+class Supplier(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    tenant_id = db.Column(db.Integer, db.ForeignKey('tenant.id'), nullable=True)
+    type = db.Column(db.String(2), nullable=False) # 'PF' or 'PJ'
+    cpf_cnpj = db.Column(db.String(20), nullable=False)
+    name = db.Column(db.String(255), nullable=False) # Razão Social ou Nome
+    email = db.Column(db.String(120))
+    phone = db.Column(db.String(20))
+    active = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=get_brasilia_time)
+
+    __table_args__ = (
+        db.UniqueConstraint('tenant_id', 'cpf_cnpj', name='uq_supplier_tenant_cpf_cnpj'),
+    )
+
+    tenant = db.relationship('Tenant')
+    contacts = db.relationship('SupplierContact', backref='supplier', lazy='dynamic', cascade='all, delete-orphan')
+    orders = db.relationship('ServiceOrder', backref='supplier', lazy='dynamic')
+
+class SupplierContact(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    supplier_id = db.Column(db.Integer, db.ForeignKey('supplier.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    name = db.Column(db.String(128), nullable=False)
+    cpf = db.Column(db.String(11), nullable=False)
+    email = db.Column(db.String(120), nullable=False)
+    
+    user = db.relationship('User', backref=db.backref('supplier_contact', uselist=False))
+
+class ServiceType(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    tenant_id = db.Column(db.Integer, db.ForeignKey('tenant.id'), nullable=True)
+    name = db.Column(db.String(128), nullable=False)
+    description = db.Column(db.Text)
+    active = db.Column(db.Boolean, default=True)
+
+    __table_args__ = (
+        db.UniqueConstraint('tenant_id', 'name', name='uq_service_type_tenant_name'),
+    )
+
+    tenant = db.relationship('Tenant')
+
+class ServiceOrder(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    tenant_id = db.Column(db.Integer, db.ForeignKey('tenant.id'), nullable=True)
+    school_id = db.Column(db.Integer, db.ForeignKey('teaching_unit.id'), nullable=False)
+    service_type_id = db.Column(db.Integer, db.ForeignKey('service_type.id'), nullable=False)
+    description = db.Column(db.Text, nullable=False)
+    status = db.Column(db.String(20), default='Pendente') # Pendente, Agendado, Concluído, Cancelado
+    supplier_id = db.Column(db.Integer, db.ForeignKey('supplier.id'), nullable=True)
+    scheduled_date = db.Column(db.DateTime, nullable=True)
+    created_at = db.Column(db.DateTime, default=get_brasilia_time)
+    created_by_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+    tenant = db.relationship('Tenant')
+    school = db.relationship('TeachingUnit', foreign_keys=[school_id])
+    service_type = db.relationship('ServiceType')
+    creator = db.relationship('User', foreign_keys=[created_by_id])
+    attachments = db.relationship('ServiceOrderAttachment', backref='order', lazy='dynamic', cascade='all, delete-orphan')
+
+class ServiceOrderAttachment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    service_order_id = db.Column(db.Integer, db.ForeignKey('service_order.id'), nullable=False)
+    file_path = db.Column(db.String(255), nullable=False)
+    filename = db.Column(db.String(255), nullable=False)
+    uploaded_at = db.Column(db.DateTime, default=get_brasilia_time)

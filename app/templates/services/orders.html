@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}Ordens de Serviço{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Ordens de Serviço</h2>
+        {% if 'fornecedor' not in current_user.get_roles() %}
+        <a href="{{ url_for('services.new_order') }}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Solicitar Serviço
+        </a>
+        {% endif %}
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Nº O.S.</th>
+                            <th>Data Solicitação</th>
+                            <th>Escola / Unidade</th>
+                            <th>Serviço</th>
+                            <th>Status</th>
+                            <th>Agendamento</th>
+                            <th class="text-end">Detalhes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for o in orders %}
+                        <tr>
+                            <td>#{{ o.id }}</td>
+                            <td>{{ o.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
+                            <td>{{ o.school.name }}</td>
+                            <td>{{ o.service_type.name }}</td>
+                            <td>
+                                {% if o.status == 'Pendente' %}
+                                    <span class="badge bg-warning text-dark">Pendente</span>
+                                {% elif o.status == 'Agendado' %}
+                                    <span class="badge bg-info">Agendado</span>
+                                {% elif o.status == 'Em Andamento' %}
+                                    <span class="badge bg-primary">Em Andamento</span>
+                                {% elif o.status == 'Concluído' %}
+                                    <span class="badge bg-success">Concluído</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">{{ o.status }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if o.scheduled_date %}
+                                    {{ o.scheduled_date.strftime('%d/%m/%Y às %H:%M') }}
+                                {% else %}
+                                    <span class="text-muted">Não agendado</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end">
+                                <a href="{{ url_for('services.view_order', id=o.id) }}" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-eye"></i> Ver / Editar
+                                </a>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="7" class="text-center py-4 text-muted">Nenhuma ordem de serviço encontrada.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    {% if pagination and pagination.pages > 1 %}
+    <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% for page_num in pagination.iter_pages() %}
+                {% if page_num %}
+                    <li class="page-item {% if page_num == pagination.page %}active{% endif %}">
+                        <a class="page-link" href="{{ url_for('services.list_orders', page=page_num) }}">{{ page_num }}</a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}Fornecedores - Ordens de Serviço{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Gestão de Fornecedores</h2>
+        <a href="{{ url_for('services.new_supplier') }}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Novo Fornecedor
+        </a>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <form method="GET" class="row g-3">
+                <div class="col-md-10">
+                    <input type="text" name="search" class="form-control" placeholder="Buscar por Nome, Razão Social ou CPF/CNPJ" value="{{ request.args.get('search', '') }}">
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-secondary w-100"><i class="bi bi-search"></i> Buscar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Nome / Razão Social</th>
+                            <th>Tipo</th>
+                            <th>CPF/CNPJ</th>
+                            <th>Contato</th>
+                            <th>Status</th>
+                            <th class="text-end">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for s in suppliers %}
+                        <tr>
+                            <td>{{ s.name }}</td>
+                            <td>{{ s.type }}</td>
+                            <td>{{ s.cpf_cnpj }}</td>
+                            <td>
+                                {% if s.email %}<i class="bi bi-envelope"></i> {{ s.email }}<br>{% endif %}
+                                {% if s.phone %}<i class="bi bi-telephone"></i> {{ s.phone }}{% endif %}
+                            </td>
+                            <td>
+                                {% if s.active %}
+                                    <span class="badge bg-success">Ativo</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Inativo</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end">
+                                <a href="{{ url_for('services.supplier_contacts', id=s.id) }}" class="btn btn-sm btn-info" title="Responsáveis/Login">
+                                    <i class="bi bi-people"></i>
+                                </a>
+                                <a href="{{ url_for('services.edit_supplier', id=s.id) }}" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <form action="{{ url_for('services.delete_supplier', id=s.id) }}" method="POST" class="d-inline" onsubmit="return confirm('Tem certeza que deseja excluir este fornecedor?');">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Excluir">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="6" class="text-center py-4 text-muted">Nenhum fornecedor encontrado.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    {% if pagination and pagination.pages > 1 %}
+    <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% for page_num in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+                {% if page_num %}
+                    <li class="page-item {% if page_num == pagination.page %}active{% endif %}">
+                        <a class="page-link" href="{{ url_for('services.list_suppliers', page=page_num, search=request.args.get('search')) }}">{{ page_num }}</a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}

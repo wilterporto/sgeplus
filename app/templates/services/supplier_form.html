@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} - Fornecedores{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>{{ title }}</h2>
+        <a href="{{ url_for('services.list_suppliers') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Voltar
+        </a>
+    </div>
+
+    <div class="card shadow-sm mx-auto" style="max-width: 800px;">
+        <div class="card-body p-4">
+            <form method="POST">
+                {{ form.hidden_tag() }}
+                
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label for="{{ form.type.id }}" class="form-label">{{ form.type.label.text }} <span style="color:red">*</span></label>
+                        {{ form.type(class="form-select" + (" is-invalid" if form.type.errors else "")) }}
+                        {% for error in form.type.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="col-md-8">
+                        <label for="{{ form.cpf_cnpj.id }}" class="form-label">{{ form.cpf_cnpj.label.text }} <span style="color:red">*</span></label>
+                        {{ form.cpf_cnpj(class="form-control" + (" is-invalid" if form.cpf_cnpj.errors else "")) }}
+                        {% for error in form.cpf_cnpj.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="{{ form.name.id }}" class="form-label">{{ form.name.label.text }} <span style="color:red">*</span></label>
+                    {{ form.name(class="form-control" + (" is-invalid" if form.name.errors else "")) }}
+                    {% for error in form.name.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="{{ form.email.id }}" class="form-label">{{ form.email.label.text }}</label>
+                        {{ form.email(class="form-control" + (" is-invalid" if form.email.errors else "")) }}
+                        {% for error in form.email.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="col-md-6">
+                        <label for="{{ form.phone.id }}" class="form-label">{{ form.phone.label.text }}</label>
+                        {{ form.phone(class="form-control" + (" is-invalid" if form.phone.errors else "")) }}
+                        {% for error in form.phone.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="mb-4 form-check">
+                    {{ form.active(class="form-check-input") }}
+                    <label class="form-check-label" for="{{ form.active.id }}">
+                        {{ form.active.label.text }}
+                    </label>
+                </div>
+
+                <div class="d-grid">
+                    {{ form.submit(class="btn btn-primary btn-lg") }}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

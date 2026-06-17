@@ -349,6 +349,12 @@
                         <i class="bi bi-heart-pulse me-2"></i> <span class="sidebar-text">Nutrição Escolar</span>
                     </a>
                 </li>
+                <li>
+                    <a href="{{ url_for('services.list_orders') }}"
+                        class="nav-link {% if 'services' in request.endpoint %}active{% endif %}">
+                        <i class="bi bi-tools me-2"></i> <span class="sidebar-text">Ordens de Serviço</span>
+                    </a>
+                </li>
                 <li class="nav-item">
                     <a href="{{ url_for('users.profile') }}"
                         class="nav-link {% if 'profile' in request.endpoint %}active{% endif %}">
@@ -362,6 +368,21 @@
                     <a href="{{ url_for('exams.list_available_exams') }}"
                         class="nav-link {% if 'available' in request.endpoint %}active{% endif %}">
                         <i class="bi bi-file-earmark-text me-2"></i> <span class="sidebar-text">Minhas Provas</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ url_for('users.profile') }}"
+                        class="nav-link {% if 'profile' in request.endpoint %}active{% endif %}">
+                        <i class="bi bi-person-badge me-2"></i> <span class="sidebar-text">Meus Dados</span>
+                    </a>
+                </li>
+
+                {# FORNECEDOR MENU #}
+                {% elif active_role == 'fornecedor' %}
+                <li class="nav-item">
+                    <a href="{{ url_for('services.list_orders') }}"
+                        class="nav-link {% if 'services' in request.endpoint %}active{% endif %}">
+                        <i class="bi bi-tools me-2"></i> <span class="sidebar-text">Ordens de Serviço</span>
                     </a>
                 </li>
                 <li class="nav-item">
@@ -484,6 +505,27 @@
                     <a href="{{ url_for('nutrition.dashboard') }}"
                         class="nav-link {% if 'nutrition' in request.endpoint %}active{% endif %}">
                         <i class="bi bi-heart-pulse me-2"></i> <span class="sidebar-text">Nutrição Escolar</span>
+                    </a>
+                </li>
+                <li class="nav-item mt-3">
+                    <span class="text-uppercase text-secondary small ms-3 fw-bold sidebar-text">Serviços e Manutenção</span>
+                </li>
+                <li>
+                    <a href="{{ url_for('services.list_types') }}"
+                        class="nav-link {% if 'types' in request.endpoint %}active{% endif %}">
+                        <i class="bi bi-card-list me-2"></i> <span class="sidebar-text">Catálogo de Serviços</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('services.list_suppliers') }}"
+                        class="nav-link {% if 'suppliers' in request.endpoint %}active{% endif %}">
+                        <i class="bi bi-truck me-2"></i> <span class="sidebar-text">Fornecedores</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('services.list_orders') }}"
+                        class="nav-link {% if 'orders' in request.endpoint %}active{% endif %}">
+                        <i class="bi bi-tools me-2"></i> <span class="sidebar-text">Ordens de Serviço</span>
                     </a>
                 </li>
                 {% endif %}

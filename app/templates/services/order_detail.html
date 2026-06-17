@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}Detalhes da O.S. #{{ order.id }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Ordem de Serviço #{{ order.id }}</h2>
+        <a href="{{ url_for('services.list_orders') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Voltar
+        </a>
+    </div>
+
+    <div class="row">
+        <!-- Coluna de Informações -->
+        <div class="col-md-7">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="card-title mb-0">Informações da Solicitação</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Escola/Unidade:</strong> {{ order.school.name }}</p>
+                    <p><strong>Serviço Solicitado:</strong> {{ order.service_type.name }}</p>
+                    <p><strong>Data da Abertura:</strong> {{ order.created_at.strftime('%d/%m/%Y às %H:%M') }}</p>
+                    <p><strong>Solicitante:</strong> {{ order.creator.name }}</p>
+                    <hr>
+                    <h6>Descrição do Problema:</h6>
+                    <p class="text-break bg-light p-3 rounded border">{{ order.description }}</p>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="card-title mb-0">Anexos ({{ order.attachments.count() }})</h5>
+                </div>
+                <div class="card-body">
+                    {% if order.attachments.count() > 0 %}
+                    <div class="row g-2">
+                        {% for attach in order.attachments %}
+                        <div class="col-sm-4">
+                            <a href="{{ url_for('static', filename=attach.file_path) }}" target="_blank">
+                                <img src="{{ url_for('static', filename=attach.file_path) }}" class="img-fluid img-thumbnail" alt="{{ attach.filename }}">
+                            </a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-muted mb-0">Nenhuma foto anexada a esta solicitação.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Coluna de Agendamento -->
+        <div class="col-md-5">
+            <div class="card shadow-sm border-primary">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">Gestão e Agendamento</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Status Atual <span style="color:red">*</span></label>
+                            {{ form.status(class="form-select") }}
+                        </div>
+
+                        {% if 'fornecedor' not in current_user.get_roles() %}
+                        <div class="mb-3">
+                            <label class="form-label">Fornecedor Designado</label>
+                            {{ form.supplier_id(class="form-select") }}
+                        </div>
+                        {% else %}
+                        <div class="mb-3">
+                            <label class="form-label">Fornecedor Responsável</label>
+                            <input type="text" class="form-control" value="{{ order.supplier.name if order.supplier else 'Aguardando sua atribuição' }}" disabled>
+                        </div>
+                        {% endif %}
+
+                        <div class="mb-4">
+                            <label class="form-label">Data e Hora do Atendimento</label>
+                            <!-- Input HTML5 para datetime-local -->
+                            <input type="datetime-local" name="scheduled_date" class="form-control" 
+                                value="{{ order.scheduled_date.strftime('%Y-%m-%dT%H:%M') if order.scheduled_date else '' }}">
+                            <div class="form-text">Preencha quando a equipe técnica for visitar a escola.</div>
+                        </div>
+
+                        <div class="d-grid">
+                            {{ form.submit(class="btn btn-primary") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

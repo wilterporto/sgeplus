@@ -25,9 +25,41 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 limiter = Limiter(key_func=get_remote_address, storage_uri="memory://")
 
+import os
+import logging
+from logging.handlers import RotatingFileHandler
+
 def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
+
+    # Setup de Logs
+    if not app.testing:
+        if not os.path.exists('logs'):
+            try:
+                os.mkdir('logs')
+            except OSError:
+                pass
+        
+        if os.path.exists('logs'):
+            file_handler = RotatingFileHandler('logs/sgeplus.log', maxBytes=1024000, backupCount=10)
+            file_handler.setFormatter(logging.Formatter(
+                '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
+            ))
+            file_handler.setLevel(logging.INFO)
+            app.logger.addHandler(file_handler)
+            app.logger.setLevel(logging.INFO)
+            app.logger.info('SGE Plus startup inicializado')
+
+    # Verificação crítica de permissão de escrita no Linux para o SQLite (pasta instance)
+    instance_path = os.path.join(app.root_path, '..', 'instance')
+    instance_path = os.path.abspath(instance_path)
+    if os.path.exists(instance_path):
+        if not os.access(instance_path, os.W_OK):
+            app.logger.error(f'CRITICO: Sem permissao de escrita na pasta {instance_path}. O login e gravacoes vao falhar!')
+            print(f"CRITICO: Sem permissao de escrita na pasta {instance_path}")
+    else:
+        app.logger.warning(f'AVISO: Pasta do banco de dados nao encontrada em {instance_path}')
 
     db.init_app(app)
     login_manager.init_app(app)
@@ -81,6 +113,9 @@ def create_app(config_class=Config):
 
     from app.routes.nutrition import nutrition_bp
     app.register_blueprint(nutrition_bp)
+
+    from app.routes.services import services_bp
+    app.register_blueprint(services_bp, url_prefix='/services')
     
     # Context Processor for Version
     @app.context_processor

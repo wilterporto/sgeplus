@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Nova Ordem de Serviço{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Nova Solicitação de Serviço</h2>
+        <a href="{{ url_for('services.list_orders') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Voltar
+        </a>
+    </div>
+
+    <div class="card shadow-sm mx-auto" style="max-width: 800px;">
+        <div class="card-body p-4">
+            <form method="POST" enctype="multipart/form-data">
+                {{ form.hidden_tag() }}
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="{{ form.school_id.id }}" class="form-label">{{ form.school_id.label.text }} <span style="color:red">*</span></label>
+                        {{ form.school_id(class="form-select" + (" is-invalid" if form.school_id.errors else "")) }}
+                    </div>
+                    <div class="col-md-6">
+                        <label for="{{ form.service_type_id.id }}" class="form-label">{{ form.service_type_id.label.text }} <span style="color:red">*</span></label>
+                        {{ form.service_type_id(class="form-select" + (" is-invalid" if form.service_type_id.errors else "")) }}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="{{ form.description.id }}" class="form-label">{{ form.description.label.text }} <span style="color:red">*</span></label>
+                    {{ form.description(class="form-control" + (" is-invalid" if form.description.errors else ""), rows="5", placeholder="Descreva com detalhes o problema ou a necessidade de serviço...") }}
+                    {% for error in form.description.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="mb-4">
+                    <label for="{{ form.photos.id }}" class="form-label">{{ form.photos.label.text }}</label>
+                    {{ form.photos(class="form-control" + (" is-invalid" if form.photos.errors else ""), accept=".jpg,.jpeg,.png", multiple=True) }}
+                    <div class="form-text">Envie fotos para facilitar o orçamento ou diagnóstico pelo fornecedor. Permitido apenas arquivos JPG ou PNG. Máximo 5MB por arquivo.</div>
+                    {% for error in form.photos.errors %}
+                        <div class="invalid-feedback d-block">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="d-grid">
+                    {{ form.submit(class="btn btn-primary btn-lg") }}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

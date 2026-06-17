@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}Responsáveis do Fornecedor{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Responsáveis por: {{ supplier.name }}</h2>
+        <a href="{{ url_for('services.list_suppliers') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Voltar
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">Novo Responsável</h5>
+                </div>
+                <div class="card-body">
+                    <p class="small text-muted">Será gerado um acesso ao sistema usando o CPF como login e os 6 primeiros dígitos como senha.</p>
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
+                        <div class="mb-3">
+                            <label for="{{ form.name.id }}" class="form-label">{{ form.name.label.text }} <span style="color:red">*</span></label>
+                            {{ form.name(class="form-control" + (" is-invalid" if form.name.errors else "")) }}
+                        </div>
+                        <div class="mb-3">
+                            <label for="{{ form.cpf.id }}" class="form-label">{{ form.cpf.label.text }} <span style="color:red">*</span></label>
+                            {{ form.cpf(class="form-control" + (" is-invalid" if form.cpf.errors else "")) }}
+                        </div>
+                        <div class="mb-3">
+                            <label for="{{ form.email.id }}" class="form-label">{{ form.email.label.text }} <span style="color:red">*</span></label>
+                            {{ form.email(class="form-control" + (" is-invalid" if form.email.errors else "")) }}
+                        </div>
+                        <div class="d-grid">
+                            {{ form.submit(class="btn btn-primary") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Nome</th>
+                                    <th>CPF (Login)</th>
+                                    <th>E-mail</th>
+                                    <th class="text-end">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for contact in supplier.contacts %}
+                                <tr>
+                                    <td>{{ contact.name }}</td>
+                                    <td>{{ contact.cpf }}</td>
+                                    <td>{{ contact.email }}</td>
+                                    <td class="text-end">
+                                        <form action="{{ url_for('services.delete_contact', contact_id=contact.id) }}" method="POST" class="d-inline" onsubmit="return confirm('Excluir este contato revogará o acesso dele ao sistema. Continuar?');">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Excluir Contato">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="4" class="text-center py-4 text-muted">Nenhum responsável cadastrado para este fornecedor.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
