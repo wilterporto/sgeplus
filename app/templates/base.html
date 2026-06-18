@@ -353,6 +353,12 @@
                     </a>
                 </li>
                 <li>
+                    <a href="{{ url_for('services.dashboard') }}"
+                        class="nav-link {% if 'dashboard' in request.endpoint and 'services' in request.blueprint %}active{% endif %}">
+                        <i class="bi bi-speedometer2 me-2"></i> <span class="sidebar-text">Dashboard de OS</span>
+                    </a>
+                </li>
+                <li>
                     <a href="{{ url_for('services.list_orders') }}"
                         class="nav-link {% if 'services' in request.endpoint %}active{% endif %}">
                         <i class="bi bi-tools me-2"></i> <span class="sidebar-text">Ordens de Serviço</span>
@@ -382,6 +388,12 @@
 
                 {# FORNECEDOR MENU #}
                 {% elif active_role == 'fornecedor' %}
+                <li>
+                    <a href="{{ url_for('services.dashboard') }}"
+                        class="nav-link {% if 'dashboard' in request.endpoint and 'services' in request.blueprint %}active{% endif %}">
+                        <i class="bi bi-speedometer2 me-2"></i> <span class="sidebar-text">Dashboard de OS</span>
+                    </a>
+                </li>
                 <li class="nav-item">
                     <a href="{{ url_for('services.list_orders') }}"
                         class="nav-link {% if 'services' in request.endpoint %}active{% endif %}">
@@ -594,6 +606,12 @@
                     <a href="{{ url_for('services.list_suppliers') }}"
                         class="nav-link {% if 'suppliers' in request.endpoint %}active{% endif %}">
                         <i class="bi bi-truck me-2"></i> <span class="sidebar-text">Fornecedores</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('services.dashboard') }}"
+                        class="nav-link {% if 'dashboard' in request.endpoint and 'services' in request.blueprint %}active{% endif %}">
+                        <i class="bi bi-speedometer2 me-2"></i> <span class="sidebar-text">Dashboard de OS</span>
                     </a>
                 </li>
                 <li>

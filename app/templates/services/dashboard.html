@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Ordens de Serviço{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Dashboard de Ordens de Serviço</h2>
+        {% if 'fornecedor' not in current_user.get_roles() %}
+        <a href="{{ url_for('services.new_order') }}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Solicitar Serviço
+        </a>
+        {% endif %}
+    </div>
+
+    <!-- Cards de Totais -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-2 col-6">
+            <div class="card bg-primary text-white shadow-sm h-100">
+                <div class="card-body text-center">
+                    <h6 class="card-title text-uppercase opacity-75">Total</h6>
+                    <h2 class="mb-0 fw-bold">{{ stats['Total'] }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2 col-6">
+            <div class="card bg-warning text-dark shadow-sm h-100">
+                <div class="card-body text-center">
+                    <h6 class="card-title text-uppercase opacity-75">Pendentes</h6>
+                    <h2 class="mb-0 fw-bold">{{ stats['Pendente'] }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2 col-6">
+            <div class="card bg-info text-white shadow-sm h-100">
+                <div class="card-body text-center">
+                    <h6 class="card-title text-uppercase opacity-75">Agendadas</h6>
+                    <h2 class="mb-0 fw-bold">{{ stats['Agendado'] }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2 col-6">
+            <div class="card bg-success text-white shadow-sm h-100">
+                <div class="card-body text-center">
+                    <h6 class="card-title text-uppercase opacity-75">Concluídas</h6>
+                    <h2 class="mb-0 fw-bold">{{ stats['Concluído'] }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2 col-6">
+            <div class="card bg-danger text-white shadow-sm h-100">
+                <div class="card-body text-center">
+                    <h6 class="card-title text-uppercase opacity-75">Canceladas</h6>
+                    <h2 class="mb-0 fw-bold">{{ stats['Cancelado'] }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <!-- Gráfico de Status -->
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white">
+                    <h5 class="card-title mb-0">Distribuição por Status</h5>
+                </div>
+                <div class="card-body d-flex align-items-center justify-content-center">
+                    <div style="width: 100%; max-width: 300px;">
+                        <canvas id="statusChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Funil de Agendamentos -->
+        <div class="col-md-8">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white">
+                    <h5 class="card-title mb-0">Funil de Agendamentos Pendentes</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3 text-center h-100 align-items-center">
+                        <div class="col-md-4">
+                            <div class="p-4 border rounded-3 bg-light">
+                                <i class="bi bi-calendar-event fs-1 text-danger mb-2"></i>
+                                <h4 class="fw-bold">{{ schedules['7_dias'] }}</h4>
+                                <span class="text-muted text-uppercase small fw-bold">Próximos 7 Dias</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="p-4 border rounded-3 bg-light">
+                                <i class="bi bi-calendar-week fs-1 text-warning mb-2"></i>
+                                <h4 class="fw-bold">{{ schedules['15_dias'] }}</h4>
+                                <span class="text-muted text-uppercase small fw-bold">Próximos 15 Dias</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="p-4 border rounded-3 bg-light">
+                                <i class="bi bi-calendar-month fs-1 text-primary mb-2"></i>
+                                <h4 class="fw-bold">{{ schedules['30_dias'] }}</h4>
+                                <span class="text-muted text-uppercase small fw-bold">Próximos 30 Dias</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabela Upcoming -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">Próximos Agendamentos (até 30 dias)</h5>
+            <a href="{{ url_for('services.list_orders') }}" class="btn btn-sm btn-outline-secondary">Ver Todas</a>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Data Agendada</th>
+                            <th>Nº O.S.</th>
+                            <th>Escola / Unidade</th>
+                            <th>Serviço</th>
+                            <th>Status</th>
+                            <th class="text-end">Detalhes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for o in upcoming %}
+                        <tr>
+                            <td class="fw-bold">{{ o.scheduled_date.strftime('%d/%m/%Y às %H:%M') }}</td>
+                            <td>#{{ o.id }}</td>
+                            <td>{{ o.school.name }}</td>
+                            <td>{{ o.service_type.name }}</td>
+                            <td>
+                                {% if o.status == 'Pendente' %}
+                                    <span class="badge bg-warning text-dark">Pendente</span>
+                                {% elif o.status == 'Agendado' %}
+                                    <span class="badge bg-info">Agendado</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">{{ o.status }}</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end">
+                                <a href="{{ url_for('services.view_order', id=o.id) }}" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-eye"></i> Visualizar
+                                </a>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="6" class="text-center py-4 text-muted">Nenhum agendamento futuro para os próximos 30 dias.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    var ctx = document.getElementById('statusChart').getContext('2d');
+    var statusChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Pendentes', 'Agendadas', 'Concluídas', 'Canceladas'],
+            datasets: [{
+                data: [
+                    {{ stats['Pendente'] }},
+                    {{ stats['Agendado'] }},
+                    {{ stats['Concluído'] }},
+                    {{ stats['Cancelado'] }}
+                ],
+                backgroundColor: [
+                    '#ffc107', // warning
+                    '#0dcaf0', // info
+                    '#198754', // success
+                    '#dc3545'  // danger
+                ],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            },
+            cutout: '70%'
+        }
+    });
+});
+</script>
+{% endblock %}

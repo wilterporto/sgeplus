@@ -237,6 +237,83 @@ def delete_type(id):
 
 # --- SERVICE ORDERS ---
 
+@services_bp.route('/orders/dashboard', methods=['GET'])
+def dashboard():
+    tenant_id = get_tenant_id()
+    
+    query = ServiceOrder.query.filter_by(tenant_id=tenant_id)
+    
+    # Se for fornecedor logado, mostra apenas as ordens que ele pode ver
+    if 'fornecedor' in current_user.get_roles():
+        contact = getattr(current_user, 'supplier_contact', None)
+        if contact:
+            query = query.filter((ServiceOrder.supplier_id == contact.supplier_id) | (ServiceOrder.supplier_id == None))
+
+    # Obter todos os resultados para calcular as estatísticas
+    # Em produção com milhões de registros, faríamos queries agrupadas por count().
+    # Como as tabelas são pequenas, puxar os dados não é tão custoso, 
+    # mas o ideal é fazer a contagem agrupada via banco.
+    from sqlalchemy import func
+    
+    # Contagens por status
+    status_counts = db.session.query(
+        ServiceOrder.status, func.count(ServiceOrder.id)
+    ).filter_by(tenant_id=tenant_id)
+    
+    if 'fornecedor' in current_user.get_roles():
+        contact = getattr(current_user, 'supplier_contact', None)
+        if contact:
+            status_counts = status_counts.filter((ServiceOrder.supplier_id == contact.supplier_id) | (ServiceOrder.supplier_id == None))
+            
+    status_counts = status_counts.group_by(ServiceOrder.status).all()
+    
+    stats = {
+        'Pendente': 0,
+        'Agendado': 0,
+        'Concluído': 0,
+        'Cancelado': 0,
+        'Total': 0
+    }
+    for status, count in status_counts:
+        if status in stats:
+            stats[status] = count
+        stats['Total'] += count
+
+    # Cálculos de agendamento (7, 15, 30 dias)
+    from datetime import date, timedelta
+    hoje = date.today()
+    dia_7 = hoje + timedelta(days=7)
+    dia_15 = hoje + timedelta(days=15)
+    dia_30 = hoje + timedelta(days=30)
+    
+    # Filtro apenas para agendamentos futuros não concluídos nem cancelados
+    scheduled_query = query.filter(
+        ServiceOrder.scheduled_date.isnot(None),
+        ServiceOrder.status.in_(['Pendente', 'Agendado']),
+        db.func.date(ServiceOrder.scheduled_date) >= hoje
+    )
+    
+    # Executamos a query dos próximos 30 dias ordenados por data
+    upcoming_30_days = scheduled_query.filter(db.func.date(ServiceOrder.scheduled_date) <= dia_30).order_by(ServiceOrder.scheduled_date).all()
+    
+    schedules = {
+        '7_dias': 0,
+        '15_dias': 0,
+        '30_dias': 0
+    }
+    
+    for order in upcoming_30_days:
+        s_date = order.scheduled_date.date()
+        if s_date <= dia_7:
+            schedules['7_dias'] += 1
+        if s_date <= dia_15:
+            schedules['15_dias'] += 1
+        if s_date <= dia_30:
+            schedules['30_dias'] += 1
+            
+    return render_template('services/dashboard.html', stats=stats, schedules=schedules, upcoming=upcoming_30_days[:15])
+
+
 @services_bp.route('/orders', methods=['GET'])
 def list_orders():
     tenant_id = get_tenant_id()
