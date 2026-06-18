@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="card shadow border-0">
+        <div class="card-header bg-primary text-white d-flex align-items-center">
+            <i class="bi bi-book fs-4 me-2"></i>
+            <h4 class="mb-0">Manual Operacional do Módulo IDEB+</h4>
+        </div>
+        <div class="card-body p-4">
+            <div class="alert alert-info border-0 shadow-sm">
+                <i class="bi bi-info-circle-fill me-2"></i>
+                <strong>Nota:</strong> Este manual descreve o fluxo de trabalho ponta a ponta do <strong>Módulo IDEB+</strong>. Siga a ordem estabelecida para garantir que toda a cadeia de dados pedagógicos (da configuração estrutural à análise estratégica) funcione corretamente, alimentando os dashboards de maneira precisa.
+            </div>
+
+            <h5 class="mt-4 border-bottom pb-2 text-primary fw-bold">Fase 1: Configurações Iniciais</h5>
+            <p class="text-muted">Nesta fase, a coordenação da rede define os parâmetros administrativos e de calendário que governarão o ciclo de avaliação.</p>
+            
+            <h6 class="fw-bold"><i class="bi bi-1-circle text-primary me-1"></i> Avaliações</h6>
+            <p>O marco zero do fluxo. Trata-se do cadastro do ciclo avaliativo ou evento macro.</p>
+            <ul>
+                <li><strong>O que fazer:</strong> Cadastre os ciclos de avaliação institucionais, como "Simulado Saeb 2026 - 1º Semestre" ou "Avaliação Diagnóstica Estadual".</li>
+                <li><strong>Detalhes Operacionais:</strong> Defina o ano letivo de referência, público-alvo e o peso/importância da avaliação no calendário anual. Tudo que for gerado posteriormente ficará guardado no "guarda-chuva" destas Avaliações criadas.</li>
+            </ul>
+
+            <h6 class="mt-4 fw-bold"><i class="bi bi-2-circle text-primary me-1"></i> Motivos de Ausência</h6>
+            <p>Para garantir a integridade dos dados estatísticos, é necessário entender não apenas o rendimento, mas também o engajamento e a evasão em dia de exame.</p>
+            <ul>
+                <li><strong>O que fazer:</strong> Liste as justificativas mapeadas pela secretaria, como "Atestado Médico", "Problemas de Transporte", "Evasão Não Justificada" ou "Clima/Enchente".</li>
+                <li><strong>Detalhes Operacionais:</strong> No momento em que a prova for aplicada e lançarem-se as presenças/ausências, o fiscal informará o motivo da falta. Isso permite cruzar dados no dashboard para entender se um baixo desempenho geral está ligado a abstenção sistêmica por problemas estruturais.</li>
+            </ul>
+
+            <h5 class="mt-5 border-bottom pb-2 text-primary fw-bold">Fase 2: Estruturação Pedagógica e Banco de Dados</h5>
+            <p class="text-muted">Nesta fase, foca-se na taxonomia do ensino e na construção do material intelectual (questões e provas).</p>
+
+            <h6 class="fw-bold"><i class="bi bi-3-circle text-primary me-1"></i> Matrizes (Matrizes de Referência)</h6>
+            <p>A Matriz de Referência é a bússola que orienta o que o aluno deve saber.</p>
+            <ul>
+                <li><strong>O que fazer:</strong> Insira as matrizes oficiais (ex: <em>Matriz Saeb de Língua Portuguesa</em>, <em>Matriz Saeb de Matemática</em>, <em>BNCC</em>, <em>Matriz Curricular Estadual</em>).</li>
+                <li><strong>Detalhes Operacionais:</strong> A matriz é a entidade "mãe". Ela conterá todos os temas e habilidades. O cadastro correto da matriz é fundamental para comparar o desempenho real do município com as exigências dos exames federais (Saeb/IDEB).</li>
+            </ul>
+
+            <h6 class="mt-4 fw-bold"><i class="bi bi-4-circle text-primary me-1"></i> Temas</h6>
+            <p>Os Temas são recortes ou eixos temáticos dentro da Matriz de Referência.</p>
+            <ul>
+                <li><strong>O que fazer:</strong> Vincule temas específicos a uma Matriz. Por exemplo, dentro da Matriz Saeb de Matemática, pode-se criar os temas: "Espaço e Forma", "Grandezas e Medidas", "Números e Operações", etc.</li>
+                <li><strong>Detalhes Operacionais:</strong> Todo descritor e questão deverá estar subordinado a um Tema. Isso viabilizará, no Dashboard, saber que determinada escola é muito boa em "Espaço e Forma", mas apresenta deficiência severa em "Tratamento da Informação".</li>
+            </ul>
+
+            <h6 class="mt-4 fw-bold"><i class="bi bi-5-circle text-primary me-1"></i> Descritores e Habilidades</h6>
+            <p>Os Descritores são a granularidade máxima da avaliação, definindo exatamente qual habilidade cognitiva está sendo cobrada.</p>
+            <ul>
+                <li><strong>O que fazer:</strong> Cadastre o código do descritor (ex: D01, D02) e a descrição completa da habilidade associada, vinculando-a sempre a um Tema e a uma Matriz.</li>
+                <li><strong>Detalhes Operacionais:</strong> A análise pedagógica final recairá diretamente sobre os descritores. Professores usarão essas métricas para decidir se precisam reforçar, por exemplo, o ensino de "Inferência" ou "Fração".</li>
+            </ul>
+
+            <h6 class="mt-4 fw-bold"><i class="bi bi-6-circle text-primary me-1"></i> Banco de Questões</h6>
+            <p>O local onde o conteúdo da prova é armazenado e classificado.</p>
+            <ul>
+                <li><strong>O que fazer:</strong> Cadastre e armazene as questões (itens), definindo enunciados, alternativas, alternativa correta, grau de dificuldade e, obrigatoriamente, vinculando a questão a um Descritor.</li>
+                <li><strong>Detalhes Operacionais:</strong> Aceite mídias (como imagens e tirinhas). O sistema poderá indicar ao longo do tempo quantas vezes uma questão foi utilizada e qual seu índice de acertos (Taxa de Discriminação/Dificuldade).</li>
+            </ul>
+
+            <h6 class="mt-4 fw-bold"><i class="bi bi-7-circle text-primary me-1"></i> Provas</h6>
+            <p>O ato de compilar o banco de questões em um "caderno" e distribuí-lo.</p>
+            <ul>
+                <li><strong>O que fazer:</strong> Crie um exame, vincule-o a uma "Avaliação" (criada no Passo 1), defina as disciplinas exigidas, configure datas de aplicação, liberação de resultados e monte os cadernos escolhendo as questões do Banco de Questões.</li>
+                <li><strong>Detalhes Operacionais:</strong> Configure se a prova será online ou impressa com gabarito virtual (cartão-resposta). Defina as turmas ou escolas que devem realizar esta prova.</li>
+            </ul>
+
+            <h5 class="mt-5 border-bottom pb-2 text-primary fw-bold">Fase 3: Análise de Resultados</h5>
+            <p class="text-muted">Após o engajamento e a aplicação das Provas pelos alunos/professores, inicia-se o momento analítico para gestores e rede educacional.</p>
+
+            <h6 class="fw-bold"><i class="bi bi-8-circle text-primary me-1"></i> Análise de Dados em Provas</h6>
+            <p>Trata-se do olhar tático, voltado para os resultados <strong>imediatos de um exame específico</strong> que acaba de ser aplicado.</p>
+            <ul>
+                <li><strong>O que verificar:</strong> Porcentagem geral de acertos e erros do Exame atual; Notas individuais dos alunos; Análise de "Item a Item" (Qual foi a questão mais errada dessa prova?); Triagem de turmas (Quem já preencheu o cartão-resposta e quem está pendente).</li>
+            </ul>
+
+            <h6 class="mt-4 fw-bold"><i class="bi bi-9-circle text-primary me-1"></i> Dashboard Integrado</h6>
+            <p>O ápice da pirâmide do Módulo IDEB+. Trata-se do olhar estratégico e panorâmico. Aqui se abandonam as métricas de apenas "uma prova" e observa-se a trajetória global.</p>
+            <ul>
+                <li><strong>Projeção IDEB:</strong> Com base no histórico de provas e taxa de aprovação/ausência, calcular uma projeção do IDEB do município.</li>
+                <li><strong>Análise Longitudinal:</strong> O crescimento (ou queda) de proficiência dos alunos ao longo do ano.</li>
+                <li><strong>Mapa de Calor por Descritor:</strong> Uma matriz colorida mostrando quais descritores (Habilidades) a rede já domina e quais estão críticos.</li>
+                <li><strong>Cruzamento Regional:</strong> Comparar Unidades Escolares, zonas urbanas vs. zonas rurais, garantindo que o investimento educacional seja bem direcionado.</li>
+            </ul>
+
+            <div class="alert alert-warning mt-4 border-0 shadow-sm d-flex align-items-center">
+                <i class="bi bi-exclamation-triangle-fill fs-4 me-3 text-warning"></i>
+                <div>
+                    <strong>Dica Estratégica:</strong> A confiabilidade do <strong>Dashboard Integrado (Passo 9)</strong> depende única e exclusivamente da dedicação em classificar meticulosamente os Descritores (Passo 5) e associá-los de modo preciso às Questões (Passo 6). Um item mal categorizado resultará em um diagnóstico estratégico distorcido.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

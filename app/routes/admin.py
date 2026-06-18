@@ -43,6 +43,10 @@ def list_imports():
         flash('Acesso restrito a administradores.', 'danger')
         return redirect(url_for('main.index'))
         
+    if current_user.is_system_admin and not session.get('active_tenant_id'):
+        flash('Selecione um cliente para visualizar as importações.', 'warning')
+        return redirect(url_for('admin.list_tenants'))
+        
     page = request.args.get('page', 1, type=int)
     
     # Filter imports list strictly by active tenant

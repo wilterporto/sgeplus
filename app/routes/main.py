@@ -14,6 +14,11 @@ def manifest():
 def sw():
     return current_app.send_static_file('sw.js')
 
+@main_bp.route('/manual/ideb')
+def manual_ideb():
+    from flask_login import login_required
+    return render_template('manual_ideb.html')
+
 @main_bp.route('/setup-db-render')
 def setup_db_render():
     from app import db

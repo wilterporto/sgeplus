@@ -273,7 +273,10 @@
                 <span class="fs-4 sidebar-header">{{ system_config.system_name }}</span>
             </a>
             <hr>
-            <ul class="nav nav-pills flex-column mb-auto">
+            <div class="mb-3 px-2 sidebar-text">
+                <input type="text" id="menuSearchInput" class="form-control form-control-sm bg-dark border-secondary text-light" placeholder="Pesquisar menu...">
+            </div>
+            <ul class="nav nav-pills flex-column mb-auto" id="sidebarMenu">
 
                 {# PROFESSOR MENU #}
                 {% if active_role == 'professor' %}
@@ -396,10 +399,13 @@
                 {% elif active_role in ['admin', 'regional_manager'] %}
                 {% set show_tenant_menus = not current_user.is_system_admin or session.get('active_tenant_id') %}
                 {% if show_tenant_menus %}
-                <li class="nav-item">
-                    <a href="{{ url_for('reports.dashboard') }}"
-                        class="nav-link {% if request.endpoint == 'reports.dashboard' %}active{% endif %}">
-                        <i class="bi bi-speedometer2 me-2"></i> <span class="sidebar-text">Dashboard</span>
+                <li class="nav-item mt-3">
+                    <span class="text-uppercase text-secondary small ms-3 fw-bold sidebar-text">IDEB+</span>
+                </li>
+                <li>
+                    <a href="{{ url_for('academic.list_evaluations') }}"
+                        class="nav-link {% if 'evaluations' in request.endpoint %}active{% endif %}">
+                        <i class="bi bi-award me-2"></i> <span class="sidebar-text">Avaliações</span>
                     </a>
                 </li>
                 <li>
@@ -408,20 +414,22 @@
                         <i class="bi bi-collection me-2"></i> <span class="sidebar-text">Banco de Questões</span>
                     </a>
                 </li>
-                <li>
-                    <a href="{{ url_for('exams.list_exams') }}"
-                        class="nav-link {% if 'exams' in request.endpoint %}active{% endif %}">
-                        <i class="bi bi-file-earmark-text me-2"></i> <span class="sidebar-text">Provas</span>
+                <li class="nav-item">
+                    <a href="{{ url_for('reports.dashboard') }}"
+                        class="nav-link {% if request.endpoint == 'reports.dashboard' %}active{% endif %}">
+                        <i class="bi bi-graph-up-arrow me-2"></i> <span class="sidebar-text">Dashboard Integrado</span>
                     </a>
                 </li>
-                <li class="nav-item mt-3">
-                    <span class="text-uppercase text-secondary small ms-3 fw-bold sidebar-text">Matrizes e
-                        Descritores</span>
+                <li>
+                    <a href="{{ url_for('matrices.list_descriptors') }}"
+                        class="nav-link {% if 'descriptors' in request.endpoint %}active{% endif %}">
+                        <i class="bi bi-hash me-2"></i> <span class="sidebar-text">Descritores/Habilidades</span>
+                    </a>
                 </li>
                 <li>
-                    <a href="{{ url_for('matrices.list_themes') }}"
-                        class="nav-link {% if 'themes' in request.endpoint %}active{% endif %}">
-                        <i class="bi bi-tags me-2"></i> <span class="sidebar-text">Temas</span>
+                    <a href="{{ url_for('main.manual_ideb') }}"
+                        class="nav-link {% if request.endpoint == 'main.manual_ideb' %}active{% endif %}">
+                        <i class="bi bi-book me-2"></i> <span class="sidebar-text">Manual</span>
                     </a>
                 </li>
                 <li>
@@ -431,11 +439,24 @@
                     </a>
                 </li>
                 <li>
-                    <a href="{{ url_for('matrices.list_descriptors') }}"
-                        class="nav-link {% if 'descriptors' in request.endpoint %}active{% endif %}">
-                        <i class="bi bi-hash me-2"></i> <span class="sidebar-text">Descritores/Habilidades</span>
+                    <a href="{{ url_for('academic.list_absence_reasons') }}"
+                        class="nav-link {% if 'absence_reasons' in request.endpoint %}active{% endif %}">
+                        <i class="bi bi-sign-stop me-2"></i> <span class="sidebar-text">Motivos de Ausência</span>
                     </a>
                 </li>
+                <li>
+                    <a href="{{ url_for('exams.list_exams') }}"
+                        class="nav-link {% if 'exams' in request.endpoint %}active{% endif %}">
+                        <i class="bi bi-file-earmark-text me-2"></i> <span class="sidebar-text">Provas</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('matrices.list_themes') }}"
+                        class="nav-link {% if 'themes' in request.endpoint %}active{% endif %}">
+                        <i class="bi bi-tags me-2"></i> <span class="sidebar-text">Temas</span>
+                    </a>
+                </li>
+
                 <li class="nav-item mt-3">
                     <span class="text-uppercase text-secondary small ms-3 fw-bold sidebar-text">Gestão Acadêmica</span>
                 </li>
@@ -444,26 +465,7 @@
                         class="nav-link {% if request.endpoint == 'academic.academic_dashboard' %}active{% endif %}">
                         <i class="bi bi-speedometer2 me-2"></i> <span class="sidebar-text">Indicadores</span>
                     </a>
-                </li>
-                <li>
-                    <a href="{{ url_for('academic.list_evaluations') }}"
-                        class="nav-link {% if 'evaluations' in request.endpoint %}active{% endif %}">
-                        <i class="bi bi-award me-2"></i> <span class="sidebar-text">Avaliações</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ url_for('academic.list_units') }}"
-                        class="nav-link {% if 'units' in request.endpoint %}active{% endif %}">
-                        <i class="bi bi-building me-2"></i> <span class="sidebar-text">Unidades</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ url_for('academic.definitions') }}"
-                        class="nav-link {% if 'definitions' in request.endpoint %}active{% endif %}">
-                        <i class="bi bi-list-check me-2"></i> <span class="sidebar-text">Definições</span>
-                    </a>
-                </li>
-                {% if active_tenant and active_tenant.type == 'Estadual' %}
+                               {% if active_tenant and active_tenant.type == 'Estadual' %}
                 <li>
                     <a href="{{ url_for('academic.map_regionals') }}"
                         class="nav-link {% if 'map_regionals' in request.endpoint %}active{% endif %}">
@@ -471,18 +473,6 @@
                     </a>
                 </li>
                 {% endif %}
-                <li>
-                    <a href="{{ url_for('academic.list_absence_reasons') }}"
-                        class="nav-link {% if 'absence_reasons' in request.endpoint %}active{% endif %}">
-                        <i class="bi bi-sign-stop me-2"></i> <span class="sidebar-text">Motivos de Ausência</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ url_for('academic.list_curriculums') }}"
-                        class="nav-link {% if 'curriculums' in request.endpoint %}active{% endif %}">
-                        <i class="bi bi-journal-bookmark me-2"></i> <span class="sidebar-text">Currículos</span>
-                    </a>
-                </li>
                 <li>
                     <a href="{{ url_for('academic.list_classes') }}"
                         class="nav-link {% if 'classes' in request.endpoint %}active{% endif %}">
@@ -507,6 +497,90 @@
                         <i class="bi bi-heart-pulse me-2"></i> <span class="sidebar-text">Nutrição Escolar</span>
                     </a>
                 </li>
+                <li class="nav-item mt-3">
+                    <span class="text-uppercase text-secondary small ms-3 fw-bold sidebar-text">Cadastros</span>
+                </li>
+                <li>
+                    <a href="{{ url_for('academic.definitions') }}#anos"
+                        class="nav-link">
+                        <i class="bi bi-calendar3 me-2"></i> <span class="sidebar-text">Anos Escolares</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="{{ url_for('academic.definitions') }}#classificacoes"
+                        class="nav-link">
+                        <i class="bi bi-tags me-2"></i> <span class="sidebar-text">Classificações da Unidade</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('academic.definitions') }}#componentes"
+                        class="nav-link">
+                        <i class="bi bi-book me-2"></i> <span class="sidebar-text">Componentes</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('academic.definitions') }}#quilombolas"
+                        class="nav-link">
+                        <i class="bi bi-house me-2"></i> <span class="sidebar-text">Comunidades Quilombolas</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('academic.list_curriculums') }}"
+                        class="nav-link {% if 'curriculums' in request.endpoint %}active{% endif %}">
+                        <i class="bi bi-journal-bookmark me-2"></i> <span class="sidebar-text">Currículos</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('academic.definitions') }}#energias"
+                        class="nav-link">
+                        <i class="bi bi-lightning me-2"></i> <span class="sidebar-text">Fontes de Energia</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="{{ url_for('academic.definitions') }}#indigenas"
+                        class="nav-link">
+                        <i class="bi bi-tree me-2"></i> <span class="sidebar-text">Povos Indígenas</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('academic.definitions') }}#regioes"
+                        class="nav-link">
+                        <i class="bi bi-map me-2"></i> <span class="sidebar-text">Regiões</span>
+                    </a>
+                </li>
+                {% if active_role == 'admin' %}
+                <li>
+                    <a href="{{ url_for('admin.list_dietary_restrictions') }}"
+                        class="nav-link {% if 'admin.list_dietary_restrictions' in request.endpoint %}active{% endif %}">
+                        <i class="bi bi-apple me-2"></i> <span class="sidebar-text">Restrições Alimentares</span>
+                    </a>
+                </li>
+                {% endif %}
+                <li>
+                    <a href="{{ url_for('academic.definitions') }}#subregioes"
+                        class="nav-link">
+                        <i class="bi bi-pin-map me-2"></i> <span class="sidebar-text">Sub Regiões</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('academic.list_units') }}"
+                        class="nav-link {% if 'units' in request.endpoint %}active{% endif %}">
+                        <i class="bi bi-building me-2"></i> <span class="sidebar-text">Unidades</span>
+                    </a>
+                </li>
+                {% if active_role == 'admin' %}
+                <li>
+                    <a href="{{ url_for('users.list_users') }}"
+                        class="nav-link {% if 'users' in request.endpoint and 'profile' not in request.endpoint %}active{% endif %}">
+                        <i class="bi bi-people-fill me-2"></i> <span class="sidebar-text">Usuários</span>
+                    </a>
+                </li>
+                {% endif %}
+
+
+                
                 <li class="nav-item mt-3">
                     <span class="text-uppercase text-secondary small ms-3 fw-bold sidebar-text">Serviços e Manutenção</span>
                 </li>
@@ -541,32 +615,30 @@
                     </a>
                 </li>
                 {% endif %}
+                {% if current_user.is_system_admin and not session.get('active_tenant_id') %}
                 <li>
                     <a href="{{ url_for('users.list_users') }}"
                         class="nav-link {% if 'users' in request.endpoint and 'profile' not in request.endpoint %}active{% endif %}">
                         <i class="bi bi-people-fill me-2"></i> <span class="sidebar-text">Usuários</span>
                     </a>
                 </li>
+                {% endif %}
                 <li>
                     <a href="{{ url_for('audit.list_logs') }}"
                         class="nav-link {% if 'audit' in request.endpoint %}active{% endif %}">
                         <i class="bi bi-shield-check me-2"></i> <span class="sidebar-text">Auditoria</span>
                     </a>
                 </li>
+                {% if show_tenant_menus %}
                 <li>
                     <a href="{{ url_for('admin.list_imports') }}"
                         class="nav-link {% if 'admin.list_imports' in request.endpoint %}active{% endif %}">
                         <i class="bi bi-cloud-arrow-down me-2"></i> <span class="sidebar-text">Importações</span>
                     </a>
                 </li>
-                {% if show_tenant_menus %}
-                <li>
-                    <a href="{{ url_for('admin.list_dietary_restrictions') }}"
-                        class="nav-link {% if 'admin.list_dietary_restrictions' in request.endpoint %}active{% endif %}">
-                        <i class="bi bi-apple me-2"></i> <span class="sidebar-text">Restrições Alimentares</span>
-                    </a>
-                </li>
                 {% endif %}
+
+
                 {% endif %}
 
                 {% endif %} {# End Admin/Manager #}
@@ -835,6 +907,27 @@
             }
             
 
+
+            // Lógica de pesquisa no menu
+            const menuSearchInput = document.getElementById('menuSearchInput');
+            if (menuSearchInput) {
+                menuSearchInput.addEventListener('input', function() {
+                    const filter = this.value.toLowerCase();
+                    const menuItems = document.querySelectorAll('#sidebarMenu > li');
+                    
+                    menuItems.forEach(function(item) {
+                        // Ignorar os separadores/headers
+                        if (item.querySelector('.nav-link')) {
+                            const text = item.textContent.toLowerCase();
+                            if (text.includes(filter)) {
+                                item.style.display = '';
+                            } else {
+                                item.style.display = 'none';
+                            }
+                        }
+                    });
+                });
+            }
 
             // Garante que todo campo obrigatório tenha a classe "required" em seu label correspondente
             document.querySelectorAll('input[required], select[required], textarea[required]').forEach(function(el) {
