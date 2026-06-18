@@ -196,8 +196,6 @@ def create_app(config_class=Config):
                        not request.endpoint.startswith('audit.') and \
                        request.endpoint not in whitelist_endpoints and \
                        not request.endpoint.startswith('static'):
-                        
-                        flash('Por favor, selecione um cliente para acessar o sistema.', 'warning')
                         return redirect(url_for('admin.list_tenants'))
 
     return app
