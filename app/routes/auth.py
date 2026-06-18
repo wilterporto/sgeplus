@@ -29,6 +29,12 @@ def login():
         
         login_user(user, remember=form.remember.data)
         
+        # Limpar dados de tenant/escola da sessão anterior para evitar persistência indevida
+        session.pop('active_tenant_id', None)
+        session.pop('active_tenant_name', None)
+        session.pop('active_school_id', None)
+        session.pop('active_school_name', None)
+        
         # Multi-role logic
         roles = user.get_roles()
         if len(roles) > 1:
@@ -200,6 +206,10 @@ def logout():
 
     session.pop('active_role', None)
     session.pop('access_log_id', None)
+    session.pop('active_tenant_id', None)
+    session.pop('active_tenant_name', None)
+    session.pop('active_school_id', None)
+    session.pop('active_school_name', None)
     logout_user()
     return redirect(url_for('auth.login'))
 
