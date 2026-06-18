@@ -516,6 +516,16 @@ def get_dashboard_data(exam_id, regional_ids=None, unit_ids=None, class_ids=None
         if school_name not in school_levels:
             school_levels[school_name] = set()
         school_levels[school_name].add(level)
+        
+    school_classes = {}
+    for cls in rankings['classes']:
+        school_id = cls['school_id']
+        if school_id not in school_classes:
+            school_classes[school_id] = []
+        school_classes[school_id].append({
+            'name': cls['name'],
+            'score': cls['score']
+        })
     
     for sch in target_schools:
         if sch.latitude and sch.longitude:
@@ -528,7 +538,8 @@ def get_dashboard_data(exam_id, regional_ids=None, unit_ids=None, class_ids=None
                     'lat': lat,
                     'lng': lng,
                     'score': school_scores.get(sch.name, None),
-                    'levels': list(school_levels.get(sch.name, set()))
+                    'levels': list(school_levels.get(sch.name, set())),
+                    'classes': school_classes.get(sch.id, [])
                 })
             except ValueError:
                 map_data['missing_coords_count'] += 1

@@ -1813,7 +1813,18 @@
                 
                 const marker = L.marker([sch.lat, sch.lng], {icon: customIcon}).addTo(mapInstance);
                 const scoreText = sch.score !== null ? `Proficiência: ${sch.score.toFixed(1)}%` : 'Sem resultados processados';
-                marker.bindPopup(`<strong>${sch.name}</strong><br>${scoreText}`);
+                
+                let classesHtml = '';
+                if (sch.classes && sch.classes.length > 0) {
+                    classesHtml += '<div class="mt-2" style="max-height: 100px; overflow-y: auto;">';
+                    classesHtml += '<strong style="font-size: 0.85rem;">Proficiência por Turma:</strong><ul class="list-unstyled mb-0" style="font-size: 0.8rem;">';
+                    sch.classes.forEach(c => {
+                        classesHtml += `<li>${c.name}: <strong>${c.score !== null ? c.score.toFixed(1) + '%' : 'N/A'}</strong></li>`;
+                    });
+                    classesHtml += '</ul></div>';
+                }
+                
+                marker.bindPopup(`<strong>${sch.name}</strong><br>${scoreText}${classesHtml}`);
                 mapMarkers.push(marker);
             }
         });
