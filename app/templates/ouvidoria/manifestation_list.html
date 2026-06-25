@@ -49,8 +49,8 @@
                             {% endif %}
                         </td>
                         <td class="align-middle">
-                            <span class="badge bg-{% if m.status == 'Pendente' %}warning{% elif m.status == 'Aceita' %}info{% elif m.status == 'Tramitando' %}primary{% elif m.status == 'Rejeitada' %}danger{% else %}success{% endif %}">
-                                {{ m.status }}
+                            <span class="badge bg-{% if OmbudsmanStatusEnum(m.status).name == 'PENDENTE' %}warning{% elif OmbudsmanStatusEnum(m.status).name == 'ACEITA' %}info{% elif OmbudsmanStatusEnum(m.status).name == 'TRAMITANDO' %}primary{% elif OmbudsmanStatusEnum(m.status).name == 'REJEITADA' %}danger{% else %}success{% endif %}">
+                                {{ OmbudsmanStatusEnum(m.status).label if m.status else '-' }}
                             </span>
                         </td>
                         <td class="align-middle text-muted">{{ m.created_at.strftime('%d/%m/%Y %H:%M') }}</td>

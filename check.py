@@ -1,0 +1,11 @@
+import sqlite3
+conn = sqlite3.connect('instance/idebmais.db')
+print("ombudsman_subject:")
+res = conn.execute("SELECT sql FROM sqlite_master WHERE name='ombudsman_subject'").fetchone()
+if res: print(res[0])
+print("\nombudsman_manifestation:")
+res2 = conn.execute("SELECT sql FROM sqlite_master WHERE name='ombudsman_manifestation'").fetchone()
+if res2: print(res2[0])
+print("\nombudsman_nature exists?")
+res3 = conn.execute("SELECT count(*) FROM sqlite_master WHERE name='ombudsman_nature'").fetchone()
+print(res3)

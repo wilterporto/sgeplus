@@ -22,7 +22,7 @@
                 <div class="row g-3">
                     <div class="col-md-6">
                         <small class="text-muted text-uppercase fw-bold d-block">Natureza</small>
-                        <span class="fw-medium">{{ manifestation.nature.name if manifestation.nature else '-' }}</span>
+                        <span class="fw-medium">{{ OmbudsmanNatureEnum(manifestation.nature).label if manifestation.nature else '-' }}</span>
                     </div>
                     <div class="col-md-6">
                         <small class="text-muted text-uppercase fw-bold d-block">Assunto</small>
@@ -32,11 +32,11 @@
                 <div class="row g-3 mt-1">
                     <div class="col-md-6">
                         <small class="text-muted text-uppercase fw-bold d-block">Tipo de Manifestante</small>
-                        <span class="fw-medium">{{ manifestation.requester_type }}</span>
+                        <span class="fw-medium">{{ OmbudsmanRequesterTypeEnum(manifestation.requester_type).label if manifestation.requester_type else '-' }}</span>
                     </div>
                     <div class="col-md-6">
                         <small class="text-muted text-uppercase fw-bold d-block">Modo de Entrada</small>
-                        <span class="fw-medium">{{ manifestation.entry_mode }}</span>
+                        <span class="fw-medium">{{ OmbudsmanEntryModeEnum(manifestation.entry_mode).label if manifestation.entry_mode else '-' }}</span>
                     </div>
                 </div>
 

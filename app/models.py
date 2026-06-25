@@ -1,3 +1,4 @@
+import enum
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
@@ -828,28 +829,81 @@ class ServiceOrderAttachment(db.Model):
     filename = db.Column(db.String(255), nullable=False)
     uploaded_at = db.Column(db.DateTime, default=get_brasilia_time)
 
-class OmbudsmanNature(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    tenant_id = db.Column(db.Integer, db.ForeignKey('tenant.id'), nullable=True)
-    name = db.Column(db.String(128), nullable=False)
-    active = db.Column(db.Boolean, default=True)
+class OmbudsmanNatureEnum(enum.IntEnum):
+    RECLAMACAO = 1
+    ELOGIO = 2
+    SOLICITACAO = 3
+    SUGESTAO = 4
+    DENUNCIA = 5
 
-    __table_args__ = (
-        db.UniqueConstraint('tenant_id', 'name', name='uq_ombudsman_nature_tenant_name'),
-    )
-    tenant = db.relationship('Tenant')
-    subjects = db.relationship('OmbudsmanSubject', backref='nature', lazy='dynamic')
-    manifestations = db.relationship('OmbudsmanManifestation', backref='nature', lazy='dynamic')
+    @property
+    def label(self):
+        return {
+            1: 'Reclamação',
+            2: 'Elogio',
+            3: 'Solicitação',
+            4: 'Sugestão',
+            5: 'Denúncia'
+        }[self.value]
+
+class OmbudsmanStatusEnum(enum.IntEnum):
+    PENDENTE = 1
+    ACEITA = 2
+    REJEITADA = 3
+    TRAMITANDO = 4
+    RESOLVIDA = 5
+
+    @property
+    def label(self):
+        return self.name.title()
+
+class OmbudsmanRequesterTypeEnum(enum.IntEnum):
+    ALUNO = 1
+    SERVIDOR = 2
+    RESPONSAVEL_ALUNO = 3
+    OUTRO = 4
+
+    @property
+    def label(self):
+        return {
+            1: 'Aluno',
+            2: 'Servidor',
+            3: 'Responsável aluno',
+            4: 'Outro'
+        }[self.value]
+
+class OmbudsmanEntryModeEnum(enum.IntEnum):
+    PORTAL_DA_COMUNIDADE = 1
+    EMAIL = 2
+    WHATSAPP = 3
+    PORTAL_DO_ALUNO = 4
+    APLICATIVO = 5
+    TELEFONE = 6
+    PRESENCIAL = 7
+    CALL_CENTER = 8
+
+    @property
+    def label(self):
+        return {
+            1: 'Portal da Comunidade',
+            2: 'E-mail',
+            3: 'WhatsApp',
+            4: 'Portal do Aluno',
+            5: 'Aplicativo',
+            6: 'Telefone',
+            7: 'Presencial',
+            8: 'Call-Center'
+        }[self.value]
 
 class OmbudsmanSubject(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     tenant_id = db.Column(db.Integer, db.ForeignKey('tenant.id'), nullable=True)
-    nature_id = db.Column(db.Integer, db.ForeignKey('ombudsman_nature.id'), nullable=False)
+    nature = db.Column(db.Enum(OmbudsmanNatureEnum), nullable=False)
     name = db.Column(db.String(128), nullable=False)
     active = db.Column(db.Boolean, default=True)
 
     __table_args__ = (
-        db.UniqueConstraint('tenant_id', 'nature_id', 'name', name='uq_ombudsman_subject_tenant_nature_name'),
+        db.UniqueConstraint('tenant_id', 'nature', 'name', name='uq_ombudsman_subject_tenant_nature_name'),
     )
     tenant = db.relationship('Tenant')
     manifestations = db.relationship('OmbudsmanManifestation', backref='subject', lazy='dynamic')
@@ -860,15 +914,15 @@ class OmbudsmanManifestation(db.Model):
     protocol_number = db.Column(db.String(50), unique=True, nullable=False)
     title = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text, nullable=False)
-    nature_id = db.Column(db.Integer, db.ForeignKey('ombudsman_nature.id'), nullable=False)
+    nature = db.Column(db.Enum(OmbudsmanNatureEnum), nullable=False)
     subject_id = db.Column(db.Integer, db.ForeignKey('ombudsman_subject.id'), nullable=False)
-    status = db.Column(db.String(50), default='Pendente') # Pendente, Aceita, Rejeitada, Tramitando, Resolvida
+    status = db.Column(db.Enum(OmbudsmanStatusEnum), default=OmbudsmanStatusEnum.PENDENTE, nullable=False)
     is_anonymous = db.Column(db.Boolean, default=False)
     requester_name = db.Column(db.String(255), nullable=False)
     requester_email = db.Column(db.String(120), nullable=False)
     requester_phone = db.Column(db.String(20), nullable=False)
-    requester_type = db.Column(db.String(50), nullable=False, default='Outro')
-    entry_mode = db.Column(db.String(50), nullable=False, default='Site')
+    requester_type = db.Column(db.Enum(OmbudsmanRequesterTypeEnum), nullable=False, default=OmbudsmanRequesterTypeEnum.OUTRO)
+    entry_mode = db.Column(db.Enum(OmbudsmanEntryModeEnum), nullable=False, default=OmbudsmanEntryModeEnum.PORTAL_DA_COMUNIDADE)
     assigned_to_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
     created_at = db.Column(db.DateTime, default=get_brasilia_time)
     updated_at = db.Column(db.DateTime, default=get_brasilia_time, onupdate=get_brasilia_time)

@@ -19,9 +19,9 @@
             <p>Sua manifestação foi registrada com sucesso na nossa Ouvidoria.</p>
             <p>Por favor, guarde o número do seu protocolo para consultas futuras:</p>
             <h3 style="text-align: center; color: #0d6efd; background: #f8f9fa; padding: 10px; border-radius: 5px;">{{ manifestation.protocol_number }}</h3>
-            <p><strong>Natureza:</strong> {{ manifestation.nature.name if manifestation.nature else '-' }}</p>
+            <p><strong>Natureza:</strong> {{ OmbudsmanNatureEnum(manifestation.nature).label if manifestation.nature else '-' }}</p>
             <p><strong>Assunto:</strong> {{ manifestation.subject.name if manifestation.subject else '-' }}</p>
-            <p><strong>Status Atual:</strong> {{ manifestation.status }}</p>
+            <p><strong>Status Atual:</strong> {{ OmbudsmanStatusEnum(manifestation.status).label if manifestation.status else '-' }}</p>
             <p>Nossa equipe analisará sua solicitação o mais breve possível.</p>
         </div>
         <div class="footer">

@@ -11,8 +11,8 @@
         <div class="card shadow border-0 rounded-4">
             <div class="card-header bg-light border-0 py-3 d-flex justify-content-between align-items-center">
                 <span class="fw-bold text-muted">Protocolo: <span class="text-dark">{{ manifestation.protocol_number }}</span></span>
-                <span class="badge bg-{% if manifestation.status == 'Pendente' %}warning{% elif manifestation.status == 'Aceita' %}info{% elif manifestation.status == 'Tramitando' %}primary{% elif manifestation.status == 'Rejeitada' %}danger{% else %}success{% endif %} fs-6 px-3 py-2 rounded-pill">
-                    {{ manifestation.status }}
+                <span class="badge bg-{% if OmbudsmanStatusEnum(manifestation.status).name == 'PENDENTE' %}warning{% elif OmbudsmanStatusEnum(manifestation.status).name == 'ACEITA' %}info{% elif OmbudsmanStatusEnum(manifestation.status).name == 'TRAMITANDO' %}primary{% elif OmbudsmanStatusEnum(manifestation.status).name == 'REJEITADA' %}danger{% else %}success{% endif %} fs-6 px-3 py-2 rounded-pill">
+                    {{ OmbudsmanStatusEnum(manifestation.status).label if manifestation.status else '-' }}
                 </span>
             </div>
             <div class="card-body p-4">
@@ -22,7 +22,7 @@
                 <div class="row mb-3">
                     <div class="col-sm-6">
                         <small class="text-muted d-block text-uppercase fw-bold">Natureza</small>
-                        <span>{{ manifestation.nature.name if manifestation.nature else '-' }}</span>
+                        <span>{{ OmbudsmanNatureEnum(manifestation.nature).label if manifestation.nature else '-' }}</span>
                     </div>
                     <div class="col-sm-6">
                         <small class="text-muted d-block text-uppercase fw-bold">Assunto</small>
@@ -32,11 +32,11 @@
                 <div class="row mb-3">
                     <div class="col-sm-6">
                         <small class="text-muted d-block text-uppercase fw-bold">Tipo de Manifestante</small>
-                        <span>{{ manifestation.requester_type }}</span>
+                        <span>{{ OmbudsmanRequesterTypeEnum(manifestation.requester_type).label if manifestation.requester_type else '-' }}</span>
                     </div>
                     <div class="col-sm-6">
                         <small class="text-muted d-block text-uppercase fw-bold">Modo de Entrada</small>
-                        <span>{{ manifestation.entry_mode }}</span>
+                        <span>{{ OmbudsmanEntryModeEnum(manifestation.entry_mode).label if manifestation.entry_mode else '-' }}</span>
                     </div>
                 </div>
                 

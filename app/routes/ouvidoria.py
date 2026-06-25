@@ -5,7 +5,8 @@ import uuid
 from werkzeug.utils import secure_filename
 from app import db
 from app.models import (
-    OmbudsmanNature, OmbudsmanSubject, OmbudsmanManifestation, OmbudsmanHistory, User, SystemConfig, OmbudsmanAttachment
+    OmbudsmanSubject, OmbudsmanManifestation, OmbudsmanHistory, User, SystemConfig, OmbudsmanAttachment,
+    OmbudsmanNatureEnum, OmbudsmanStatusEnum, OmbudsmanRequesterTypeEnum, OmbudsmanEntryModeEnum
 )
 from app.forms import (
     OmbudsmanSubjectForm, OmbudsmanPublicManifestationForm,
@@ -60,20 +61,15 @@ def nova():
     tenant_id = get_tenant_id()
     form = OmbudsmanPublicManifestationForm()
     
-    # Populate Naturezas
-    natures = OmbudsmanNature.query.filter_by(active=True, tenant_id=None).order_by(OmbudsmanNature.name).all()
-    form.nature_id.choices = [(n.id, n.name) for n in natures]
-    form.nature_id.choices.insert(0, (0, 'Selecione a Natureza'))
-    
     # Dynamic Subjects
-    if request.method == 'POST' and form.nature_id.data and form.nature_id.data > 0:
-        subjects = OmbudsmanSubject.query.filter_by(nature_id=form.nature_id.data, active=True, tenant_id=tenant_id).order_by(OmbudsmanSubject.name).all()
+    if request.method == 'POST' and form.nature.data and form.nature.data > 0:
+        subjects = OmbudsmanSubject.query.filter_by(nature=form.nature.data, active=True, tenant_id=tenant_id).order_by(OmbudsmanSubject.name).all()
         form.subject_id.choices = [(s.id, s.name) for s in subjects]
     else:
         form.subject_id.choices = [(0, 'Selecione o Assunto')]
 
     if form.validate_on_submit():
-        if form.nature_id.data == 0 or form.subject_id.data == 0:
+        if form.nature.data == 0 or form.subject_id.data == 0:
             flash('Por favor, selecione Natureza e Assunto.', 'danger')
             return render_template('ouvidoria/manifestation_form.html', form=form)
             
@@ -102,7 +98,7 @@ def nova():
             protocol_number=OmbudsmanManifestation.generate_protocol(),
             title=form.title.data,
             description=form.description.data,
-            nature_id=form.nature_id.data,
+            nature=form.nature.data,
             subject_id=form.subject_id.data,
             is_anonymous=form.is_anonymous.data,
             requester_name=form.requester_name.data,
@@ -158,7 +154,7 @@ def nova():
 @ouvidoria_bp.route('/get_subjects/<int:nature_id>')
 def get_subjects(nature_id):
     tenant_id = get_tenant_id()
-    subjects = OmbudsmanSubject.query.filter_by(nature_id=nature_id, active=True, tenant_id=tenant_id).order_by(OmbudsmanSubject.name).all()
+    subjects = OmbudsmanSubject.query.filter_by(nature=nature_id, active=True, tenant_id=tenant_id).order_by(OmbudsmanSubject.name).all()
     return jsonify([{'id': s.id, 'name': s.name} for s in subjects])
 
 @ouvidoria_bp.route('/anexo/<filename>')
@@ -179,13 +175,11 @@ def subject_list():
     subjects = OmbudsmanSubject.query.filter_by(tenant_id=tenant_id).order_by(OmbudsmanSubject.name).all()
     form = OmbudsmanSubjectForm()
     
-    natures = OmbudsmanNature.query.filter_by(tenant_id=None, active=True).order_by(OmbudsmanNature.name).all()
-    form.nature_id.choices = [(n.id, n.name) for n in natures]
     
     if form.validate_on_submit():
         subject = OmbudsmanSubject(
             name=form.name.data,
-            nature_id=form.nature_id.data,
+            nature=form.nature.data,
             active=form.active.data,
             tenant_id=tenant_id
         )
@@ -194,7 +188,7 @@ def subject_list():
         flash('Assunto criado com sucesso!', 'success')
         return redirect(url_for('ouvidoria.subject_list'))
         
-    return render_template('ouvidoria/subject_list.html', subjects=subjects, form=form)
+    return render_template('ouvidoria/subject_list.html', subjects=subjects, form=form, OmbudsmanNatureEnum=OmbudsmanNatureEnum)
 
 @ouvidoria_bp.route('/assuntos/<int:id>/edit', methods=['GET', 'POST'])
 @login_required
@@ -203,12 +197,10 @@ def subject_edit(id):
     subject = OmbudsmanSubject.query.filter_by(id=id, tenant_id=tenant_id).first_or_404()
     form = OmbudsmanSubjectForm(obj=subject)
     
-    natures = OmbudsmanNature.query.filter_by(tenant_id=None, active=True).order_by(OmbudsmanNature.name).all()
-    form.nature_id.choices = [(n.id, n.name) for n in natures]
     
     if form.validate_on_submit():
         subject.name = form.name.data
-        subject.nature_id = form.nature_id.data
+        subject.nature = form.nature.data
         subject.active = form.active.data
         db.session.commit()
         flash('Assunto atualizado com sucesso!', 'success')
@@ -343,22 +335,24 @@ def dashboard():
     monthly_counts = [month_counts[m] for m in months]
     
     # 2. Quantity by Status
-    status_data = db.session.query(
+    status_data_raw = db.session.query(
         OmbudsmanManifestation.status,
         func.count(OmbudsmanManifestation.id)
     ).filter(
         OmbudsmanManifestation.tenant_id == tenant_id,
         func.strftime('%Y', OmbudsmanManifestation.created_at) == current_year
     ).group_by(OmbudsmanManifestation.status).all()
+    status_data = [(OmbudsmanStatusEnum(s).label if s else 'Desconhecido', count) for s, count in status_data_raw]
     
     # 3. Quantity by Nature
-    nature_data = db.session.query(
-        OmbudsmanNature.name,
+    nature_data_raw = db.session.query(
+        OmbudsmanManifestation.nature,
         func.count(OmbudsmanManifestation.id)
-    ).join(OmbudsmanManifestation).filter(
+    ).filter(
         OmbudsmanManifestation.tenant_id == tenant_id,
         func.strftime('%Y', OmbudsmanManifestation.created_at) == current_year
-    ).group_by(OmbudsmanNature.name).all()
+    ).group_by(OmbudsmanManifestation.nature).all()
+    nature_data = [(OmbudsmanNatureEnum(n).label if n else 'Desconhecida', count) for n, count in nature_data_raw]
     
     # 4. Quantity by Subject
     subject_data = db.session.query(
@@ -370,22 +364,24 @@ def dashboard():
     ).group_by(OmbudsmanSubject.name).all()
     
     # 5. Quantity by Requester Type
-    requester_type_data = db.session.query(
+    requester_type_data_raw = db.session.query(
         OmbudsmanManifestation.requester_type,
         func.count(OmbudsmanManifestation.id)
     ).filter(
         OmbudsmanManifestation.tenant_id == tenant_id,
         func.strftime('%Y', OmbudsmanManifestation.created_at) == current_year
     ).group_by(OmbudsmanManifestation.requester_type).all()
+    requester_type_data = [(OmbudsmanRequesterTypeEnum(r).label if r else 'Desconhecido', count) for r, count in requester_type_data_raw]
     
     # 6. Quantity by Entry Mode
-    entry_mode_data = db.session.query(
+    entry_mode_data_raw = db.session.query(
         OmbudsmanManifestation.entry_mode,
         func.count(OmbudsmanManifestation.id)
     ).filter(
         OmbudsmanManifestation.tenant_id == tenant_id,
         func.strftime('%Y', OmbudsmanManifestation.created_at) == current_year
     ).group_by(OmbudsmanManifestation.entry_mode).all()
+    entry_mode_data = [(OmbudsmanEntryModeEnum(e).label if e else 'Desconhecido', count) for e, count in entry_mode_data_raw]
     
     return render_template('ouvidoria/dashboard.html',
         month_labels=month_labels,

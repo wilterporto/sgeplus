@@ -24,7 +24,7 @@
                     {% for subject in subjects %}
                     <tr>
                         <td class="align-middle fw-medium">{{ subject.name }}</td>
-                        <td class="align-middle text-muted">{{ subject.nature.name if subject.nature else '-' }}</td>
+                        <td class="align-middle text-muted">{{ OmbudsmanNatureEnum(subject.nature).label if subject.nature else "" if subject.nature else '-' }}</td>
                         <td class="align-middle">
                             {% if subject.active %}
                             <span class="badge bg-success">Ativo</span>
@@ -67,8 +67,8 @@
                 <div class="modal-body">
                     {{ form.hidden_tag() }}
                     <div class="mb-3">
-                        <label class="form-label">{{ form.nature_id.label.text }} <span class="text-danger">*</span></label>
-                        {{ form.nature_id(class="form-select") }}
+                        <label class="form-label">{{ form.nature.label.text }} <span class="text-danger">*</span></label>
+                        {{ form.nature(class="form-select") }}
                     </div>
                     <div class="mb-3">
                         <label class="form-label">{{ form.name.label.text }} <span class="text-danger">*</span></label>

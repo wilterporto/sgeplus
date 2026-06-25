@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import FloatField, DateField, StringField, TextAreaField, SelectField, BooleanField, SubmitField, FormField, FieldList, DateField, SelectMultipleField, PasswordField, IntegerField, HiddenField, MultipleFileField
 from flask_wtf.file import FileField, FileRequired, FileAllowed
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError, Optional
-from app.models import User, Subject, TeachingUnit, Class
+from app.models import User, Subject, TeachingUnit, Class, OmbudsmanNatureEnum, OmbudsmanStatusEnum, OmbudsmanRequesterTypeEnum, OmbudsmanEntryModeEnum
 import re
 
 def validate_cpf(form, field):
@@ -640,13 +640,13 @@ class ServiceProfessionalForm(FlaskForm):
 
 
 class OmbudsmanSubjectForm(FlaskForm):
-    nature_id = SelectField('Natureza', coerce=int, validators=[DataRequired()])
+    nature = SelectField('Natureza', coerce=int, choices=[(0, 'Selecione a Natureza')] + [(e.value, e.label) for e in OmbudsmanNatureEnum], validators=[DataRequired()])
     name = StringField('Nome do Assunto', validators=[DataRequired(), Length(max=128)])
     active = BooleanField('Ativo', default=True)
     submit = SubmitField('Salvar Assunto')
 
 class OmbudsmanPublicManifestationForm(FlaskForm):
-    nature_id = SelectField('Natureza da Manifestação', coerce=int, validators=[DataRequired()])
+    nature = SelectField('Natureza da Manifestação', coerce=int, choices=[(0, 'Selecione a Natureza')] + [(e.value, e.label) for e in OmbudsmanNatureEnum], validators=[DataRequired()])
     subject_id = SelectField('Assunto', coerce=int, validators=[DataRequired()])
     title = StringField('Título', validators=[DataRequired(), Length(max=255)])
     description = TextAreaField('Descrição Detalhada', validators=[DataRequired()])
@@ -656,36 +656,16 @@ class OmbudsmanPublicManifestationForm(FlaskForm):
     requester_email = StringField('E-mail para Contato', validators=[DataRequired(), Email(), Length(max=120)])
     requester_phone = StringField('Telefone para Contato', validators=[DataRequired(), Length(max=20)])
     
-    requester_type = SelectField('Tipo de Manifestante', choices=[
-        ('Aluno', 'Aluno'),
-        ('Servidor', 'Servidor'),
-        ('Responsável aluno', 'Responsável aluno'),
-        ('Outro', 'Outro')
-    ], validators=[DataRequired()])
+    requester_type = SelectField('Tipo de Manifestante', coerce=int, choices=[(0, 'Selecione...')] + [(e.value, e.label) for e in OmbudsmanRequesterTypeEnum], validators=[DataRequired()])
     
-    entry_mode = SelectField('Modo de Entrada', choices=[
-        ('Site', 'Site'),
-        ('E-mail', 'E-mail'),
-        ('WhatsApp', 'WhatsApp'),
-        ('Portal do Aluno', 'Portal do Aluno'),
-        ('Aplicativo', 'Aplicativo'),
-        ('Telefone', 'Telefone'),
-        ('Presencial', 'Presencial'),
-        ('Call-Center', 'Call-Center')
-    ], validators=[DataRequired()])
+    entry_mode = SelectField('Modo de Entrada', coerce=int, choices=[(0, 'Selecione...')] + [(e.value, e.label) for e in OmbudsmanEntryModeEnum], validators=[DataRequired()])
     
     attachments = MultipleFileField('Anexos (Opcional - máx 10MB/arquivo)', validators=[Optional()])
     
     submit = SubmitField('Registrar Manifestação')
 
 class OmbudsmanStatusUpdateForm(FlaskForm):
-    status = SelectField('Novo Status', choices=[
-        ('Pendente', 'Pendente'),
-        ('Aceita', 'Aceita'),
-        ('Rejeitada', 'Rejeitada'),
-        ('Tramitando', 'Tramitando'),
-        ('Resolvida', 'Resolvida')
-    ], validators=[DataRequired()])
+    status = SelectField('Novo Status', coerce=int, choices=[(e.value, e.label) for e in OmbudsmanStatusEnum], validators=[DataRequired()])
     comment = TextAreaField('Comentário / Parecer', validators=[Optional()])
     assigned_to_id = SelectField('Responsável (Atribuir a)', coerce=int, validators=[Optional()])
     submit = SubmitField('Atualizar Status')
