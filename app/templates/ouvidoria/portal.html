@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 text-center my-5">
+        <h1 class="display-4 text-primary fw-bold mb-3"><i class="fas fa-bullhorn"></i> Ouvidoria</h1>
+        <p class="lead text-muted mb-5">Seja bem-vindo ao portal da Ouvidoria. Registre sua manifestação ou consulte o andamento de uma solicitação existente.</p>
+        
+        <div class="d-grid gap-3 d-sm-flex justify-content-sm-center mb-5">
+            <a href="{{ url_for('ouvidoria.nova') }}" class="btn btn-primary btn-lg px-4 gap-3 shadow-sm rounded-pill">
+                <i class="fas fa-plus-circle"></i> Nova Manifestação
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row justify-content-center pb-5">
+    <div class="col-md-6">
+        <div class="card shadow border-0 rounded-4">
+            <div class="card-body p-5">
+                <h4 class="card-title text-center mb-4"><i class="fas fa-search text-secondary"></i> Consultar Manifestação</h4>
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    <div class="mb-4">
+                        <label class="form-label text-muted fw-bold">{{ form.protocol_number.label.text }} <span class="text-danger">*</span></label>
+                        {{ form.protocol_number(class="form-control form-control-lg bg-light rounded-pill px-4", placeholder="Digite o número do protocolo") }}
+                    </div>
+                    <div class="d-grid">
+                        {{ form.submit(class="btn btn-outline-primary btn-lg rounded-pill") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

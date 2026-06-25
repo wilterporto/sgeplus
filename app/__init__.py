@@ -33,6 +33,10 @@ def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
 
+    # Suporte para Proxy Reverso (Nginx/Gunicorn) para identificar corretamente HTTPS e IP
+    from werkzeug.middleware.proxy_fix import ProxyFix
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
+
     # Setup de Logs
     if not app.testing:
         if not os.path.exists('logs'):
@@ -117,6 +121,9 @@ def create_app(config_class=Config):
     from app.routes.services import services_bp
     app.register_blueprint(services_bp, url_prefix='/services')
     
+    from app.routes.ouvidoria import ouvidoria_bp
+    app.register_blueprint(ouvidoria_bp, url_prefix='/ouvidoria')
+    
     # Context Processor for Version
     @app.context_processor
     def inject_context():
@@ -155,7 +162,7 @@ def create_app(config_class=Config):
         # static: for css/js/images
         # auth.login: to allow logging in
         # auth.forgot_password, auth.reset_password: for recovery
-        whitelist_endpoints = ['auth.login', 'auth.forgot_password', 'auth.reset_password', 'static', 'main.get_logo', 'main.get_login_bg', 'main.get_favicon', 'main.serve_sw', 'main.serve_manifest', 'main.setup_db_render', 'main.confirm_update']
+        whitelist_endpoints = ['auth.login', 'auth.forgot_password', 'auth.reset_password', 'static', 'main.get_logo', 'main.get_login_bg', 'main.get_favicon', 'main.serve_sw', 'main.serve_manifest', 'main.setup_db_render', 'main.confirm_update', 'ouvidoria.portal', 'ouvidoria.public_detail', 'ouvidoria.nova', 'ouvidoria.get_subjects', 'ouvidoria.serve_attachment']
         
         if not current_user.is_authenticated:
             if request.endpoint and \

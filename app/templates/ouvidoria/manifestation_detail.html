@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-file-alt text-primary"></i> Detalhes da Solicitação</h2>
+    <a href="{{ url_for('ouvidoria.manifestation_list') }}" class="btn btn-outline-secondary"><i class="fas fa-arrow-left"></i> Voltar</a>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-white border-0 pb-0 d-flex justify-content-between">
+                <span class="text-muted fw-bold">Protocolo: <span class="text-dark">{{ manifestation.protocol_number }}</span></span>
+                <span class="text-muted small">Registrado em {{ manifestation.created_at.strftime('%d/%m/%Y %H:%M') }}</span>
+            </div>
+            <div class="card-body">
+                <h4 class="card-title text-primary fw-bold mb-3">{{ manifestation.title }}</h4>
+                <div class="p-3 bg-light rounded mb-4">
+                    <p class="mb-0 text-dark" style="white-space: pre-wrap;">{{ manifestation.description }}</p>
+                </div>
+                
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <small class="text-muted text-uppercase fw-bold d-block">Natureza</small>
+                        <span class="fw-medium">{{ manifestation.nature.name if manifestation.nature else '-' }}</span>
+                    </div>
+                    <div class="col-md-6">
+                        <small class="text-muted text-uppercase fw-bold d-block">Assunto</small>
+                        <span class="fw-medium">{{ manifestation.subject.name if manifestation.subject else '-' }}</span>
+                    </div>
+                </div>
+                <div class="row g-3 mt-1">
+                    <div class="col-md-6">
+                        <small class="text-muted text-uppercase fw-bold d-block">Tipo de Manifestante</small>
+                        <span class="fw-medium">{{ manifestation.requester_type }}</span>
+                    </div>
+                    <div class="col-md-6">
+                        <small class="text-muted text-uppercase fw-bold d-block">Modo de Entrada</small>
+                        <span class="fw-medium">{{ manifestation.entry_mode }}</span>
+                    </div>
+                </div>
+
+                {% if manifestation.attachments.count() > 0 %}
+                <hr class="text-muted opacity-25 mt-4">
+                <h6 class="text-primary mb-3"><i class="fas fa-paperclip"></i> Anexos</h6>
+                <div class="d-flex flex-wrap gap-2 mb-4">
+                    {% for attachment in manifestation.attachments %}
+                    <a href="{{ url_for('ouvidoria.serve_attachment', filename=attachment.filename) }}" target="_blank" class="btn btn-outline-secondary btn-sm">
+                        <i class="fas fa-file"></i> {{ attachment.original_filename }}
+                    </a>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white border-0 pb-0">
+                <h5 class="mb-0 text-primary"><i class="fas fa-history"></i> Histórico e Comentários</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    {% for h in manifestation.history|sort(attribute='created_at', reverse=True) %}
+                    <li class="list-group-item px-0 py-3">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1 text-dark fw-bold">
+                                {% if h.old_status %} {{ h.old_status }} <i class="fas fa-arrow-right text-muted small mx-1"></i> {% endif %}
+                                <span class="text-primary">{{ h.new_status }}</span>
+                            </h6>
+                            <small class="text-muted">{{ h.created_at.strftime('%d/%m/%Y %H:%M') }}</small>
+                        </div>
+                        <p class="mb-1 mt-2 text-dark" style="white-space: pre-wrap;">{{ h.comment or 'Sem comentários.' }}</p>
+                        <small class="text-muted">Por: {{ h.user.name or h.user.username if h.user else 'Sistema/Público' }}</small>
+                    </li>
+                    {% else %}
+                    <li class="list-group-item px-0 text-muted">Nenhum histórico registrado.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card shadow-sm border-0 mb-4 bg-light">
+            <div class="card-header bg-light border-0 pb-0">
+                <h6 class="text-primary fw-bold mb-0 text-uppercase"><i class="fas fa-id-card"></i> Solicitante</h6>
+            </div>
+            <div class="card-body">
+                {% if manifestation.is_anonymous %}
+                <div class="alert alert-warning py-2 mb-3">
+                    <i class="fas fa-user-secret"></i> O solicitante optou pelo anonimato. Seus dados são visíveis apenas para gestão interna.
+                </div>
+                {% endif %}
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2"><strong>Nome:</strong> {{ manifestation.requester_name }}</li>
+                    <li class="mb-2"><strong>E-mail:</strong> <a href="mailto:{{ manifestation.requester_email }}">{{ manifestation.requester_email }}</a></li>
+                    <li class="mb-0"><strong>Telefone:</strong> {{ manifestation.requester_phone }}</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="card shadow border-0 border-top border-primary border-4">
+            <div class="card-header bg-white border-0 pb-0">
+                <h6 class="text-primary fw-bold mb-0 text-uppercase"><i class="fas fa-tasks"></i> Tramitação</h6>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    <div class="mb-3">
+                        <label class="form-label text-muted fw-bold">{{ form.status.label.text }} <span class="text-danger">*</span></label>
+                        {{ form.status(class="form-select border-primary") }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-muted fw-bold">{{ form.assigned_to_id.label.text }}</label>
+                        {{ form.assigned_to_id(class="form-select") }}
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label text-muted fw-bold">{{ form.comment.label.text }}</label>
+                        {{ form.comment(class="form-control", rows="4", placeholder="Adicione uma justificativa, parecer ou resposta ao solicitante...") }}
+                    </div>
+                    <div class="d-grid">
+                        {{ form.submit(class="btn btn-primary fw-bold") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

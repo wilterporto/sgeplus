@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px; }
+        .header { background-color: #0d6efd; color: white; padding: 15px; text-align: center; border-radius: 5px 5px 0 0; }
+        .content { padding: 20px; }
+        .footer { font-size: 12px; text-align: center; color: #888; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>Manifestação Registrada</h2>
+        </div>
+        <div class="content">
+            <p>Olá, <strong>{{ manifestation.requester_name }}</strong>,</p>
+            <p>Sua manifestação foi registrada com sucesso na nossa Ouvidoria.</p>
+            <p>Por favor, guarde o número do seu protocolo para consultas futuras:</p>
+            <h3 style="text-align: center; color: #0d6efd; background: #f8f9fa; padding: 10px; border-radius: 5px;">{{ manifestation.protocol_number }}</h3>
+            <p><strong>Natureza:</strong> {{ manifestation.nature.name if manifestation.nature else '-' }}</p>
+            <p><strong>Assunto:</strong> {{ manifestation.subject.name if manifestation.subject else '-' }}</p>
+            <p><strong>Status Atual:</strong> {{ manifestation.status }}</p>
+            <p>Nossa equipe analisará sua solicitação o mais breve possível.</p>
+        </div>
+        <div class="footer">
+            <p>Este é um e-mail automático. Por favor, não responda.</p>
+            <p>{{ system_config.system_name if system_config else 'SGE Plus' }}</p>
+        </div>
+    </div>
+</body>
+</html>

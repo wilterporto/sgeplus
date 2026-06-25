@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import FloatField, DateField, StringField, TextAreaField, SelectField, BooleanField, SubmitField, FormField, FieldList, DateField, SelectMultipleField, PasswordField, IntegerField, HiddenField
+from wtforms import FloatField, DateField, StringField, TextAreaField, SelectField, BooleanField, SubmitField, FormField, FieldList, DateField, SelectMultipleField, PasswordField, IntegerField, HiddenField, MultipleFileField
 from flask_wtf.file import FileField, FileRequired, FileAllowed
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError, Optional
 from app.models import User, Subject, TeachingUnit, Class
@@ -606,4 +606,90 @@ class ScheduleServiceOrderForm(FlaskForm):
         ('Cancelado', 'Cancelado')
     ], validators=[DataRequired()])
     supplier_id = SelectField('Fornecedor Designado', coerce=int, validators=[Optional()])
+    professional_id = SelectField('Profissional Designado', coerce=int, validators=[Optional()])
     submit = SubmitField('Atualizar Ordem de Serviço')
+
+class ServiceProfessionalForm(FlaskForm):
+    nome = StringField('Nome Completo', validators=[DataRequired(), Length(max=128)])
+    cpf = StringField('CPF', validators=[DataRequired(), validate_cpf])
+    birth_date = DateField('Data de Nascimento', format='%Y-%m-%d', validators=[DataRequired()])
+    phone = StringField('Telefone', validators=[Optional(), Length(max=20)])
+    
+    # Address
+    cep = StringField('CEP', validators=[Optional(), Length(max=10)])
+    logradouro = StringField('Logradouro', validators=[Optional(), Length(max=255)])
+    numero = StringField('Número', validators=[Optional(), Length(max=20)])
+    complemento = StringField('Complemento', validators=[Optional(), Length(max=128)])
+    bairro = StringField('Bairro', validators=[Optional(), Length(max=128)])
+    cidade = StringField('Cidade', validators=[Optional(), Length(max=128)])
+    uf = SelectField('UF', choices=[
+        ('', 'Selecione...'),
+        ('AC', 'Acre'), ('AL', 'Alagoas'), ('AP', 'Amapá'), ('AM', 'Amazonas'),
+        ('BA', 'Bahia'), ('CE', 'Ceará'), ('DF', 'Distrito Federal'), ('ES', 'Espírito Santo'),
+        ('GO', 'Goiás'), ('MA', 'Maranhão'), ('MT', 'Mato Grosso'), ('MS', 'Mato Grosso do Sul'),
+        ('MG', 'Minas Gerais'), ('PA', 'Pará'), ('PB', 'Paraíba'), ('PR', 'Paraná'),
+        ('PE', 'Pernambuco'), ('PI', 'Piauí'), ('RJ', 'Rio de Janeiro'), ('RN', 'Rio Grande do Norte'),
+        ('RS', 'Rio Grande do Sul'), ('RO', 'Rondônia'), ('RR', 'Roraima'), ('SC', 'Santa Catarina'),
+        ('SP', 'São Paulo'), ('SE', 'Sergipe'), ('TO', 'Tocantins')
+    ], validators=[Optional()])
+
+    active = BooleanField('Ativo', default=True)
+    service_type_ids = SelectMultipleField('Serviços Aptos', coerce=int, validators=[Optional()])
+    
+    submit = SubmitField('Salvar Profissional')
+
+
+class OmbudsmanSubjectForm(FlaskForm):
+    nature_id = SelectField('Natureza', coerce=int, validators=[DataRequired()])
+    name = StringField('Nome do Assunto', validators=[DataRequired(), Length(max=128)])
+    active = BooleanField('Ativo', default=True)
+    submit = SubmitField('Salvar Assunto')
+
+class OmbudsmanPublicManifestationForm(FlaskForm):
+    nature_id = SelectField('Natureza da Manifestação', coerce=int, validators=[DataRequired()])
+    subject_id = SelectField('Assunto', coerce=int, validators=[DataRequired()])
+    title = StringField('Título', validators=[DataRequired(), Length(max=255)])
+    description = TextAreaField('Descrição Detalhada', validators=[DataRequired()])
+    
+    is_anonymous = BooleanField('Desejo manter minha identidade em sigilo')
+    requester_name = StringField('Seu Nome Completo', validators=[DataRequired(), Length(max=255)])
+    requester_email = StringField('E-mail para Contato', validators=[DataRequired(), Email(), Length(max=120)])
+    requester_phone = StringField('Telefone para Contato', validators=[DataRequired(), Length(max=20)])
+    
+    requester_type = SelectField('Tipo de Manifestante', choices=[
+        ('Aluno', 'Aluno'),
+        ('Servidor', 'Servidor'),
+        ('Responsável aluno', 'Responsável aluno'),
+        ('Outro', 'Outro')
+    ], validators=[DataRequired()])
+    
+    entry_mode = SelectField('Modo de Entrada', choices=[
+        ('Site', 'Site'),
+        ('E-mail', 'E-mail'),
+        ('WhatsApp', 'WhatsApp'),
+        ('Portal do Aluno', 'Portal do Aluno'),
+        ('Aplicativo', 'Aplicativo'),
+        ('Telefone', 'Telefone'),
+        ('Presencial', 'Presencial'),
+        ('Call-Center', 'Call-Center')
+    ], validators=[DataRequired()])
+    
+    attachments = MultipleFileField('Anexos (Opcional - máx 10MB/arquivo)', validators=[Optional()])
+    
+    submit = SubmitField('Registrar Manifestação')
+
+class OmbudsmanStatusUpdateForm(FlaskForm):
+    status = SelectField('Novo Status', choices=[
+        ('Pendente', 'Pendente'),
+        ('Aceita', 'Aceita'),
+        ('Rejeitada', 'Rejeitada'),
+        ('Tramitando', 'Tramitando'),
+        ('Resolvida', 'Resolvida')
+    ], validators=[DataRequired()])
+    comment = TextAreaField('Comentário / Parecer', validators=[Optional()])
+    assigned_to_id = SelectField('Responsável (Atribuir a)', coerce=int, validators=[Optional()])
+    submit = SubmitField('Atualizar Status')
+
+class OmbudsmanSearchForm(FlaskForm):
+    protocol_number = StringField('Número do Protocolo', validators=[DataRequired()])
+    submit = SubmitField('Consultar')

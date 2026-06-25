@@ -8,8 +8,8 @@ from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash
 
 from app import db
-from app.models import Supplier, SupplierContact, ServiceType, ServiceOrder, ServiceOrderAttachment, TeachingUnit, User
-from app.forms import SupplierForm, SupplierContactForm, ServiceTypeForm, ServiceOrderForm, ScheduleServiceOrderForm
+from app.models import Supplier, SupplierContact, ServiceType, ServiceOrder, ServiceOrderAttachment, TeachingUnit, User, ServiceProfessional
+from app.forms import SupplierForm, SupplierContactForm, ServiceTypeForm, ServiceOrderForm, ScheduleServiceOrderForm, ServiceProfessionalForm
 from app.utils.tenancy import get_tenant_id
 
 services_bp = Blueprint('services', __name__)
@@ -176,6 +176,147 @@ def delete_contact(contact_id):
         flash('Erro ao remover responsável.', 'danger')
         
     return redirect(url_for('services.supplier_contacts', id=supplier_id))
+
+# --- PROFESSIONALS ---
+
+@services_bp.route('/professionals', methods=['GET'])
+def list_professionals():
+    tenant_id = get_tenant_id()
+    page = request.args.get('page', 1, type=int)
+    query = ServiceProfessional.query.filter_by(tenant_id=tenant_id)
+    
+    search = request.args.get('search')
+    if search:
+        query = query.filter(ServiceProfessional.nome.ilike(f'%{search}%') | ServiceProfessional.cpf.ilike(f'%{search}%'))
+        
+    pagination = query.order_by(ServiceProfessional.nome).paginate(page=page, per_page=30, error_out=False)
+    return render_template('services/professionals.html', professionals=pagination.items, pagination=pagination)
+
+@services_bp.route('/professionals/new', methods=['GET', 'POST'])
+def new_professional():
+    tenant_id = get_tenant_id()
+    form = ServiceProfessionalForm()
+    
+    # Load ServiceTypes
+    service_types = ServiceType.query.filter_by(tenant_id=tenant_id, active=True).order_by(ServiceType.name).all()
+    form.service_type_ids.choices = [(t.id, t.name) for t in service_types]
+    
+    if form.validate_on_submit():
+        cpf_limpo = clean_cpf(form.cpf.data)
+        if len(cpf_limpo) != 11:
+            flash('CPF deve conter 11 dígitos.', 'danger')
+            return render_template('services/professional_form.html', form=form, title="Novo Profissional")
+
+        existing_prof = ServiceProfessional.query.filter_by(tenant_id=tenant_id, cpf=cpf_limpo).first()
+        if existing_prof:
+            flash('Este CPF já está cadastrado para outro profissional.', 'danger')
+            return render_template('services/professional_form.html', form=form, title="Novo Profissional")
+
+        prof = ServiceProfessional(
+            tenant_id=tenant_id,
+            nome=form.nome.data,
+            cpf=cpf_limpo,
+            birth_date=form.birth_date.data,
+            phone=form.phone.data,
+            cep=form.cep.data,
+            logradouro=form.logradouro.data,
+            numero=form.numero.data,
+            complemento=form.complemento.data,
+            bairro=form.bairro.data,
+            cidade=form.cidade.data,
+            uf=form.uf.data,
+            active=form.active.data
+        )
+        
+        # Link services
+        if form.service_type_ids.data:
+            selected_services = ServiceType.query.filter(ServiceType.id.in_(form.service_type_ids.data)).all()
+            prof.services = selected_services
+
+        db.session.add(prof)
+        try:
+            db.session.commit()
+            flash('Profissional cadastrado com sucesso!', 'success')
+            return redirect(url_for('services.list_professionals'))
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Erro ao cadastrar: {str(e)}', 'danger')
+            
+    return render_template('services/professional_form.html', form=form, title="Novo Profissional")
+
+@services_bp.route('/professionals/<int:id>/edit', methods=['GET', 'POST'])
+def edit_professional(id):
+    tenant_id = get_tenant_id()
+    prof = ServiceProfessional.query.filter_by(id=id, tenant_id=tenant_id).first_or_404()
+    
+    form = ServiceProfessionalForm(obj=prof)
+    
+    service_types = ServiceType.query.filter_by(tenant_id=tenant_id, active=True).order_by(ServiceType.name).all()
+    form.service_type_ids.choices = [(t.id, t.name) for t in service_types]
+
+    if request.method == 'GET':
+        form.cpf.data = prof.formatted_cpf
+        form.service_type_ids.data = [s.id for s in prof.services]
+
+    if form.validate_on_submit():
+        cpf_limpo = clean_cpf(form.cpf.data)
+        if len(cpf_limpo) != 11:
+            flash('CPF deve conter 11 dígitos.', 'danger')
+            return render_template('services/professional_form.html', form=form, title="Editar Profissional")
+            
+        existing_prof = ServiceProfessional.query.filter_by(tenant_id=tenant_id, cpf=cpf_limpo).first()
+        if existing_prof and existing_prof.id != prof.id:
+            flash('Este CPF já está cadastrado para outro profissional.', 'danger')
+            return render_template('services/professional_form.html', form=form, title="Editar Profissional")
+
+        prof.nome = form.nome.data
+        prof.cpf = cpf_limpo
+        prof.birth_date = form.birth_date.data
+        prof.phone = form.phone.data
+        prof.cep = form.cep.data
+        prof.logradouro = form.logradouro.data
+        prof.numero = form.numero.data
+        prof.complemento = form.complemento.data
+        prof.bairro = form.bairro.data
+        prof.cidade = form.cidade.data
+        prof.uf = form.uf.data
+        prof.active = form.active.data
+        
+        # Update services
+        prof.services = []
+        if form.service_type_ids.data:
+            selected_services = ServiceType.query.filter(ServiceType.id.in_(form.service_type_ids.data)).all()
+            prof.services = selected_services
+
+        try:
+            db.session.commit()
+            flash('Profissional atualizado com sucesso!', 'success')
+            return redirect(url_for('services.list_professionals'))
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Erro ao atualizar: {str(e)}', 'danger')
+            
+    return render_template('services/professional_form.html', form=form, title="Editar Profissional")
+
+@services_bp.route('/professionals/<int:id>/delete', methods=['POST'])
+def delete_professional(id):
+    tenant_id = get_tenant_id()
+    prof = ServiceProfessional.query.filter_by(id=id, tenant_id=tenant_id).first_or_404()
+    
+    # Check dependencies (ordens de serviço)
+    orders_count = ServiceOrder.query.filter_by(professional_id=prof.id).count()
+    if orders_count > 0:
+        flash('Não é possível excluir este profissional pois existem ordens de serviço vinculadas a ele.', 'danger')
+        return redirect(url_for('services.list_professionals'))
+        
+    try:
+        db.session.delete(prof)
+        db.session.commit()
+        flash('Profissional excluído com sucesso.', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash('Erro ao excluir profissional.', 'danger')
+    return redirect(url_for('services.list_professionals'))
 
 # --- SERVICE TYPES ---
 
@@ -400,15 +541,21 @@ def view_order(id):
     tenant_id = get_tenant_id()
     order = ServiceOrder.query.filter_by(id=id, tenant_id=tenant_id).first_or_404()
     
-    # Form para o Fornecedor agendar
+    # Form para agendamento
     form = ScheduleServiceOrderForm(obj=order)
     
-    # Apenas admin ou escola pode alterar o fornecedor designado
+    # Apenas admin ou escola pode alterar o fornecedor designado ou profissional
     suppliers = Supplier.query.filter_by(tenant_id=tenant_id, active=True).order_by(Supplier.name).all()
     form.supplier_id.choices = [(0, '--- Nenhum ---')] + [(s.id, s.name) for s in suppliers]
     
+    professionals = ServiceProfessional.query.filter_by(tenant_id=tenant_id, active=True).order_by(ServiceProfessional.nome).all()
+    form.professional_id.choices = [(0, '--- Nenhum ---')] + [(p.id, p.nome) for p in professionals]
+    
     if not form.supplier_id.data and order.supplier_id:
         form.supplier_id.data = order.supplier_id
+        
+    if not form.professional_id.data and order.professional_id:
+        form.professional_id.data = order.professional_id
         
     if request.method == 'POST' and form.validate_on_submit():
         # Se for fornecedor, ele pode agendar e colocar o status como "Agendado"
@@ -416,11 +563,18 @@ def view_order(id):
             contact = getattr(current_user, 'supplier_contact', None)
             if contact:
                 order.supplier_id = contact.supplier_id
-                
-        if form.supplier_id.data and form.supplier_id.data != 0:
-            order.supplier_id = form.supplier_id.data
-        elif form.supplier_id.data == 0:
-            order.supplier_id = None
+                order.professional_id = None
+        else:
+            # Regra: se escolher um fornecedor, limpa profissional, e vice-versa.
+            if form.supplier_id.data and form.supplier_id.data != 0:
+                order.supplier_id = form.supplier_id.data
+                order.professional_id = None
+            elif form.professional_id.data and form.professional_id.data != 0:
+                order.professional_id = form.professional_id.data
+                order.supplier_id = None
+            else:
+                order.supplier_id = None
+                order.professional_id = None
             
         if form.scheduled_date.data:
             try:

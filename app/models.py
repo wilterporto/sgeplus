@@ -760,6 +760,47 @@ class ServiceType(db.Model):
 
     tenant = db.relationship('Tenant')
 
+# Association table for ServiceProfessional <-> ServiceType
+professional_services = db.Table('professional_services',
+    db.Column('professional_id', db.Integer, db.ForeignKey('service_professional.id'), primary_key=True),
+    db.Column('service_type_id', db.Integer, db.ForeignKey('service_type.id'), primary_key=True)
+)
+
+class ServiceProfessional(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    tenant_id = db.Column(db.Integer, db.ForeignKey('tenant.id'), nullable=True)
+    nome = db.Column(db.String(128), nullable=False)
+    cpf = db.Column(db.String(11), nullable=False)
+    birth_date = db.Column(db.Date)
+    phone = db.Column(db.String(20))
+    cep = db.Column(db.String(10))
+    logradouro = db.Column(db.String(255))
+    numero = db.Column(db.String(20))
+    complemento = db.Column(db.String(128))
+    bairro = db.Column(db.String(128))
+    cidade = db.Column(db.String(128))
+    uf = db.Column(db.String(2))
+    active = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=get_brasilia_time)
+
+    __table_args__ = (
+        db.UniqueConstraint('tenant_id', 'cpf', name='uq_service_professional_tenant_cpf'),
+    )
+
+    tenant = db.relationship('Tenant')
+    services = db.relationship('ServiceType', secondary=professional_services, lazy='subquery',
+        backref=db.backref('professionals', lazy=True))
+        
+    @property
+    def formatted_cpf(self):
+        if not self.cpf:
+            return ""
+        import re
+        clean_cpf = re.sub(r'[^0-9]', '', self.cpf)
+        if len(clean_cpf) == 11:
+            return f"{clean_cpf[:3]}.{clean_cpf[3:6]}.{clean_cpf[6:9]}-{clean_cpf[9:]}"
+        return self.cpf
+
 class ServiceOrder(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     tenant_id = db.Column(db.Integer, db.ForeignKey('tenant.id'), nullable=True)
@@ -768,6 +809,7 @@ class ServiceOrder(db.Model):
     description = db.Column(db.Text, nullable=False)
     status = db.Column(db.String(20), default='Pendente') # Pendente, Agendado, Concluído, Cancelado
     supplier_id = db.Column(db.Integer, db.ForeignKey('supplier.id'), nullable=True)
+    professional_id = db.Column(db.Integer, db.ForeignKey('service_professional.id'), nullable=True)
     scheduled_date = db.Column(db.DateTime, nullable=True)
     created_at = db.Column(db.DateTime, default=get_brasilia_time)
     created_by_id = db.Column(db.Integer, db.ForeignKey('user.id'))
@@ -776,6 +818,7 @@ class ServiceOrder(db.Model):
     school = db.relationship('TeachingUnit', foreign_keys=[school_id])
     service_type = db.relationship('ServiceType')
     creator = db.relationship('User', foreign_keys=[created_by_id])
+    professional = db.relationship('ServiceProfessional', foreign_keys=[professional_id])
     attachments = db.relationship('ServiceOrderAttachment', backref='order', lazy='dynamic', cascade='all, delete-orphan')
 
 class ServiceOrderAttachment(db.Model):
@@ -784,3 +827,80 @@ class ServiceOrderAttachment(db.Model):
     file_path = db.Column(db.String(255), nullable=False)
     filename = db.Column(db.String(255), nullable=False)
     uploaded_at = db.Column(db.DateTime, default=get_brasilia_time)
+
+class OmbudsmanNature(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    tenant_id = db.Column(db.Integer, db.ForeignKey('tenant.id'), nullable=True)
+    name = db.Column(db.String(128), nullable=False)
+    active = db.Column(db.Boolean, default=True)
+
+    __table_args__ = (
+        db.UniqueConstraint('tenant_id', 'name', name='uq_ombudsman_nature_tenant_name'),
+    )
+    tenant = db.relationship('Tenant')
+    subjects = db.relationship('OmbudsmanSubject', backref='nature', lazy='dynamic')
+    manifestations = db.relationship('OmbudsmanManifestation', backref='nature', lazy='dynamic')
+
+class OmbudsmanSubject(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    tenant_id = db.Column(db.Integer, db.ForeignKey('tenant.id'), nullable=True)
+    nature_id = db.Column(db.Integer, db.ForeignKey('ombudsman_nature.id'), nullable=False)
+    name = db.Column(db.String(128), nullable=False)
+    active = db.Column(db.Boolean, default=True)
+
+    __table_args__ = (
+        db.UniqueConstraint('tenant_id', 'nature_id', 'name', name='uq_ombudsman_subject_tenant_nature_name'),
+    )
+    tenant = db.relationship('Tenant')
+    manifestations = db.relationship('OmbudsmanManifestation', backref='subject', lazy='dynamic')
+
+class OmbudsmanManifestation(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    tenant_id = db.Column(db.Integer, db.ForeignKey('tenant.id'), nullable=True)
+    protocol_number = db.Column(db.String(50), unique=True, nullable=False)
+    title = db.Column(db.String(255), nullable=False)
+    description = db.Column(db.Text, nullable=False)
+    nature_id = db.Column(db.Integer, db.ForeignKey('ombudsman_nature.id'), nullable=False)
+    subject_id = db.Column(db.Integer, db.ForeignKey('ombudsman_subject.id'), nullable=False)
+    status = db.Column(db.String(50), default='Pendente') # Pendente, Aceita, Rejeitada, Tramitando, Resolvida
+    is_anonymous = db.Column(db.Boolean, default=False)
+    requester_name = db.Column(db.String(255), nullable=False)
+    requester_email = db.Column(db.String(120), nullable=False)
+    requester_phone = db.Column(db.String(20), nullable=False)
+    requester_type = db.Column(db.String(50), nullable=False, default='Outro')
+    entry_mode = db.Column(db.String(50), nullable=False, default='Site')
+    assigned_to_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
+    created_at = db.Column(db.DateTime, default=get_brasilia_time)
+    updated_at = db.Column(db.DateTime, default=get_brasilia_time, onupdate=get_brasilia_time)
+
+    tenant = db.relationship('Tenant')
+    assigned_to = db.relationship('User', foreign_keys=[assigned_to_id])
+    history = db.relationship('OmbudsmanHistory', backref='manifestation', lazy='dynamic', cascade='all, delete-orphan')
+    attachments = db.relationship('OmbudsmanAttachment', backref='manifestation', lazy='dynamic', cascade='all, delete-orphan')
+
+    @staticmethod
+    def generate_protocol():
+        import random
+        from datetime import datetime
+        now = datetime.now()
+        prefix = now.strftime("%Y%m%d")
+        suffix = random.randint(1000, 9999)
+        return f"{prefix}{suffix}"
+
+class OmbudsmanHistory(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    manifestation_id = db.Column(db.Integer, db.ForeignKey('ombudsman_manifestation.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True) # Null se alterado publicamente
+    old_status = db.Column(db.String(50))
+    new_status = db.Column(db.String(50), nullable=False)
+    comment = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, default=get_brasilia_time)
+
+    user = db.relationship('User')
+
+class OmbudsmanAttachment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    manifestation_id = db.Column(db.Integer, db.ForeignKey('ombudsman_manifestation.id'), nullable=False)
+    filename = db.Column(db.String(255), nullable=False)
+    original_filename = db.Column(db.String(255), nullable=False)
+    created_at = db.Column(db.DateTime, default=get_brasilia_time)

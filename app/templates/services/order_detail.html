@@ -69,7 +69,12 @@
                         {% if 'fornecedor' not in current_user.get_roles() %}
                         <div class="mb-3">
                             <label class="form-label">Fornecedor Designado</label>
-                            {{ form.supplier_id(class="form-select") }}
+                            {{ form.supplier_id(class="form-select", id="supplier_id") }}
+                        </div>
+                        <div class="mb-3 text-center text-muted small fw-bold">OU</div>
+                        <div class="mb-3 border-start border-3 border-info ps-3 py-1">
+                            <label class="form-label text-info">Profissional Responsável (Servidor)</label>
+                            {{ form.professional_id(class="form-select", id="professional_id") }}
                         </div>
                         {% else %}
                         <div class="mb-3">
@@ -95,4 +100,26 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const supplierSelect = document.getElementById('supplier_id');
+    const professionalSelect = document.getElementById('professional_id');
+    
+    if(supplierSelect && professionalSelect) {
+        supplierSelect.addEventListener('change', function() {
+            if(this.value && this.value !== "0" && this.value !== "") {
+                professionalSelect.value = "0";
+            }
+        });
+        professionalSelect.addEventListener('change', function() {
+            if(this.value && this.value !== "0" && this.value !== "") {
+                supplierSelect.value = "0";
+            }
+        });
+    }
+});
+</script>
 {% endblock %}

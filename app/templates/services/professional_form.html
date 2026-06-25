@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} - Ordens de Serviço{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white border-bottom-0 pt-4 pb-0">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0 text-primary"><i class="bi bi-person-badge me-2"></i>{{ title }}</h4>
+                        <a href="{{ url_for('services.list_professionals') }}" class="btn btn-outline-secondary btn-sm">
+                            <i class="bi bi-arrow-left"></i> Voltar
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
+                        
+                        <h6 class="text-uppercase text-muted mb-3">Dados Pessoais</h6>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                {{ form.nome.label(class="form-label fw-bold") }} <span class="text-danger">*</span>
+                                {{ form.nome(class="form-control" + (" is-invalid" if form.nome.errors else "")) }}
+                                {% for error in form.nome.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            <div class="col-md-3">
+                                {{ form.cpf.label(class="form-label fw-bold") }} <span class="text-danger">*</span>
+                                {{ form.cpf(class="form-control" + (" is-invalid" if form.cpf.errors else ""), placeholder="000.000.000-00", oninput="mascaraCPF(this)") }}
+                                {% for error in form.cpf.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            <div class="col-md-3">
+                                {{ form.birth_date.label(class="form-label fw-bold") }} <span class="text-danger">*</span>
+                                {{ form.birth_date(class="form-control" + (" is-invalid" if form.birth_date.errors else "")) }}
+                                {% for error in form.birth_date.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            
+                            <div class="col-md-4">
+                                {{ form.phone.label(class="form-label fw-bold") }}
+                                {{ form.phone(class="form-control" + (" is-invalid" if form.phone.errors else "")) }}
+                                {% for error in form.phone.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <hr>
+                        <h6 class="text-uppercase text-muted mb-3">Endereço</h6>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-3">
+                                {{ form.cep.label(class="form-label fw-bold") }}
+                                {{ form.cep(class="form-control" + (" is-invalid" if form.cep.errors else "")) }}
+                            </div>
+                            <div class="col-md-7">
+                                {{ form.logradouro.label(class="form-label fw-bold") }}
+                                {{ form.logradouro(class="form-control" + (" is-invalid" if form.logradouro.errors else "")) }}
+                            </div>
+                            <div class="col-md-2">
+                                {{ form.numero.label(class="form-label fw-bold") }}
+                                {{ form.numero(class="form-control" + (" is-invalid" if form.numero.errors else "")) }}
+                            </div>
+
+                            <div class="col-md-4">
+                                {{ form.complemento.label(class="form-label fw-bold") }}
+                                {{ form.complemento(class="form-control" + (" is-invalid" if form.complemento.errors else "")) }}
+                            </div>
+                            <div class="col-md-3">
+                                {{ form.bairro.label(class="form-label fw-bold") }}
+                                {{ form.bairro(class="form-control" + (" is-invalid" if form.bairro.errors else "")) }}
+                            </div>
+                            <div class="col-md-3">
+                                {{ form.cidade.label(class="form-label fw-bold") }}
+                                {{ form.cidade(class="form-control" + (" is-invalid" if form.cidade.errors else "")) }}
+                            </div>
+                            <div class="col-md-2">
+                                {{ form.uf.label(class="form-label fw-bold") }}
+                                {{ form.uf(class="form-select" + (" is-invalid" if form.uf.errors else "")) }}
+                            </div>
+                        </div>
+
+                        <hr>
+                        <h6 class="text-uppercase text-muted mb-3">Configurações e Especialidades</h6>
+                        <div class="row g-3">
+                            <div class="col-md-12">
+                                {{ form.service_type_ids.label(class="form-label fw-bold") }}
+                                <div class="text-muted small mb-2">Selecione os serviços que este profissional está apto a realizar (segure CTRL para selecionar vários).</div>
+                                {{ form.service_type_ids(class="form-select" + (" is-invalid" if form.service_type_ids.errors else ""), size=5) }}
+                            </div>
+                            <div class="col-md-12 mt-4">
+                                <div class="form-check form-switch">
+                                    {{ form.active(class="form-check-input") }}
+                                    {{ form.active.label(class="form-check-label fw-bold") }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid mt-5">
+                            {{ form.submit(class="btn btn-primary btn-lg") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function mascaraCPF(i){
+        let v = i.value;
+        v = v.replace(/\D/g,"")
+        v = v.replace(/(\d{3})(\d)/,"$1.$2")
+        v = v.replace(/(\d{3})(\d)/,"$1.$2")
+        v = v.replace(/(\d{3})(\d{1,2})$/,"$1-$2")
+        i.value = v;
+    }
+</script>
+{% endblock %}

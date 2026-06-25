@@ -1,0 +1,185 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-chart-pie text-primary"></i> Dashboard da Ouvidoria ({{ current_year }})</h2>
+    
+    <form class="d-flex align-items-center gap-2" method="GET" action="{{ url_for('ouvidoria.dashboard') }}">
+        <label for="year" class="fw-bold text-secondary mb-0">Ano:</label>
+        <select name="year" id="year" class="form-select form-select-sm shadow-sm" onchange="this.form.submit()" style="width: 100px;">
+            {% for y in available_years %}
+                <option value="{{ y }}" {% if y == current_year %}selected{% endif %}>{{ y }}</option>
+            {% endfor %}
+            {% if not available_years %}
+                <option value="{{ current_year }}">{{ current_year }}</option>
+            {% endif %}
+        </select>
+    </form>
+</div>
+
+<div class="row g-4 mb-5">
+    <!-- Manifestations by Month -->
+    <div class="col-lg-12">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-white border-0 pb-0">
+                <h6 class="text-primary fw-bold mb-0">Manifestações por Mês</h6>
+            </div>
+            <div class="card-body">
+                <canvas id="monthlyChart" height="80"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Status -->
+    <div class="col-lg-4 col-md-6">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-white border-0 pb-0">
+                <h6 class="text-primary fw-bold mb-0">Por Situação</h6>
+            </div>
+            <div class="card-body d-flex justify-content-center" style="min-height: 250px;">
+                <canvas id="statusChart"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Requester Type -->
+    <div class="col-lg-4 col-md-6">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-white border-0 pb-0">
+                <h6 class="text-primary fw-bold mb-0">Por Tipo de Manifestante</h6>
+            </div>
+            <div class="card-body d-flex justify-content-center" style="min-height: 250px;">
+                <canvas id="requesterTypeChart"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Entry Mode -->
+    <div class="col-lg-4 col-md-6">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-white border-0 pb-0">
+                <h6 class="text-primary fw-bold mb-0">Por Modo de Entrada</h6>
+            </div>
+            <div class="card-body d-flex justify-content-center" style="min-height: 250px;">
+                <canvas id="entryModeChart"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Nature -->
+    <div class="col-lg-6">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-white border-0 pb-0">
+                <h6 class="text-primary fw-bold mb-0">Por Natureza</h6>
+            </div>
+            <div class="card-body d-flex justify-content-center" style="min-height: 300px;">
+                <canvas id="natureChart"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Subject -->
+    <div class="col-lg-6">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-white border-0 pb-0">
+                <h6 class="text-primary fw-bold mb-0">Por Assunto</h6>
+            </div>
+            <div class="card-body d-flex justify-content-center" style="min-height: 300px;">
+                <canvas id="subjectChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const defaultColors = [
+        '#0d6efd', '#198754', '#dc3545', '#ffc107', '#0dcaf0', 
+        '#6f42c1', '#fd7e14', '#20c997', '#6610f2', '#d63384'
+    ];
+
+    // 1. Monthly Chart
+    new Chart(document.getElementById('monthlyChart'), {
+        type: 'bar',
+        data: {
+            labels: {{ month_labels | tojson }},
+            datasets: [{
+                label: 'Manifestações',
+                data: {{ monthly_counts | tojson }},
+                backgroundColor: '#0d6efd'
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: { 
+                y: { beginAtZero: true, ticks: { stepSize: 1 } } 
+            }
+        }
+    });
+
+    // Helper for Pie/Doughnut charts
+    function createPieChart(ctxId, type, dataArray) {
+        if (!dataArray || dataArray.length === 0) return;
+        const labels = dataArray.map(item => item[0]);
+        const values = dataArray.map(item => item[1]);
+        
+        new Chart(document.getElementById(ctxId), {
+            type: type,
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: values,
+                    backgroundColor: defaultColors.slice(0, labels.length)
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+    }
+    
+    // Helper for Bar charts (Nature/Subject)
+    function createBarChart(ctxId, dataArray) {
+        if (!dataArray || dataArray.length === 0) return;
+        const labels = dataArray.map(item => item[0]);
+        const values = dataArray.map(item => item[1]);
+        
+        new Chart(document.getElementById(ctxId), {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Quantidade',
+                    data: values,
+                    backgroundColor: defaultColors.slice(0, labels.length)
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: { 
+                    y: { beginAtZero: true, ticks: { stepSize: 1 } } 
+                }
+            }
+        });
+    }
+
+    createPieChart('statusChart', 'doughnut', {{ status_data | tojson }});
+    createPieChart('requesterTypeChart', 'pie', {{ requester_type_data | tojson }});
+    createPieChart('entryModeChart', 'pie', {{ entry_mode_data | tojson }});
+    createBarChart('natureChart', {{ nature_data | tojson }});
+    createBarChart('subjectChart', {{ subject_data | tojson }});
+});
+</script>
+{% endblock %}

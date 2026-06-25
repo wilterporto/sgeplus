@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px; }
+        .header { background-color: #0d6efd; color: white; padding: 15px; text-align: center; border-radius: 5px 5px 0 0; }
+        .content { padding: 20px; }
+        .highlight { background-color: #f8f9fa; border-left: 4px solid #0d6efd; padding: 10px; margin: 15px 0; }
+        .footer { font-size: 12px; text-align: center; color: #888; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>Atualização de Manifestação</h2>
+        </div>
+        <div class="content">
+            <p>Olá, <strong>{{ manifestation.requester_name }}</strong>,</p>
+            <p>Informamos que houve uma atualização no andamento da sua manifestação referente ao protocolo <strong>{{ manifestation.protocol_number }}</strong>.</p>
+            
+            <p><strong>Novo Status:</strong> {{ history.new_status }}</p>
+            
+            {% if history.comment %}
+            <div class="highlight">
+                <p style="margin-bottom: 5px;"><strong>Parecer / Comentário da Ouvidoria:</strong></p>
+                <p style="white-space: pre-wrap; margin-top: 0;">{{ history.comment }}</p>
+            </div>
+            {% endif %}
+            
+            <p>Você pode acompanhar todos os detalhes consultando seu protocolo no portal da Ouvidoria.</p>
+        </div>
+        <div class="footer">
+            <p>Este é um e-mail automático. Por favor, não responda.</p>
+            <p>{{ system_config.system_name if system_config else 'SGE Plus' }}</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -513,26 +513,26 @@
                     <span class="text-uppercase text-secondary small ms-3 fw-bold sidebar-text">Cadastros</span>
                 </li>
                 <li>
-                    <a href="{{ url_for('academic.definitions') }}#anos"
+                    <a href="#"
                         class="nav-link">
                         <i class="bi bi-calendar3 me-2"></i> <span class="sidebar-text">Anos Escolares</span>
                     </a>
                 </li>
 
                 <li>
-                    <a href="{{ url_for('academic.definitions') }}#classificacoes"
+                    <a href="#"
                         class="nav-link">
                         <i class="bi bi-tags me-2"></i> <span class="sidebar-text">Classificações da Unidade</span>
                     </a>
                 </li>
                 <li>
-                    <a href="{{ url_for('academic.definitions') }}#componentes"
+                    <a href="#"
                         class="nav-link">
                         <i class="bi bi-book me-2"></i> <span class="sidebar-text">Componentes</span>
                     </a>
                 </li>
                 <li>
-                    <a href="{{ url_for('academic.definitions') }}#quilombolas"
+                    <a href="#"
                         class="nav-link">
                         <i class="bi bi-house me-2"></i> <span class="sidebar-text">Comunidades Quilombolas</span>
                     </a>
@@ -544,20 +544,20 @@
                     </a>
                 </li>
                 <li>
-                    <a href="{{ url_for('academic.definitions') }}#energias"
+                    <a href="#"
                         class="nav-link">
                         <i class="bi bi-lightning me-2"></i> <span class="sidebar-text">Fontes de Energia</span>
                     </a>
                 </li>
 
                 <li>
-                    <a href="{{ url_for('academic.definitions') }}#indigenas"
+                    <a href="#"
                         class="nav-link">
                         <i class="bi bi-tree me-2"></i> <span class="sidebar-text">Povos Indígenas</span>
                     </a>
                 </li>
                 <li>
-                    <a href="{{ url_for('academic.definitions') }}#regioes"
+                    <a href="#"
                         class="nav-link">
                         <i class="bi bi-map me-2"></i> <span class="sidebar-text">Regiões</span>
                     </a>
@@ -571,7 +571,7 @@
                 </li>
                 {% endif %}
                 <li>
-                    <a href="{{ url_for('academic.definitions') }}#subregioes"
+                    <a href="#"
                         class="nav-link">
                         <i class="bi bi-pin-map me-2"></i> <span class="sidebar-text">Sub Regiões</span>
                     </a>
@@ -621,6 +621,37 @@
                     </a>
                 </li>
                 {% endif %}
+                
+                {% if session.get('active_tenant_id') %}
+                <li class="nav-item mt-3">
+                    <span class="text-uppercase text-secondary small ms-3 fw-bold sidebar-text">Ouvidoria</span>
+                </li>
+                <li>
+                    <a href="{{ url_for('ouvidoria.dashboard') }}"
+                        class="nav-link {% if 'dashboard' in request.endpoint %}active{% endif %}">
+                        <i class="bi bi-pie-chart-fill me-2"></i> <span class="sidebar-text">Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('ouvidoria.portal') }}" target="_blank" class="nav-link">
+                        <i class="bi bi-box-arrow-up-right me-2"></i> <span class="sidebar-text">Portal Público</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('ouvidoria.manifestation_list') }}"
+                        class="nav-link {% if 'solicitacoes' in request.endpoint or 'manifestation' in request.endpoint %}active{% endif %}">
+                        <i class="bi bi-inbox me-2"></i> <span class="sidebar-text">Painel de Solicitações</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="{{ url_for('ouvidoria.subject_list') }}"
+                        class="nav-link {% if 'subject' in request.endpoint %}active{% endif %}">
+                        <i class="bi bi-tags-fill me-2"></i> <span class="sidebar-text">Assuntos</span>
+                    </a>
+                </li>
+                {% endif %}
+
                 {% if active_role == 'admin' %}
                 <li class="nav-item mt-3">
                     <span class="text-uppercase text-secondary small ms-3 fw-bold sidebar-text">Administração</span>

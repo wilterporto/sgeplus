@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 mt-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="text-primary mb-0"><i class="fas fa-search"></i> Consulta de Protocolo</h3>
+            <a href="{{ url_for('ouvidoria.portal') }}" class="btn btn-outline-secondary btn-sm"><i class="fas fa-arrow-left"></i> Voltar</a>
+        </div>
+
+        <div class="card shadow border-0 rounded-4">
+            <div class="card-header bg-light border-0 py-3 d-flex justify-content-between align-items-center">
+                <span class="fw-bold text-muted">Protocolo: <span class="text-dark">{{ manifestation.protocol_number }}</span></span>
+                <span class="badge bg-{% if manifestation.status == 'Pendente' %}warning{% elif manifestation.status == 'Aceita' %}info{% elif manifestation.status == 'Tramitando' %}primary{% elif manifestation.status == 'Rejeitada' %}danger{% else %}success{% endif %} fs-6 px-3 py-2 rounded-pill">
+                    {{ manifestation.status }}
+                </span>
+            </div>
+            <div class="card-body p-4">
+                <h5 class="card-title fw-bold text-dark">{{ manifestation.title }}</h5>
+                <p class="card-text text-muted mb-4">{{ manifestation.description }}</p>
+                
+                <div class="row mb-3">
+                    <div class="col-sm-6">
+                        <small class="text-muted d-block text-uppercase fw-bold">Natureza</small>
+                        <span>{{ manifestation.nature.name if manifestation.nature else '-' }}</span>
+                    </div>
+                    <div class="col-sm-6">
+                        <small class="text-muted d-block text-uppercase fw-bold">Assunto</small>
+                        <span>{{ manifestation.subject.name if manifestation.subject else '-' }}</span>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-6">
+                        <small class="text-muted d-block text-uppercase fw-bold">Tipo de Manifestante</small>
+                        <span>{{ manifestation.requester_type }}</span>
+                    </div>
+                    <div class="col-sm-6">
+                        <small class="text-muted d-block text-uppercase fw-bold">Modo de Entrada</small>
+                        <span>{{ manifestation.entry_mode }}</span>
+                    </div>
+                </div>
+                
+                {% if manifestation.attachments.count() > 0 %}
+                <hr class="text-muted opacity-25">
+                <h6 class="text-primary mb-3"><i class="fas fa-paperclip"></i> Anexos</h6>
+                <div class="d-flex flex-wrap gap-2 mb-4">
+                    {% for attachment in manifestation.attachments %}
+                    <a href="{{ url_for('ouvidoria.serve_attachment', filename=attachment.filename) }}" target="_blank" class="btn btn-outline-secondary btn-sm">
+                        <i class="fas fa-file"></i> {{ attachment.original_filename }}
+                    </a>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                
+                <hr class="text-muted opacity-25">
+                
+                <h6 class="text-primary mb-3"><i class="fas fa-history"></i> Histórico de Tramitação</h6>
+                <ul class="list-group list-group-flush">
+                    {% for h in manifestation.history|sort(attribute='created_at', reverse=True) %}
+                    <li class="list-group-item bg-transparent px-0 py-3 border-bottom-0 border-top">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1 text-dark fw-bold">
+                                {% if h.old_status %} {{ h.old_status }} <i class="fas fa-arrow-right text-muted small mx-1"></i> {% endif %}
+                                <span class="text-primary">{{ h.new_status }}</span>
+                            </h6>
+                            <small class="text-muted">{{ h.created_at.strftime('%d/%m/%Y %H:%M') }}</small>
+                        </div>
+                        <p class="mb-1 text-muted">{{ h.comment or 'Sem comentários adicionais.' }}</p>
+                    </li>
+                    {% else %}
+                    <li class="list-group-item bg-transparent px-0 text-muted">Nenhum histórico registrado ainda.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

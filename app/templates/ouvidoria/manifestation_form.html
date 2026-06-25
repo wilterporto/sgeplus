@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-lg border-0 rounded-4 mt-4 mb-5">
+            <div class="card-header bg-primary text-white border-0 py-3 rounded-top-4">
+                <h4 class="mb-0"><i class="fas fa-file-signature"></i> Registrar Manifestação</h4>
+            </div>
+            <div class="card-body p-4 p-md-5">
+                <p class="text-muted mb-4">Por favor, preencha as informações abaixo com o máximo de detalhes possível para que possamos melhor atendê-lo.</p>
+                
+                <form method="POST" enctype="multipart/form-data">
+                    {{ form.hidden_tag() }}
+                    
+                    <h5 class="text-primary border-bottom pb-2 mb-3 mt-4">Classificação</h5>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">{{ form.nature_id.label.text }} <span class="text-danger">*</span></label>
+                            {{ form.nature_id(class="form-select bg-light", id="nature_select") }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">{{ form.subject_id.label.text }} <span class="text-danger">*</span></label>
+                            {{ form.subject_id(class="form-select bg-light", id="subject_select") }}
+                        </div>
+                    </div>
+                    
+                    <h5 class="text-primary border-bottom pb-2 mb-3 mt-4">Detalhes</h5>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">{{ form.title.label.text }} <span class="text-danger">*</span></label>
+                        {{ form.title(class="form-control bg-light", placeholder="Resumo do ocorrido") }}
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">{{ form.description.label.text }} <span class="text-danger">*</span></label>
+                        {{ form.description(class="form-control bg-light", rows="5", placeholder="Descreva os detalhes da sua manifestação...") }}
+                    </div>
+                    
+                    <h5 class="text-primary border-bottom pb-2 mb-3 mt-4">Anexos</h5>
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">{{ form.attachments.label.text }}</label>
+                        {{ form.attachments(class="form-control bg-light", accept=".pdf,.png,.jpg,.jpeg", multiple=True) }}
+                        <div class="form-text text-muted small"><i class="fas fa-file-upload"></i> Envie imagens ou documentos PDF de até 10MB cada.</div>
+                    </div>
+                    
+                    <h5 class="text-primary border-bottom pb-2 mb-3 mt-4">Identificação e Contato</h5>
+                    <div class="alert alert-info py-2 small">
+                        <i class="fas fa-info-circle"></i> O e-mail e telefone são obrigatórios para receber notificações de andamento, mesmo caso opte pelo sigilo da sua identidade (anonimato na listagem).
+                    </div>
+                    
+                    <div class="form-check form-switch mb-3 bg-light p-3 rounded">
+                        {{ form.is_anonymous(class="form-check-input ms-0 me-2", role="switch") }}
+                        <label class="form-check-label fw-bold text-dark">{{ form.is_anonymous.label.text }}</label>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label fw-bold">{{ form.requester_name.label.text }} <span class="text-danger">*</span></label>
+                            {{ form.requester_name(class="form-control bg-light") }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">{{ form.requester_type.label.text }} <span class="text-danger">*</span></label>
+                            {{ form.requester_type(class="form-select bg-light") }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">{{ form.entry_mode.label.text }} <span class="text-danger">*</span></label>
+                            {{ form.entry_mode(class="form-select bg-light") }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">{{ form.requester_email.label.text }} <span class="text-danger">*</span></label>
+                            {{ form.requester_email(class="form-control bg-light", type="email") }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">{{ form.requester_phone.label.text }} <span class="text-danger">*</span></label>
+                            {{ form.requester_phone(class="form-control bg-light") }}
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between mt-5">
+                        <a href="{{ url_for('ouvidoria.portal') }}" class="btn btn-outline-secondary px-4 rounded-pill">Cancelar</a>
+                        {{ form.submit(class="btn btn-primary px-5 rounded-pill fw-bold shadow-sm") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const natureSelect = document.getElementById('nature_select');
+    const subjectSelect = document.getElementById('subject_select');
+    
+    natureSelect.addEventListener('change', function() {
+        const natureId = this.value;
+        subjectSelect.innerHTML = '<option value="0">Carregando...</option>';
+        
+        if (natureId > 0) {
+            fetch(`{{ url_for('ouvidoria.get_subjects', nature_id=0) }}`.replace('0', natureId))
+                .then(response => response.json())
+                .then(data => {
+                    subjectSelect.innerHTML = '';
+                    if (data.length === 0) {
+                        subjectSelect.innerHTML = '<option value="0">Nenhum assunto disponível</option>';
+                    } else {
+                        data.forEach(subject => {
+                            const option = document.createElement('option');
+                            option.value = subject.id;
+                            option.textContent = subject.name;
+                            subjectSelect.appendChild(option);
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching subjects:', error);
+                    subjectSelect.innerHTML = '<option value="0">Erro ao carregar</option>';
+                });
+        } else {
+            subjectSelect.innerHTML = '<option value="0">Selecione o Assunto</option>';
+        }
+    });
+});
+</script>
+{% endblock %}
