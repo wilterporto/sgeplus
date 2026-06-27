@@ -61,7 +61,11 @@
             <div class="card-body">
                 <ul class="list-group list-group-flush">
                     {% for h in manifestation.history|sort(attribute='created_at', reverse=True) %}
-                    <li class="list-group-item px-0 py-3">
+                        {% if not h.is_private or (h.is_private and h.user_id == current_user.id) %}
+                    <li class="list-group-item px-0 py-3 {% if h.is_private %}bg-light border-start border-warning border-4{% endif %}">
+                        {% if h.is_private %}
+                        <div class="mb-2"><span class="badge bg-warning text-dark"><i class="fas fa-lock"></i> Assunto Privado</span></div>
+                        {% endif %}
                         <div class="d-flex w-100 justify-content-between">
                             <h6 class="mb-1 text-dark fw-bold">
                                 {% if h.old_status %} {{ h.old_status }} <i class="fas fa-arrow-right text-muted small mx-1"></i> {% endif %}
@@ -72,6 +76,7 @@
                         <p class="mb-1 mt-2 text-dark" style="white-space: pre-wrap;">{{ h.comment or 'Sem comentários.' }}</p>
                         <small class="text-muted">Por: {{ h.user.name or h.user.username if h.user else 'Sistema/Público' }}</small>
                     </li>
+                        {% endif %}
                     {% else %}
                     <li class="list-group-item px-0 text-muted">Nenhum histórico registrado.</li>
                     {% endfor %}
@@ -104,7 +109,7 @@
                 <h6 class="text-primary fw-bold mb-0 text-uppercase"><i class="fas fa-tasks"></i> Tramitação</h6>
             </div>
             <div class="card-body">
-                <form method="POST">
+                <form method="POST" enctype="multipart/form-data">
                     {{ form.hidden_tag() }}
                     <div class="mb-3">
                         <label class="form-label text-muted fw-bold">{{ form.status.label.text }} <span class="text-danger">*</span></label>
@@ -114,9 +119,17 @@
                         <label class="form-label text-muted fw-bold">{{ form.assigned_to_id.label.text }}</label>
                         {{ form.assigned_to_id(class="form-select") }}
                     </div>
-                    <div class="mb-4">
+                    <div class="mb-3">
                         <label class="form-label text-muted fw-bold">{{ form.comment.label.text }}</label>
                         {{ form.comment(class="form-control", rows="4", placeholder="Adicione uma justificativa, parecer ou resposta ao solicitante...") }}
+                    </div>
+                    <div class="form-check form-switch mb-3 bg-light p-2 rounded">
+                        {{ form.is_private(class="form-check-input ms-0 me-2", role="switch") }}
+                        <label class="form-check-label fw-bold text-dark small">{{ form.is_private.label.text }}</label>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label text-muted fw-bold small"><i class="fas fa-paperclip"></i> {{ form.attachments.label.text }}</label>
+                        {{ form.attachments(class="form-control form-control-sm", accept=".pdf,.png,.jpg,.jpeg", multiple=True) }}
                     </div>
                     <div class="d-grid">
                         {{ form.submit(class="btn btn-primary fw-bold") }}

@@ -9,7 +9,7 @@ from app.models import (
     OmbudsmanNatureEnum, OmbudsmanStatusEnum, OmbudsmanRequesterTypeEnum, OmbudsmanEntryModeEnum
 )
 from app.forms import (
-    OmbudsmanSubjectForm, OmbudsmanPublicManifestationForm,
+    OmbudsmanSubjectForm, OmbudsmanPublicManifestationForm, OmbudsmanInternalManifestationForm,
     OmbudsmanStatusUpdateForm, OmbudsmanSearchForm
 )
 from app.routes.auth import send_email
@@ -63,7 +63,7 @@ def nova():
     
     # Dynamic Subjects
     if request.method == 'POST' and form.nature.data and form.nature.data > 0:
-        subjects = OmbudsmanSubject.query.filter_by(nature=form.nature.data, active=True, tenant_id=tenant_id).order_by(OmbudsmanSubject.name).all()
+        subjects = OmbudsmanSubject.query.filter_by(nature=OmbudsmanNatureEnum(form.nature.data), active=True, tenant_id=tenant_id).order_by(OmbudsmanSubject.name).all()
         form.subject_id.choices = [(s.id, s.name) for s in subjects]
     else:
         form.subject_id.choices = [(0, 'Selecione o Assunto')]
@@ -98,7 +98,7 @@ def nova():
             protocol_number=OmbudsmanManifestation.generate_protocol(),
             title=form.title.data,
             description=form.description.data,
-            nature=form.nature.data,
+            nature=OmbudsmanNatureEnum(form.nature.data),
             subject_id=form.subject_id.data,
             is_anonymous=form.is_anonymous.data,
             requester_name=form.requester_name.data,
@@ -154,7 +154,13 @@ def nova():
 @ouvidoria_bp.route('/get_subjects/<int:nature_id>')
 def get_subjects(nature_id):
     tenant_id = get_tenant_id()
-    subjects = OmbudsmanSubject.query.filter_by(nature=nature_id, active=True, tenant_id=tenant_id).order_by(OmbudsmanSubject.name).all()
+    if nature_id <= 0:
+        return jsonify([])
+    try:
+        enum_val = OmbudsmanNatureEnum(nature_id)
+    except ValueError:
+        return jsonify([])
+    subjects = OmbudsmanSubject.query.filter_by(nature=enum_val, active=True, tenant_id=tenant_id).order_by(OmbudsmanSubject.name).all()
     return jsonify([{'id': s.id, 'name': s.name} for s in subjects])
 
 @ouvidoria_bp.route('/anexo/<filename>')
@@ -165,6 +171,107 @@ def serve_attachment(filename):
 # ==========================================
 # ADMIN ROUTES
 # ==========================================
+
+# ==========================================
+# INTERNAL REGISTRATION
+# ==========================================
+@ouvidoria_bp.route('/internal/nova', methods=['GET', 'POST'])
+@login_required
+def internal_nova():
+    tenant_id = get_tenant_id()
+    form = OmbudsmanInternalManifestationForm()
+    
+    # Dynamic Subjects
+    if request.method == 'POST' and form.nature.data and form.nature.data > 0:
+        subjects = OmbudsmanSubject.query.filter_by(nature=OmbudsmanNatureEnum(form.nature.data), active=True, tenant_id=tenant_id).order_by(OmbudsmanSubject.name).all()
+        form.subject_id.choices = [(s.id, s.name) for s in subjects]
+    else:
+        form.subject_id.choices = [(0, 'Selecione o Assunto')]
+
+    if form.validate_on_submit():
+        if form.nature.data == 0 or form.subject_id.data == 0:
+            flash('Por favor, selecione Natureza e Assunto.', 'danger')
+            return render_template('ouvidoria/internal_manifestation_form.html', form=form)
+            
+        attachments = request.files.getlist('attachments')
+        valid_extensions = {'.pdf', '.png', '.jpg', '.jpeg'}
+        max_size = 10 * 1024 * 1024 # 10MB
+        files_to_save = []
+        
+        for file in attachments:
+            if file and file.filename:
+                ext = os.path.splitext(file.filename)[1].lower()
+                if ext not in valid_extensions:
+                    flash(f'Extensão não permitida para o arquivo {file.filename}. Apenas PDF, PNG e JPG são aceitos.', 'danger')
+                    return render_template('ouvidoria/internal_manifestation_form.html', form=form)
+                
+                file_content = file.read()
+                if len(file_content) > max_size:
+                    flash(f'O arquivo {file.filename} excede o tamanho limite de 10MB.', 'danger')
+                    return render_template('ouvidoria/internal_manifestation_form.html', form=form)
+                
+                file.seek(0)
+                files_to_save.append(file)
+            
+        manifestation = OmbudsmanManifestation(
+            tenant_id=tenant_id,
+            protocol_number=OmbudsmanManifestation.generate_protocol(),
+            title=form.title.data,
+            description=form.description.data,
+            nature=OmbudsmanNatureEnum(form.nature.data),
+            subject_id=form.subject_id.data,
+            is_anonymous=form.is_anonymous.data,
+            requester_name=form.requester_name.data,
+            requester_email=form.requester_email.data,
+            requester_phone=form.requester_phone.data,
+            requester_type=form.requester_type.data,
+            entry_mode=OmbudsmanEntryModeEnum.PRESENCIAL.value,
+            status=OmbudsmanStatusEnum.PENDENTE.value,
+            assigned_to_id=current_user.id
+        )
+        db.session.add(manifestation)
+        db.session.commit()
+        
+        if files_to_save:
+            upload_dir = os.path.join(current_app.root_path, 'static', 'uploads', 'ouvidoria')
+            os.makedirs(upload_dir, exist_ok=True)
+            for file in files_to_save:
+                ext = os.path.splitext(file.filename)[1].lower()
+                hashed_filename = uuid.uuid4().hex + ext
+                file_path = os.path.join(upload_dir, hashed_filename)
+                file.save(file_path)
+                
+                attachment = OmbudsmanAttachment(
+                    manifestation_id=manifestation.id,
+                    filename=hashed_filename,
+                    original_filename=secure_filename(file.filename)
+                )
+                db.session.add(attachment)
+            db.session.commit()
+
+        # History
+        history = OmbudsmanHistory(
+            manifestation_id=manifestation.id,
+            user_id=current_user.id,
+            new_status=OmbudsmanStatusEnum.PENDENTE.value,
+            comment='Manifestação registrada internamente por atendimento presencial.'
+        )
+        db.session.add(history)
+        db.session.commit()
+        
+        # Send notifications
+        _send_ouvidoria_email(
+            f"Sua manifestação foi registrada - {manifestation.protocol_number}",
+            f"Olá, recebemos sua manifestação protocolo {manifestation.protocol_number}.",
+            render_template('ouvidoria/email/created.html', manifestation=manifestation),
+            [manifestation.requester_email]
+        )
+        
+        flash(f'Manifestação registrada internamente com sucesso! Protocolo: {manifestation.protocol_number}', 'success')
+        return redirect(url_for('ouvidoria.manifestation_list'))
+        
+    return render_template('ouvidoria/internal_manifestation_form.html', form=form)
+
 
 
 
@@ -179,7 +286,7 @@ def subject_list():
     if form.validate_on_submit():
         subject = OmbudsmanSubject(
             name=form.name.data,
-            nature=form.nature.data,
+            nature=OmbudsmanNatureEnum(form.nature.data),
             active=form.active.data,
             tenant_id=tenant_id
         )
@@ -200,7 +307,7 @@ def subject_edit(id):
     
     if form.validate_on_submit():
         subject.name = form.name.data
-        subject.nature = form.nature.data
+        subject.nature = OmbudsmanNatureEnum(form.nature.data)
         subject.active = form.active.data
         db.session.commit()
         flash('Assunto atualizado com sucesso!', 'success')
@@ -258,45 +365,87 @@ def manifestation_detail(id):
     form.assigned_to_id.choices = [(0, 'Não Atribuir / Limpar')] + [(u.id, u.name or u.username) for u in admins]
     
     if request.method == 'GET':
-        form.status.data = manifestation.status
+        form.status.data = manifestation.status.value if hasattr(manifestation.status, 'value') else manifestation.status
         form.assigned_to_id.data = manifestation.assigned_to_id or 0
         
     if form.validate_on_submit():
         old_status = manifestation.status
-        manifestation.status = form.status.data
+        new_status = form.status.data
+        
+        # Validar e preparar anexos
+        attachments = request.files.getlist('attachments')
+        valid_extensions = {'.pdf', '.png', '.jpg', '.jpeg'}
+        max_size = 10 * 1024 * 1024 # 10MB
+        files_to_save = []
+        
+        for file in attachments:
+            if file and file.filename:
+                ext = os.path.splitext(file.filename)[1].lower()
+                if ext not in valid_extensions:
+                    flash(f'Extensão não permitida para o arquivo {file.filename}. Apenas PDF, PNG e JPG são aceitos.', 'danger')
+                    return render_template('ouvidoria/manifestation_detail.html', manifestation=manifestation, form=form)
+                
+                file_content = file.read()
+                if len(file_content) > max_size:
+                    flash(f'O arquivo {file.filename} excede o tamanho limite de 10MB.', 'danger')
+                    return render_template('ouvidoria/manifestation_detail.html', manifestation=manifestation, form=form)
+                
+                file.seek(0)
+                files_to_save.append(file)
+
+        manifestation.status = new_status
         manifestation.assigned_to_id = form.assigned_to_id.data if form.assigned_to_id.data > 0 else None
         
+        # Salvar anexos
+        if files_to_save:
+            upload_dir = os.path.join(current_app.root_path, 'static', 'uploads', 'ouvidoria')
+            os.makedirs(upload_dir, exist_ok=True)
+            for file in files_to_save:
+                ext = os.path.splitext(file.filename)[1].lower()
+                hashed_filename = uuid.uuid4().hex + ext
+                file_path = os.path.join(upload_dir, hashed_filename)
+                file.save(file_path)
+                
+                attachment = OmbudsmanAttachment(
+                    manifestation_id=manifestation.id,
+                    filename=hashed_filename,
+                    original_filename=secure_filename(file.filename)
+                )
+                db.session.add(attachment)
+
         # History
         history = OmbudsmanHistory(
             manifestation_id=manifestation.id,
             user_id=current_user.id,
-            old_status=old_status,
-            new_status=manifestation.status,
-            comment=form.comment.data
+            old_status=old_status.value if hasattr(old_status, 'value') else old_status,
+            new_status=new_status,
+            comment=form.comment.data,
+            is_private=form.is_private.data
         )
         db.session.add(history)
         db.session.commit()
         
         # Notification
-        if form.comment.data or old_status != manifestation.status:
-            _send_ouvidoria_email(
-                f"Atualização na manifestação {manifestation.protocol_number}",
-                f"Sua manifestação teve uma atualização. Status: {manifestation.status}.",
-                render_template('ouvidoria/email/updated.html', manifestation=manifestation, history=history),
-                [manifestation.requester_email]
-            )
-            
-            if manifestation.assigned_to:
+        if not form.is_private.data:
+            if form.comment.data or old_status != manifestation.status:
                 _send_ouvidoria_email(
-                    f"[Ouvidoria] Atualização na manifestação {manifestation.protocol_number}",
-                    f"A manifestação {manifestation.protocol_number} foi atualizada por {current_user.name}.",
-                    render_template('ouvidoria/email/updated_admin.html', manifestation=manifestation, history=history),
-                    [manifestation.assigned_to.email]
+                    f"Atualização na manifestação {manifestation.protocol_number}",
+                    f"Sua manifestação teve uma atualização. Status: {manifestation.status.label if hasattr(manifestation.status, 'label') else manifestation.status}.",
+                    render_template('ouvidoria/email/updated.html', manifestation=manifestation, history=history),
+                    [manifestation.requester_email]
                 )
         
+        if manifestation.assigned_to:
+            _send_ouvidoria_email(
+                f"[Ouvidoria] Atualização na manifestação {manifestation.protocol_number}",
+                f"A manifestação {manifestation.protocol_number} foi atualizada por {current_user.name}.",
+                render_template('ouvidoria/email/updated_admin.html', manifestation=manifestation, history=history),
+                [manifestation.assigned_to.email]
+            )
+            
         flash('Manifestação atualizada com sucesso!', 'success')
-        return redirect(url_for('ouvidoria.manifestation_list'))
-    
+        return redirect(url_for('ouvidoria.manifestation_detail', id=manifestation.id))
+        
     return render_template('ouvidoria/manifestation_detail.html', manifestation=manifestation, form=form)
 
 @ouvidoria_bp.route('/dashboard')
@@ -355,13 +504,14 @@ def dashboard():
     nature_data = [(OmbudsmanNatureEnum(n).label if n else 'Desconhecida', count) for n, count in nature_data_raw]
     
     # 4. Quantity by Subject
-    subject_data = db.session.query(
+    subject_data_raw = db.session.query(
         OmbudsmanSubject.name,
         func.count(OmbudsmanManifestation.id)
     ).join(OmbudsmanManifestation).filter(
         OmbudsmanManifestation.tenant_id == tenant_id,
         func.strftime('%Y', OmbudsmanManifestation.created_at) == current_year
     ).group_by(OmbudsmanSubject.name).all()
+    subject_data = [(name, count) for name, count in subject_data_raw]
     
     # 5. Quantity by Requester Type
     requester_type_data_raw = db.session.query(

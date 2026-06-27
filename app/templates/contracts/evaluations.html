@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">{{ title }}</h1>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Contrato</th>
+                        <th>Escola</th>
+                        <th>Avaliador</th>
+                        <th class="text-end">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for eval in evaluations %}
+                    <tr>
+                        <td>{{ eval.evaluation_date.strftime('%d/%m/%Y') }}</td>
+                        <td>{{ eval.contract.contract_number }} - {{ eval.contract.supplier.name }}</td>
+                        <td>{{ eval.school.name }}</td>
+                        <td>{{ eval.evaluator.name }}</td>
+                        <td class="text-end">
+                            <button type="button" class="btn btn-sm btn-outline-info" data-bs-toggle="modal" data-bs-target="#evalModal{{ eval.id }}" title="Ver Detalhes">
+                                <i class="bi bi-eye"></i> Detalhes
+                            </button>
+                        </td>
+                    </tr>
+                    
+                    <!-- Modal Details -->
+                    <div class="modal fade" id="evalModal{{ eval.id }}" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Detalhes da Avaliação - {{ eval.contract.contract_number }}</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <strong>Escola:</strong> {{ eval.school.name }}<br>
+                                            <strong>Data:</strong> {{ eval.evaluation_date.strftime('%d/%m/%Y') }}
+                                        </div>
+                                        <div class="col-md-6">
+                                            <strong>Avaliador:</strong> {{ eval.evaluator.name }}<br>
+                                            <strong>Fornecedor:</strong> {{ eval.contract.supplier.name }}
+                                        </div>
+                                    </div>
+                                    
+                                    <h6>Notas</h6>
+                                    <table class="table table-sm table-bordered">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Item Avaliado</th>
+                                                <th class="text-center">Nota</th>
+                                                <th>Justificativa</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for grade in eval.grades %}
+                                            <tr>
+                                                <td>{{ grade.item.name }}</td>
+                                                <td class="text-center">
+                                                    <span class="badge {% if grade.grade <= 5 %}bg-danger{% elif grade.grade < 8 %}bg-warning text-dark{% else %}bg-success{% endif %}">
+                                                        {{ grade.grade }}
+                                                    </span>
+                                                </td>
+                                                <td>{{ grade.justification or '-' }}</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                    
+                                    {% if eval.comments %}
+                                    <h6>Observações Gerais</h6>
+                                    <p class="mb-0">{{ eval.comments }}</p>
+                                    {% endif %}
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center text-muted py-4">Nenhuma avaliação realizada ainda.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -24,8 +24,8 @@
             <div class="card-header bg-white border-0 pb-0">
                 <h6 class="text-primary fw-bold mb-0">Manifestações por Mês</h6>
             </div>
-            <div class="card-body">
-                <canvas id="monthlyChart" height="80"></canvas>
+            <div class="card-body" style="position: relative; height: 300px; width: 100%;">
+                <canvas id="monthlyChart"></canvas>
             </div>
         </div>
     </div>
@@ -36,7 +36,7 @@
             <div class="card-header bg-white border-0 pb-0">
                 <h6 class="text-primary fw-bold mb-0">Por Situação</h6>
             </div>
-            <div class="card-body d-flex justify-content-center" style="min-height: 250px;">
+            <div class="card-body" style="position: relative; height: 250px; width: 100%;">
                 <canvas id="statusChart"></canvas>
             </div>
         </div>
@@ -48,7 +48,7 @@
             <div class="card-header bg-white border-0 pb-0">
                 <h6 class="text-primary fw-bold mb-0">Por Tipo de Manifestante</h6>
             </div>
-            <div class="card-body d-flex justify-content-center" style="min-height: 250px;">
+            <div class="card-body" style="position: relative; height: 250px; width: 100%;">
                 <canvas id="requesterTypeChart"></canvas>
             </div>
         </div>
@@ -60,7 +60,7 @@
             <div class="card-header bg-white border-0 pb-0">
                 <h6 class="text-primary fw-bold mb-0">Por Modo de Entrada</h6>
             </div>
-            <div class="card-body d-flex justify-content-center" style="min-height: 250px;">
+            <div class="card-body" style="position: relative; height: 250px; width: 100%;">
                 <canvas id="entryModeChart"></canvas>
             </div>
         </div>
@@ -72,7 +72,7 @@
             <div class="card-header bg-white border-0 pb-0">
                 <h6 class="text-primary fw-bold mb-0">Por Natureza</h6>
             </div>
-            <div class="card-body d-flex justify-content-center" style="min-height: 300px;">
+            <div class="card-body" style="position: relative; height: 300px; width: 100%;">
                 <canvas id="natureChart"></canvas>
             </div>
         </div>
@@ -84,7 +84,7 @@
             <div class="card-header bg-white border-0 pb-0">
                 <h6 class="text-primary fw-bold mb-0">Por Assunto</h6>
             </div>
-            <div class="card-body d-flex justify-content-center" style="min-height: 300px;">
+            <div class="card-body" style="position: relative; height: 300px; width: 100%;">
                 <canvas id="subjectChart"></canvas>
             </div>
         </div>
@@ -112,6 +112,7 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
             plugins: {
                 legend: { display: false }
             },

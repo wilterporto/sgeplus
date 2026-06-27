@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">{{ title }}</h1>
+    <p class="text-muted">Contrato: <strong>{{ contract.contract_number }}</strong> - {{ contract.supplier.name }}</p>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <form method="POST" id="evaluation-form">
+            {{ form.hidden_tag() }}
+            
+            <div class="row mb-4">
+                <div class="col-md-8">
+                    {{ form.school_id.label(class="form-label") }} <span class="text-danger">*</span>
+                    {{ form.school_id(class="form-select" + (" is-invalid" if form.school_id.errors else "")) }}
+                    {% for error in form.school_id.errors %}
+                    <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="col-md-4">
+                    {{ form.evaluation_date.label(class="form-label") }} <span class="text-danger">*</span>
+                    {{ form.evaluation_date(class="form-control" + (" is-invalid" if form.evaluation_date.errors else ""), type="date") }}
+                    {% for error in form.evaluation_date.errors %}
+                    <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <h5 class="mb-3">Itens Avaliados</h5>
+            <div class="table-responsive mb-4">
+                <table class="table table-bordered align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 30%">Item</th>
+                            <th style="width: 20%">Nota (0 a 10) <span class="text-danger">*</span></th>
+                            <th style="width: 50%">Justificativa</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in items %}
+                        <tr>
+                            <td>
+                                <strong>{{ item.name }}</strong>
+                                {% if item.description %}
+                                <div class="small text-muted">{{ item.description }}</div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <input type="number" name="grade_{{ item.id }}" id="grade_{{ item.id }}" class="form-control grade-input" min="0" max="10" required data-item-id="{{ item.id }}" value="{{ request.form.get('grade_' ~ item.id, '') }}">
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <textarea name="justification_{{ item.id }}" id="justification_{{ item.id }}" class="form-control justification-input" rows="2">{{ request.form.get('justification_' ~ item.id, '') }}</textarea>
+                                    <span class="text-danger ms-2 justification-req-star d-none" id="star_{{ item.id }}" title="Justificativa obrigatória para nota <= 5">*</span>
+                                </div>
+                                <div class="invalid-feedback" id="feedback_{{ item.id }}">Justificativa é obrigatória para notas iguais ou abaixo de 5.</div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mb-4">
+                {{ form.comments.label(class="form-label") }}
+                {{ form.comments(class="form-control" + (" is-invalid" if form.comments.errors else ""), rows="3") }}
+            </div>
+
+            <div class="d-flex justify-content-end gap-2">
+                <a href="{{ url_for('contracts.list_contracts') }}" class="btn btn-secondary">Cancelar</a>
+                <button type="submit" class="btn btn-primary">Salvar Avaliação</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('evaluation-form');
+    const gradeInputs = document.querySelectorAll('.grade-input');
+
+    function checkJustification(gradeInput) {
+        const itemId = gradeInput.dataset.itemId;
+        const justificationInput = document.getElementById('justification_' + itemId);
+        const star = document.getElementById('star_' + itemId);
+        
+        if (gradeInput.value !== '' && parseInt(gradeInput.value, 10) <= 5) {
+            justificationInput.setAttribute('required', 'required');
+            star.classList.remove('d-none');
+        } else {
+            justificationInput.removeAttribute('required');
+            star.classList.add('d-none');
+            // Remove error state if any
+            justificationInput.classList.remove('is-invalid');
+        }
+    }
+
+    // Run on load to restore state if form failed validation on backend
+    gradeInputs.forEach(input => {
+        checkJustification(input);
+        input.addEventListener('input', () => checkJustification(input));
+    });
+
+    // Form submit validation
+    form.addEventListener('submit', function(e) {
+        let hasError = false;
+        gradeInputs.forEach(input => {
+            const itemId = input.dataset.itemId;
+            const justificationInput = document.getElementById('justification_' + itemId);
+            
+            if (input.value !== '' && parseInt(input.value, 10) <= 5) {
+                if (!justificationInput.value || justificationInput.value.trim() === '') {
+                    justificationInput.classList.add('is-invalid');
+                    hasError = true;
+                } else {
+                    justificationInput.classList.remove('is-invalid');
+                }
+            }
+        });
+
+        if (hasError) {
+            e.preventDefault();
+            alert('Por favor, preencha as justificativas obrigatórias para notas iguais ou abaixo de 5.');
+        }
+    });
+});
+</script>
+{% endblock %}

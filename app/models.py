@@ -948,6 +948,7 @@ class OmbudsmanHistory(db.Model):
     old_status = db.Column(db.String(50))
     new_status = db.Column(db.String(50), nullable=False)
     comment = db.Column(db.Text)
+    is_private = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=get_brasilia_time)
 
     user = db.relationship('User')
@@ -958,3 +959,90 @@ class OmbudsmanAttachment(db.Model):
     filename = db.Column(db.String(255), nullable=False)
     original_filename = db.Column(db.String(255), nullable=False)
     created_at = db.Column(db.DateTime, default=get_brasilia_time)
+
+class ContractPurposeEnum(enum.Enum):
+    ALIMENTACAO_ESCOLAR = "Alimentação Escolar"
+    SERVICOS = "Serviços"
+    GERAL_OUTROS = "Geral/Outros"
+
+class ContractModalityEnum(enum.Enum):
+    CONCORRENCIA_LICITACAO = "Concorrência/Licitação"
+    PREGAO = "Pregão"
+    CARTA_CONVITE = "Carta convite"
+    DISPENSA_LICITACAO = "Dispensa de licitação"
+    REGISTRO_PRECO = "Registro de preço"
+
+class ContractCategory(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    tenant_id = db.Column(db.Integer, db.ForeignKey('tenant.id'), nullable=False)
+    name = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, default=get_brasilia_time)
+    updated_at = db.Column(db.DateTime, default=get_brasilia_time, onupdate=get_brasilia_time)
+
+class FinancialProgram(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    tenant_id = db.Column(db.Integer, db.ForeignKey('tenant.id'), nullable=False)
+    name = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, default=get_brasilia_time)
+    updated_at = db.Column(db.DateTime, default=get_brasilia_time, onupdate=get_brasilia_time)
+
+contract_services = db.Table('contract_services',
+    db.Column('contract_id', db.Integer, db.ForeignKey('contract.id'), primary_key=True),
+    db.Column('service_id', db.Integer, db.ForeignKey('service_type.id'), primary_key=True)
+)
+
+class Contract(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    tenant_id = db.Column(db.Integer, db.ForeignKey('tenant.id'), nullable=False)
+    supplier_id = db.Column(db.Integer, db.ForeignKey('supplier.id'), nullable=False)
+    purpose = db.Column(db.Enum(ContractPurposeEnum), nullable=False)
+    modality = db.Column(db.Enum(ContractModalityEnum), nullable=False)
+    category_id = db.Column(db.Integer, db.ForeignKey('contract_category.id'), nullable=False)
+    program_id = db.Column(db.Integer, db.ForeignKey('financial_program.id'), nullable=False)
+    
+    contract_number = db.Column(db.String(100), nullable=False)
+    signature_date = db.Column(db.Date, nullable=False)
+    validity_start = db.Column(db.Date, nullable=False)
+    validity_end = db.Column(db.Date, nullable=False)
+    
+    created_at = db.Column(db.DateTime, default=get_brasilia_time)
+    updated_at = db.Column(db.DateTime, default=get_brasilia_time, onupdate=get_brasilia_time)
+
+    supplier = db.relationship('Supplier', backref=db.backref('contracts', lazy='dynamic'))
+    category = db.relationship('ContractCategory', backref=db.backref('contracts', lazy='dynamic'))
+    program = db.relationship('FinancialProgram', backref=db.backref('contracts', lazy='dynamic'))
+    services = db.relationship('ServiceType', secondary=contract_services, lazy='subquery', backref=db.backref('contracts', lazy='dynamic'))
+
+class ContractEvaluationItem(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    tenant_id = db.Column(db.Integer, db.ForeignKey('tenant.id'), nullable=False)
+    name = db.Column(db.String(255), nullable=False)
+    description = db.Column(db.Text)
+    active = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=get_brasilia_time)
+
+class ContractEvaluation(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    tenant_id = db.Column(db.Integer, db.ForeignKey('tenant.id'), nullable=False)
+    contract_id = db.Column(db.Integer, db.ForeignKey('contract.id'), nullable=False)
+    school_id = db.Column(db.Integer, db.ForeignKey('teaching_unit.id'), nullable=False)
+    evaluator_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    evaluation_date = db.Column(db.Date, nullable=False)
+    comments = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, default=get_brasilia_time)
+
+    contract = db.relationship('Contract', backref=db.backref('evaluations', lazy='dynamic'))
+    school = db.relationship('TeachingUnit', foreign_keys=[school_id])
+    evaluator = db.relationship('User', foreign_keys=[evaluator_id])
+
+class ContractEvaluationGrade(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    evaluation_id = db.Column(db.Integer, db.ForeignKey('contract_evaluation.id'), nullable=False)
+    item_id = db.Column(db.Integer, db.ForeignKey('contract_evaluation_item.id'), nullable=False)
+    grade = db.Column(db.Integer, nullable=False)
+    justification = db.Column(db.Text)
+    
+    evaluation = db.relationship('ContractEvaluation', backref=db.backref('grades', cascade='all, delete-orphan', lazy='joined'))
+    item = db.relationship('ContractEvaluationItem')

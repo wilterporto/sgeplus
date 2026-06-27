@@ -124,6 +124,9 @@ def create_app(config_class=Config):
     from app.routes.ouvidoria import ouvidoria_bp
     app.register_blueprint(ouvidoria_bp, url_prefix='/ouvidoria')
     
+    from app.routes.contracts import bp as contracts_bp
+    app.register_blueprint(contracts_bp)
+    
     # Context Processor for Version
     @app.context_processor
     def inject_context():

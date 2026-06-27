@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import FloatField, DateField, StringField, TextAreaField, SelectField, BooleanField, SubmitField, FormField, FieldList, DateField, SelectMultipleField, PasswordField, IntegerField, HiddenField, MultipleFileField
 from flask_wtf.file import FileField, FileRequired, FileAllowed
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError, Optional
-from app.models import User, Subject, TeachingUnit, Class, OmbudsmanNatureEnum, OmbudsmanStatusEnum, OmbudsmanRequesterTypeEnum, OmbudsmanEntryModeEnum
+from app.models import User, Subject, TeachingUnit, Class, OmbudsmanNatureEnum, OmbudsmanStatusEnum, OmbudsmanRequesterTypeEnum, OmbudsmanEntryModeEnum, ContractPurposeEnum, ContractModalityEnum
 import re
 
 def validate_cpf(form, field):
@@ -664,12 +664,69 @@ class OmbudsmanPublicManifestationForm(FlaskForm):
     
     submit = SubmitField('Registrar Manifestação')
 
+class OmbudsmanInternalManifestationForm(FlaskForm):
+    nature = SelectField('Natureza da Manifestação', coerce=int, choices=[(0, 'Selecione a Natureza')] + [(e.value, e.label) for e in OmbudsmanNatureEnum], validators=[DataRequired()])
+    subject_id = SelectField('Assunto', coerce=int, validators=[DataRequired()])
+    title = StringField('Título', validators=[DataRequired(), Length(max=255)])
+    description = TextAreaField('Descrição Detalhada', validators=[DataRequired()])
+    
+    is_anonymous = BooleanField('Manter a identidade do manifestante em sigilo')
+    requester_name = StringField('Nome Completo', validators=[DataRequired(), Length(max=255)])
+    requester_email = StringField('E-mail para Contato', validators=[DataRequired(), Email(), Length(max=120)])
+    requester_phone = StringField('Telefone para Contato', validators=[DataRequired(), Length(max=20)])
+    
+    requester_type = SelectField('Tipo de Manifestante', coerce=int, choices=[(0, 'Selecione...')] + [(e.value, e.label) for e in OmbudsmanRequesterTypeEnum], validators=[DataRequired()])
+    
+    attachments = MultipleFileField('Anexos (Opcional - máx 10MB/arquivo)', validators=[Optional()])
+    
+    submit = SubmitField('Registrar Manifestação')
+
 class OmbudsmanStatusUpdateForm(FlaskForm):
     status = SelectField('Novo Status', coerce=int, choices=[(e.value, e.label) for e in OmbudsmanStatusEnum], validators=[DataRequired()])
     comment = TextAreaField('Comentário / Parecer', validators=[Optional()])
+    is_private = BooleanField('Marcar como assunto privado (Apenas eu poderei ver)', default=False)
+    attachments = MultipleFileField('Incluir Novos Anexos (Opcional - máx 10MB/arquivo)', validators=[Optional()])
     assigned_to_id = SelectField('Responsável (Atribuir a)', coerce=int, validators=[Optional()])
-    submit = SubmitField('Atualizar Status')
+    submit = SubmitField('Salvar Comentário / Atualizar Status')
 
 class OmbudsmanSearchForm(FlaskForm):
     protocol_number = StringField('Número do Protocolo', validators=[DataRequired()])
     submit = SubmitField('Consultar')
+
+class ContractCategoryForm(FlaskForm):
+    name = StringField('Nome da Categoria', validators=[DataRequired(), Length(max=100)])
+    description = TextAreaField('Descrição', validators=[Optional()])
+    submit = SubmitField('Salvar')
+
+class FinancialProgramForm(FlaskForm):
+    name = StringField('Nome do Programa Financeiro', validators=[DataRequired(), Length(max=100)])
+    description = TextAreaField('Descrição', validators=[Optional()])
+    submit = SubmitField('Salvar')
+
+class ContractForm(FlaskForm):
+    supplier_id = SelectField('Fornecedor', coerce=int, validators=[DataRequired()])
+    purpose = SelectField('Finalidade', choices=[(e.name, e.value) for e in ContractPurposeEnum], validators=[DataRequired()])
+    modality = SelectField('Modalidade', choices=[(e.name, e.value) for e in ContractModalityEnum], validators=[DataRequired()])
+    category_id = SelectField('Categoria do Contrato', coerce=int, validators=[DataRequired()])
+    program_id = SelectField('Programa Financeiro', coerce=int, validators=[DataRequired()])
+    
+    contract_number = StringField('Número do Contrato', validators=[DataRequired(), Length(max=100)])
+    signature_date = DateField('Data da Assinatura', format='%Y-%m-%d', validators=[DataRequired()])
+    validity_start = DateField('Vigência - Início', format='%Y-%m-%d', validators=[DataRequired()])
+    validity_end = DateField('Vigência - Fim', format='%Y-%m-%d', validators=[DataRequired()])
+    
+    services = SelectMultipleField('Serviços Vinculados', coerce=int, validators=[Optional()])
+    
+    submit = SubmitField('Salvar Contrato')
+
+class ContractEvaluationItemForm(FlaskForm):
+    name = StringField('Nome do Item', validators=[DataRequired(), Length(max=255)])
+    description = TextAreaField('Descrição', validators=[Optional()])
+    active = BooleanField('Ativo', default=True)
+    submit = SubmitField('Salvar Item')
+
+class ContractEvaluationForm(FlaskForm):
+    school_id = SelectField('Escola (Unidade de Ensino)', coerce=int, validators=[DataRequired(message="Selecione uma escola.")])
+    evaluation_date = DateField('Data da Avaliação', format='%Y-%m-%d', validators=[DataRequired(message="Informe a data.")])
+    comments = TextAreaField('Observações Gerais', validators=[Optional()])
+    submit = SubmitField('Salvar Avaliação')

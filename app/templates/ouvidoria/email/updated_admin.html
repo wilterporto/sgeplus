@@ -23,7 +23,7 @@
             
             {% if history.comment %}
             <div class="highlight">
-                <p style="margin-bottom: 5px;"><strong>Comentário Adicionado:</strong></p>
+                <p style="margin-bottom: 5px;"><strong>Comentário Adicionado:</strong> {% if history.is_private %}<span style="color: #856404; background-color: #fff3cd; padding: 2px 5px; border-radius: 3px; font-size: 12px; margin-left: 5px;">&#128274; Assunto Privado</span>{% endif %}</p>
                 <p style="white-space: pre-wrap; margin-top: 0;">{{ history.comment }}</p>
             </div>
             {% endif %}

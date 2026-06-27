@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Contratos{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Contratos</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{{ url_for('contracts.new_contract') }}" class="btn btn-sm btn-primary">
+            <i class="bi bi-plus-circle"></i> Novo Contrato
+        </a>
+    </div>
+</div>
+<div class="table-responsive">
+    <table class="table table-striped table-hover align-middle">
+        <thead>
+            <tr>
+                <th>Número</th>
+                <th>Fornecedor</th>
+                <th>Finalidade</th>
+                <th>Modalidade</th>
+                <th>Categoria</th>
+                <th>Programa</th>
+                <th>Vigência</th>
+                <th class="text-end">Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for contract in contracts %}
+            <tr>
+                <td>{{ contract.contract_number }}</td>
+                <td>{{ contract.supplier.name }}</td>
+                <td>{{ contract.purpose.value }}</td>
+                <td>{{ contract.modality.value }}</td>
+                <td>{{ contract.category.name }}</td>
+                <td>{{ contract.program.name }}</td>
+                <td>{{ contract.validity_start.strftime('%d/%m/%Y') }} a {{ contract.validity_end.strftime('%d/%m/%Y') }}</td>
+                <td class="text-end">
+                    <a href="{{ url_for('contracts.evaluate_contract', contract_id=contract.id) }}" class="btn btn-sm btn-outline-primary" title="Avaliar"><i class="bi bi-star"></i></a>
+                    <a href="{{ url_for('contracts.edit_contract', id=contract.id) }}" class="btn btn-sm btn-outline-secondary" title="Editar"><i class="bi bi-pencil"></i></a>
+                    <form action="{{ url_for('contracts.delete_contract', id=contract.id) }}" method="POST" class="d-inline" onsubmit="return confirm('Tem certeza que deseja excluir este contrato?');">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Excluir"><i class="bi bi-trash"></i></button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="8" class="text-center">Nenhum contrato encontrado.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
