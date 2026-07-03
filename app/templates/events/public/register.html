@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="mb-4">
+                <a href="{{ url_for('main.inscricoes') }}" class="text-decoration-none text-secondary">
+                    <i class="fas fa-arrow-left"></i> Voltar para Lista de Eventos
+                </a>
+            </div>
+            
+            <div class="card shadow border-0 rounded-4 overflow-hidden">
+                <div class="card-header bg-primary text-white py-4 text-center border-0">
+                    <h3 class="mb-1 fw-bold">Formulário de Inscrição</h3>
+                    <p class="mb-0 text-white-50">{{ event.name }} - {{ event.date.strftime('%d/%m/%Y') }}</p>
+                </div>
+                
+                <div class="card-body p-5">
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="mb-4">
+                            {{ form.name.label(class="form-label fw-bold") }} <span class="text-danger">*</span>
+                            {{ form.name(class="form-control form-control-lg bg-light border-0" + (" is-invalid" if form.name.errors else ""), placeholder="Seu nome completo") }}
+                            {% for error in form.name.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                {{ form.cpf.label(class="form-label fw-bold") }} <span class="text-danger">*</span>
+                                {{ form.cpf(class="form-control form-control-lg bg-light border-0" + (" is-invalid" if form.cpf.errors else ""), placeholder="000.000.000-00", id="cpfInput") }}
+                                {% for error in form.cpf.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            
+                            <div class="col-md-6 mb-4">
+                                {{ form.birth_date.label(class="form-label fw-bold") }}
+                                {{ form.birth_date(class="form-control form-control-lg bg-light border-0" + (" is-invalid" if form.birth_date.errors else "")) }}
+                                {% for error in form.birth_date.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-5">
+                            {{ form.email.label(class="form-label fw-bold") }}
+                            {{ form.email(class="form-control form-control-lg bg-light border-0" + (" is-invalid" if form.email.errors else ""), placeholder="seu.email@exemplo.com") }}
+                            {% for error in form.email.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                            <div class="form-text mt-2"><i class="fas fa-info-circle"></i> Opcional: usaremos para enviar novidades.</div>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg rounded-pill fw-bold py-3 shadow-sm">
+                                Confirmar Inscrição <i class="fas fa-check-circle ms-2"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+<script>
+    $(document).ready(function(){
+        $('#cpfInput').mask('000.000.000-00', {reverse: true});
+    });
+</script>
+{% endblock %}

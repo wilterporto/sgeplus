@@ -704,6 +704,29 @@
                 
                 {% if session.get('active_tenant_id') %}
                 <li class="nav-item mt-3">
+                    <a class="nav-link text-uppercase text-secondary small fw-bold d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#collapseEventos" role="button" aria-expanded="false" aria-controls="collapseEventos">
+                        <span class="sidebar-text">Eventos e Certificados</span>
+                        <i class="bi bi-chevron-down sidebar-text"></i>
+                    </a>
+                </li>
+                <div class="collapse" id="collapseEventos">
+                    <ul class="nav flex-column ms-2">
+                        <li>
+                            <a href="{{ url_for('events.list_events') }}"
+                                class="nav-link {% if 'events.list_events' in request.endpoint or 'events.new_event' in request.endpoint or 'events.edit_event' in request.endpoint or 'events.list_participants' in request.endpoint %}active{% endif %}">
+                                <i class="bi bi-calendar-event me-2"></i> <span class="sidebar-text">Eventos</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ url_for('events.list_templates') }}"
+                                class="nav-link {% if 'events.list_templates' in request.endpoint or 'events.new_template' in request.endpoint or 'events.edit_template' in request.endpoint %}active{% endif %}">
+                                <i class="bi bi-card-image me-2"></i> <span class="sidebar-text">Modelos de Certificado</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                
+                <li class="nav-item mt-3">
                     <a class="nav-link text-uppercase text-secondary small fw-bold d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#collapseOuvidoria" role="button" aria-expanded="false" aria-controls="collapseOuvidoria">
                         <span class="sidebar-text">Ouvidoria</span>
                         <i class="bi bi-chevron-down sidebar-text"></i>

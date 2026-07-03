@@ -1,0 +1,244 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-users text-primary"></i> Participantes - {{ event.name }}</h2>
+    <div>
+        <a href="{{ url_for('events.list_events') }}" class="btn btn-outline-secondary me-2">
+            <i class="fas fa-arrow-left"></i> Voltar
+        </a>
+        <button type="button" class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#importModal">
+            <i class="fas fa-file-excel"></i> Importar Excel
+        </button>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addParticipantModal">
+            <i class="fas fa-user-plus"></i> Adicionar
+        </button>
+    </div>
+</div>
+
+<!-- Barra de Progresso da Importação -->
+<div class="card shadow-sm border-0 mb-4 d-none" id="importProgressCard">
+    <div class="card-body">
+        <h6 class="card-title fw-bold text-primary mb-3"><i class="fas fa-spinner fa-spin"></i> Importando Participantes...</h6>
+        <div class="progress mb-2" style="height: 25px;">
+            <div id="importProgressBar" class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+        </div>
+        <div class="d-flex justify-content-between text-muted small">
+            <span id="importStatusText">Iniciando importação...</span>
+            <span id="importCountText">0 inseridos</span>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4">Nome</th>
+                        <th>CPF</th>
+                        <th>Email</th>
+                        <th class="text-end pe-4">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for participant in pagination.items %}
+                    <tr>
+                        <td class="ps-4 fw-bold">{{ participant.name }}</td>
+                        <td>{{ participant.cpf }}</td>
+                        <td>{{ participant.email or '-' }}</td>
+                        <td class="text-end pe-4">
+                            {% if event.certificate_template_id %}
+                            <a href="{{ url_for('events.view_certificate', event_id=event.id, participant_id=participant.id) }}" class="btn btn-sm btn-outline-info" title="Visualizar Certificado" target="_blank">
+                                <i class="fas fa-certificate"></i>
+                            </a>
+                            {% endif %}
+                            <form action="{{ url_for('events.delete_participant', id=participant.id) }}" method="POST" class="d-inline" onsubmit="return confirm('Tem certeza que deseja remover este participante?');">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Remover">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" class="text-center py-4 text-muted">Nenhum participante inscrito.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% if pagination.pages > 1 %}
+<nav class="mt-4">
+    <ul class="pagination justify-content-center">
+        <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}">
+            <a class="page-link" href="{{ url_for('events.list_participants', id=event.id, page=pagination.prev_num) if pagination.has_prev else '#' }}">Anterior</a>
+        </li>
+        {% for page in pagination.iter_pages() %}
+            {% if page %}
+                <li class="page-item {% if page == pagination.page %}active{% endif %}">
+                    <a class="page-link" href="{{ url_for('events.list_participants', id=event.id, page=page) }}">{{ page }}</a>
+                </li>
+            {% else %}
+                <li class="page-item disabled"><span class="page-link">...</span></li>
+            {% endif %}
+        {% endfor %}
+        <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
+            <a class="page-link" href="{{ url_for('events.list_participants', id=event.id, page=pagination.next_num) if pagination.has_next else '#' }}">Próxima</a>
+        </li>
+    </ul>
+</nav>
+{% endif %}
+
+<!-- Add Participant Modal -->
+<div class="modal fade" id="addParticipantModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Adicionar Participante</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ url_for('events.add_participant', id=event.id) }}" method="POST">
+                <div class="modal-body">
+                    {{ form.hidden_tag() }}
+                    <div class="mb-3">
+                        {{ form.name.label(class="form-label fw-bold") }} <span class="text-danger">*</span>
+                        {{ form.name(class="form-control" + (" is-invalid" if form.name.errors else "")) }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.cpf.label(class="form-label fw-bold") }} <span class="text-danger">*</span>
+                        {{ form.cpf(class="form-control" + (" is-invalid" if form.cpf.errors else "")) }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.birth_date.label(class="form-label fw-bold") }}
+                        {{ form.birth_date(class="form-control" + (" is-invalid" if form.birth_date.errors else "")) }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.email.label(class="form-label fw-bold") }}
+                        {{ form.email(class="form-control" + (" is-invalid" if form.email.errors else "")) }}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Import Excel Modal -->
+<div class="modal fade" id="importModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Importar Participantes via Excel</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>O arquivo Excel (.xlsx) deve conter na primeira linha os cabeçalhos <strong>Nome</strong> e <strong>CPF</strong>.</p>
+                <form id="importForm" enctype="multipart/form-data">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <div class="mb-3">
+                        <label for="excelFile" class="form-label fw-bold">Arquivo Excel <span class="text-danger">*</span></label>
+                        <input class="form-control" type="file" id="excelFile" name="file" accept=".xls,.xlsx" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-success" id="btnImportar"><i class="fas fa-file-import"></i> Importar</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const btnImportar = document.getElementById('btnImportar');
+    const importForm = document.getElementById('importForm');
+    const importModalEl = document.getElementById('importModal');
+    const importModal = bootstrap.Modal.getInstance(importModalEl) || new bootstrap.Modal(importModalEl);
+    
+    const progressCard = document.getElementById('importProgressCard');
+    const progressBar = document.getElementById('importProgressBar');
+    const statusText = document.getElementById('importStatusText');
+    const countText = document.getElementById('importCountText');
+
+    btnImportar.addEventListener('click', function() {
+        const fileInput = document.getElementById('excelFile');
+        if (!fileInput.files.length) {
+            alert('Por favor, selecione um arquivo.');
+            return;
+        }
+
+        // Fechar Modal
+        importModal.hide();
+        
+        // Exibir Barra de Progresso
+        progressCard.classList.remove('d-none');
+        progressBar.style.width = '10%';
+        progressBar.innerText = '10%';
+        statusText.innerText = 'Enviando arquivo...';
+
+        const formData = new FormData(importForm);
+
+        // Simulando um progresso rápido para experiência do usuário, 
+        // já que pandas via bulk insert é muito rápido
+        let simProgress = 10;
+        const progressInterval = setInterval(() => {
+            if (simProgress < 90) {
+                simProgress += 15;
+                progressBar.style.width = simProgress + '%';
+                progressBar.innerText = simProgress + '%';
+                statusText.innerText = 'Processando registros...';
+            }
+        }, 500);
+
+        fetch("{{ url_for('events.import_participants', id=event.id) }}", {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': document.querySelector('input[name="csrf_token"]').value
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            clearInterval(progressInterval);
+            progressBar.style.width = '100%';
+            progressBar.innerText = '100%';
+            progressBar.classList.remove('progress-bar-animated');
+            
+            if (data.success) {
+                progressBar.classList.replace('bg-success', 'bg-primary');
+                statusText.innerText = 'Importação concluída!';
+                countText.innerText = data.success;
+                
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            } else {
+                progressBar.classList.replace('bg-success', 'bg-danger');
+                statusText.innerText = 'Erro na importação: ' + data.error;
+                statusText.classList.replace('text-muted', 'text-danger');
+            }
+        })
+        .catch(error => {
+            clearInterval(progressInterval);
+            progressBar.style.width = '100%';
+            progressBar.classList.replace('bg-success', 'bg-danger');
+            progressBar.classList.remove('progress-bar-animated');
+            statusText.innerText = 'Erro na comunicação com o servidor.';
+            statusText.classList.replace('text-muted', 'text-danger');
+        });
+    });
+});
+</script>
+{% endblock %}

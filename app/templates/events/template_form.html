@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>
+        <i class="fas fa-certificate text-primary"></i> 
+        {% if form.name.data %}Editar Modelo{% else %}Novo Modelo{% endif %}
+    </h2>
+    <a href="{{ url_for('events.list_templates') }}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left"></i> Voltar
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4">
+                <form method="POST" enctype="multipart/form-data">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-3">
+                        {{ form.name.label(class="form-label fw-bold") }} <span class="text-danger">*</span>
+                        {{ form.name(class="form-control" + (" is-invalid" if form.name.errors else "")) }}
+                        {% for error in form.name.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.background_image.label(class="form-label fw-bold") }}
+                        {{ form.background_image(class="form-control" + (" is-invalid" if form.background_image.errors else "")) }}
+                        <div class="form-text">Envie uma imagem JPG ou PNG que servirá como fundo do certificado (tamanho recomendado: A4 horizontal).</div>
+                        {% for error in form.background_image.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="mb-4">
+                        {{ form.content_html.label(class="form-label fw-bold") }}
+                        {{ form.content_html(class="form-control", rows="8", placeholder="Exemplo: Certificamos que {{ nome_participante }} (CPF: {{ cpf_participante }}) participou do evento {{ nome_evento }} realizado em {{ data_evento }}.") }}
+                        <div class="form-text">
+                            Você pode usar tags HTML. Variáveis disponíveis:<br>
+                            <code>{{ '{{' }} nome_participante {{ '}}' }}</code>, 
+                            <code>{{ '{{' }} cpf_participante {{ '}}' }}</code>, 
+                            <code>{{ '{{' }} nome_evento {{ '}}' }}</code>, 
+                            <code>{{ '{{' }} data_evento {{ '}}' }}</code>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="submit" class="btn btn-primary px-4">
+                            <i class="fas fa-save"></i> {{ form.submit.label.text }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

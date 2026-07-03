@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Certificado - {{ participant.name }}</title>
+    <style>
+        @page {
+            size: A4 landscape;
+            margin: 0;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
+            {% if template.background_image %}
+            background-image: url("{{ url_for('static', filename='uploads/certificates/' + template.background_image) }}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            {% else %}
+            background-color: #f8f9fa;
+            border: 20px solid #ddd;
+            {% endif %}
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+        .content-box {
+            width: 80%;
+            text-align: center;
+            padding: 40px;
+            {% if not template.background_image %}
+            background-color: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            {% endif %}
+        }
+        /* Hide everything else on print */
+        @media print {
+            .no-print { display: none !important; }
+        }
+        
+        .print-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #0d6efd;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+        .print-btn:hover {
+            background-color: #0b5ed7;
+        }
+    </style>
+</head>
+<body>
+    <button class="print-btn no-print" onclick="window.print()">🖨️ Imprimir PDF</button>
+    
+    <div class="content-box">
+        {% if not template.background_image %}
+        <h1 style="font-size: 50px; color: #333; margin-bottom: 30px;">CERTIFICADO</h1>
+        {% endif %}
+        
+        <div style="font-size: 24px; line-height: 1.6; color: #444; margin-top: 50px;">
+            {{ content|safe }}
+        </div>
+    </div>
+</body>
+</html>

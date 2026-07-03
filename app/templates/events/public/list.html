@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-5 text-center">
+        <div class="col-12">
+            <h1 class="display-5 fw-bold text-primary mb-3">Eventos e Inscrições</h1>
+            <p class="lead text-muted">Confira abaixo os eventos com inscrições abertas e participe!</p>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        {% for event in events %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden" style="transition: transform 0.3s ease;">
+                <div class="card-header border-0 {% if event.type == 'Online' %}bg-info text-white{% else %}bg-success text-white{% endif %} py-3 text-center">
+                    <span class="badge bg-white text-dark mb-2 shadow-sm">{{ event.type }}</span>
+                    <h5 class="card-title mb-0 fw-bold">{{ event.name }}</h5>
+                </div>
+                <div class="card-body p-4 text-center d-flex flex-column justify-content-center">
+                    <p class="card-text mb-3">
+                        <i class="far fa-calendar-alt fa-2x text-primary mb-2 d-block"></i>
+                        <span class="fs-5">{{ event.date.strftime('%d/%m/%Y') }}</span>
+                    </p>
+                    <a href="{{ url_for('main.registrar_inscricao', id=event.id) }}" class="btn btn-outline-primary rounded-pill fw-bold w-100 mt-auto">
+                        Quero me Inscrever <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-12 text-center py-5">
+            <div class="p-5 bg-light rounded-4">
+                <i class="far fa-sad-tear fa-4x text-muted mb-3"></i>
+                <h3 class="text-muted">Nenhum evento disponível no momento.</h3>
+                <p class="text-muted mb-0">Fique de olho nesta página para futuras oportunidades!</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -730,3 +730,26 @@ class ContractEvaluationForm(FlaskForm):
     evaluation_date = DateField('Data da Avaliação', format='%Y-%m-%d', validators=[DataRequired(message="Informe a data.")])
     comments = TextAreaField('Observações Gerais', validators=[Optional()])
     submit = SubmitField('Salvar Avaliação')
+
+class CertificateTemplateForm(FlaskForm):
+    name = StringField('Nome do Modelo', validators=[DataRequired(message="Campo obrigatório."), Length(max=128)])
+    background_image = FileField('Imagem de Fundo (Opcional)', validators=[
+        Optional(),
+        FileAllowed(['jpg', 'png', 'jpeg'], 'Apenas imagens (JPG, PNG).')
+    ])
+    content_html = TextAreaField('Conteúdo HTML do Certificado', validators=[Optional()])
+    submit = SubmitField('Salvar Modelo')
+
+class EventForm(FlaskForm):
+    name = StringField('Nome do Evento', validators=[DataRequired(message="Campo obrigatório."), Length(max=255)])
+    date = DateField('Data do Evento', format='%Y-%m-%d', validators=[DataRequired(message="Campo obrigatório.")])
+    type = SelectField('Tipo', choices=[('Online', 'Online'), ('Presencial', 'Presencial')], validators=[DataRequired(message="Campo obrigatório.")])
+    certificate_template_id = SelectField('Modelo de Certificado', coerce=int, validators=[Optional()])
+    submit = SubmitField('Salvar Evento')
+
+class ParticipantForm(FlaskForm):
+    name = StringField('Nome do Participante', validators=[DataRequired(message="Campo obrigatório."), Length(max=255)])
+    birth_date = DateField('Data de Nascimento', format='%Y-%m-%d', validators=[Optional()])
+    cpf = StringField('CPF', validators=[DataRequired(message="Campo obrigatório."), validate_cpf])
+    email = StringField('Email', validators=[Optional(), Email(message="E-mail inválido.")])
+    submit = SubmitField('Salvar Participante')

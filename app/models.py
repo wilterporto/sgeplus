@@ -1046,3 +1046,35 @@ class ContractEvaluationGrade(db.Model):
     
     evaluation = db.relationship('ContractEvaluation', backref=db.backref('grades', cascade='all, delete-orphan', lazy='joined'))
     item = db.relationship('ContractEvaluationItem')
+
+class CertificateTemplate(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    tenant_id = db.Column(db.Integer, db.ForeignKey('tenant.id'), nullable=True)
+    name = db.Column(db.String(128), nullable=False)
+    background_image = db.Column(db.String(255), nullable=True)
+    content_html = db.Column(db.Text, nullable=True)
+    created_at = db.Column(db.DateTime, default=get_brasilia_time)
+    
+    tenant = db.relationship('Tenant')
+
+class Event(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    tenant_id = db.Column(db.Integer, db.ForeignKey('tenant.id'), nullable=True)
+    certificate_template_id = db.Column(db.Integer, db.ForeignKey('certificate_template.id'), nullable=True)
+    name = db.Column(db.String(255), nullable=False)
+    date = db.Column(db.Date, nullable=False)
+    type = db.Column(db.String(50), nullable=False) # 'Online' ou 'Presencial'
+    created_at = db.Column(db.DateTime, default=get_brasilia_time)
+    
+    tenant = db.relationship('Tenant')
+    certificate_template = db.relationship('CertificateTemplate', backref='events')
+    participants = db.relationship('Participant', backref='event', cascade='all, delete-orphan', lazy='dynamic')
+
+class Participant(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    event_id = db.Column(db.Integer, db.ForeignKey('event.id'), nullable=False)
+    name = db.Column(db.String(255), nullable=False)
+    birth_date = db.Column(db.Date, nullable=True)
+    cpf = db.Column(db.String(14), nullable=False)
+    email = db.Column(db.String(255), nullable=True)
+    created_at = db.Column(db.DateTime, default=get_brasilia_time)

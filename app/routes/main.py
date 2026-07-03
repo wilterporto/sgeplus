@@ -394,3 +394,40 @@ def serve_manifest():
     import os
     return send_from_directory(current_app.static_folder, 'manifest.json', mimetype='application/json')
 
+
+@main_bp.route('/inscricoes')
+def inscricoes():
+    from app.models import Event
+    from app.utils.tenancy import get_tenant_id
+    events = Event.query.filter_by(tenant_id=get_tenant_id()).order_by(Event.date.desc()).all()
+    return render_template('events/public/list.html', events=events)
+
+@main_bp.route('/inscricoes/<int:id>/registrar', methods=['GET', 'POST'])
+def registrar_inscricao(id):
+    from app.models import Event, Participant
+    from app.forms import ParticipantForm
+    from app import db
+    from app.utils.tenancy import get_tenant_id
+    from flask import flash, redirect, url_for
+    
+    event = Event.query.filter_by(id=id, tenant_id=get_tenant_id()).first_or_404()
+    form = ParticipantForm()
+    
+    if form.validate_on_submit():
+        existing = Participant.query.filter_by(event_id=id, cpf=form.cpf.data).first()
+        if existing:
+            flash('Este CPF já está inscrito neste evento.', 'warning')
+        else:
+            participant = Participant(
+                event_id=id,
+                name=form.name.data,
+                birth_date=form.birth_date.data,
+                cpf=form.cpf.data,
+                email=form.email.data
+            )
+            db.session.add(participant)
+            db.session.commit()
+            flash('Sua inscrição foi realizada com sucesso!', 'success')
+            return redirect(url_for('main.inscricoes'))
+            
+    return render_template('events/public/register.html', event=event, form=form)
