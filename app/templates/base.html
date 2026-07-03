@@ -260,6 +260,7 @@
 
 <body>
     <div class="d-flex">
+        {% block sidebar %}
         <div id="sidebar" class="sidebar p-3 d-flex flex-column flex-shrink-0">
             {% set active_role = session.get('active_role') %}
             <a href="{% if active_role in ['admin', 'regional_manager'] %}{{ url_for('academic.academic_dashboard') }}{% else %}{{ url_for('main.index') }}{% endif %}"
@@ -815,12 +816,15 @@
 
             </ul>
         </div>
+        {% endblock %}
         <div class="flex-grow-1">
             <nav class="navbar navbar-light bg-light border-bottom mb-4">
                 <div class="container-fluid">
+                    {% block sidebar_toggle %}
                     <button class="btn btn-outline-secondary me-3" id="sidebarToggle">
                         <i class="bi bi-list"></i>
                     </button>
+                    {% endblock %}
                     <!-- Navigation texts -->
                     <div class="navbar-text me-auto d-flex align-items-center">
                     </div>

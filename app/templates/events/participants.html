@@ -115,12 +115,16 @@
                         {{ form.cpf(class="form-control" + (" is-invalid" if form.cpf.errors else "")) }}
                     </div>
                     <div class="mb-3">
-                        {{ form.birth_date.label(class="form-label fw-bold") }}
+                        {{ form.birth_date.label(class="form-label fw-bold") }} <span class="text-danger">*</span>
                         {{ form.birth_date(class="form-control" + (" is-invalid" if form.birth_date.errors else "")) }}
                     </div>
                     <div class="mb-3">
-                        {{ form.email.label(class="form-label fw-bold") }}
+                        {{ form.email.label(class="form-label fw-bold") }} <span class="text-danger">*</span>
                         {{ form.email(class="form-control" + (" is-invalid" if form.email.errors else "")) }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.phone.label(class="form-label fw-bold") }} <span class="text-danger">*</span>
+                        {{ form.phone(class="form-control" + (" is-invalid" if form.phone.errors else "")) }}
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -141,7 +145,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p>O arquivo Excel (.xlsx) deve conter na primeira linha os cabeçalhos <strong>Nome</strong> e <strong>CPF</strong>.</p>
+                <p>O arquivo Excel (.xlsx) deve conter na primeira linha os cabeçalhos <strong>Nome</strong>, <strong>CPF</strong>, <strong>Email</strong>, <strong>Nascimento</strong> e <strong>Telefone</strong>.</p>
                 <form id="importForm" enctype="multipart/form-data">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <div class="mb-3">

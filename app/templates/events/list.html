@@ -15,7 +15,8 @@
                 <thead class="bg-light">
                     <tr>
                         <th class="ps-4">Nome do Evento</th>
-                        <th>Data</th>
+                        <th>Período</th>
+                        <th>Situação</th>
                         <th>Tipo</th>
                         <th>Modelo de Certificado</th>
                         <th class="text-end pe-4">Ações</th>
@@ -25,7 +26,12 @@
                     {% for event in pagination.items %}
                     <tr>
                         <td class="ps-4 fw-bold">{{ event.name }}</td>
-                        <td>{{ event.date.strftime('%d/%m/%Y') }}</td>
+                        <td>{{ event.start_date.strftime('%d/%m/%Y') }}{% if event.end_date %} a {{ event.end_date.strftime('%d/%m/%Y') }}{% endif %}</td>
+                        <td>
+                            <span class="badge {% if event.status == 'Aberto' %}bg-success{% elif event.status == 'Previsto' %}bg-warning text-dark{% else %}bg-secondary{% endif %}">
+                                {{ event.status }}
+                            </span>
+                        </td>
                         <td>
                             <span class="badge {% if event.type == 'Online' %}bg-info{% else %}bg-success{% endif %}">
                                 {{ event.type }}
@@ -55,7 +61,7 @@
                     </tr>
                     {% else %}
                     <tr>
-                        <td colspan="5" class="text-center py-4 text-muted">Nenhum evento encontrado.</td>
+                        <td colspan="6" class="text-center py-4 text-muted">Nenhum evento encontrado.</td>
                     </tr>
                     {% endfor %}
                 </tbody>

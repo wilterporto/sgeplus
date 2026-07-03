@@ -1,11 +1,16 @@
 {% extends "base.html" %}
 
+{% block sidebar %}{% endblock %}
+{% block sidebar_toggle %}{% endblock %}
 {% block content %}
 <div class="container py-5">
     <div class="row mb-5 text-center">
         <div class="col-12">
             <h1 class="display-5 fw-bold text-primary mb-3">Eventos e Inscrições</h1>
-            <p class="lead text-muted">Confira abaixo os eventos com inscrições abertas e participe!</p>
+            <p class="lead text-muted mb-4">Confira abaixo os eventos com inscrições abertas e participe!</p>
+            <a href="{{ url_for('main.meus_certificados') }}" class="btn btn-outline-primary rounded-pill shadow-sm px-4">
+                <i class="fas fa-certificate me-2"></i> Emitir meu Certificado
+            </a>
         </div>
     </div>
 
@@ -18,13 +23,33 @@
                     <h5 class="card-title mb-0 fw-bold">{{ event.name }}</h5>
                 </div>
                 <div class="card-body p-4 text-center d-flex flex-column justify-content-center">
-                    <p class="card-text mb-3">
+                    <p class="card-text mb-2">
                         <i class="far fa-calendar-alt fa-2x text-primary mb-2 d-block"></i>
-                        <span class="fs-5">{{ event.date.strftime('%d/%m/%Y') }}</span>
+                        <span class="fs-6 fw-bold">Período do Evento:</span><br>
+                        <span class="fs-6">{{ event.start_date.strftime('%d/%m/%Y') }} {% if event.end_date %} a {{ event.end_date.strftime('%d/%m/%Y') }}{% endif %}</span>
                     </p>
+                    <p class="text-muted small mb-2">
+                        <strong><i class="fas fa-users me-1"></i> Público Alvo:</strong> {{ event.target_audience }}<br>
+                        {% if event.workload %}<strong><i class="fas fa-clock me-1"></i> Carga Horária:</strong> {{ event.workload }}h<br>{% endif %}
+                    </p>
+                    <p class="text-muted small mb-4">
+                        <span class="badge {% if event.status == 'Previsto' %}bg-warning text-dark{% else %}bg-success{% endif %} mb-1">{{ event.status }}</span><br>
+                        <strong>Inscrições:</strong><br>
+                        {% if event.registration_start and event.registration_end %}
+                            {{ event.registration_start.strftime('%d/%m/%Y') }} a {{ event.registration_end.strftime('%d/%m/%Y') }}
+                        {% else %}
+                            A definir
+                        {% endif %}
+                    </p>
+                    {% if event.status == 'Aberto' %}
                     <a href="{{ url_for('main.registrar_inscricao', id=event.id) }}" class="btn btn-outline-primary rounded-pill fw-bold w-100 mt-auto">
                         Quero me Inscrever <i class="fas fa-arrow-right ms-1"></i>
                     </a>
+                    {% else %}
+                    <button class="btn btn-secondary rounded-pill fw-bold w-100 mt-auto" disabled>
+                        Inscrições Fechadas
+                    </button>
+                    {% endif %}
                 </div>
             </div>
         </div>

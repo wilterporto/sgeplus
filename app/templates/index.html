@@ -1,6 +1,20 @@
 {% extends "base.html" %}
 
 {% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card shadow-sm border-0 bg-primary text-white text-center py-4 rounded-3">
+            <div class="card-body">
+                <h3 class="fw-bold mb-3"><i class="fas fa-calendar-alt me-2"></i> Eventos e Inscrições</h3>
+                <p class="fs-5 mb-4">Acesse nosso portal de eventos para conferir a programação completa e realizar sua inscrição nos eventos disponíveis.</p>
+                <a href="{{ url_for('main.inscricoes') }}" class="btn btn-light btn-lg text-primary fw-bold px-5 rounded-pill shadow-sm">
+                    Ver Eventos Abertos <i class="fas fa-arrow-right ms-2"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% if session.get('active_role') == 'student' %}
 <div class="p-5 mb-4 bg-light rounded-3 shadow-sm">
     <div class="container-fluid py-5">

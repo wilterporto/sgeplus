@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block sidebar %}{% endblock %}
+{% block sidebar_toggle %}{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <a href="{{ url_for('main.meus_certificados') }}" class="text-decoration-none text-secondary">
+                    <i class="fas fa-arrow-left"></i> Nova Pesquisa
+                </a>
+                <a href="{{ url_for('main.inscricoes') }}" class="btn btn-outline-primary btn-sm rounded-pill">
+                    Ver Eventos Abertos
+                </a>
+            </div>
+            
+            <div class="card shadow border-0 rounded-4">
+                <div class="card-header bg-primary text-white p-4 rounded-top-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0 fw-bold"><i class="fas fa-list-alt me-2"></i> Certificados Encontrados</h4>
+                        <span class="badge bg-light text-primary fs-6">{{ participants|length }} registros</span>
+                    </div>
+                    <p class="mb-0 mt-2 text-white-50 small">Resultados para a busca: {{ display_term }}</p>
+                </div>
+                
+                <div class="card-body p-0">
+                    {% if participants %}
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="ps-4">Evento</th>
+                                    <th>Período</th>
+                                    <th>Participante</th>
+                                    <th class="text-end pe-4">Ação</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for p in participants %}
+                                <tr>
+                                    <td class="ps-4">
+                                        <div class="fw-bold text-dark">{{ p.event.name }}</div>
+                                        <small class="text-muted"><i class="fas fa-clock me-1"></i> {{ p.event.workload or 0 }} horas</small>
+                                    </td>
+                                    <td>
+                                        <div class="text-secondary small">
+                                            {{ p.event.start_date.strftime('%d/%m/%Y') }}
+                                            {% if p.event.end_date %} a {{ p.event.end_date.strftime('%d/%m/%Y') }}{% endif %}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="text-dark">{{ p.name }}</div>
+                                    </td>
+                                    <td class="text-end pe-4">
+                                        {% if p.event.certificate_template_id %}
+                                        <a href="{{ url_for('events.view_certificate', event_id=p.event.id, participant_id=p.id) }}" target="_blank" class="btn btn-success btn-sm rounded-pill px-3 shadow-sm">
+                                            <i class="fas fa-download me-1"></i> Baixar Certificado
+                                        </a>
+                                        {% else %}
+                                        <span class="badge bg-warning text-dark px-2 py-1"><i class="fas fa-exclamation-triangle me-1"></i> Não Disponível</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">Nenhum registro encontrado</h5>
+                        <p class="text-secondary mb-0">Não localizamos participações em eventos para os dados informados.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

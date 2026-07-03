@@ -81,7 +81,7 @@ def delete_template(id):
 @login_required
 def list_events():
     page = request.args.get('page', 1, type=int)
-    pagination = Event.query.filter_by(tenant_id=get_tenant_id()).order_by(Event.date.desc()).paginate(page=page, per_page=30, error_out=False)
+    pagination = Event.query.filter_by(tenant_id=get_tenant_id()).order_by(Event.start_date.desc()).paginate(page=page, per_page=30, error_out=False)
     return render_template('events/list.html', pagination=pagination, title="Eventos")
 
 @events_bp.route('/new', methods=['GET', 'POST'])
@@ -94,8 +94,14 @@ def new_event():
         event = Event(
             tenant_id=get_tenant_id(),
             name=form.name.data,
-            date=form.date.data,
+            start_date=form.start_date.data,
+            end_date=form.end_date.data,
+            registration_start=form.registration_start.data,
+            registration_end=form.registration_end.data,
+            status=form.status.data,
+            workload=form.workload.data,
             type=form.type.data,
+            target_audience=form.target_audience.data,
             certificate_template_id=form.certificate_template_id.data if form.certificate_template_id.data != 0 else None
         )
         db.session.add(event)
@@ -117,8 +123,14 @@ def edit_event(id):
 
     if form.validate_on_submit():
         event.name = form.name.data
-        event.date = form.date.data
+        event.start_date = form.start_date.data
+        event.end_date = form.end_date.data
+        event.registration_start = form.registration_start.data
+        event.registration_end = form.registration_end.data
+        event.status = form.status.data
+        event.workload = form.workload.data
         event.type = form.type.data
+        event.target_audience = form.target_audience.data
         event.certificate_template_id = form.certificate_template_id.data if form.certificate_template_id.data != 0 else None
         db.session.commit()
         flash('Evento atualizado com sucesso!', 'success')
@@ -151,6 +163,10 @@ def list_participants(id):
 @login_required
 def add_participant(id):
     event = Event.query.filter_by(id=id, tenant_id=get_tenant_id()).first_or_404()
+    if event.status != 'Aberto':
+        flash('Inscrições fechadas para este evento.', 'danger')
+        return redirect(url_for('events.list_participants', id=id))
+
     form = ParticipantForm()
     if form.validate_on_submit():
         existing = Participant.query.filter_by(event_id=id, cpf=form.cpf.data).first()
@@ -162,7 +178,8 @@ def add_participant(id):
                 name=form.name.data,
                 birth_date=form.birth_date.data,
                 cpf=form.cpf.data,
-                email=form.email.data
+                email=form.email.data,
+                phone=form.phone.data
             )
             db.session.add(participant)
             db.session.commit()
@@ -188,7 +205,9 @@ def delete_participant(id):
 @login_required
 def import_participants(id):
     event = Event.query.filter_by(id=id, tenant_id=get_tenant_id()).first_or_404()
-    
+    if event.status != 'Aberto':
+        return jsonify({'error': 'Inscrições fechadas para este evento.'}), 400
+        
     if 'file' not in request.files:
         return jsonify({'error': 'Nenhum arquivo enviado.'}), 400
         
@@ -249,6 +268,23 @@ def view_certificate(event_id, participant_id):
         html = html.replace('{{ nome_participante }}', participant.name)
         html = html.replace('{{ cpf_participante }}', participant.cpf)
         html = html.replace('{{ nome_evento }}', event.name)
-        html = html.replace('{{ data_evento }}', event.date.strftime('%d/%m/%Y'))
+        html = html.replace('{{ data_evento }}', event.start_date.strftime('%d/%m/%Y'))
         
     return render_template('events/certificate_view.html', template=template, content=html, participant=participant, event=event)
+
+@events_bp.route('/templates/<int:id>/preview')
+@login_required
+def preview_template(id):
+    template = CertificateTemplate.query.get_or_404(id)
+    
+    html = template.content_html
+    if html:
+        html = html.replace('{{ nome_participante }}', 'NOME DE EXEMPLO DA SILVA')
+        html = html.replace('{{ cpf_participante }}', '000.000.000-00')
+        html = html.replace('{{ nome_evento }}', 'NOME DO EVENTO DE EXEMPLO')
+        html = html.replace('{{ data_evento }}', '01/01/2026')
+        
+    class FakeParticipant:
+        name = "NOME DE EXEMPLO DA SILVA"
+        
+    return render_template('events/certificate_view.html', template=template, content=html, participant=FakeParticipant(), event=None)

@@ -742,14 +742,21 @@ class CertificateTemplateForm(FlaskForm):
 
 class EventForm(FlaskForm):
     name = StringField('Nome do Evento', validators=[DataRequired(message="Campo obrigatório."), Length(max=255)])
-    date = DateField('Data do Evento', format='%Y-%m-%d', validators=[DataRequired(message="Campo obrigatório.")])
+    start_date = DateField('Data Inicial', format='%Y-%m-%d', validators=[DataRequired(message="Campo obrigatório.")])
+    end_date = DateField('Data Final', format='%Y-%m-%d', validators=[Optional()])
+    registration_start = DateField('Início das Inscrições', format='%Y-%m-%d', validators=[Optional()])
+    registration_end = DateField('Término das Inscrições', format='%Y-%m-%d', validators=[Optional()])
+    status = SelectField('Situação', choices=[('Previsto', 'Previsto'), ('Aberto', 'Aberto'), ('Encerrado', 'Encerrado')], validators=[DataRequired(message="Campo obrigatório.")])
+    workload = IntegerField('Carga Horária (horas)', validators=[Optional()], default=0)
     type = SelectField('Tipo', choices=[('Online', 'Online'), ('Presencial', 'Presencial')], validators=[DataRequired(message="Campo obrigatório.")])
+    target_audience = StringField('Público Alvo', validators=[DataRequired(message="Campo obrigatório."), Length(max=255)])
     certificate_template_id = SelectField('Modelo de Certificado', coerce=int, validators=[Optional()])
     submit = SubmitField('Salvar Evento')
 
 class ParticipantForm(FlaskForm):
     name = StringField('Nome do Participante', validators=[DataRequired(message="Campo obrigatório."), Length(max=255)])
-    birth_date = DateField('Data de Nascimento', format='%Y-%m-%d', validators=[Optional()])
+    birth_date = DateField('Data de Nascimento', format='%Y-%m-%d', validators=[DataRequired(message="Campo obrigatório.")])
     cpf = StringField('CPF', validators=[DataRequired(message="Campo obrigatório."), validate_cpf])
-    email = StringField('Email', validators=[Optional(), Email(message="E-mail inválido.")])
+    email = StringField('Email', validators=[DataRequired(message="Campo obrigatório."), Email(message="E-mail inválido.")])
+    phone = StringField('Telefone', validators=[DataRequired(message="Campo obrigatório."), Length(max=20)])
     submit = SubmitField('Salvar Participante')

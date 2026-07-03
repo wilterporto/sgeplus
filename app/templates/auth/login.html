@@ -116,8 +116,17 @@
                     {{ form.submit(class="btn btn-primary") }}
                 </div>
                 <div class="text-center">
-                    <a href="{{ url_for('auth.forgot_password') }}" class="text-decoration-none d-block mb-2">Esqueceu a senha?</a>
-                    <a href="{{ url_for('ouvidoria.portal') }}" class="text-decoration-none d-block"><i class="bi bi-box-arrow-up-right me-1"></i> Ouvidoria - Portal Público</a>
+                    <a href="{{ url_for('auth.forgot_password') }}" class="text-decoration-none d-block mb-3">Esqueceu a senha?</a>
+                </div>
+                
+                <div class="text-center mt-3 border-top pt-4">
+                    <p class="text-muted small fw-bold mb-3 text-uppercase">Acesso Público</p>
+                    <a href="{{ url_for('main.inscricoes') }}" class="btn btn-outline-primary w-100 mb-2 fw-bold" style="border-radius: 0.5rem; padding: 0.5rem;">
+                        <i class="bi bi-calendar-event me-2"></i> Eventos e Inscrições
+                    </a>
+                    <a href="{{ url_for('ouvidoria.portal') }}" class="btn btn-outline-secondary w-100 fw-bold" style="border-radius: 0.5rem; padding: 0.5rem;">
+                        <i class="bi bi-megaphone me-2"></i> Portal da Ouvidoria
+                    </a>
                 </div>
             </form>
         </div>

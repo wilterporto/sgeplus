@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block sidebar %}{% endblock %}
+{% block sidebar_toggle %}{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="mb-4">
+                <a href="{{ url_for('main.inscricoes') }}" class="text-decoration-none text-secondary">
+                    <i class="fas fa-arrow-left"></i> Voltar para Lista de Eventos
+                </a>
+            </div>
+            
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-header bg-primary text-white text-center py-4 rounded-top-4">
+                    <i class="fas fa-certificate fa-3x mb-3"></i>
+                    <h3 class="card-title mb-0 fw-bold">Meus Certificados</h3>
+                </div>
+                <div class="card-body p-4 p-md-5">
+                    <p class="text-muted text-center mb-4">
+                        Informe o seu CPF ou E-mail abaixo para pesquisar todos os eventos dos quais você participou e emitir o seu certificado.
+                    </p>
+                    
+                    <form method="POST" action="{{ url_for('main.meus_certificados') }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        
+                        <div class="mb-4">
+                            <label for="search_term" class="form-label fw-bold">CPF ou E-mail <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control form-control-lg" id="search_term" name="search_term" placeholder="Digite seu CPF ou E-mail" required>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg rounded-pill fw-bold">
+                                Pesquisar <i class="fas fa-search ms-2"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block scripts %}
+<script>
+    // Removemos a máscara forçada para permitir a digitação de e-mail.
+    // Opcionalmente poderíamos aplicar a máscara apenas se fosse digitado número.
+    document.getElementById('search_term').addEventListener('input', function(e) {
+        let val = e.target.value;
+        // Se só contiver números e formatação de CPF
+        if (/^[0-9.-]*$/.test(val) && !val.includes('@')) {
+            // Aplicar máscara básica de CPF (apenas visualmente se quiser, 
+            // mas para evitar conflitos com e-mail vamos apenas deixar livre)
+        }
+    });
+</script>
+{% endblock %}
+{% endblock %}

@@ -399,7 +399,11 @@ def serve_manifest():
 def inscricoes():
     from app.models import Event
     from app.utils.tenancy import get_tenant_id
-    events = Event.query.filter_by(tenant_id=get_tenant_id()).order_by(Event.date.desc()).all()
+    tenant_id = get_tenant_id()
+    query = Event.query.filter(Event.status.in_(['Previsto', 'Aberto']))
+    if tenant_id:
+        query = query.filter(Event.tenant_id == tenant_id)
+    events = query.order_by(Event.start_date.desc()).all()
     return render_template('events/public/list.html', events=events)
 
 @main_bp.route('/inscricoes/<int:id>/registrar', methods=['GET', 'POST'])
@@ -410,7 +414,16 @@ def registrar_inscricao(id):
     from app.utils.tenancy import get_tenant_id
     from flask import flash, redirect, url_for
     
-    event = Event.query.filter_by(id=id, tenant_id=get_tenant_id()).first_or_404()
+    tenant_id = get_tenant_id()
+    if tenant_id:
+        event = Event.query.filter_by(id=id, tenant_id=tenant_id).first_or_404()
+    else:
+        event = Event.query.filter_by(id=id).first_or_404()
+    
+    if event.status != 'Aberto':
+        flash('As inscrições para este evento não estão abertas no momento.', 'warning')
+        return redirect(url_for('main.inscricoes'))
+        
     form = ParticipantForm()
     
     if form.validate_on_submit():
@@ -423,7 +436,8 @@ def registrar_inscricao(id):
                 name=form.name.data,
                 birth_date=form.birth_date.data,
                 cpf=form.cpf.data,
-                email=form.email.data
+                email=form.email.data,
+                phone=form.phone.data
             )
             db.session.add(participant)
             db.session.commit()
@@ -431,3 +445,26 @@ def registrar_inscricao(id):
             return redirect(url_for('main.inscricoes'))
             
     return render_template('events/public/register.html', event=event, form=form)
+
+@main_bp.route('/meus-certificados', methods=['GET', 'POST'])
+def meus_certificados():
+    from app.models import Participant
+    if request.method == 'POST':
+        search_term = request.form.get('search_term', '').strip()
+        
+        if not search_term:
+            from flask import flash, redirect, url_for
+            flash('Informe o CPF ou E-mail.', 'danger')
+            return redirect(url_for('main.meus_certificados'))
+            
+        if '@' in search_term:
+            participants = Participant.query.filter(Participant.email.ilike(search_term)).all()
+            display_term = search_term
+        else:
+            import re
+            cpf = re.sub(r'[^0-9]', '', search_term)
+            participants = Participant.query.filter_by(cpf=cpf).all()
+            display_term = f"{cpf[:3]}.***.***-{cpf[-2:]}" if len(cpf) == 11 else cpf
+            
+        return render_template('events/public/my_certificates.html', participants=participants, display_term=display_term)
+    return render_template('events/public/search_certificates.html')

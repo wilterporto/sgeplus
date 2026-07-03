@@ -1062,8 +1062,14 @@ class Event(db.Model):
     tenant_id = db.Column(db.Integer, db.ForeignKey('tenant.id'), nullable=True)
     certificate_template_id = db.Column(db.Integer, db.ForeignKey('certificate_template.id'), nullable=True)
     name = db.Column(db.String(255), nullable=False)
-    date = db.Column(db.Date, nullable=False)
+    start_date = db.Column(db.Date, nullable=False)
+    end_date = db.Column(db.Date, nullable=True)
+    registration_start = db.Column(db.Date, nullable=True)
+    registration_end = db.Column(db.Date, nullable=True)
+    status = db.Column(db.String(20), nullable=False, default='Previsto')
+    workload = db.Column(db.Integer, nullable=False, default=0)
     type = db.Column(db.String(50), nullable=False) # 'Online' ou 'Presencial'
+    target_audience = db.Column(db.String(255), nullable=False, default='Público Geral')
     created_at = db.Column(db.DateTime, default=get_brasilia_time)
     
     tenant = db.relationship('Tenant')
@@ -1077,4 +1083,5 @@ class Participant(db.Model):
     birth_date = db.Column(db.Date, nullable=True)
     cpf = db.Column(db.String(14), nullable=False)
     email = db.Column(db.String(255), nullable=True)
+    phone = db.Column(db.String(20), nullable=True)
     created_at = db.Column(db.DateTime, default=get_brasilia_time)

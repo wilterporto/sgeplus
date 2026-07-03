@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% block sidebar %}{% endblock %}
+{% block sidebar_toggle %}{% endblock %}
 {% block content %}
 <div class="container py-5">
     <div class="row justify-content-center">
@@ -13,7 +15,7 @@
             <div class="card shadow border-0 rounded-4 overflow-hidden">
                 <div class="card-header bg-primary text-white py-4 text-center border-0">
                     <h3 class="mb-1 fw-bold">Formulário de Inscrição</h3>
-                    <p class="mb-0 text-white-50">{{ event.name }} - {{ event.date.strftime('%d/%m/%Y') }}</p>
+                    <p class="mb-0 text-white-50">{{ event.name }} - {{ event.start_date.strftime('%d/%m/%Y') }}{% if event.end_date %} a {{ event.end_date.strftime('%d/%m/%Y') }}{% endif %}</p>
                 </div>
                 
                 <div class="card-body p-5">
@@ -49,7 +51,7 @@
                             </div>
                             
                             <div class="col-md-6 mb-4">
-                                {{ form.birth_date.label(class="form-label fw-bold") }}
+                                {{ form.birth_date.label(class="form-label fw-bold") }} <span class="text-danger">*</span>
                                 {{ form.birth_date(class="form-control form-control-lg bg-light border-0" + (" is-invalid" if form.birth_date.errors else "")) }}
                                 {% for error in form.birth_date.errors %}
                                     <div class="invalid-feedback">{{ error }}</div>
@@ -57,13 +59,21 @@
                             </div>
                         </div>
                         
-                        <div class="mb-5">
-                            {{ form.email.label(class="form-label fw-bold") }}
-                            {{ form.email(class="form-control form-control-lg bg-light border-0" + (" is-invalid" if form.email.errors else ""), placeholder="seu.email@exemplo.com") }}
-                            {% for error in form.email.errors %}
-                                <div class="invalid-feedback">{{ error }}</div>
-                            {% endfor %}
-                            <div class="form-text mt-2"><i class="fas fa-info-circle"></i> Opcional: usaremos para enviar novidades.</div>
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                {{ form.email.label(class="form-label fw-bold") }} <span class="text-danger">*</span>
+                                {{ form.email(class="form-control form-control-lg bg-light border-0" + (" is-invalid" if form.email.errors else ""), placeholder="seu.email@exemplo.com") }}
+                                {% for error in form.email.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            <div class="col-md-6 mb-5">
+                                {{ form.phone.label(class="form-label fw-bold") }} <span class="text-danger">*</span>
+                                {{ form.phone(class="form-control form-control-lg bg-light border-0" + (" is-invalid" if form.phone.errors else ""), placeholder="(00) 00000-0000", id="phoneInput") }}
+                                {% for error in form.phone.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
                         </div>
                         
                         <div class="d-grid">
@@ -84,6 +94,7 @@
 <script>
     $(document).ready(function(){
         $('#cpfInput').mask('000.000.000-00', {reverse: true});
+        $('#phoneInput').mask('(00) 00000-0000');
     });
 </script>
 {% endblock %}
