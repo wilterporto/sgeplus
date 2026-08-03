@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h2>Novo Tópico LMS</h2>
+    </div>
+</div>
+
+<div class="card shadow-sm max-w-700">
+    <div class="card-body">
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            
+            <div class="mb-3">
+                {{ form.subject_id.label(class="form-label fw-bold") }} <span style="color:red">*</span>
+                {{ form.subject_id(class="form-select" + (" is-invalid" if form.subject_id.errors else "")) }}
+                {% for error in form.subject_id.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+                {% endfor %}
+            </div>
+            
+            <div class="mb-3">
+                {{ form.name.label(class="form-label fw-bold") }} <span style="color:red">*</span>
+                {{ form.name(class="form-control" + (" is-invalid" if form.name.errors else "")) }}
+                {% for error in form.name.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+                {% endfor %}
+            </div>
+            
+            <div class="mb-3">
+                {{ form.description.label(class="form-label") }}
+                {{ form.description(class="form-control", rows="4") }}
+            </div>
+            
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="form-check">
+                        {{ form.repository(class="form-check-input") }}
+                        {{ form.repository.label(class="form-check-label") }}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-check">
+                        {{ form.visible(class="form-check-input") }}
+                        {{ form.visible.label(class="form-check-label") }}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-4">
+                {{ form.submit(class="btn btn-primary") }}
+                <a href="{{ url_for('lms.list_topics') }}" class="btn btn-outline-secondary ms-2">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

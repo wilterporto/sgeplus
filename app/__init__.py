@@ -130,6 +130,9 @@ def create_app(config_class=Config):
     from app.routes.events import events_bp
     app.register_blueprint(events_bp, url_prefix='/events')
     
+    from app.routes.lms import lms_bp
+    app.register_blueprint(lms_bp, url_prefix='/lms')
+
     # Context Processor for Version
     @app.context_processor
     def inject_context():

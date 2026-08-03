@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h2>LMS - Disciplinas</h2>
+    </div>
+    <div class="col-md-4 text-end">
+        <a href="{{ url_for('lms.create_subject') }}" class="btn btn-primary">
+            <i class="bi bi-plus-lg"></i> Nova Disciplina
+        </a>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Nome</th>
+                        <th>Categoria</th>
+                        <th>Início Inscrições</th>
+                        <th>Fim Inscrições</th>
+                        <th>Início Aulas</th>
+                        <th>Status</th>
+                        <th class="text-end">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for subj in subjects.items %}
+                    <tr>
+                        <td>{{ subj.name }}</td>
+                        <td>{{ subj.category.name if subj.category else '-' }}</td>
+                        <td>{{ subj.subscribe_begin.strftime('%d/%m/%Y') if subj.subscribe_begin else '-' }}</td>
+                        <td>{{ subj.subscribe_end.strftime('%d/%m/%Y') if subj.subscribe_end else '-' }}</td>
+                        <td>{{ subj.init_date.strftime('%d/%m/%Y') if subj.init_date else '-' }}</td>
+                        <td>
+                            {% if subj.visible %}
+                            <span class="badge bg-success">Ativa</span>
+                            {% else %}
+                            <span class="badge bg-secondary">Inativa</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            <form id="delete-form-{{ subj.id }}" action="{{ url_for('lms.delete_subject', id=subj.id) }}" method="POST" class="d-inline">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                                <button type="button" class="btn btn-sm btn-outline-danger"
+                                    onclick="if(confirm('Tem certeza que deseja excluir esta disciplina?')) this.form.submit();"
+                                    title="Excluir">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center py-4 text-muted">Nenhuma disciplina encontrada.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    {% if subjects.pages > 1 %}
+    <div class="card-footer bg-white border-top-0 pt-4 pb-0">
+        <nav aria-label="Navegação de páginas">
+            <ul class="pagination justify-content-center mb-0">
+                {% if subjects.has_prev %}
+                <li class="page-item"><a class="page-link" href="{{ url_for('lms.list_subjects', page=subjects.prev_num) }}">Anterior</a></li>
+                {% else %}
+                <li class="page-item disabled"><span class="page-link">Anterior</span></li>
+                {% endif %}
+                
+                {% for page_num in subjects.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+                    {% if page_num %}
+                        {% if subjects.page == page_num %}
+                        <li class="page-item active"><span class="page-link">{{ page_num }}</span></li>
+                        {% else %}
+                        <li class="page-item"><a class="page-link" href="{{ url_for('lms.list_subjects', page=page_num) }}">{{ page_num }}</a></li>
+                        {% endif %}
+                    {% else %}
+                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if subjects.has_next %}
+                <li class="page-item"><a class="page-link" href="{{ url_for('lms.list_subjects', page=subjects.next_num) }}">Próxima</a></li>
+                {% else %}
+                <li class="page-item disabled"><span class="page-link">Próxima</span></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

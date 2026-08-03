@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid py-3">
+    <div class="row mb-4">
+        <div class="col">
+            <h2 class="fw-bold"><i class="bi bi-mortarboard-fill me-2 text-primary"></i> Workflow: Formação Contínua</h2>
+            <p class="text-muted">Guia passo a passo de como estruturar e utilizar seus cursos no ambiente virtual de aprendizagem.</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Diagrama Fluxo -->
+            <div class="card shadow-sm mb-4 border-0">
+                <div class="card-body">
+                    <h4 class="card-title text-primary mb-4"><i class="bi bi-map"></i> Visão Geral do Fluxo</h4>
+                    <div class="text-center p-4 bg-light rounded mb-4" style="overflow-x: auto;">
+                        <div class="mermaid">
+                            graph TD
+                                A[1. Categorias] --> B[2. Disciplinas]
+                                B --> C[3. Turmas/Grupos]
+                                B --> D[4. Tópicos de Aula]
+                                D --> E[5. Recursos Interativos]
+                                B --> F[6. Metas de Aprendizagem]
+                                B --> G[7. Avaliações Dinâmicas]
+                                B --> H[8. Mural / Fórum]
+                                
+                                classDef default fill:#f9f9f9,stroke:#333,stroke-width:1px;
+                                classDef step fill:#0d6efd,stroke:#0d6efd,color:#fff,stroke-width:2px;
+                                class A,B,C,D,E,F,G,H step;
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Passo a passo -->
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+                    <h4 class="card-title text-primary mb-4"><i class="bi bi-list-check"></i> Passo a Passo Detalhado</h4>
+
+                    <!-- Passo 1 -->
+                    <div class="timeline-step mb-4 pb-4 border-bottom">
+                        <h5 class="fw-bold"><span class="badge bg-primary me-2">1</span> Cadastro de Categorias</h5>
+                        <p class="mb-2 text-muted">A <strong>Categoria</strong> é o topo da hierarquia. Serve para agrupar cursos semelhantes.</p>
+                        <ul class="list-unstyled mb-0">
+                            <li><i class="bi bi-arrow-right-short text-success fs-5"></i> <strong>Onde ir:</strong> Menu Lateral > Categorias.</li>
+                            <li><i class="bi bi-arrow-right-short text-success fs-5"></i> <strong>Ação:</strong> Crie uma categoria (ex: "Cursos de Extensão", "Formação Pedagógica").</li>
+                            <li class="text-danger small mt-2"><i class="bi bi-exclamation-circle-fill"></i> Importante: Você não pode criar uma Disciplina sem ter pelo menos 1 Categoria cadastrada.</li>
+                        </ul>
+                    </div>
+
+                    <!-- Passo 2 -->
+                    <div class="timeline-step mb-4 pb-4 border-bottom">
+                        <h5 class="fw-bold"><span class="badge bg-primary me-2">2</span> Cadastro de Disciplinas (Cursos)</h5>
+                        <p class="mb-2 text-muted">A <strong>Disciplina</strong> é o seu curso em si. Ela concentra alunos, professores, tópicos e notas.</p>
+                        <ul class="list-unstyled mb-0">
+                            <li><i class="bi bi-arrow-right-short text-success fs-5"></i> <strong>Onde ir:</strong> Menu Lateral > Disciplinas.</li>
+                            <li><i class="bi bi-arrow-right-short text-success fs-5"></i> <strong>Ação:</strong> Cadastre a disciplina escolhendo a Categoria correspondente.</li>
+                            <li><i class="bi bi-lightbulb text-warning"></i> <strong>Destaques:</strong> Aqui você define o período de inscrições, a data de início/fim e quais os Professores responsáveis.</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Passo 3 -->
+                    <div class="timeline-step mb-4 pb-4 border-bottom">
+                        <h5 class="fw-bold"><span class="badge bg-primary me-2">3</span> Criação de Turmas (Opcional, porém recomendado)</h5>
+                        <p class="mb-2 text-muted">Você pode subdividir os alunos de uma Disciplina em <strong>Turmas (Grupos)</strong>.</p>
+                        <ul class="list-unstyled mb-0">
+                            <li><i class="bi bi-arrow-right-short text-success fs-5"></i> <strong>Onde ir:</strong> Menu Lateral > Turmas (Grupos).</li>
+                            <li><i class="bi bi-arrow-right-short text-success fs-5"></i> <strong>Ação:</strong> Selecione a Disciplina e crie uma turma (ex: "Turma Matutino", "Turma A").</li>
+                            <li><i class="bi bi-check-circle text-success"></i> <strong>Vantagem:</strong> Facilita muito na hora de restringir conteúdos específicos para um grupo de alunos.</li>
+                        </ul>
+                    </div>
+
+                    <!-- Passo 4 -->
+                    <div class="timeline-step mb-4 pb-4 border-bottom">
+                        <h5 class="fw-bold"><span class="badge bg-primary me-2">4</span> Estruturação dos Tópicos de Aula</h5>
+                        <p class="mb-2 text-muted">Os <strong>Tópicos</strong> são como os "Capítulos" ou "Módulos" da sua disciplina.</p>
+                        <ul class="list-unstyled mb-0">
+                            <li><i class="bi bi-arrow-right-short text-success fs-5"></i> <strong>Onde ir:</strong> Menu Lateral > Tópicos.</li>
+                            <li><i class="bi bi-arrow-right-short text-success fs-5"></i> <strong>Ação:</strong> Vincule o tópico à disciplina (ex: "Módulo 1: Introdução", "Módulo 2: Aprofundamento").</li>
+                            <li><i class="bi bi-info-circle text-info"></i> <strong>Dica:</strong> Um tópico pode ser marcado como "Repositório" caso você queira apenas jogar arquivos variados sem estrutura modular (Apenas 1 por disciplina).</li>
+                        </ul>
+                    </div>
+
+                    <!-- Passo 5 -->
+                    <div class="timeline-step mb-4 pb-4 border-bottom">
+                        <h5 class="fw-bold"><span class="badge bg-primary me-2">5</span> Alimentando com Recursos Educacionais</h5>
+                        <p class="mb-2 text-muted">É aqui que você disponibiliza o material para o aluno consumir.</p>
+                        <ul class="list-unstyled mb-0">
+                            <li><i class="bi bi-arrow-right-short text-success fs-5"></i> <strong>Onde ir:</strong> Menu Lateral > Recursos.</li>
+                            <li><i class="bi bi-arrow-right-short text-success fs-5"></i> <strong>Ação:</strong> Escolha o Tópico criado no passo anterior e adicione os materiais (HTML, YouTube, PDF, Link Externo).</li>
+                            <li><i class="bi bi-shield-lock text-secondary"></i> <strong>Restrição:</strong> Você pode usar o campo "Restringir a Grupos" para exibir um arquivo PDF <em>apenas para a Turma A</em>, por exemplo.</li>
+                        </ul>
+                    </div>
+
+                    <!-- Passo 6 -->
+                    <div class="timeline-step mb-4 pb-4 border-bottom">
+                        <h5 class="fw-bold"><span class="badge bg-primary me-2">6</span> Criação de Metas de Aprendizagem</h5>
+                        <p class="mb-2 text-muted">Defina e monitore o que se espera que o aluno alcance na Disciplina.</p>
+                        <ul class="list-unstyled mb-0">
+                            <li><i class="bi bi-arrow-right-short text-success fs-5"></i> <strong>Onde ir:</strong> Menu Lateral > Metas.</li>
+                            <li><i class="bi bi-arrow-right-short text-success fs-5"></i> <strong>Ação:</strong> Crie a meta (ex: "Apresentação do TCC") e, em seguida, os sub-itens (ex: "Entregar introdução", "Entregar Conclusão").</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Passo 7 -->
+                    <div class="timeline-step mb-4 pb-4 border-bottom">
+                        <h5 class="fw-bold"><span class="badge bg-primary me-2">7</span> Avaliações e Importação de Notas</h5>
+                        <p class="mb-2 text-muted">Lance notas oficiais em massa diretamente de uma planilha do Excel.</p>
+                        <ul class="list-unstyled mb-0">
+                            <li><i class="bi bi-arrow-right-short text-success fs-5"></i> <strong>Onde ir:</strong> Menu Lateral > Avaliações.</li>
+                            <li><i class="bi bi-arrow-right-short text-success fs-5"></i> <strong>Ação:</strong> Crie a Avaliação. Depois clique em "Importar Notas".</li>
+                            <li class="mt-2 text-muted small border-start border-3 border-success ps-2 ms-2">
+                                <strong>Importando do Excel:</strong><br>
+                                O sistema abre um Modal. Selecione uma planilha onde a <strong>Coluna A = E-mail ou Usuário</strong> e a <strong>Coluna B = Nota</strong>.<br>
+                                O processamento roda em segundo plano. Uma barra de progresso te informará sobre o status e relatará quaisquer erros (ex: aluno não encontrado).
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Passo 8 -->
+                    <div class="timeline-step">
+                        <h5 class="fw-bold"><span class="badge bg-primary me-2">8</span> Interação pelo Fórum (Mural)</h5>
+                        <p class="mb-2 text-muted">Mantenha os alunos engajados através do fórum unificado da disciplina.</p>
+                        <ul class="list-unstyled mb-0">
+                            <li><i class="bi bi-arrow-right-short text-success fs-5"></i> <strong>Onde ir:</strong> Menu Lateral > Disciplinas > Botão de Ações > Fórum / Mural.</li>
+                            <li><i class="bi bi-arrow-right-short text-success fs-5"></i> <strong>Ação:</strong> Professores e alunos trocam mensagens, publicam dúvidas e respondem comentários com suporte a texto rico.</li>
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <!-- Sidebar Widgets -->
+            <div class="card shadow-sm border-0 bg-primary text-white mb-4">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="bi bi-lightbulb-fill me-2 text-warning"></i> Dica de Ouro</h5>
+                    <p class="card-text small mb-0">
+                        Para uma melhor organização visual e cognitiva do aluno, tente manter no máximo <strong>5 a 7 tópicos</strong> por disciplina, dividindo os recursos de aprendizagem de forma equilibrada entre eles.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-body">
+                    <h6 class="fw-bold text-secondary mb-3">Links Rápidos</h6>
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('lms.create_category') }}" class="btn btn-outline-primary text-start"><i class="bi bi-folder-plus me-2"></i> Adicionar Categoria</a>
+                        <a href="{{ url_for('lms.create_subject') }}" class="btn btn-outline-primary text-start"><i class="bi bi-journal-plus me-2"></i> Criar Nova Disciplina</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Importação da biblioteca Mermaid para renderizar os diagramas -->
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        mermaid.initialize({ 
+            startOnLoad: true, 
+            theme: 'default',
+            securityLevel: 'loose',
+            fontFamily: 'Inter, sans-serif'
+        });
+    });
+</script>
+
+<style>
+.timeline-step:last-child {
+    border-bottom: none !important;
+    padding-bottom: 0 !important;
+    margin-bottom: 0 !important;
+}
+.mermaid {
+    font-family: 'Inter', sans-serif;
+}
+</style>
+{% endblock %}

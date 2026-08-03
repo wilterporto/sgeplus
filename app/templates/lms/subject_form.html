@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h2>Nova Disciplina LMS</h2>
+    </div>
+</div>
+
+<div class="card shadow-sm max-w-700">
+    <div class="card-body">
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    {{ form.category_id.label(class="form-label fw-bold") }} <span style="color:red">*</span>
+                    {{ form.category_id(class="form-select" + (" is-invalid" if form.category_id.errors else "")) }}
+                    {% for error in form.category_id.errors %}
+                    <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="col-md-6">
+                    {{ form.name.label(class="form-label fw-bold") }} <span style="color:red">*</span>
+                    {{ form.name(class="form-control" + (" is-invalid" if form.name.errors else "")) }}
+                    {% for error in form.name.errors %}
+                    <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                {{ form.description_brief.label(class="form-label") }}
+                {{ form.description_brief(class="form-control", rows="2") }}
+            </div>
+            
+            <div class="mb-3">
+                {{ form.description.label(class="form-label") }}
+                {{ form.description(class="form-control", rows="4") }}
+            </div>
+            
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    {{ form.subscribe_begin.label(class="form-label fw-bold") }} <span style="color:red">*</span>
+                    {{ form.subscribe_begin(class="form-control" + (" is-invalid" if form.subscribe_begin.errors else "")) }}
+                    {% for error in form.subscribe_begin.errors %}
+                    <div class="invalid-feedback d-block">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="col-md-3">
+                    {{ form.subscribe_end.label(class="form-label fw-bold") }} <span style="color:red">*</span>
+                    {{ form.subscribe_end(class="form-control" + (" is-invalid" if form.subscribe_end.errors else "")) }}
+                    {% for error in form.subscribe_end.errors %}
+                    <div class="invalid-feedback d-block">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="col-md-3">
+                    {{ form.init_date.label(class="form-label fw-bold") }} <span style="color:red">*</span>
+                    {{ form.init_date(class="form-control" + (" is-invalid" if form.init_date.errors else "")) }}
+                    {% for error in form.init_date.errors %}
+                    <div class="invalid-feedback d-block">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="col-md-3">
+                    {{ form.end_date.label(class="form-label fw-bold") }} <span style="color:red">*</span>
+                    {{ form.end_date(class="form-control" + (" is-invalid" if form.end_date.errors else "")) }}
+                    {% for error in form.end_date.errors %}
+                    <div class="invalid-feedback d-block">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    {{ form.tags.label(class="form-label") }}
+                    {{ form.tags(class="form-control") }}
+                </div>
+                <div class="col-md-6">
+                    {{ form.price.label(class="form-label") }}
+                    {{ form.price(class="form-control") }}
+                </div>
+            </div>
+            
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <div class="form-check">
+                        {{ form.visible(class="form-check-input") }}
+                        {{ form.visible.label(class="form-check-label") }}
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-check">
+                        {{ form.display_avatar(class="form-check-input") }}
+                        {{ form.display_avatar.label(class="form-check-label") }}
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-check">
+                        {{ form.external_access(class="form-check-input") }}
+                        {{ form.external_access.label(class="form-check-label") }}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                {{ form.professors.label(class="form-label") }}
+                {{ form.professors(class="form-select") }}
+            </div>
+            
+            <div class="mt-4">
+                {{ form.submit(class="btn btn-primary") }}
+                <a href="{{ url_for('lms.list_subjects') }}" class="btn btn-outline-secondary ms-2">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

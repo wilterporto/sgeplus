@@ -487,6 +487,57 @@
                 </div>
 
                 <li class="nav-item mt-3">
+                    <a class="nav-link text-uppercase text-secondary small fw-bold d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#collapseLMS" role="button" aria-expanded="false" aria-controls="collapseLMS">
+                        <span class="sidebar-text">Formação Contínua</span>
+                        <i class="bi bi-chevron-down sidebar-text"></i>
+                    </a>
+                </li>
+                <div class="collapse" id="collapseLMS">
+                    <ul class="nav flex-column ms-2">
+                        <li>
+                            <a href="{{ url_for('lms.workflow') }}" class="nav-link {% if 'lms.workflow' in request.endpoint %}active{% endif %}">
+                                <i class="bi bi-info-circle me-2"></i> <span class="sidebar-text">Guia de Uso</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ url_for('lms.list_categories') }}" class="nav-link {% if 'lms.list_categories' in request.endpoint %}active{% endif %}">
+                                <i class="bi bi-folder me-2"></i> <span class="sidebar-text">Categorias</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ url_for('lms.list_subjects') }}" class="nav-link {% if 'lms.list_subjects' in request.endpoint %}active{% endif %}">
+                                <i class="bi bi-book me-2"></i> <span class="sidebar-text">Disciplinas</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ url_for('lms.list_student_groups') }}" class="nav-link {% if 'lms.list_student_groups' in request.endpoint %}active{% endif %}">
+                                <i class="bi bi-people me-2"></i> <span class="sidebar-text">Turmas (Grupos)</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ url_for('lms.list_topics') }}" class="nav-link {% if 'lms.list_topics' in request.endpoint %}active{% endif %}">
+                                <i class="bi bi-list-nested me-2"></i> <span class="sidebar-text">Tópicos</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ url_for('lms.list_resources') }}" class="nav-link {% if 'lms.list_resources' in request.endpoint %}active{% endif %}">
+                                <i class="bi bi-files me-2"></i> <span class="sidebar-text">Recursos</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ url_for('lms.list_goals') }}" class="nav-link {% if 'lms.list_goals' in request.endpoint %}active{% endif %}">
+                                <i class="bi bi-bullseye me-2"></i> <span class="sidebar-text">Metas</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ url_for('lms.list_evaluations') }}" class="nav-link {% if 'lms.list_evaluations' in request.endpoint %}active{% endif %}">
+                                <i class="bi bi-card-checklist me-2"></i> <span class="sidebar-text">Avaliações</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <li class="nav-item mt-3">
                     <a class="nav-link text-uppercase text-secondary small fw-bold d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#collapseGestaoAcademica" role="button" aria-expanded="false" aria-controls="collapseGestaoAcademica">
                         <span class="sidebar-text">Gestão Acadêmica</span>
                         <i class="bi bi-chevron-down sidebar-text"></i>

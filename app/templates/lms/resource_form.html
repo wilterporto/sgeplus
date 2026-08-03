@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h2>Novo Recurso Educacional</h2>
+    </div>
+</div>
+
+<div class="card shadow-sm max-w-700">
+    <div class="card-body">
+        <form method="POST" enctype="multipart/form-data">
+            {{ form.hidden_tag() }}
+            
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    {{ form.topic_id.label(class="form-label fw-bold") }} <span style="color:red">*</span>
+                    {{ form.topic_id(class="form-select" + (" is-invalid" if form.topic_id.errors else "")) }}
+                    {% for error in form.topic_id.errors %}
+                    <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="col-md-6">
+                    {{ form.type.label(class="form-label fw-bold") }} <span style="color:red">*</span>
+                    {{ form.type(class="form-select" + (" is-invalid" if form.type.errors else ""), id="resource_type") }}
+                    {% for error in form.type.errors %}
+                    <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                {{ form.name.label(class="form-label fw-bold") }} <span style="color:red">*</span>
+                {{ form.name(class="form-control" + (" is-invalid" if form.name.errors else "")) }}
+                {% for error in form.name.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+                {% endfor %}
+            </div>
+            
+            <div class="mb-3">
+                {{ form.brief_description.label(class="form-label") }}
+                {{ form.brief_description(class="form-control", rows="2") }}
+            </div>
+            
+            <!-- Conditional Fields Container -->
+            <div id="html_fields" style="display:none;" class="mb-3">
+                {{ form.content.label(class="form-label fw-bold") }} <span style="color:red">*</span> (Editor Rico)
+                {{ form.content(class="form-control", rows="10") }}
+                <!-- TODO: Initialize Summernote via JS on this field -->
+            </div>
+            
+            <div id="url_fields" style="display:none;" class="mb-3">
+                {{ form.url.label(class="form-label fw-bold") }} <span style="color:red">*</span>
+                {{ form.url(class="form-control", placeholder="https://youtube.com/... ou https://...") }}
+            </div>
+            
+            <div id="file_fields" style="display:none;" class="mb-3">
+                {{ form.file.label(class="form-label fw-bold") }} <span style="color:red">*</span> (Máx 10MB)
+                {{ form.file(class="form-control") }}
+                {% for error in form.file.errors %}
+                <div class="invalid-feedback d-block">{{ error }}</div>
+                {% endfor %}
+            </div>
+            
+            <hr class="my-4">
+            
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <div class="form-check">
+                        {{ form.show_window(class="form-check-input") }}
+                        {{ form.show_window.label(class="form-check-label") }}
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-check">
+                        {{ form.visible(class="form-check-input") }}
+                        {{ form.visible.label(class="form-check-label") }}
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-check">
+                        {{ form.all_students(class="form-check-input") }}
+                        {{ form.all_students.label(class="form-check-label") }}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                {{ form.groups.label(class="form-label") }} (Apenas se não for visível para todos)
+                {{ form.groups(class="form-select") }}
+            </div>
+            
+            <div class="mb-3">
+                {{ form.tags.label(class="form-label") }}
+                {{ form.tags(class="form-control") }}
+            </div>
+            
+            <div class="mt-4">
+                {{ form.submit(class="btn btn-primary") }}
+                <a href="{{ url_for('lms.list_resources') }}" class="btn btn-outline-secondary ms-2">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const typeSelect = document.getElementById('resource_type');
+    const htmlFields = document.getElementById('html_fields');
+    const urlFields = document.getElementById('url_fields');
+    const fileFields = document.getElementById('file_fields');
+    
+    function updateFields() {
+        const type = typeSelect.value;
+        htmlFields.style.display = 'none';
+        urlFields.style.display = 'none';
+        fileFields.style.display = 'none';
+        
+        if (type === 'html') {
+            htmlFields.style.display = 'block';
+        } else if (type === 'youtube' || type === 'link') {
+            urlFields.style.display = 'block';
+        } else if (type === 'file' || type === 'pdf') {
+            fileFields.style.display = 'block';
+        }
+    }
+    
+    typeSelect.addEventListener('change', updateFields);
+    updateFields();
+});
+</script>
+{% endblock %}

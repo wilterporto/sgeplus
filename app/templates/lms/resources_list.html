@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h2>Recursos Educacionais Interativos</h2>
+    </div>
+    <div class="col-md-4 text-end">
+        <a href="{{ url_for('lms.create_resource') }}" class="btn btn-primary">
+            <i class="bi bi-plus-lg"></i> Novo Recurso
+        </a>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Nome</th>
+                        <th>Tipo</th>
+                        <th>Tópico</th>
+                        <th>Visibilidade</th>
+                        <th class="text-end">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for res in resources.items %}
+                    <tr>
+                        <td>{{ res.name }}</td>
+                        <td>
+                            {% if res.type.value == 'html' %} <i class="bi bi-filetype-html text-primary"></i> HTML/Texto Rico
+                            {% elif res.type.value == 'youtube' %} <i class="bi bi-youtube text-danger"></i> YouTube
+                            {% elif res.type.value == 'pdf' %} <i class="bi bi-filetype-pdf text-danger"></i> PDF
+                            {% elif res.type.value == 'file' %} <i class="bi bi-file-earmark-arrow-down text-secondary"></i> Arquivo
+                            {% elif res.type.value == 'link' %} <i class="bi bi-link-45deg text-info"></i> Link Externo
+                            {% endif %}
+                        </td>
+                        <td>{{ res.topic.name if res.topic else '-' }}</td>
+                        <td>
+                            {% if res.visible %}
+                            <span class="badge bg-success">Ativo</span>
+                            {% else %}
+                            <span class="badge bg-secondary">Inativo</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            <form id="delete-form-{{ res.id }}" action="{{ url_for('lms.delete_resource', id=res.id) }}" method="POST" class="d-inline">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                                <button type="button" class="btn btn-sm btn-outline-danger"
+                                    onclick="if(confirm('Tem certeza que deseja excluir este recurso?')) this.form.submit();"
+                                    title="Excluir">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center py-4 text-muted">Nenhum recurso encontrado.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    {% if resources.pages > 1 %}
+    <div class="card-footer bg-white border-top-0 pt-4 pb-0">
+        <nav aria-label="Navegação de páginas">
+            <ul class="pagination justify-content-center mb-0">
+                {% if resources.has_prev %}
+                <li class="page-item"><a class="page-link" href="{{ url_for('lms.list_resources', page=resources.prev_num) }}">Anterior</a></li>
+                {% else %}
+                <li class="page-item disabled"><span class="page-link">Anterior</span></li>
+                {% endif %}
+                
+                {% for page_num in resources.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+                    {% if page_num %}
+                        {% if resources.page == page_num %}
+                        <li class="page-item active"><span class="page-link">{{ page_num }}</span></li>
+                        {% else %}
+                        <li class="page-item"><a class="page-link" href="{{ url_for('lms.list_resources', page=page_num) }}">{{ page_num }}</a></li>
+                        {% endif %}
+                    {% else %}
+                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if resources.has_next %}
+                <li class="page-item"><a class="page-link" href="{{ url_for('lms.list_resources', page=resources.next_num) }}">Próxima</a></li>
+                {% else %}
+                <li class="page-item disabled"><span class="page-link">Próxima</span></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

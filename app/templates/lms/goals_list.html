@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h2>Metas de Aprendizagem</h2>
+    </div>
+    <div class="col-md-4 text-end">
+        <a href="{{ url_for('lms.create_goal') }}" class="btn btn-primary">
+            <i class="bi bi-plus-lg"></i> Nova Meta
+        </a>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Disciplina</th>
+                        <th>Nome da Meta</th>
+                        <th>Período</th>
+                        <th>Visibilidade</th>
+                        <th class="text-end">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for goal in goals.items %}
+                    <tr>
+                        <td>{{ goal.subject.name if goal.subject else '-' }}</td>
+                        <td>
+                            <strong>{{ goal.name }}</strong>
+                            {% if goal.items.count() > 0 %}
+                            <br><small class="text-muted">{{ goal.items.count() }} itens associados</small>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <small>
+                                Início: {{ goal.init_date.strftime('%d/%m/%Y') }}<br>
+                                Fim: <strong class="text-danger">{{ goal.limit_submission_date.strftime('%d/%m/%Y') }}</strong>
+                            </small>
+                        </td>
+                        <td>
+                            {% if goal.visible %}
+                            <span class="badge bg-success">Ativa</span>
+                            {% else %}
+                            <span class="badge bg-secondary">Inativa</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            <form id="delete-form-{{ goal.id }}" action="{{ url_for('lms.delete_goal', id=goal.id) }}" method="POST" class="d-inline">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                                <button type="button" class="btn btn-sm btn-outline-danger"
+                                    onclick="if(confirm('Tem certeza que deseja excluir esta meta? Todos os itens associados também serão apagados.')) this.form.submit();"
+                                    title="Excluir">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center py-4 text-muted">Nenhuma meta de aprendizagem encontrada.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    {% if goals.pages > 1 %}
+    <div class="card-footer bg-white border-top-0 pt-4 pb-0">
+        <nav aria-label="Navegação de páginas">
+            <ul class="pagination justify-content-center mb-0">
+                {% if goals.has_prev %}
+                <li class="page-item"><a class="page-link" href="{{ url_for('lms.list_goals', page=goals.prev_num) }}">Anterior</a></li>
+                {% endif %}
+                
+                {% for page_num in goals.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+                    {% if page_num %}
+                        {% if goals.page == page_num %}
+                        <li class="page-item active"><span class="page-link">{{ page_num }}</span></li>
+                        {% else %}
+                        <li class="page-item"><a class="page-link" href="{{ url_for('lms.list_goals', page=page_num) }}">{{ page_num }}</a></li>
+                        {% endif %}
+                    {% else %}
+                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if goals.has_next %}
+                <li class="page-item"><a class="page-link" href="{{ url_for('lms.list_goals', page=goals.next_num) }}">Próxima</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

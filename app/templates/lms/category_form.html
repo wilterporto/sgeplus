@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% import "bootstrap5/form.html" as wtf %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h2>Nova Categoria LMS</h2>
+    </div>
+</div>
+
+<div class="card shadow-sm max-w-700">
+    <div class="card-body">
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            
+            <div class="mb-3">
+                {{ form.name.label(class="form-label fw-bold") }} <span style="color:red">*</span>
+                {{ form.name(class="form-control" + (" is-invalid" if form.name.errors else "")) }}
+                {% for error in form.name.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+                {% endfor %}
+            </div>
+            
+            <div class="mb-3">
+                {{ form.description.label(class="form-label") }}
+                {{ form.description(class="form-control", rows="3") }}
+                {% for error in form.description.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+                {% endfor %}
+            </div>
+            
+            <div class="mb-3 form-check">
+                {{ form.visible(class="form-check-input") }}
+                {{ form.visible.label(class="form-check-label") }}
+            </div>
+            
+            <div class="mb-3">
+                {{ form.coordinators.label(class="form-label") }}
+                {{ form.coordinators(class="form-select") }}
+            </div>
+            
+            <div class="mt-4">
+                {{ form.submit(class="btn btn-primary") }}
+                <a href="{{ url_for('lms.list_categories') }}" class="btn btn-outline-secondary ms-2">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

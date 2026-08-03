@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h2>Nova Avaliação</h2>
+    </div>
+</div>
+
+<div class="card shadow-sm max-w-700">
+    <div class="card-body">
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            
+            <div class="mb-3">
+                {{ form.subject_id.label(class="form-label fw-bold") }} <span style="color:red">*</span>
+                {{ form.subject_id(class="form-select" + (" is-invalid" if form.subject_id.errors else "")) }}
+                {% for error in form.subject_id.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+                {% endfor %}
+            </div>
+            
+            <div class="mb-3">
+                {{ form.name.label(class="form-label fw-bold") }} <span style="color:red">*</span>
+                {{ form.name(class="form-control" + (" is-invalid" if form.name.errors else "")) }}
+                {% for error in form.name.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+                {% endfor %}
+            </div>
+            
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    {{ form.type.label(class="form-label fw-bold") }} <span style="color:red">*</span>
+                    {{ form.type(class="form-select" + (" is-invalid" if form.type.errors else "")) }}
+                    {% for error in form.type.errors %}
+                    <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="col-md-6">
+                    {{ form.date.label(class="form-label fw-bold") }} <span style="color:red">*</span>
+                    {{ form.date(class="form-control" + (" is-invalid" if form.date.errors else "")) }}
+                    {% for error in form.date.errors %}
+                    <div class="invalid-feedback d-block">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <div class="mb-3 form-check">
+                {{ form.visible(class="form-check-input") }}
+                {{ form.visible.label(class="form-check-label") }}
+            </div>
+            
+            <div class="mt-4">
+                {{ form.submit(class="btn btn-primary") }}
+                <a href="{{ url_for('lms.list_evaluations') }}" class="btn btn-outline-secondary ms-2">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

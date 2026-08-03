@@ -31,6 +31,11 @@ class User(UserMixin, db.Model):
     roles = db.Column(db.String(256), default='professor')
     active = db.Column(db.Boolean, default=True)
     name = db.Column(db.String(128))
+    last_name = db.Column(db.String(128), nullable=True)
+    social_name = db.Column(db.String(128), nullable=True)
+    show_email = db.Column(db.Boolean, default=False)
+    image_path = db.Column(db.String(255), nullable=True)
+    description = db.Column(db.Text, nullable=True)
     last_login = db.Column(db.DateTime)
     last_agreed_version = db.Column(db.String(20))
     is_system_admin = db.Column(db.Boolean, nullable=False, default=False)
@@ -1085,3 +1090,251 @@ class Participant(db.Model):
     email = db.Column(db.String(255), nullable=True)
     phone = db.Column(db.String(20), nullable=True)
     created_at = db.Column(db.DateTime, default=get_brasilia_time)
+
+# --- LMS (Formação Contínua) Models ---
+
+class LMSCategory(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    tenant_id = db.Column(db.Integer, db.ForeignKey('tenant.id'), nullable=True)
+    name = db.Column(db.String(128), nullable=False)
+    description = db.Column(db.Text, nullable=True)
+    visible = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=get_brasilia_time)
+
+    tenant = db.relationship('Tenant')
+
+lms_category_coordinators = db.Table('lms_category_coordinators',
+    db.Column('category_id', db.Integer, db.ForeignKey('lms_category.id', ondelete='CASCADE'), primary_key=True),
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), primary_key=True)
+)
+
+LMSCategory.coordinators = db.relationship('User', secondary=lms_category_coordinators, lazy='subquery', backref=db.backref('lms_coordinated_categories', lazy=True))
+
+
+class LMSSubject(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    tenant_id = db.Column(db.Integer, db.ForeignKey('tenant.id'), nullable=True)
+    category_id = db.Column(db.Integer, db.ForeignKey('lms_category.id'), nullable=False)
+    name = db.Column(db.String(128), nullable=False)
+    description_brief = db.Column(db.Text, nullable=True)
+    description = db.Column(db.Text, nullable=True)
+    subscribe_begin = db.Column(db.Date, nullable=False)
+    subscribe_end = db.Column(db.Date, nullable=False)
+    init_date = db.Column(db.Date, nullable=False)
+    end_date = db.Column(db.Date, nullable=False)
+    visible = db.Column(db.Boolean, default=True)
+    tags = db.Column(db.String(255), nullable=True)
+    price = db.Column(db.Float, nullable=True)
+    display_avatar = db.Column(db.Boolean, default=True)
+    external_access = db.Column(db.Boolean, default=False)
+    created_at = db.Column(db.DateTime, default=get_brasilia_time)
+
+    tenant = db.relationship('Tenant')
+    category = db.relationship('LMSCategory', backref=db.backref('subjects', lazy='dynamic'))
+
+lms_subject_professors = db.Table('lms_subject_professors',
+    db.Column('subject_id', db.Integer, db.ForeignKey('lms_subject.id', ondelete='CASCADE'), primary_key=True),
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), primary_key=True)
+)
+
+lms_subject_students = db.Table('lms_subject_students',
+    db.Column('subject_id', db.Integer, db.ForeignKey('lms_subject.id', ondelete='CASCADE'), primary_key=True),
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), primary_key=True)
+)
+
+LMSSubject.professors = db.relationship('User', secondary=lms_subject_professors, lazy='subquery', backref=db.backref('lms_teaching_subjects', lazy=True))
+LMSSubject.students = db.relationship('User', secondary=lms_subject_students, lazy='subquery', backref=db.backref('lms_enrolled_subjects', lazy=True))
+
+
+class LMSStudentGroup(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    tenant_id = db.Column(db.Integer, db.ForeignKey('tenant.id'), nullable=True)
+    subject_id = db.Column(db.Integer, db.ForeignKey('lms_subject.id'), nullable=False)
+    name = db.Column(db.String(128), nullable=False)
+    description = db.Column(db.Text, nullable=True)
+    created_at = db.Column(db.DateTime, default=get_brasilia_time)
+
+    tenant = db.relationship('Tenant')
+    subject = db.relationship('LMSSubject', backref=db.backref('groups', lazy='dynamic'))
+
+lms_student_group_participants = db.Table('lms_student_group_participants',
+    db.Column('group_id', db.Integer, db.ForeignKey('lms_student_group.id', ondelete='CASCADE'), primary_key=True),
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), primary_key=True)
+)
+
+LMSStudentGroup.participants = db.relationship('User', secondary=lms_student_group_participants, lazy='subquery', backref=db.backref('lms_groups', lazy=True))
+
+
+class LMSTopic(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    tenant_id = db.Column(db.Integer, db.ForeignKey('tenant.id'), nullable=True)
+    subject_id = db.Column(db.Integer, db.ForeignKey('lms_subject.id'), nullable=False)
+    name = db.Column(db.String(128), nullable=False)
+    description = db.Column(db.Text, nullable=True)
+    repository = db.Column(db.Boolean, default=False)
+    visible = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=get_brasilia_time)
+
+    tenant = db.relationship('Tenant')
+    subject = db.relationship('LMSSubject', backref=db.backref('topics', lazy='dynamic'))
+
+# --- LMS Phase 2 Models ---
+
+class LMSMuralActionEnum(enum.Enum):
+    COMMENT = "comment"
+    HELP = "help"
+    
+class LMSResourceTypeEnum(enum.Enum):
+    HTML = "html"
+    YOUTUBE = "youtube"
+    FILE = "file"
+    PDF = "pdf"
+    LINK = "link"
+
+class LMSResource(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    tenant_id = db.Column(db.Integer, db.ForeignKey('tenant.id'), nullable=True)
+    topic_id = db.Column(db.Integer, db.ForeignKey('lms_topic.id'), nullable=False)
+    type = db.Column(db.Enum(LMSResourceTypeEnum), nullable=False)
+    name = db.Column(db.String(255), nullable=False)
+    content = db.Column(db.Text, nullable=True)
+    url = db.Column(db.String(512), nullable=True)
+    file_path = db.Column(db.String(255), nullable=True)
+    brief_description = db.Column(db.Text, nullable=True)
+    show_window = db.Column(db.Boolean, default=False)
+    all_students = db.Column(db.Boolean, default=True)
+    visible = db.Column(db.Boolean, default=True)
+    tags = db.Column(db.String(255), nullable=True)
+    created_at = db.Column(db.DateTime, default=get_brasilia_time)
+
+    tenant = db.relationship('Tenant')
+    topic = db.relationship('LMSTopic', backref=db.backref('resources', lazy='dynamic', cascade='all, delete-orphan'))
+
+lms_resource_students = db.Table('lms_resource_students',
+    db.Column('resource_id', db.Integer, db.ForeignKey('lms_resource.id', ondelete='CASCADE'), primary_key=True),
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), primary_key=True)
+)
+
+lms_resource_groups = db.Table('lms_resource_groups',
+    db.Column('resource_id', db.Integer, db.ForeignKey('lms_resource.id', ondelete='CASCADE'), primary_key=True),
+    db.Column('group_id', db.Integer, db.ForeignKey('lms_student_group.id', ondelete='CASCADE'), primary_key=True)
+)
+
+LMSResource.students = db.relationship('User', secondary=lms_resource_students, lazy='subquery', backref=db.backref('lms_resources', lazy=True))
+LMSResource.groups = db.relationship('LMSStudentGroup', secondary=lms_resource_groups, lazy='subquery', backref=db.backref('lms_resources', lazy=True))
+
+class LMSMuralPost(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    tenant_id = db.Column(db.Integer, db.ForeignKey('tenant.id'), nullable=True)
+    subject_id = db.Column(db.Integer, db.ForeignKey('lms_subject.id'), nullable=False)
+    action = db.Column(db.Enum(LMSMuralActionEnum), nullable=False)
+    post = db.Column(db.Text, nullable=False)
+    image_path = db.Column(db.String(255), nullable=True)
+    resource_id = db.Column(db.Integer, db.ForeignKey('lms_resource.id'), nullable=True)
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    created_at = db.Column(db.DateTime, default=get_brasilia_time)
+
+    tenant = db.relationship('Tenant')
+    subject = db.relationship('LMSSubject', backref=db.backref('mural_posts', lazy='dynamic', cascade='all, delete-orphan'))
+    author = db.relationship('User', foreign_keys=[author_id])
+    resource = db.relationship('LMSResource', backref='mural_posts')
+
+class LMSMuralComment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    tenant_id = db.Column(db.Integer, db.ForeignKey('tenant.id'), nullable=True)
+    post_id = db.Column(db.Integer, db.ForeignKey('lms_mural_post.id', ondelete='CASCADE'), nullable=False)
+    comment = db.Column(db.Text, nullable=False)
+    image_path = db.Column(db.String(255), nullable=True)
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    created_at = db.Column(db.DateTime, default=get_brasilia_time)
+
+    tenant = db.relationship('Tenant')
+    post = db.relationship('LMSMuralPost', backref=db.backref('comments', lazy='dynamic', cascade='all, delete-orphan'))
+    author = db.relationship('User', foreign_keys=[author_id])
+
+class LMSGoal(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    tenant_id = db.Column(db.Integer, db.ForeignKey('tenant.id'), nullable=True)
+    subject_id = db.Column(db.Integer, db.ForeignKey('lms_subject.id'), nullable=False)
+    name = db.Column(db.String(255), nullable=False)
+    presentation = db.Column(db.Text, nullable=False)
+    init_date = db.Column(db.DateTime, nullable=False)
+    limit_submission_date = db.Column(db.DateTime, nullable=False)
+    brief_description = db.Column(db.Text, nullable=True)
+    visible = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=get_brasilia_time)
+
+    tenant = db.relationship('Tenant')
+    subject = db.relationship('LMSSubject', backref=db.backref('goals', lazy='dynamic', cascade='all, delete-orphan'))
+
+class LMSGoalItem(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    tenant_id = db.Column(db.Integer, db.ForeignKey('tenant.id'), nullable=True)
+    goal_id = db.Column(db.Integer, db.ForeignKey('lms_goal.id', ondelete='CASCADE'), nullable=False)
+    description = db.Column(db.String(255), nullable=False)
+    ref_value = db.Column(db.String(50), nullable=True)
+    created_at = db.Column(db.DateTime, default=get_brasilia_time)
+
+    tenant = db.relationship('Tenant')
+    goal = db.relationship('LMSGoal', backref=db.backref('items', lazy='dynamic', cascade='all, delete-orphan'))
+
+# --- LMS Phase 3 Models (Evaluations and Async Job) ---
+
+class LMSEvaluationTypeEnum(enum.Enum):
+    DIAGNOSTICA = "diagnostica"
+    PROCESSUAL = "processual"
+    SAIDA = "saida"
+    INDIFERENTE = "indiferente"
+
+class LMSEvaluation(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    tenant_id = db.Column(db.Integer, db.ForeignKey('tenant.id'), nullable=True)
+    subject_id = db.Column(db.Integer, db.ForeignKey('lms_subject.id'), nullable=False)
+    name = db.Column(db.String(255), nullable=False)
+    type = db.Column(db.Enum(LMSEvaluationTypeEnum), nullable=False)
+    date = db.Column(db.Date, nullable=False)
+    visible = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=get_brasilia_time)
+
+    tenant = db.relationship('Tenant')
+    subject = db.relationship('LMSSubject', backref=db.backref('evaluations', lazy='dynamic', cascade='all, delete-orphan'))
+
+class LMSQuestion(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    tenant_id = db.Column(db.Integer, db.ForeignKey('tenant.id'), nullable=True)
+    evaluation_id = db.Column(db.Integer, db.ForeignKey('lms_evaluation.id', ondelete='CASCADE'), nullable=False)
+    statement = db.Column(db.Text, nullable=False)
+    type = db.Column(db.String(50), nullable=False) 
+    options = db.Column(db.Text, nullable=True) 
+    correct_answer = db.Column(db.String(255), nullable=True)
+    created_at = db.Column(db.DateTime, default=get_brasilia_time)
+
+    tenant = db.relationship('Tenant')
+    evaluation = db.relationship('LMSEvaluation', backref=db.backref('questions', lazy='dynamic', cascade='all, delete-orphan'))
+
+class LMSStudentGrade(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    tenant_id = db.Column(db.Integer, db.ForeignKey('tenant.id'), nullable=True)
+    evaluation_id = db.Column(db.Integer, db.ForeignKey('lms_evaluation.id', ondelete='CASCADE'), nullable=False)
+    student_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
+    grade = db.Column(db.Float, nullable=False)
+    created_at = db.Column(db.DateTime, default=get_brasilia_time)
+
+    tenant = db.relationship('Tenant')
+    evaluation = db.relationship('LMSEvaluation', backref=db.backref('grades', lazy='dynamic', cascade='all, delete-orphan'))
+    student = db.relationship('User', foreign_keys=[student_id])
+
+class LMSImportJob(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    tenant_id = db.Column(db.Integer, db.ForeignKey('tenant.id'), nullable=True)
+    evaluation_id = db.Column(db.Integer, db.ForeignKey('lms_evaluation.id', ondelete='CASCADE'), nullable=False)
+    status = db.Column(db.String(50), default='pending') # pending, processing, completed, error
+    total_records = db.Column(db.Integer, default=0)
+    processed_records = db.Column(db.Integer, default=0)
+    log = db.Column(db.Text, nullable=True) 
+    file_path = db.Column(db.String(512), nullable=False)
+    created_at = db.Column(db.DateTime, default=get_brasilia_time)
+    updated_at = db.Column(db.DateTime, default=get_brasilia_time, onupdate=get_brasilia_time)
+
+    tenant = db.relationship('Tenant')
+    evaluation = db.relationship('LMSEvaluation')

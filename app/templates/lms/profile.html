@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h2>Meu Perfil (Formação Contínua)</h2>
+    </div>
+</div>
+
+<div class="card shadow-sm max-w-700">
+    <div class="card-body">
+        <form method="POST" enctype="multipart/form-data">
+            {{ form.hidden_tag() }}
+            
+            <div class="row mb-3">
+                <div class="col-md-8">
+                    <div class="mb-3">
+                        {{ form.social_name.label(class="form-label") }}
+                        {{ form.social_name(class="form-control") }}
+                        {% for error in form.social_name.errors %}
+                        <div class="invalid-feedback d-block">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="mb-3 form-check">
+                        {{ form.show_email(class="form-check-input") }}
+                        {{ form.show_email.label(class="form-check-label") }}
+                    </div>
+                </div>
+                <div class="col-md-4 text-center">
+                    <div class="mb-3">
+                        {% if current_user.image_path %}
+                        <img src="{{ url_for('static', filename='uploads/' + current_user.image_path) }}" alt="Foto" class="rounded-circle img-thumbnail mb-2" style="width: 150px; height: 150px; object-fit: cover;">
+                        {% else %}
+                        <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2" style="width: 150px; height: 150px; font-size: 3rem;">
+                            <i class="bi bi-person"></i>
+                        </div>
+                        {% endif %}
+                        {{ form.image(class="form-control form-control-sm") }}
+                        {% for error in form.image.errors %}
+                        <div class="invalid-feedback d-block">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                {{ form.description.label(class="form-label") }}
+                {{ form.description(class="form-control", rows="4") }}
+            </div>
+            
+            <hr class="my-4">
+            <h4>Alterar Senha</h4>
+            <p class="text-muted small">Preencha apenas se desejar alterar sua senha atual.</p>
+            
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    {{ form.current_password.label(class="form-label") }}
+                    {{ form.current_password(class="form-control") }}
+                </div>
+                <div class="col-md-4">
+                    {{ form.new_password.label(class="form-label") }}
+                    {{ form.new_password(class="form-control" + (" is-invalid" if form.new_password.errors else "")) }}
+                    {% for error in form.new_password.errors %}
+                    <div class="invalid-feedback d-block">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="col-md-4">
+                    {{ form.confirm_password.label(class="form-label") }}
+                    {{ form.confirm_password(class="form-control" + (" is-invalid" if form.confirm_password.errors else "")) }}
+                    {% for error in form.confirm_password.errors %}
+                    <div class="invalid-feedback d-block">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <div class="mt-4">
+                {{ form.submit(class="btn btn-primary") }}
+                <a href="{{ url_for('main.index') }}" class="btn btn-outline-secondary ms-2">Voltar</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

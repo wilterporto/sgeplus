@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h2>Avaliações Dinâmicas</h2>
+    </div>
+    <div class="col-md-4 text-end">
+        <a href="{{ url_for('lms.create_evaluation') }}" class="btn btn-primary">
+            <i class="bi bi-plus-lg"></i> Nova Avaliação
+        </a>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Disciplina</th>
+                        <th>Nome</th>
+                        <th>Tipo</th>
+                        <th>Data</th>
+                        <th class="text-end">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ev in evaluations.items %}
+                    <tr>
+                        <td>{{ ev.subject.name if ev.subject else '-' }}</td>
+                        <td><strong>{{ ev.name }}</strong></td>
+                        <td><span class="badge bg-secondary">{{ ev.type.value.capitalize() }}</span></td>
+                        <td>{{ ev.date.strftime('%d/%m/%Y') }}</td>
+                        <td class="text-end">
+                            <button type="button" class="btn btn-sm btn-outline-success me-2" onclick="openImportModal({{ ev.id }}, '{{ ev.name }}')" title="Importar Notas Excel">
+                                <i class="bi bi-file-earmark-excel"></i> Importar Notas
+                            </button>
+                            
+                            <form id="delete-form-{{ ev.id }}" action="{{ url_for('lms.delete_evaluation', id=ev.id) }}" method="POST" class="d-inline">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                                <button type="button" class="btn btn-sm btn-outline-danger"
+                                    onclick="if(confirm('Tem certeza que deseja excluir esta avaliação?')) this.form.submit();"
+                                    title="Excluir">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center py-4 text-muted">Nenhuma avaliação encontrada.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    {% if evaluations.pages > 1 %}
+    <div class="card-footer bg-white border-top-0 pt-4 pb-0">
+        <!-- Paginação aqui (omitida p/ brevidade) -->
+    </div>
+    {% endif %}
+</div>
+
+<!-- Modal Importação -->
+<div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true" data-bs-backdrop="static">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="importModalLabel">Importar Notas: <span id="importEvalName"></span></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="btnCloseModalTop"></button>
+      </div>
+      <div class="modal-body">
+        
+        <div id="uploadSection">
+            <p class="small text-muted">A planilha deve conter 2 colunas na primeira aba: Coluna A (E-mail ou Usuário do Aluno) e Coluna B (Nota).</p>
+            <form id="importForm" enctype="multipart/form-data">
+                <input type="hidden" id="importEvalId">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Arquivo Excel (.xlsx, .xls) <span style="color:red">*</span></label>
+                    <input type="file" class="form-control" id="importFile" name="file" accept=".xlsx, .xls" required>
+                </div>
+            </form>
+        </div>
+        
+        <div id="progressSection" style="display:none;" class="text-center">
+            <h6 class="mb-3" id="progressStatusText">Processando, por favor aguarde...</h6>
+            <div class="progress mb-2" style="height: 25px;">
+              <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+            </div>
+            <p class="small text-muted" id="progressCounts">Processados: 0 de 0</p>
+            
+            <div id="errorLogSection" class="mt-3 text-start" style="display:none;">
+                <h6 class="text-danger">Log de Alertas:</h6>
+                <textarea class="form-control text-danger font-monospace" rows="4" id="errorLogText" readonly style="font-size:12px;"></textarea>
+            </div>
+        </div>
+
+      </div>
+      <div class="modal-footer" id="modalFooter">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-success" onclick="submitImport()">Iniciar Importação</button>
+      </div>
+      
+      <!-- Footer pós-processo -->
+      <div class="modal-footer" id="modalFooterDone" style="display:none;">
+        <button type="button" class="btn btn-primary" onclick="window.location.reload();">Concluir e Recarregar</button>
+      </div>
+      
+    </div>
+  </div>
+</div>
+
+<script>
+let pollingInterval;
+
+function openImportModal(evalId, evalName) {
+    document.getElementById('importEvalId').value = evalId;
+    document.getElementById('importEvalName').textContent = evalName;
+    document.getElementById('importFile').value = '';
+    
+    // Reset UI
+    document.getElementById('uploadSection').style.display = 'block';
+    document.getElementById('progressSection').style.display = 'none';
+    document.getElementById('modalFooter').style.display = 'flex';
+    document.getElementById('modalFooterDone').style.display = 'none';
+    document.getElementById('btnCloseModalTop').style.display = 'block';
+    document.getElementById('errorLogSection').style.display = 'none';
+    
+    var modal = new bootstrap.Modal(document.getElementById('importModal'));
+    modal.show();
+}
+
+function submitImport() {
+    const evalId = document.getElementById('importEvalId').value;
+    const fileInput = document.getElementById('importFile');
+    
+    if(!fileInput.files[0]) {
+        alert("Por favor, selecione um arquivo.");
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('file', fileInput.files[0]);
+    formData.append('csrf_token', document.querySelector('input[name="csrf_token"]').value);
+    
+    // UI Update: Hide form, show progress
+    document.getElementById('uploadSection').style.display = 'none';
+    document.getElementById('progressSection').style.display = 'block';
+    document.getElementById('modalFooter').style.display = 'none';
+    document.getElementById('btnCloseModalTop').style.display = 'none'; // Prevent closing while processing
+    
+    fetch(`/lms/evaluations/${evalId}/import_grades`, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.error) {
+            showFatalError(data.error);
+        } else if(data.job_id) {
+            // Start Polling
+            pollingInterval = setInterval(() => pollJobStatus(data.job_id), 1000);
+        }
+    })
+    .catch(error => {
+        showFatalError("Falha na comunicação com o servidor.");
+    });
+}
+
+function pollJobStatus(jobId) {
+    fetch(`/lms/api/job_status/${jobId}`)
+    .then(res => res.json())
+    .then(data => {
+        const total = data.total_records || 0;
+        const processed = data.processed_records || 0;
+        let percent = 0;
+        
+        if (total > 0) {
+            percent = Math.round((processed / total) * 100);
+        }
+        
+        const bar = document.getElementById('progressBar');
+        bar.style.width = percent + '%';
+        bar.textContent = percent + '%';
+        bar.setAttribute('aria-valuenow', percent);
+        
+        document.getElementById('progressCounts').textContent = `Processados: ${processed} de ${total}`;
+        
+        if(data.status === 'completed' || data.status === 'error') {
+            clearInterval(pollingInterval);
+            bar.classList.remove('progress-bar-animated', 'progress-bar-striped');
+            
+            if(data.status === 'completed') {
+                document.getElementById('progressStatusText').textContent = "Importação Concluída!";
+                document.getElementById('progressStatusText').className = "text-success fw-bold mb-3";
+            } else {
+                document.getElementById('progressStatusText').textContent = "A importação encontrou falhas críticas.";
+                document.getElementById('progressStatusText').className = "text-danger fw-bold mb-3";
+                bar.classList.replace('bg-success', 'bg-danger');
+            }
+            
+            // Exibir Logs de erro, se houver
+            if(data.log && data.log !== "Importação concluída sem erros.") {
+                document.getElementById('errorLogSection').style.display = 'block';
+                document.getElementById('errorLogText').value = data.log;
+            }
+            
+            document.getElementById('modalFooterDone').style.display = 'flex';
+        }
+    })
+    .catch(err => {
+        console.error("Polling error:", err);
+    });
+}
+
+function showFatalError(msg) {
+    document.getElementById('progressStatusText').textContent = msg;
+    document.getElementById('progressStatusText').className = "text-danger fw-bold mb-3";
+    document.getElementById('progressBar').classList.replace('bg-success', 'bg-danger');
+    document.getElementById('modalFooterDone').style.display = 'flex';
+}
+</script>
+{% endblock %}

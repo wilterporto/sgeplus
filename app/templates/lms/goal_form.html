@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h2>Nova Meta de Aprendizagem</h2>
+    </div>
+</div>
+
+<div class="card shadow-sm max-w-700">
+    <div class="card-body">
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            
+            <div class="mb-3">
+                {{ form.subject_id.label(class="form-label fw-bold") }} <span style="color:red">*</span>
+                {{ form.subject_id(class="form-select" + (" is-invalid" if form.subject_id.errors else "")) }}
+                {% for error in form.subject_id.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+                {% endfor %}
+            </div>
+            
+            <div class="mb-3">
+                {{ form.name.label(class="form-label fw-bold") }} <span style="color:red">*</span>
+                {{ form.name(class="form-control" + (" is-invalid" if form.name.errors else "")) }}
+                {% for error in form.name.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+                {% endfor %}
+            </div>
+            
+            <div class="mb-3">
+                {{ form.brief_description.label(class="form-label") }}
+                {{ form.brief_description(class="form-control", rows="2") }}
+            </div>
+            
+            <div class="mb-3">
+                {{ form.presentation.label(class="form-label fw-bold") }} <span style="color:red">*</span> (Editor Rico)
+                {{ form.presentation(class="form-control" + (" is-invalid" if form.presentation.errors else ""), rows="6") }}
+                {% for error in form.presentation.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+                {% endfor %}
+            </div>
+            
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    {{ form.init_date.label(class="form-label fw-bold") }} <span style="color:red">*</span>
+                    {{ form.init_date(class="form-control" + (" is-invalid" if form.init_date.errors else "")) }}
+                    {% for error in form.init_date.errors %}
+                    <div class="invalid-feedback d-block">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="col-md-6">
+                    {{ form.limit_submission_date.label(class="form-label fw-bold") }} <span style="color:red">*</span>
+                    {{ form.limit_submission_date(class="form-control" + (" is-invalid" if form.limit_submission_date.errors else "")) }}
+                    {% for error in form.limit_submission_date.errors %}
+                    <div class="invalid-feedback d-block">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <div class="mb-3 form-check">
+                {{ form.visible(class="form-check-input") }}
+                {{ form.visible.label(class="form-check-label") }}
+            </div>
+            
+            <div class="mt-4">
+                {{ form.submit(class="btn btn-primary") }}
+                <a href="{{ url_for('lms.list_goals') }}" class="btn btn-outline-secondary ms-2">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
