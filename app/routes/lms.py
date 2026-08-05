@@ -50,6 +50,11 @@ def profile():
 def workflow():
     return render_template('lms/workflow.html')
 
+@lms_bp.route('/public_portal', methods=['GET'])
+def public_portal():
+    # Exibe disciplinas que possuem acesso externo/público ou redireciona para login
+    return render_template('lms/public_portal.html')
+
 # --- Categories ---
 
 @lms_bp.route('/categories', methods=['GET'])

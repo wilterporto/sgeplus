@@ -242,6 +242,11 @@ def get_logo():
     # Fallback or 404
     return "No logo", 404
 
+
+@main_bp.route('/portal-comunidade')
+def portal_comunidade():
+    return render_template('main/portal_comunidade.html')
+
 @main_bp.route('/settings/remove_logo', methods=['POST'])
 def remove_logo():
     from app.models import SystemConfig

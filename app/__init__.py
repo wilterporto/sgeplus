@@ -179,7 +179,7 @@ def create_app(config_class=Config):
         # static: for css/js/images
         # auth.login: to allow logging in
         # auth.forgot_password, auth.reset_password: for recovery
-        whitelist_endpoints = ['auth.login', 'auth.forgot_password', 'auth.reset_password', 'static', 'main.get_logo', 'main.get_login_bg', 'main.get_favicon', 'main.serve_sw', 'main.serve_manifest', 'main.setup_db_render', 'main.confirm_update', 'ouvidoria.portal', 'ouvidoria.public_detail', 'ouvidoria.nova', 'ouvidoria.get_subjects', 'ouvidoria.serve_attachment', 'main.inscricoes', 'main.registrar_inscricao', 'main.meus_certificados', 'events.view_certificate']
+        whitelist_endpoints = ['auth.login', 'auth.forgot_password', 'auth.reset_password', 'static', 'main.get_logo', 'main.get_login_bg', 'main.get_favicon', 'main.serve_sw', 'main.serve_manifest', 'main.setup_db_render', 'main.confirm_update', 'ouvidoria.portal', 'ouvidoria.public_detail', 'ouvidoria.nova', 'ouvidoria.get_subjects', 'ouvidoria.serve_attachment', 'main.inscricoes', 'main.registrar_inscricao', 'main.meus_certificados', 'events.view_certificate', 'main.portal_comunidade', 'lms.public_portal']
         
         if not current_user.is_authenticated:
             if request.endpoint and \
