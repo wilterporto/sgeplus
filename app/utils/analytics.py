@@ -128,6 +128,7 @@ def get_dashboard_data(exam_id, regional_ids=None, unit_ids=None, class_ids=None
         StudentResult.absence_reason_id,
         StudentResult.answers,
         StudentResult.finished_at,
+        StudentResult.attendance_percentage,
         Student.id.label('student_id'),
         Student.name.label('student_name')
     )
@@ -177,10 +178,17 @@ def get_dashboard_data(exam_id, regional_ids=None, unit_ids=None, class_ids=None
         except Exception:
             answers_dict = {}
             
+        try:
+            subj_att_dict = json.loads(r.subject_attendance) if isinstance(r.subject_attendance, str) else (r.subject_attendance or {})
+        except Exception:
+            subj_att_dict = {}
+            
         processed_results.append({
             'score_percentage': r.score_percentage,
             'absence_reason_id': r.absence_reason_id,
             'finished_at': r.finished_at,
+            'attendance_percentage': r.attendance_percentage,
+            'subject_attendance': subj_att_dict,
             'student_id': r.student_id,
             'student_name': r.student_name,
             'answers_dict': answers_dict
@@ -270,7 +278,7 @@ def get_dashboard_data(exam_id, regional_ids=None, unit_ids=None, class_ids=None
         ranking = _get_group_performance(exam_id, 'class', unit_ids=unit_ids, school_year_ids=school_year_ids)
     else:
         # Show Students in this Class
-        ranking = [{"id": r['student_id'], "name": r['student_name'], "score": r['score_percentage'] or 0, "is_absent": r['absence_reason_id'] is not None} for r in processed_results]
+        ranking = [{"id": r['student_id'], "name": r['student_name'], "score": r['score_percentage'] or 0, "attendance": round(r['attendance_percentage'], 1) if r['attendance_percentage'] is not None else None, "is_absent": r['absence_reason_id'] is not None} for r in processed_results]
         ranking.sort(key=lambda x: x['score'] or 0, reverse=True)
 
     # 3. Item Analysis & Difficulty Performance
@@ -426,7 +434,7 @@ def get_dashboard_data(exam_id, regional_ids=None, unit_ids=None, class_ids=None
                 continue
                 
             if sub.id not in sub_map:
-                sub_map[sub.id] = {'name': sub.name, 'correct': 0, 'total': 0}
+                sub_map[sub.id] = {'name': sub.name, 'correct': 0, 'total': 0, 'att_sum': 0, 'att_count': 0}
                 
             for res in realized_results:
                 ans = res['answers_dict'].get(str(item.question.id))
@@ -434,17 +442,28 @@ def get_dashboard_data(exam_id, regional_ids=None, unit_ids=None, class_ids=None
                 sub_map[sub.id]['total'] += 1
                 if ans == item.question.correct_alternative:
                     sub_map[sub.id]['correct'] += 1
+
+        for res in realized_results:
+            for sub_id in sub_map.keys():
+                att = res['subject_attendance'].get(str(sub_id))
+                if att is not None:
+                    sub_map[sub_id]['att_sum'] += float(att)
+                    sub_map[sub_id]['att_count'] += 1
                     
         for sub_id, stats in sub_map.items():
             tot = stats['total']
             corr = stats['correct']
             perc = round((corr / tot * 100), 2) if tot > 0 else 0.0
+            
+            att_avg = round((stats['att_sum'] / stats['att_count']), 1) if stats['att_count'] > 0 else None
+            
             components_performance.append({
                 'id': sub_id,
                 'name': stats['name'],
                 'correct_perc': perc,
                 'correct_count': corr,
-                'total_count': tot
+                'total_count': tot,
+                'attendance': att_avg
             })
         components_performance.sort(key=lambda x: x['name'])
 
@@ -500,8 +519,9 @@ def get_dashboard_data(exam_id, regional_ids=None, unit_ids=None, class_ids=None
         
     target_schools = target_schools_query.distinct().all()
     
-    # Get scores from ranking to color code
+    # Get scores and attendance from ranking to color code and display in map
     school_scores = {s['name']: s['score'] for s in rankings['schools']}
+    school_attendances = {s['name']: s.get('attendance') for s in rankings['schools']}
     
     school_levels = {}
     for student in rankings['students']:
@@ -524,7 +544,8 @@ def get_dashboard_data(exam_id, regional_ids=None, unit_ids=None, class_ids=None
             school_classes[school_id] = []
         school_classes[school_id].append({
             'name': cls['name'],
-            'score': cls['score']
+            'score': cls['score'],
+            'attendance': cls.get('attendance')
         })
     
     for sch in target_schools:
@@ -538,6 +559,7 @@ def get_dashboard_data(exam_id, regional_ids=None, unit_ids=None, class_ids=None
                     'lat': lat,
                     'lng': lng,
                     'score': school_scores.get(sch.name, None),
+                    'attendance': school_attendances.get(sch.name, None),
                     'levels': list(school_levels.get(sch.name, set())),
                     'classes': school_classes.get(sch.id, [])
                 })
@@ -638,7 +660,7 @@ def get_rankings_data(exam_id, regional_ids=None, unit_ids=None, class_ids=None,
             base_query = base_query.filter(~Student.dietary_restrictions.any())
 
         # Schools Ranking
-    schools_ranking = base_query.with_entities(TeachingUnit.name, db.func.avg(StudentResult.score_percentage).label('score'), TeachingUnit.municipio)\
+    schools_ranking = base_query.with_entities(TeachingUnit.name, db.func.avg(StudentResult.score_percentage).label('score'), TeachingUnit.municipio, db.func.avg(StudentResult.attendance_percentage).label('attendance'))\
         .group_by(TeachingUnit.name, TeachingUnit.municipio).order_by(db.desc('score')).all()
 
     # Classes Ranking
@@ -649,11 +671,12 @@ def get_rankings_data(exam_id, regional_ids=None, unit_ids=None, class_ids=None,
         db.func.avg(StudentResult.score_percentage).label('score'),
         db.func.count(StudentResult.id).label('student_count'),
         db.func.sum(StudentResult.score_percentage).label('total_score'),
-        TeachingUnit.id
+        TeachingUnit.id,
+        db.func.avg(StudentResult.attendance_percentage).label('attendance')
     ).group_by(Class.id, TeachingUnit.name, TeachingUnit.id).order_by(db.desc('score')).all()
 
     # Students Ranking
-    students_ranking = base_query.with_entities(Student.name, StudentResult.score_percentage.label('score'), TeachingUnit.name, Class.name)\
+    students_ranking = base_query.with_entities(Student.name, StudentResult.score_percentage.label('score'), TeachingUnit.name, Class.name, StudentResult.attendance_percentage.label('attendance'))\
         .order_by(db.desc('score')).limit(50).all()
 
     # Professors Ranking
@@ -691,9 +714,9 @@ def get_rankings_data(exam_id, regional_ids=None, unit_ids=None, class_ids=None,
     professors_ranking.sort(key=lambda x: x['score'], reverse=True)
 
     return {
-        'schools': [{'name': r[0], 'score': round(r[1] or 0, 2), 'municipio': r[2]} for r in schools_ranking],
-        'classes': [{'class_id': r[0], 'name': r[1], 'sub': r[2], 'score': round(r[3] or 0, 2), 'school_id': r[6]} for r in classes_ranking],
-        'students': [{'name': r[0], 'sub': r[2], 'score': round(r[1] or 0, 2), 'class_name': r[3]} for r in students_ranking],
+        'schools': [{'name': r[0], 'score': round(r[1] or 0, 2), 'municipio': r[2], 'attendance': round(r[3] or 0, 1)} for r in schools_ranking],
+        'classes': [{'class_id': r[0], 'name': r[1], 'sub': r[2], 'score': round(r[3] or 0, 2), 'school_id': r[6], 'attendance': round(r[7] or 0, 1)} for r in classes_ranking],
+        'students': [{'name': r[0], 'sub': r[2], 'score': round(r[1] or 0, 2), 'class_name': r[3], 'attendance': round(r[4] or 0, 1)} for r in students_ranking],
         'professors': professors_ranking
     }
 
@@ -803,7 +826,8 @@ def _get_group_performance(exam_id, group_by, regional_ids=None, unit_ids=None, 
         ParentUnit = sa.orm.aliased(TeachingUnit)
         avg_query = db.session.query(
             ParentUnit.id.label('reg_id'),
-            func.avg(StudentResult.score_percentage).label('avg_score')
+            func.avg(StudentResult.score_percentage).label('avg_score'),
+            func.avg(StudentResult.attendance_percentage).label('avg_attendance')
         ).select_from(StudentResult)\
          .join(Student, StudentResult.student_id == Student.id)\
          .join(Enrollment, Student.id == Enrollment.student_id)\
@@ -819,12 +843,14 @@ def _get_group_performance(exam_id, group_by, regional_ids=None, unit_ids=None, 
             
         avg_query = avg_query.group_by(ParentUnit.id)
          
-        averages = {row.reg_id: row.avg_score for row in avg_query.all()}
+        averages = {row.reg_id: {'score': row.avg_score, 'attendance': row.avg_attendance} for row in avg_query.all()}
         
         results = []
         for reg in regionals:
             avg = averages.get(reg.id)
-            results.append({'id': reg.id, 'name': reg.name, 'score': round(avg, 2) if avg else 0})
+            score = round(avg['score'], 2) if avg and avg['score'] is not None else 0
+            attendance = round(avg['attendance'], 1) if avg and avg['attendance'] is not None else None
+            results.append({'id': reg.id, 'name': reg.name, 'score': score, 'attendance': attendance})
         return sorted(results, key=lambda x: x['score'], reverse=True)
 
     elif group_by == 'unit':
@@ -838,7 +864,8 @@ def _get_group_performance(exam_id, group_by, regional_ids=None, unit_ids=None, 
         # Buscar médias agrupadas por escola
         avg_query = db.session.query(
             Class.teaching_unit_id.label('unit_id'),
-            func.avg(StudentResult.score_percentage).label('avg_score')
+            func.avg(StudentResult.score_percentage).label('avg_score'),
+            func.avg(StudentResult.attendance_percentage).label('avg_attendance')
         ).select_from(StudentResult)\
          .join(Student, StudentResult.student_id == Student.id)\
          .join(Enrollment, Student.id == Enrollment.student_id)\
@@ -854,12 +881,14 @@ def _get_group_performance(exam_id, group_by, regional_ids=None, unit_ids=None, 
             avg_query = avg_query.filter(Student.tenant_id == get_tenant_id())
             
         avg_query = avg_query.group_by(Class.teaching_unit_id)
-        averages = {row.unit_id: row.avg_score for row in avg_query.all()}
+        averages = {row.unit_id: {'score': row.avg_score, 'attendance': row.avg_attendance} for row in avg_query.all()}
         
         results = []
         for sch in schools:
             avg = averages.get(sch.id)
-            results.append({'id': sch.id, 'name': sch.name, 'score': round(avg, 2) if avg else 0})
+            score = round(avg['score'], 2) if avg and avg['score'] is not None else 0
+            attendance = round(avg['attendance'], 1) if avg and avg['attendance'] is not None else None
+            results.append({'id': sch.id, 'name': sch.name, 'score': score, 'attendance': attendance})
         return sorted(results, key=lambda x: x['score'], reverse=True)
 
     elif group_by == 'school_year':
@@ -874,7 +903,8 @@ def _get_group_performance(exam_id, group_by, regional_ids=None, unit_ids=None, 
         # Buscar médias agrupadas por ano escolar
         avg_query = db.session.query(
             Class.school_year_id.label('school_year_id'),
-            func.avg(StudentResult.score_percentage).label('avg_score')
+            func.avg(StudentResult.score_percentage).label('avg_score'),
+            func.avg(StudentResult.attendance_percentage).label('avg_attendance')
         ).select_from(StudentResult)\
          .join(Student, StudentResult.student_id == Student.id)\
          .join(Enrollment, Student.id == Enrollment.student_id)\
@@ -889,12 +919,14 @@ def _get_group_performance(exam_id, group_by, regional_ids=None, unit_ids=None, 
             avg_query = avg_query.filter(Student.tenant_id == get_tenant_id())
             
         avg_query = avg_query.group_by(Class.school_year_id)
-        averages = {row.school_year_id: row.avg_score for row in avg_query.all()}
+        averages = {row.school_year_id: {'score': row.avg_score, 'attendance': row.avg_attendance} for row in avg_query.all()}
         
         results = []
         for sy_id, sy_name in years:
             avg = averages.get(sy_id)
-            results.append({'id': sy_id, 'name': sy_name, 'score': round(avg, 2) if avg else 0})
+            score = round(avg['score'], 2) if avg and avg['score'] is not None else 0
+            attendance = round(avg['attendance'], 1) if avg and avg['attendance'] is not None else None
+            results.append({'id': sy_id, 'name': sy_name, 'score': score, 'attendance': attendance})
         return sorted(results, key=lambda x: x['score'], reverse=True)
 
     elif group_by == 'class':
@@ -910,7 +942,8 @@ def _get_group_performance(exam_id, group_by, regional_ids=None, unit_ids=None, 
         # Buscar médias agrupadas por turma
         avg_query = db.session.query(
             Enrollment.class_id.label('class_id'),
-            func.avg(StudentResult.score_percentage).label('avg_score')
+            func.avg(StudentResult.score_percentage).label('avg_score'),
+            func.avg(StudentResult.attendance_percentage).label('avg_attendance')
         ).select_from(StudentResult)\
          .join(Student, StudentResult.student_id == Student.id)\
          .join(Enrollment, Student.id == Enrollment.student_id)\
@@ -928,12 +961,14 @@ def _get_group_performance(exam_id, group_by, regional_ids=None, unit_ids=None, 
             avg_query = avg_query.filter(Student.tenant_id == get_tenant_id())
             
         avg_query = avg_query.group_by(Enrollment.class_id)
-        averages = {row.class_id: row.avg_score for row in avg_query.all()}
+        averages = {row.class_id: {'score': row.avg_score, 'attendance': row.avg_attendance} for row in avg_query.all()}
         
         results = []
         for cls in classes:
             avg = averages.get(cls.id)
-            results.append({'id': cls.id, 'name': cls.name, 'score': round(avg, 2) if avg else 0})
+            score = round(avg['score'], 2) if avg and avg['score'] is not None else 0
+            attendance = round(avg['attendance'], 1) if avg and avg['attendance'] is not None else None
+            results.append({'id': cls.id, 'name': cls.name, 'score': score, 'attendance': attendance})
         return sorted(results, key=lambda x: x['score'], reverse=True)
     
     return []
@@ -1041,7 +1076,7 @@ def get_exam_stats(exam_id):
             
     total_count = StudentResult.query.filter_by(exam_id=exam_id).count()
     if total_count == 0:
-        return {'success': 0.0, 'failure': 0.0, 'absent': 0.0}
+        return {'success': 0.0, 'failure': 0.0, 'absent': 0.0, 'avg_attendance': None}
         
     absent_count = StudentResult.query.filter_by(exam_id=exam_id).filter(StudentResult.absence_reason_id.isnot(None)).count()
     absent_perc = round((absent_count / total_count * 100), 2)
@@ -1057,4 +1092,10 @@ def get_exam_stats(exam_id):
         
     failure_perc = round(100.0 - success_perc, 2)
     
-    return {'success': success_perc, 'failure': failure_perc, 'absent': absent_perc}
+    # Media de frequencia apenas para os alunos que realizaram a prova (presenca ativa)
+    avg_att = db.session.query(func.avg(StudentResult.attendance_percentage))\
+        .filter(StudentResult.exam_id == exam_id, StudentResult.absence_reason_id.is_(None)).scalar()
+        
+    avg_attendance = round(avg_att, 1) if avg_att is not None else None
+    
+    return {'success': success_perc, 'failure': failure_perc, 'absent': absent_perc, 'avg_attendance': avg_attendance}

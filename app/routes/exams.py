@@ -105,6 +105,7 @@ def list_exams():
             'success': stats['success'],
             'failure': stats['failure'],
             'absent': stats['absent'],
+            'avg_attendance': stats['avg_attendance'],
             'can_delete': can_delete,
             'can_record': can_record
         })
@@ -1852,6 +1853,10 @@ def class_diagnosis(id):
         flash('Nenhum resultado finalizado encontrado para os filtros selecionados.', 'warning')
         return redirect(url_for('exams.view_exam', id=id))
 
+    class_attendance_sum = sum(res.attendance_percentage for res in results if res.attendance_percentage is not None)
+    class_attendance_count = sum(1 for res in results if res.attendance_percentage is not None)
+    class_avg_attendance = round(class_attendance_sum / class_attendance_count, 1) if class_attendance_count > 0 else None
+
     # 1. Radar Chart Data (Performance per Descriptor)
     descriptor_stats = {} # {desc_id: {code, description, correct, total}}
     
@@ -1889,7 +1894,13 @@ def class_diagnosis(id):
     # Rows: Student Name, Q1_status, Q2_status, ...
     heatmap_data = []
     for res in results:
-        student_row = {'name': res.student.name, 'answers': [], 'score': res.score_percentage}
+        student_row = {
+            'name': res.student.name, 
+            'special_needs': res.student.special_needs,
+            'attendance': res.attendance_percentage,
+            'answers': [], 
+            'score': res.score_percentage
+        }
         answers = json.loads(res.answers) if res.answers else {}
         for item in exam.items:
             if not item.question:
@@ -1927,7 +1938,9 @@ def class_diagnosis(id):
                 'descriptor': ", ".join([d.code for d in item.question.descriptors])
             })
 
-    low_performers = [s['name'] for s in heatmap_data if (s['score'] or 0) < 50]
+    low_performers = [s for s in heatmap_data if (s['score'] or 0) < 50]
+    low_performers_regular = [s for s in low_performers if not s.get('special_needs')]
+    low_performers_pcd = [s for s in low_performers if s.get('special_needs')]
 
     return render_template('exams/diagnosis.html', 
                            exam=exam,
@@ -1936,9 +1949,11 @@ def class_diagnosis(id):
                            radar_data=radar_data,
                            heatmap_data=heatmap_data,
                            critical_questions=critical_questions,
-                           low_performers=low_performers,
+                           low_performers_regular=low_performers_regular,
+                           low_performers_pcd=low_performers_pcd,
                            school_name=school_name,
-                           class_name=class_name)
+                           class_name=class_name,
+                           class_avg_attendance=class_avg_attendance)
 
 def generate_pdf_worker(app, job_id, exam_id, students_list, evaluation_id, logo_url, font_size='12pt', layout_columns='1'):
     with app.app_context():

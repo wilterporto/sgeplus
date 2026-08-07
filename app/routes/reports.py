@@ -206,10 +206,18 @@ def export_students_by_level():
     # Order alphabetically by school and then by student
     filtered_students.sort(key=lambda x: (x['sub'] or '', x['name'] or ''))
 
+    level_names = {
+        1: 'Abaixo do básico',
+        2: 'Básico',
+        3: 'Proficiente',
+        4: 'Avançado'
+    }
+    level_name = level_names.get(level, str(level))
+
     exam = Exam.query.get_or_404(exam_id)
     html = render_template('reports/pdf_students_by_level.html', 
                            students=filtered_students, 
-                           level=level, 
+                           level_name=level_name, 
                            exam=exam,
                            now=datetime.now())
     

@@ -25,6 +25,7 @@
                 <th>% Acertos</th>
                 <th>% Erros</th>
                 <th>% Ausências</th>
+                <th>Frequência Média</th>
                 <th class="text-end">Ações</th>
             </tr>
         </thead>
@@ -65,6 +66,15 @@
                         <div class="progress-bar bg-secondary" role="progressbar" style="width: {{ item.absent }}%;"
                             title="Ausências: {{ item.absent }}%">{{ item.absent }}%</div>
                     </div>
+                </td>
+                <td>
+                    {% if item.avg_attendance is not none %}
+                    <span class="badge {% if item.avg_attendance >= 75 %}bg-success{% elif item.avg_attendance >= 50 %}bg-warning text-dark{% else %}bg-danger{% endif %}">
+                        {{ item.avg_attendance }}%
+                    </span>
+                    {% else %}
+                    <span class="text-muted">-</span>
+                    {% endif %}
                 </td>
                 <td class="text-end">
                     <div class="btn-group">

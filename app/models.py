@@ -521,6 +521,8 @@ class StudentResult(db.Model):
     student_id = db.Column(db.Integer, db.ForeignKey('student.id'), nullable=False)
     answers = db.Column(db.Text) # JSON string
     score_percentage = db.Column(db.Float)
+    attendance_percentage = db.Column(db.Float)
+    subject_attendance = db.Column(db.Text) # JSON string
     finished_at = db.Column(db.DateTime, default=get_brasilia_time)
     absence_reason_id = db.Column(db.Integer, db.ForeignKey('absence_reason.id'), nullable=True)
     

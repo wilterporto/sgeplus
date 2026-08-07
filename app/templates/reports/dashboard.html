@@ -417,6 +417,30 @@
                     </div>
                 </div>
 
+                <!-- Dispersão: Frequência x Desempenho -->
+                <div class="row g-3 mt-2">
+                    <div class="col-lg-12">
+                        <div class="card shadow-sm border-0">
+                            <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+                                <h6 class="mb-0 fw-bold" id="scatterTitle"><i class="bi bi-graph-up text-primary me-2"></i>Relação Desempenho x Frequência</h6>
+                            </div>
+                            <div class="card-body">
+                                <div id="scatterEmptyState" class="text-center py-4 d-none">
+                                    <i class="bi bi-bar-chart text-muted fs-1 opacity-50"></i>
+                                    <p class="text-muted mt-2 mb-0">Sem dados suficientes para gerar o gráfico de dispersão neste nível.</p>
+                                </div>
+                                <div id="scatterChartWrapper">
+                                    <div class="d-flex justify-content-center">
+                                        <div style="height: 400px; width: 100%; position: relative;">
+                                            <canvas id="scatterChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Motivos de Ausência -->
                 <div class="row g-3 mt-2">
                     <div class="col-lg-12">
@@ -999,6 +1023,7 @@
                 renderBreadcrumbs();
                 updateComponentsPerformance(data.components_performance);
                 updateAbsenceReasonsChart(data.absence_reasons);
+                updateScatterChart(data.ranking);
 
                 if (callback && typeof callback === 'function') {
                     callback();
@@ -1010,6 +1035,93 @@
                     callback();
                 }
             });
+    }
+    
+    let scatterChart = null;
+    function updateScatterChart(studentsData) {
+        const emptyState = document.getElementById('scatterEmptyState');
+        const chartWrapper = document.getElementById('scatterChartWrapper');
+        
+        if (!studentsData || studentsData.length === 0) {
+            emptyState.classList.remove('d-none');
+            chartWrapper.classList.add('d-none');
+            if (scatterChart) { scatterChart.destroy(); scatterChart = null; }
+            return;
+        }
+
+        emptyState.classList.add('d-none');
+        chartWrapper.classList.remove('d-none');
+
+        const scatterData = studentsData.map(s => ({
+            x: s.attendance || 0,
+            y: s.score || 0,
+            name: s.name,
+            sub: s.sub
+        }));
+
+        const levelNames = {
+            [LEVELS.REDE]: 'Regionais',
+            [LEVELS.REGIONAL]: 'Escolas',
+            [LEVELS.UNIT]: 'Anos Escolares',
+            [LEVELS.GRADE]: 'Turmas',
+            [LEVELS.CLASS]: 'Alunos'
+        };
+        const currentLevelName = levelNames[dashboardState.current_level] || 'Dados';
+        document.getElementById('scatterTitle').innerHTML = `<i class="bi bi-graph-up text-primary me-2"></i>Relação Desempenho x Frequência (${currentLevelName})`;
+
+        const ctx = document.getElementById('scatterChart').getContext('2d');
+        if (scatterChart) {
+            scatterChart.data.datasets[0].data = scatterData;
+            scatterChart.data.datasets[0].label = currentLevelName;
+            scatterChart.update();
+        } else {
+            scatterChart = new Chart(ctx, {
+                type: 'scatter',
+                data: {
+                    datasets: [{
+                        label: currentLevelName,
+                        data: scatterData,
+                        backgroundColor: 'rgba(13, 110, 253, 0.6)',
+                        borderColor: 'rgba(13, 110, 253, 1)',
+                        pointRadius: 5,
+                        pointHoverRadius: 7
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    layout: {
+                        padding: { top: 15, right: 15, bottom: 5, left: 5 }
+                    },
+                    clip: false,
+                    scales: {
+                        x: {
+                            title: { display: true, text: 'Frequência (%)', font: { weight: 'bold' } },
+                            min: 0,
+                            max: 100,
+                            ticks: { callback: function(value) { return value + '%'; } }
+                        },
+                        y: {
+                            title: { display: true, text: 'Proficiência (%)', font: { weight: 'bold' } },
+                            min: 0,
+                            max: 100,
+                            ticks: { callback: function(value) { return value + '%'; } }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const point = context.raw;
+                                    return [`${point.name}`, `${point.sub ? point.sub : ''}`, `Frequência: ${point.x}%`, `Proficiência: ${point.y}%`];
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
     }
     // Gráfico de Motivos de Ausência
     const ABSENCE_COLORS = [
@@ -1149,12 +1261,19 @@
 
             div.innerHTML = `
                 <div class="d-flex justify-content-between align-items-center mb-1">
-                    <div class="d-flex flex-column text-truncate" style="max-width: 75%;">
+                    <div class="d-flex flex-column text-truncate" style="max-width: 60%;">
                         <span class="small fw-bold" title="${item.name}">${item.name}</span>
                         ${item.sub ? `<span class="x-small text-muted">${item.sub}</span>` : ''}
                     </div>
-                    <div class="d-flex align-items-center">
-                        <span class="small fw-bold">${Number(item.score).toFixed(2)}%</span>
+                    <div class="d-flex align-items-center justify-content-end text-end" style="min-width: 35%;">
+                        <div class="d-flex flex-column me-2 border-end pe-2">
+                            <span class="x-small text-muted mb-0 lh-1">Frequência</span>
+                            <span class="small fw-bold lh-1 mt-1 ${item.attendance != null && item.attendance >= 75 ? 'text-success' : (item.attendance != null && item.attendance >= 50 ? 'text-warning' : (item.attendance != null ? 'text-danger' : 'text-muted'))}">${item.attendance != null ? Number(item.attendance).toFixed(1) + '%' : '-'}</span>
+                        </div>
+                        <div class="d-flex flex-column">
+                            <span class="x-small text-muted mb-0 lh-1">Proficiência</span>
+                            <span class="small fw-bold lh-1 mt-1">${Number(item.score).toFixed(2)}%</span>
+                        </div>
                         ${actionBtn}
                     </div>
                 </div>
@@ -1251,8 +1370,15 @@
                         <div class="progress-bar ${color}" style="width: ${item.score}%"></div>
                     </div>
                 </div>
-                <div class="fw-bold" onclick="drillDownFromItem(${item.id}, '${item.name.replace(/'/g, "\\'")}');">
-                    ${Number(item.score).toFixed(2)}%
+                <div class="d-flex align-items-center justify-content-end text-end" style="min-width: 35%;" onclick="drillDownFromItem(${item.id}, '${item.name.replace(/'/g, "\\'")}');">
+                    <div class="d-flex flex-column me-2 border-end pe-2">
+                        <span class="x-small text-muted mb-0 lh-1">Frequência</span>
+                        <span class="small fw-bold lh-1 mt-1 ${item.attendance != null && item.attendance >= 75 ? 'text-success' : (item.attendance != null && item.attendance >= 50 ? 'text-warning' : (item.attendance != null ? 'text-danger' : 'text-muted'))}">${item.attendance != null ? Number(item.attendance).toFixed(1) + '%' : '-'}</span>
+                    </div>
+                    <div class="d-flex flex-column">
+                        <span class="x-small text-muted mb-0 lh-1">Proficiência</span>
+                        <span class="small fw-bold lh-1 mt-1">${Number(item.score).toFixed(2)}%</span>
+                    </div>
                 </div>
             `;
 
@@ -1333,7 +1459,7 @@
     }
 
     function updateProficiencyChart(data) {
-        const labels = ['Nível 1 (<25%)', 'Nível 2 (25%-49,9%)', 'Nível 3 (50%-74,9%)', 'Nível 4 (75%-100%)'];
+        const labels = ['Abaixo do básico (<25%)', 'Básico (25%-49,9%)', 'Proficiente (50%-74,9%)', 'Avançado (75%-100%)'];
         const counts = [data.level1.count, data.level2.count, data.level3.count, data.level4.count];
         const percentages = [data.level1.perc, data.level2.perc, data.level3.perc, data.level4.perc];
         const colors = [
@@ -1523,8 +1649,8 @@
                                      aria-valuenow="${comp.correct_perc}" aria-valuemin="0" aria-valuemax="100"></div>
                             </div>
                             <div class="d-flex justify-content-between align-items-center small text-muted">
-                                <span>Acertos: <strong class="text-dark">${comp.correct_count}</strong></span>
-                                <span>Total de respostas: <strong class="text-dark">${comp.total_count}</strong></span>
+                                <span>Acertos: <strong class="text-dark">${comp.correct_count}/${comp.total_count}</strong></span>
+                                <span>Frequência: <strong class="${comp.attendance != null && comp.attendance >= 75 ? 'text-success' : (comp.attendance != null && comp.attendance >= 50 ? 'text-warning' : (comp.attendance != null ? 'text-danger' : 'text-dark'))}">${comp.attendance != null ? Number(comp.attendance).toFixed(1) + '%' : '-'}</strong></span>
                             </div>
                         </div>
                     </div>
@@ -1813,18 +1939,22 @@
                 
                 const marker = L.marker([sch.lat, sch.lng], {icon: customIcon}).addTo(mapInstance);
                 const scoreText = sch.score !== null ? `Proficiência: ${sch.score.toFixed(1)}%` : 'Sem resultados processados';
+                const attText = sch.attendance != null ? `Frequência: ${sch.attendance.toFixed(1)}%` : '';
+                const mainInfo = attText ? `${scoreText}<br>${attText}` : scoreText;
                 
                 let classesHtml = '';
                 if (sch.classes && sch.classes.length > 0) {
                     classesHtml += '<div class="mt-2" style="max-height: 100px; overflow-y: auto;">';
-                    classesHtml += '<strong style="font-size: 0.85rem;">Proficiência por Turma:</strong><ul class="list-unstyled mb-0" style="font-size: 0.8rem;">';
+                    classesHtml += '<strong style="font-size: 0.85rem;">Resultados por Turma:</strong><ul class="list-unstyled mb-0" style="font-size: 0.8rem;">';
                     sch.classes.forEach(c => {
-                        classesHtml += `<li>${c.name}: <strong>${c.score !== null ? c.score.toFixed(1) + '%' : 'N/A'}</strong></li>`;
+                        const cScore = c.score !== null ? c.score.toFixed(1) + '%' : 'N/A';
+                        const cAtt = c.attendance != null ? ` | Freq: ${c.attendance.toFixed(1)}%` : '';
+                        classesHtml += `<li>${c.name}: <strong>${cScore}</strong><span class="text-muted">${cAtt}</span></li>`;
                     });
                     classesHtml += '</ul></div>';
                 }
                 
-                marker.bindPopup(`<strong>${sch.name}</strong><br>${scoreText}${classesHtml}`);
+                marker.bindPopup(`<strong>${sch.name}</strong><br>${mainInfo}${classesHtml}`);
                 mapMarkers.push(marker);
             }
         });

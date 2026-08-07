@@ -9,6 +9,7 @@
             {% if school_name %}<i class="bi bi-building"></i> {{ school_name }}{% endif %}
             {% if school_name and class_name %} <span class="mx-2">|</span> {% endif %}
             {% if class_name %}<i class="bi bi-people"></i> Turma: {{ class_name }}{% endif %}
+            {% if class_avg_attendance is not none %} <span class="mx-2">|</span> <i class="bi bi-calendar-check"></i> Frequência: {{ class_avg_attendance }}%{% endif %}
         </h6>
         {% endif %}
     </div>
@@ -55,14 +56,44 @@
                 </ul>
                 {% endif %}
 
-                {% if low_performers %}
+                {% if low_performers_regular or low_performers_pcd %}
                 <h6><i class="bi bi-people text-warning"></i> Grupo de Intervenção (Abaixo de 50%):</h6>
                 <p class="small text-muted mb-2">Recomenda-se reforço pedagógico imediato para:</p>
-                <div class="d-flex flex-wrap gap-1">
-                    {% for name in low_performers %}
-                    <span class="badge bg-light text-dark border">{{ name }}</span>
-                    {% endfor %}
+                
+                {% if low_performers_regular %}
+                <div class="mb-3">
+                    <strong class="small text-secondary d-block mb-1">Alunos sem Deficiência:</strong>
+                    <div class="d-flex flex-wrap gap-2">
+                        {% for s in low_performers_regular %}
+                        <span class="badge bg-light text-dark border p-2 text-start" style="font-weight: 500;">
+                            <div class="mb-1">{{ s.name }}</div>
+                            <div style="font-size: 0.75rem;">
+                                <span class="text-danger">Proficiência: {{ "%.1f"|format(s.score or 0) }}%</span> | 
+                                <span class="text-muted">Freq: {% if s.attendance is not none %}{{ "%.0f"|format(s.attendance) }}%{% else %}-{% endif %}</span>
+                            </div>
+                        </span>
+                        {% endfor %}
+                    </div>
                 </div>
+                {% endif %}
+
+                {% if low_performers_pcd %}
+                <div>
+                    <strong class="small text-secondary d-block mb-1">Alunos com Deficiência:</strong>
+                    <div class="d-flex flex-wrap gap-2">
+                        {% for s in low_performers_pcd %}
+                        <span class="badge bg-light text-dark border border-primary p-2 text-start" style="font-weight: 500;">
+                            <div class="mb-1">{{ s.name }}</div>
+                            <div style="font-size: 0.75rem;">
+                                <span class="text-danger">Proficiência: {{ "%.1f"|format(s.score or 0) }}%</span> | 
+                                <span class="text-muted">Freq: {% if s.attendance is not none %}{{ "%.0f"|format(s.attendance) }}%{% else %}-{% endif %}</span>
+                            </div>
+                        </span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
                 {% else %}
                 <div class="alert alert-success py-2 mt-3">
                     <i class="bi bi-check-circle"></i> Todos os alunos atingiram desempenho acima de 50%!
@@ -93,6 +124,7 @@
                             <th style="width: 250px; position: sticky; left: 0; z-index: 2; background: #f8f9fa;">Aluno
                             </th>
                             <th style="width: 80px; text-align: center;">Média</th>
+                            <th style="width: 80px; text-align: center;">Frequência</th>
                             {% for item in exam.items %}
                             <th style="text-align: center; font-size: 8pt; width: 35px;">Q{{ loop.index }}</th>
                             {% endfor %}
@@ -104,6 +136,15 @@
                             <td class="small fw-bold" style="position: sticky; left: 0; z-index: 1; background: white;">
                                 {{ row.name }}</td>
                             <td class="text-center small">{{ "%.1f"|format(row.score or 0) }}%</td>
+                            <td class="text-center small">
+                                {% if row.attendance is not none %}
+                                    <span class="badge {% if row.attendance >= 75 %}bg-success{% elif row.attendance >= 50 %}bg-warning text-dark{% else %}bg-danger{% endif %}">
+                                        {{ "%.0f"|format(row.attendance) }}%
+                                    </span>
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
                             {% for ans in row.answers %}
                             <td class="text-center p-0" style="height: 25px;">
                                 {% if ans.status == True %}

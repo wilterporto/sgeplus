@@ -134,16 +134,19 @@ Painel gerencial focado em BI (Business Intelligence) Educacional para análise 
     *   Total de Avaliações Aplicadas vs. Previstas.
     *   Média Geral de Notas (Consolidado por Turma/Escola/Rede).
     *   Taxa de Evasão/Absenteísmo nas Provas (integrado com o banco de "Motivos de Ausência").
+    *   **Frequência Média Escolar:** O sistema exibirá a frequência do aluno calculada até a data de realização da prova. Em casos de provas multidisciplinares e turmas com diário individual, o sistema deverá calcular e exibir a frequência do aluno de forma segregada para **cada componente curricular** até a data da avaliação. O cálculo deve sempre levar em consideração a data exata de entrada (matrícula) do aluno na turma.
 *   **Gráficos e Análise Pedagógica:**
     *   **Desempenho por Descritor/Habilidade:** Gráfico indicando o percentual de acerto e erro em cada habilidade avaliada, crucial para indicar a necessidade de retomada de conteúdo (ex: Habilidade D01 teve apenas 30% de proficiência).
     *   **Análise de Complexidade:** Desempenho dos alunos distribuído por nível de questão (Fácil, Médio, Difícil).
     *   **Comparativo Institucional:** Visão lado a lado entre turmas de uma mesma escola, ou entre escolas da rede.
+    *   **Relação Desempenho x Frequência (Gráfico de Dispersão):** Gráfico que correlaciona a proficiência do aluno (ou média da entidade) com a sua frequência escolar. O gráfico deve ser dinâmico e estar vinculado à navegação do Comparativo Institucional (níveis de Regional, Escola, Turma e Aluno), atualizando seus pontos em tempo real conforme o nível acessado.
 *   **Acesso e Autorização (Controle por Perfil e Contexto):**
     *   **Professor:** Visualiza estatísticas exclusivamente de suas turmas vinculadas.
     *   **Contexto de Unidade Escolar (Diretor/Coordenador):** Será possível analisar e extrair relatórios contendo estritamente os dados da própria unidade, suas turmas e alunos. Não haverá acesso aos dados de outras unidades escolares.
     *   **Contexto de Regional (Diretoria de Ensino/Superintendência):** Assim como ocorre em redes estaduais, os responsáveis pela regional poderão analisar somente os dados dos municípios e escolas vinculadas à sua regional jurisdicionada.
     *   **Contexto Global (Secretaria/Gestor da Rede):** Visualiza os dados gerais e compara todas as regionais, escolas e municípios que compõem a rede inteira.
-*   **Requisitos Técnicos do Dashboard:**
+*   **Requisitos Técnicos e Integrações do Dashboard:**
+    *   **Exibição Transversal da Frequência:** O percentual médio de frequência deverá estar obrigatoriamente presente também nos detalhamentos visuais, como nos pop-ups (pins) do Mapa Georreferenciado, nos cartões de Desempenho por Componente Curricular e nas listagens de ranking (visão geral, regionais, escolas, turmas e alunos).
     *   Exportação dos relatórios e gráficos em PDF e planilhas Excel estruturadas.
 
 ## 7. Tela de Diagnóstico da Turma
@@ -152,7 +155,8 @@ Uma interface dedicada e aprofundada, permitindo que o professor e a coordenaç�
 
 *   **Informações e Visões Obrigatórias:**
     *   **Cabeçalho da Avaliação:** Total de alunos matriculados, total de alunos presentes na prova, ausentes e a média geral alcançada pela turma.
-    *   **Desempenho Individual (Aluno a Aluno):** Tabela (paginada a 30) listando os alunos com sua nota absoluta, percentual de acerto, e um indicativo do nível de proficiência alcançado (Ex: Crítico, Básico, Adequado).
+    *   **Desempenho Individual (Aluno a Aluno):** Tabela (paginada a 30) listando os alunos com sua nota absoluta, percentual de acerto, o respectivo percentual de frequência escolar do aluno na data da prova, e um indicativo do nível de proficiência alcançado (Ex: Abaixo do básico, Básico, Proficiente, Avançado).
+    *   **Ações Recomendadas e Segregação Inclusiva:** Na aba de Ações Recomendadas e diagnósticos, o sistema **deverá obrigatoriamente separar em seções distintas** os alunos com deficiência (PCD) e os alunos sem deficiência, garantindo que o professor consiga planejar intervenções pedagógicas de forma mais assertiva.
     *   **Mapa de Calor por Questão/Descritor:** Uma matriz visual cruzando os Alunos (linhas) x Questões ou Habilidades (colunas). As células recebem cores (ex: verde para acerto, vermelho para erro). Isso evidencia se uma habilidade específica não foi absorvida pela maioria da turma (erro sistêmico) ou se foi um erro isolado do aluno.
     *   **Alerta de Alunos em Risco:** Destaque para os estudantes que ficaram muito abaixo do esperado e que demandam nivelamento ou intervenção pedagógica urgente.
     *   **Plano de Intervenção Automático:** A partir dos resultados consolidados da avaliação, o sistema deverá formular e propor um plano de intervenção direcionado, focado especificamente nos descritores e habilidades com menor desempenho da turma.
