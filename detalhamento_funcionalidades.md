@@ -140,6 +140,7 @@ Painel gerencial focado em BI (Business Intelligence) Educacional para análise 
     *   **Análise de Complexidade:** Desempenho dos alunos distribuído por nível de questão (Fácil, Médio, Difícil).
     *   **Comparativo Institucional:** Visão lado a lado entre turmas de uma mesma escola, ou entre escolas da rede.
     *   **Relação Desempenho x Frequência (Gráfico de Dispersão):** Gráfico que correlaciona a proficiência do aluno (ou média da entidade) com a sua frequência escolar. O gráfico deve ser dinâmico e estar vinculado à navegação do Comparativo Institucional (níveis de Regional, Escola, Turma e Aluno), atualizando seus pontos em tempo real conforme o nível acessado.
+    *   **Relação Estado Nutricional x Proficiência:** Gráfico de barras empilhadas correlacionando o último estado nutricional registrado do aluno (ex: Eutrofia, Sobrepeso, Obesidade) com suas faixas de proficiência (Abaixo do Básico, Básico, Proficiente, Avançado), incluindo uma categoria dedicada para alunos com estado nutricional "Não Informado".
 *   **Acesso e Autorização (Controle por Perfil e Contexto):**
     *   **Professor:** Visualiza estatísticas exclusivamente de suas turmas vinculadas.
     *   **Contexto de Unidade Escolar (Diretor/Coordenador):** Será possível analisar e extrair relatórios contendo estritamente os dados da própria unidade, suas turmas e alunos. Não haverá acesso aos dados de outras unidades escolares.

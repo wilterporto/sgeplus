@@ -441,6 +441,30 @@
                     </div>
                 </div>
 
+                <!-- Estado Nutricional x Proficiência -->
+                <div class="row g-3 mt-2">
+                    <div class="col-lg-12">
+                        <div class="card shadow-sm border-0" id="nutritionalChartCard">
+                            <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+                                <h6 class="mb-0 fw-bold"><i class="bi bi-heart-pulse text-danger me-2"></i>Relação Estado Nutricional x Proficiência</h6>
+                            </div>
+                            <div class="card-body">
+                                <div id="nutritionalEmptyState" class="text-center py-4 d-none">
+                                    <i class="bi bi-bar-chart text-muted fs-1 opacity-50"></i>
+                                    <p class="text-muted mt-2 mb-0">Sem dados nutricionais suficientes para gerar o gráfico.</p>
+                                </div>
+                                <div id="nutritionalChartWrapper">
+                                    <div class="d-flex justify-content-center">
+                                        <div style="height: 400px; width: 100%; position: relative;">
+                                            <canvas id="nutritionalChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Motivos de Ausência -->
                 <div class="row g-3 mt-2">
                     <div class="col-lg-12">
@@ -1024,6 +1048,7 @@
                 updateComponentsPerformance(data.components_performance);
                 updateAbsenceReasonsChart(data.absence_reasons);
                 updateScatterChart(data.ranking);
+                updateNutritionalChart(data.nutritional_performance);
 
                 if (callback && typeof callback === 'function') {
                     callback();
@@ -1038,6 +1063,79 @@
     }
     
     let scatterChart = null;
+    let nutritionalChart = null;
+    
+    function updateNutritionalChart(nutritionalData) {
+        const emptyState = document.getElementById('nutritionalEmptyState');
+        const chartWrapper = document.getElementById('nutritionalChartWrapper');
+        
+        if (!nutritionalData || Object.keys(nutritionalData).length === 0) {
+            emptyState.classList.remove('d-none');
+            chartWrapper.classList.add('d-none');
+            if (nutritionalChart) { nutritionalChart.destroy(); nutritionalChart = null; }
+            return;
+        }
+
+        emptyState.classList.add('d-none');
+        chartWrapper.classList.remove('d-none');
+
+        const labels = Object.keys(nutritionalData);
+        
+        const dataAbaixo = [];
+        const dataBasico = [];
+        const dataProficiente = [];
+        const dataAvancado = [];
+
+        labels.forEach(status => {
+            const stats = nutritionalData[status];
+            const total = stats.total || 1; // avoid division by zero
+            dataAbaixo.push((stats['Abaixo do básico'] / total) * 100);
+            dataBasico.push((stats['Básico'] / total) * 100);
+            dataProficiente.push((stats['Proficiente'] / total) * 100);
+            dataAvancado.push((stats['Avançado'] / total) * 100);
+        });
+
+        const ctx = document.getElementById('nutritionalChart').getContext('2d');
+        if (nutritionalChart) {
+            nutritionalChart.destroy();
+        }
+
+        nutritionalChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [
+                    { label: 'Abaixo do básico', data: dataAbaixo, backgroundColor: '#dc3545' },
+                    { label: 'Básico', data: dataBasico, backgroundColor: '#ffc107' },
+                    { label: 'Proficiente', data: dataProficiente, backgroundColor: '#198754' },
+                    { label: 'Avançado', data: dataAvancado, backgroundColor: '#0d6efd' }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom' },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ' + context.parsed.y.toFixed(1) + '%';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: { stacked: true },
+                    y: { 
+                        stacked: true, 
+                        max: 100, 
+                        ticks: { callback: function(value) { return value + '%'; } }
+                    }
+                }
+            }
+        });
+    }
+
     function updateScatterChart(studentsData) {
         const emptyState = document.getElementById('scatterEmptyState');
         const chartWrapper = document.getElementById('scatterChartWrapper');

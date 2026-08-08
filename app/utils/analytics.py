@@ -1,4 +1,4 @@
-from app.models import db, StudentResult, Student, Enrollment, Class, TeachingUnit, Exam, ExamItem, Question, SchoolYear, Subject, Professor, TeachingAssignment, AbsenceReason
+from app.models import db, StudentResult, Student, Enrollment, Class, TeachingUnit, Exam, ExamItem, Question, SchoolYear, Subject, Professor, TeachingAssignment, AbsenceReason, AnthropometricRecord
 from sqlalchemy import func
 import sqlalchemy as sa
 import json
@@ -166,7 +166,8 @@ def get_dashboard_data(exam_id, regional_ids=None, unit_ids=None, class_ids=None
                 'professors': []
             },
             'map_data': {'schools': [], 'missing_coords_count': 0},
-            'current_exam_title': current_display
+            'current_exam_title': current_display,
+            'nutritional_performance': {}
         }
 
     # Pré-processamento dos resultados para uma lista leve de dicionários
@@ -193,6 +194,17 @@ def get_dashboard_data(exam_id, regional_ids=None, unit_ids=None, class_ids=None
             'student_name': r.student_name,
             'answers_dict': answers_dict
         })
+
+    # Obter dados nutricionais dos estudantes em lote
+    student_ids = [r['student_id'] for r in processed_results if r['student_id']]
+    nutritional_map = {}
+    if student_ids:
+        anthro_records = AnthropometricRecord.query.filter(
+            AnthropometricRecord.student_id.in_(student_ids)
+        ).order_by(AnthropometricRecord.student_id, AnthropometricRecord.date.desc()).all()
+        for ar in anthro_records:
+            if ar.student_id not in nutritional_map:
+                nutritional_map[ar.student_id] = ar.nutritional_status
 
     # 1. KPIs
     total_students_scoped = _get_total_students_count(
@@ -250,13 +262,35 @@ def get_dashboard_data(exam_id, regional_ids=None, unit_ids=None, class_ids=None
     }
     
     total_finished = len(finished_results)
+    nutritional_performance = {}
     if total_finished > 0:
         for r in finished_results:
             score = r['score_percentage'] or 0
-            if score < 25: prof_levels['level1']['count'] += 1
-            elif score < 50: prof_levels['level2']['count'] += 1
-            elif score < 75: prof_levels['level3']['count'] += 1
-            else: prof_levels['level4']['count'] += 1
+            if score < 25:
+                prof_levels['level1']['count'] += 1
+                level_name = 'Abaixo do básico'
+            elif score < 50:
+                prof_levels['level2']['count'] += 1
+                level_name = 'Básico'
+            elif score < 75:
+                prof_levels['level3']['count'] += 1
+                level_name = 'Proficiente'
+            else:
+                prof_levels['level4']['count'] += 1
+                level_name = 'Avançado'
+                
+            # Update Nutritional Performance
+            nut_status = nutritional_map.get(r['student_id']) or 'Não Informado'
+            if nut_status not in nutritional_performance:
+                nutritional_performance[nut_status] = {
+                    'Abaixo do básico': 0,
+                    'Básico': 0,
+                    'Proficiente': 0,
+                    'Avançado': 0,
+                    'total': 0
+                }
+            nutritional_performance[nut_status][level_name] += 1
+            nutritional_performance[nut_status]['total'] += 1
         
         for key in prof_levels:
             prof_levels[key]['perc'] = round((prof_levels[key]['count'] / total_finished) * 100, 1)
@@ -594,6 +628,7 @@ def get_dashboard_data(exam_id, regional_ids=None, unit_ids=None, class_ids=None
         'radar_data': radar_data,
         'rankings': rankings,
         'map_data': map_data,
+        'nutritional_performance': nutritional_performance,
         'current_exam_title': current_display
     }
 
