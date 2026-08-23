@@ -582,6 +582,12 @@ def get_dashboard_data(exam_id, regional_ids=None, unit_ids=None, class_ids=None
             'attendance': cls.get('attendance')
         })
     
+    from datetime import date
+    today = date.today()
+    def calc_years(start_date):
+        if not start_date: return None
+        return today.year - start_date.year - ((today.month, today.day) < (start_date.month, start_date.day))
+
     for sch in target_schools:
         if sch.latitude and sch.longitude:
             try:
@@ -595,7 +601,12 @@ def get_dashboard_data(exam_id, regional_ids=None, unit_ids=None, class_ids=None
                     'score': school_scores.get(sch.name, None),
                     'attendance': school_attendances.get(sch.name, None),
                     'levels': list(school_levels.get(sch.name, set())),
-                    'classes': school_classes.get(sch.id, [])
+                    'classes': school_classes.get(sch.id, []),
+                    'regional_name': sch.parent.name if sch.parent else None,
+                    'director': sch.director_name,
+                    'dir_years': calc_years(sch.modulation_start_date),
+                    'coordinator': sch.coordinator_name,
+                    'coord_years': calc_years(sch.coordinator_modulation_date)
                 })
             except ValueError:
                 map_data['missing_coords_count'] += 1
@@ -694,9 +705,24 @@ def get_rankings_data(exam_id, regional_ids=None, unit_ids=None, class_ids=None,
         elif 'Não' in dietary and 'Sim' not in dietary:
             base_query = base_query.filter(~Student.dietary_restrictions.any())
 
-        # Schools Ranking
-    schools_ranking = base_query.with_entities(TeachingUnit.name, db.func.avg(StudentResult.score_percentage).label('score'), TeachingUnit.municipio, db.func.avg(StudentResult.attendance_percentage).label('attendance'))\
-        .group_by(TeachingUnit.name, TeachingUnit.municipio).order_by(db.desc('score')).all()
+    # Schools Ranking
+    schools_ranking = base_query.with_entities(
+        TeachingUnit.name, 
+        db.func.avg(StudentResult.score_percentage).label('score'), 
+        TeachingUnit.municipio, 
+        db.func.avg(StudentResult.attendance_percentage).label('attendance'),
+        TeachingUnit.director_name,
+        TeachingUnit.modulation_start_date,
+        TeachingUnit.coordinator_name,
+        TeachingUnit.coordinator_modulation_date
+    ).group_by(
+        TeachingUnit.name, 
+        TeachingUnit.municipio,
+        TeachingUnit.director_name,
+        TeachingUnit.modulation_start_date,
+        TeachingUnit.coordinator_name,
+        TeachingUnit.coordinator_modulation_date
+    ).order_by(db.desc('score')).all()
 
     # Classes Ranking
     classes_ranking = base_query.with_entities(
@@ -748,8 +774,18 @@ def get_rankings_data(exam_id, regional_ids=None, unit_ids=None, class_ids=None,
             
     professors_ranking.sort(key=lambda x: x['score'], reverse=True)
 
+    from datetime import date
+    today = date.today()
+    def calc_years(start_date):
+        if not start_date: return None
+        return today.year - start_date.year - ((today.month, today.day) < (start_date.month, start_date.day))
+
     return {
-        'schools': [{'name': r[0], 'score': round(r[1] or 0, 2), 'municipio': r[2], 'attendance': round(r[3] or 0, 1)} for r in schools_ranking],
+        'schools': [{
+            'name': r[0], 'score': round(r[1] or 0, 2), 'municipio': r[2], 'attendance': round(r[3] or 0, 1),
+            'director': r[4], 'dir_years': calc_years(r[5]),
+            'coordinator': r[6], 'coord_years': calc_years(r[7])
+        } for r in schools_ranking],
         'classes': [{'class_id': r[0], 'name': r[1], 'sub': r[2], 'score': round(r[3] or 0, 2), 'school_id': r[6], 'attendance': round(r[7] or 0, 1)} for r in classes_ranking],
         'students': [{'name': r[0], 'sub': r[2], 'score': round(r[1] or 0, 2), 'class_name': r[3], 'attendance': round(r[4] or 0, 1)} for r in students_ranking],
         'professors': professors_ranking

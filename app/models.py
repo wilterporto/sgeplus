@@ -300,6 +300,10 @@ class TeachingUnit(db.Model):
     differentiated_location = db.Column(db.String(128), nullable=True)
     latitude = db.Column(db.String(50), nullable=True)
     longitude = db.Column(db.String(50), nullable=True)
+    director_name = db.Column(db.String(128), nullable=True)
+    modulation_start_date = db.Column(db.Date, nullable=True)
+    coordinator_name = db.Column(db.String(128), nullable=True)
+    coordinator_modulation_date = db.Column(db.Date, nullable=True)
     
     classification_id = db.Column(db.Integer, db.ForeignKey('school_classification.id'), nullable=True)
     energy_source_id = db.Column(db.Integer, db.ForeignKey('electrical_energy_source.id'), nullable=True)

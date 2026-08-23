@@ -98,7 +98,7 @@
 
 <!-- New Unit Modal -->
 <div class="modal fade" id="newUnitModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Nova Unidade</h5>
@@ -107,22 +107,24 @@
             <form method="POST">
                 <div class="modal-body">
                     {{ form.hidden_tag() }}
+                    
+                    <h6 class="mb-3 text-primary border-bottom pb-2">Dados Principais</h6>
                     <div class="row">
-                        <div class="col-md-12 mb-3">
+                        <div class="col-md-3 mb-3">
                             {{ form.type.label(class="form-label required") }}
                             {{ form.type(class="form-select") }}
                             {% for error in form.type.errors %}
                             <span class="text-danger small">{{ error }}</span>
                             {% endfor %}
                         </div>
-                        <div class="col-md-12 mb-3">
+                        <div class="col-md-9 mb-3">
                             {{ form.name.label(class="form-label required") }}
                             {{ form.name(class="form-control") }}
                             {% for error in form.name.errors %}
                             <span class="text-danger small">{{ error }}</span>
                             {% endfor %}
                         </div>
-                        <div class="col-md-12 mb-3">
+                        <div class="col-md-8 mb-3">
                             {{ form.parent_id.label(class="form-label") }}
                             {{ form.parent_id(class="form-select") }}
                             <div class="form-text">Apenas para Escolas vinculadas a uma Regional.</div>
@@ -130,48 +132,52 @@
                             <span class="text-danger small">{{ error }}</span>
                             {% endfor %}
                         </div>
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-4 mb-3">
                             {{ form.inep_code.label(class="form-label") }}
                             {{ form.inep_code(class="form-control") }}
                             {% for error in form.inep_code.errors %}
                             <span class="text-danger small">{{ error }}</span>
                             {% endfor %}
                         </div>
-                        <div class="col-md-3 mb-3">
+                    </div>
+
+                    <h6 class="mb-3 mt-3 text-primary border-bottom pb-2">Localização e Infraestrutura</h6>
+                    <div class="row">
+                        <div class="col-md-2 mb-3">
                             {{ form.uf.label(class="form-label") }}
                             {{ form.uf(class="form-select", id="new_unit_uf") }}
                             {% for error in form.uf.errors %}
                             <span class="text-danger small">{{ error }}</span>
                             {% endfor %}
                         </div>
-                        <div class="col-md-3 mb-3">
+                        <div class="col-md-4 mb-3">
                             {{ form.municipio.label(class="form-label") }}
                             {{ form.municipio(class="form-select", id="new_unit_municipio") }}
                             {% for error in form.municipio.errors %}
                             <span class="text-danger small">{{ error }}</span>
                             {% endfor %}
                         </div>
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-3 mb-3">
                             {{ form.residential_zone.label(class="form-label") }}
                             {{ form.residential_zone(class="form-select") }}
                         </div>
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-3 mb-3">
                             {{ form.differentiated_location.label(class="form-label") }}
                             {{ form.differentiated_location(class="form-select") }}
                         </div>
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-3 mb-3">
                             {{ form.classification_id.label(class="form-label") }}
                             {{ form.classification_id(class="form-select") }}
                         </div>
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-3 mb-3">
                             {{ form.energy_source_id.label(class="form-label") }}
                             {{ form.energy_source_id(class="form-select") }}
                         </div>
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-3 mb-3">
                             {{ form.region_id.label(class="form-label") }}
                             {{ form.region_id(class="form-select") }}
                         </div>
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-3 mb-3">
                             {{ form.sub_region_id.label(class="form-label") }}
                             {{ form.sub_region_id(class="form-select") }}
                         </div>
@@ -182,6 +188,38 @@
                         <div class="col-md-6 mb-3">
                             {{ form.longitude.label(class="form-label") }}
                             {{ form.longitude(class="form-control") }}
+                        </div>
+                    </div>
+
+                    <h6 class="mb-3 mt-3 text-primary border-bottom pb-2">Gestão Escolar</h6>
+                    <div class="row">
+                        <div class="col-md-8 mb-3">
+                            {{ form.director_name.label(class="form-label") }}
+                            {{ form.director_name(class="form-control") }}
+                            {% for error in form.director_name.errors %}
+                            <span class="text-danger small">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            {{ form.modulation_start_date.label(class="form-label") }}
+                            {{ form.modulation_start_date(class="form-control", type="date") }}
+                            {% for error in form.modulation_start_date.errors %}
+                            <span class="text-danger small">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        <div class="col-md-8 mb-3">
+                            {{ form.coordinator_name.label(class="form-label") }}
+                            {{ form.coordinator_name(class="form-control") }}
+                            {% for error in form.coordinator_name.errors %}
+                            <span class="text-danger small">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            {{ form.coordinator_modulation_date.label(class="form-label") }}
+                            {{ form.coordinator_modulation_date(class="form-control", type="date") }}
+                            {% for error in form.coordinator_modulation_date.errors %}
+                            <span class="text-danger small">{{ error }}</span>
+                            {% endfor %}
                         </div>
                     </div>
                 </div>

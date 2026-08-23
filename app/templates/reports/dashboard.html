@@ -1357,8 +1357,15 @@
                 actionBtn = `<a href="/exams/${dashboardState.exam_id}/diagnosis?school_id=${item.school_id}&class_id=${item.class_id}" class="btn btn-sm btn-outline-info ms-2 py-0 px-1" title="Diagnóstico da Turma"><i class="bi bi-pie-chart" style="font-size: 0.8rem;"></i></a>`;
             }
 
+            let extraInfo = '';
+            if (category === 'schools') {
+                const dirStr = item.director ? `Dir: ${item.director} (${item.dir_years !== null ? item.dir_years : 0} anos)` : 'Dir não inf.';
+                const coordStr = item.coordinator ? `Coord: ${item.coordinator} (${item.coord_years !== null ? item.coord_years : 0} anos)` : 'Coord não inf.';
+                extraInfo = `<div class="x-small text-muted mt-1 w-100">${dirStr} | ${coordStr}</div>`;
+            }
+
             div.innerHTML = `
-                <div class="d-flex justify-content-between align-items-center mb-1">
+                <div class="d-flex justify-content-between align-items-center mb-1 flex-wrap">
                     <div class="d-flex flex-column text-truncate" style="max-width: 60%;">
                         <span class="small fw-bold" title="${item.name}">${item.name}</span>
                         ${item.sub ? `<span class="x-small text-muted">${item.sub}</span>` : ''}
@@ -1374,6 +1381,7 @@
                         </div>
                         ${actionBtn}
                     </div>
+                    ${extraInfo}
                 </div>
                 <div class="progress" style="height: 4px;">
                     <div class="progress-bar ${dynamicColor}" style="width: ${item.score}%"></div>
@@ -2040,9 +2048,17 @@
                 const attText = sch.attendance != null ? `Frequência: ${sch.attendance.toFixed(1)}%` : '';
                 const mainInfo = attText ? `${scoreText}<br>${attText}` : scoreText;
                 
+                let extraInfoHtml = '';
+                if (sch.regional_name) {
+                    extraInfoHtml += `<div style="font-size: 0.8rem;" class="text-muted mt-1">Regional: <strong>${sch.regional_name}</strong></div>`;
+                }
+                const dirStr = sch.director ? `Dir: ${sch.director} (${sch.dir_years !== null ? sch.dir_years : 0} anos)` : 'Dir não inf.';
+                const coordStr = sch.coordinator ? `Coord: ${sch.coordinator} (${sch.coord_years !== null ? sch.coord_years : 0} anos)` : 'Coord não inf.';
+                extraInfoHtml += `<div style="font-size: 0.8rem;" class="text-muted lh-sm">${dirStr}<br>${coordStr}</div>`;
+                
                 let classesHtml = '';
                 if (sch.classes && sch.classes.length > 0) {
-                    classesHtml += '<div class="mt-2" style="max-height: 100px; overflow-y: auto;">';
+                    classesHtml += '<div class="mt-2 pt-2 border-top" style="max-height: 100px; overflow-y: auto;">';
                     classesHtml += '<strong style="font-size: 0.85rem;">Resultados por Turma:</strong><ul class="list-unstyled mb-0" style="font-size: 0.8rem;">';
                     sch.classes.forEach(c => {
                         const cScore = c.score !== null ? c.score.toFixed(1) + '%' : 'N/A';
@@ -2052,7 +2068,7 @@
                     classesHtml += '</ul></div>';
                 }
                 
-                marker.bindPopup(`<strong>${sch.name}</strong><br>${mainInfo}${classesHtml}`);
+                marker.bindPopup(`<strong style="font-size: 0.95rem;">${sch.name}</strong>${extraInfoHtml}<div class="mt-2">${mainInfo}</div>${classesHtml}`);
                 mapMarkers.push(marker);
             }
         });

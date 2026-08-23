@@ -159,6 +159,10 @@ class TeachingUnitForm(FlaskForm):
     ])
     latitude = StringField('Latitude', validators=[Length(max=50)])
     longitude = StringField('Longitude', validators=[Length(max=50)])
+    director_name = StringField('Nome do Diretor', validators=[Optional(), Length(max=128)])
+    modulation_start_date = DateField('Data de Início de Modulação', format='%Y-%m-%d', validators=[Optional()])
+    coordinator_name = StringField('Nome do Coordenador Pedagógico', validators=[Optional(), Length(max=128)])
+    coordinator_modulation_date = DateField('Data de Início (Coordenador)', format='%Y-%m-%d', validators=[Optional()])
     
     submit = SubmitField('Salvar Unidade')
 

@@ -7,9 +7,9 @@ Este documento detalha as regras de negócio, especificações técnicas, modela
 Sistema para gerenciar os motivos pelos quais os alunos podem faltar, alimentando diretamente o diário de classe e os relatórios de evasão/absenteísmo.
 
 *   **Campos e Dados do Cadastro:**
-    *   **Descrição** <span style="color:red">*</span> (Ex: Atestado Médico, Atraso do Transporte).
-    *   **Categoria** <span style="color:red">*</span> (Ex: Saúde, Familiar, Transporte, Injustificada).
-    *   **Ativo/Inativo** <span style="color:red">*</span> (Toggle para habilitar o uso no diário).
+    *   **Descrição** campo obrigatório identificado com asterisco em cor vermelha (Ex: Atestado Médico, Atraso do Transporte).
+    *   **Categoria** campo obrigatório identificado com asterisco em cor vermelha (Ex: Saúde, Familiar, Transporte, Injustificada).
+    *   **Ativo/Inativo** campo obrigatório identificado com asterisco em cor vermelha (Toggle para habilitar o uso no diário).
     *   **Observação Interna** (Opcional - para regras da secretaria).
     *   **Data de Criação e Usuário Responsável** (Registrados sistemicamente e visíveis na listagem).
 *   **Listagem e Filtros:**
@@ -23,19 +23,19 @@ Sistema para gerenciar os motivos pelos quais os alunos podem faltar, alimentand
 Gestão da estrutura curricular que embasará as avaliações (ex: BNCC, matrizes estaduais). 
 
 *   **Matrizes de Referência:**
-    *   **Nome da Matriz** <span style="color:red">*</span> (Ex: SAEB 2023).
-    *   **Fonte / Origem** <span style="color:red">*</span> (Federal, Estadual, Municipal ou Própria).
+    *   **Nome da Matriz** campo obrigatório identificado com asterisco em cor vermelha (Ex: SAEB 2023).
+    *   **Fonte / Origem** campo obrigatório identificado com asterisco em cor vermelha (Federal, Estadual, Municipal ou Própria).
     *   **Composição a partir de Documento Base:** O sistema deve permitir que a rede monte uma nova matriz referencial derivando ou importando a estrutura de um **Documento Curricular Existente** (ex: importar os descritores da BNCC como base para a matriz municipal).
-    *   **Ano/Etapa** <span style="color:red">*</span> (Ex: 9º Ano do Ensino Fundamental).
-    *   **Disciplina** <span style="color:red">*</span> (Ex: Língua Portuguesa).
-    *   **Vigência** <span style="color:red">*</span> (Ano de início e término de validade da matriz).
+    *   **Ano/Etapa** campo obrigatório identificado com asterisco em cor vermelha (Ex: 9º Ano do Ensino Fundamental).
+    *   **Disciplina** campo obrigatório identificado com asterisco em cor vermelha (Ex: Língua Portuguesa).
+    *   **Vigência** campo obrigatório identificado com asterisco em cor vermelha (Ano de início e término de validade da matriz).
 *   **Temas / Tópicos:**
     *   Vinculação obrigatória à Matriz.
-    *   **Descrição do Tema** <span style="color:red">*</span> (Ex: Práticas de Leitura).
+    *   **Descrição do Tema** campo obrigatório identificado com asterisco em cor vermelha (Ex: Práticas de Leitura).
 *   **Descritores / Habilidades:**
     *   Vinculação obrigatória ao Tema.
-    *   **Código do Descritor** <span style="color:red">*</span> (Ex: D01, EF01MA01).
-    *   **Descrição da Habilidade** <span style="color:red">*</span> (Ex: Localizar informações explícitas em um texto).
+    *   **Código do Descritor** campo obrigatório identificado com asterisco em cor vermelha (Ex: D01, EF01MA01).
+    *   **Descrição da Habilidade** campo obrigatório identificado com asterisco em cor vermelha (Ex: Localizar informações explícitas em um texto).
 *   **Regras de Interface e Importação:**
     *   **Listagem Paginada:** Todas as tabelas desta seção devem possuir paginação estrita de **30 registros por página**.
     *   **Importação via Excel (.xlsx / .csv):**
@@ -50,22 +50,22 @@ Gestão da estrutura curricular que embasará as avaliações (ex: BNCC, matrize
 Repositório centralizado, rico e tagueado de questões que servirão de base para a montagem de avaliações e simulados.
 
 *   **Campos de Classificação e Metadados:**
-    *   **Matriz / Tema / Descritor** <span style="color:red">*</span> (Seleção dependente e aninhada).
-    *   **Nível de Complexidade** <span style="color:red">*</span> (Fácil, Médio, Difícil).
-    *   **Fonte / Origem** <span style="color:red">*</span> (Ex: ENEM, ENADE, Autoral, Prova Brasil).
+    *   **Matriz / Tema / Descritor** campo obrigatório identificado com asterisco em cor vermelha (Seleção dependente e aninhada).
+    *   **Nível de Complexidade** campo obrigatório identificado com asterisco em cor vermelha (Fácil, Médio, Difícil).
+    *   **Fonte / Origem** campo obrigatório identificado com asterisco em cor vermelha (Ex: ENEM, ENADE, Autoral, Prova Brasil).
     *   **Ano de Aplicação Origem** (Opcional - ano em que a questão foi criada/aplicada originalmente).
     *   **Tags / Palavras-chave** (Opcional - Múltiplas strings para facilitar a busca, ex: "Fração", "Regra de Três").
-    *   **Status de Revisão** <span style="color:red">*</span> (Rascunho, Em Revisão, Aprovada, Arquivada).
+    *   **Status de Revisão** campo obrigatório identificado com asterisco em cor vermelha (Rascunho, Em Revisão, Aprovada, Arquivada).
 *   **Fluxo de Criação e Aprovação (Permissões):**
     *   **Professores:** Têm permissão para criar e enviar novas questões para o banco. Ao serem salvas e finalizadas, essas questões assumem o status de "Em Revisão".
     *   **Secretaria/Gestores:** Possuem a permissão exclusiva de validar a qualidade pedagógica e alterar o status da questão para "Aprovada".
     *   **Uso nas Provas:** A Secretaria (e a rotina de geração automática) fará o uso **exclusivo** de questões com status "Aprovada" na montagem de provas e simulados oficiais.
 *   **Conteúdo da Questão:**
-    *   **Tipo da Questão** <span style="color:red">*</span> (Múltipla Escolha, Discursiva/Aberta).
-    *   **Enunciado** <span style="color:red">*</span> (Campo *Rich Text* com suporte a equações matemáticas e formatação).
+    *   **Tipo da Questão** campo obrigatório identificado com asterisco em cor vermelha (Múltipla Escolha, Discursiva/Aberta).
+    *   **Enunciado** campo obrigatório identificado com asterisco em cor vermelha (Campo *Rich Text* com suporte a equações matemáticas e formatação).
     *   **Imagens de Apoio** (Opcional).
-    *   **Alternativas** <span style="color:red">*</span> (Para múltipla escolha, mínimo 2 opções de resposta).
-    *   **Alternativa Correta** <span style="color:red">*</span> (Gabarito oficial do sistema).
+    *   **Alternativas** campo obrigatório identificado com asterisco em cor vermelha (Para múltipla escolha, mínimo 2 opções de resposta).
+    *   **Alternativa Correta** campo obrigatório identificado com asterisco em cor vermelha (Gabarito oficial do sistema).
     *   **Resolução Comentada** (Opcional - Texto explicativo do raciocínio para chegar à resposta).
 *   **Interface e Ações:**
     *   **Listagem:** Limitada a **30 registros por página**.
@@ -77,13 +77,13 @@ Repositório centralizado, rico e tagueado de questões que servirão de base pa
 Módulo estrutural para definir as diretrizes gerais das avaliações que serão aplicadas na rede ou escola, determinando sua composição.
 
 *   **Parâmetros de Cadastro da Avaliação:**
-    *   **Nome/Título da Avaliação** <span style="color:red">*</span> (Ex: 1º Simulado Bimestral, Avaliação Diagnóstica).
-    *   **Período Letivo / Bimestre** <span style="color:red">*</span>.
-    *   **Tipo de Avaliação** <span style="color:red">*</span> (Simulado, Prova Regular, Diagnóstica).
-    *   **Composição Disciplinar (Estrutura):** <span style="color:red">*</span>
+    *   **Nome/Título da Avaliação** campo obrigatório identificado com asterisco em cor vermelha (Ex: 1º Simulado Bimestral, Avaliação Diagnóstica).
+    *   **Período Letivo / Bimestre** campo obrigatório identificado com asterisco em cor vermelha.
+    *   **Tipo de Avaliação** campo obrigatório identificado com asterisco em cor vermelha (Simulado, Prova Regular, Diagnóstica).
+    *   **Composição Disciplinar (Estrutura):** campo obrigatório identificado com asterisco em cor vermelha
         *   **Único Componente (Monodisciplinar):** A avaliação será formada por questões de uma única disciplina (Ex: Apenas prova de Matemática).
         *   **Vários Componentes (Multidisciplinar):** A avaliação será um caderno único contendo questões de múltiplas disciplinas (Ex: Simulado da Rede com Português, Matemática e Ciências). O sistema deverá permitir a adição dinâmica das disciplinas que farão parte desta avaliação no ato do cadastro.
-    *   **Público-Alvo (Série/Ano)** <span style="color:red">*</span>.
+    *   **Público-Alvo (Série/Ano)** campo obrigatório identificado com asterisco em cor vermelha.
 *   **Regras de Listagem e Exclusão:**
     *   Paginação padrão de 30 registros. Bloqueio de exclusão caso existam provas geradas para esta avaliação.
 
@@ -92,20 +92,20 @@ Módulo estrutural para definir as diretrizes gerais das avaliações que serão
 Módulo onde o usuário materializa o caderno de testes baseado na avaliação previamente cadastrada.
 
 *   **Configuração e Agendamento da Aplicação:**
-    *   **Vínculo com a Avaliação** <span style="color:red">*</span> (Ao selecionar, o sistema herda a estrutura, obrigando a prova a ser de um ou de vários componentes, filtrando as questões de acordo com a configuração da avaliação).
-    *   **Modalidade** <span style="color:red">*</span> (Online via sistema, Impressa, ou Híbrida).
-    *   **Data/Hora de Início** <span style="color:red">*</span> e **Data/Hora de Término** <span style="color:red">*</span> (Janela de aplicação).
+    *   **Vínculo com a Avaliação** campo obrigatório identificado com asterisco em cor vermelha (Ao selecionar, o sistema herda a estrutura, obrigando a prova a ser de um ou de vários componentes, filtrando as questões de acordo com a configuração da avaliação).
+    *   **Modalidade** campo obrigatório identificado com asterisco em cor vermelha (Online via sistema, Impressa, ou Híbrida).
+    *   **Data/Hora de Início** campo obrigatório identificado com asterisco em cor vermelha e **Data/Hora de Término** campo obrigatório identificado com asterisco em cor vermelha (Janela de aplicação).
     *   **Duração da Prova** (Opcional - Ex: Limite de 120 minutos após o aluno iniciar).
 *   **Geração e Montagem da Prova (Regras de Negócio):**
     *   **Modo de Seleção Manual:** Abertura de modal listando o banco de questões (com filtros avançados e paginação estrita de 30 itens na busca). O usuário seleciona cada questão individualmente.
     *   **Modo de Geração Automática (Parametrizada):** O sistema sorteia as questões com base em critérios definidos pelo usuário:
-        *   **Quantidade Total de Questões** e limite de questões **por Disciplina** <span style="color:red">*</span>.
-        *   **Distribuição por Nível de Complexidade** <span style="color:red">*</span> (Ex: 30% Fáceis, 50% Médias, 20% Difíceis).
+        *   **Quantidade Total de Questões** e limite de questões **por Disciplina** campo obrigatório identificado com asterisco em cor vermelha.
+        *   **Distribuição por Nível de Complexidade** campo obrigatório identificado com asterisco em cor vermelha (Ex: 30% Fáceis, 50% Médias, 20% Difíceis).
         *   **Distribuição por Descritor / Habilidade** (Ex: Solicitar que contenha exatamente 5 questões da habilidade D01 e 3 da D02).
         *   **Filtro por Fonte** (Ex: Gerar apenas com questões Autorais ou do ENEM).
         *   *Validação e Revisão:* O sistema sorteia as questões do banco (que estejam com status "Aprovada") e exibe um "Rascunho da Prova", permitindo ao autor revisar, remover e substituir qualquer questão sorteada antes do fechamento.
     *   **Configuração de Pontuação:**
-        *   **Peso por Questão / Valor Total** <span style="color:red">*</span> (O sistema deve prever a soma dos pesos para compor a nota máxima da avaliação, validando contra o critério de aprovação da escola).
+        *   **Peso por Questão / Valor Total** campo obrigatório identificado com asterisco em cor vermelha (O sistema deve prever a soma dos pesos para compor a nota máxima da avaliação, validando contra o critério de aprovação da escola).
     *   **Regras de Aplicação (Modalidade Online):**
         *   Flag para **Embaralhamento Dinâmico** da ordem das questões e da ordem das alternativas (cada aluno visualizará a prova com ordem diferente).
         *   Restrição de Janela/Aba: Registrar no sistema se o aluno saiu da tela da prova para inibir colas (se tecnicamente viável).

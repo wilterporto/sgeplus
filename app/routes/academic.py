@@ -9,7 +9,7 @@ from flask import Blueprint, render_template, redirect, url_for, flash, jsonify,
 from flask_login import login_required, current_user
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileRequired, FileAllowed
-from wtforms import StringField, SelectField, SelectMultipleField, SubmitField
+from wtforms import StringField, SelectField, SelectMultipleField, SubmitField, DateField
 from wtforms.validators import DataRequired, Optional, Length
 from werkzeug.utils import secure_filename
 from sqlalchemy import func
@@ -52,6 +52,10 @@ class TeachingUnitForm(FlaskForm):
     ], default='Não está em área de localização diferenciada', validators=[Optional()])
     latitude = StringField('Latitude', validators=[Optional(), Length(max=50)])
     longitude = StringField('Longitude', validators=[Optional(), Length(max=50)])
+    director_name = StringField('Nome do Diretor', validators=[Optional(), Length(max=128)])
+    modulation_start_date = DateField('Data de Início de Modulação', format='%Y-%m-%d', validators=[Optional()])
+    coordinator_name = StringField('Nome do Coordenador Pedagógico', validators=[Optional(), Length(max=128)])
+    coordinator_modulation_date = DateField('Data de Início (Coordenador)', format='%Y-%m-%d', validators=[Optional()])
     submit = SubmitField('Salvar')
 
 class ImportUnitForm(FlaskForm):
@@ -163,6 +167,10 @@ def list_units():
             differentiated_location=form.differentiated_location.data if form.differentiated_location.data else None,
             latitude=form.latitude.data.strip() if form.latitude.data else None,
             longitude=form.longitude.data.strip() if form.longitude.data else None,
+            director_name=form.director_name.data.strip() if form.director_name.data else None,
+            modulation_start_date=form.modulation_start_date.data if form.modulation_start_date.data else None,
+            coordinator_name=form.coordinator_name.data.strip() if form.coordinator_name.data else None,
+            coordinator_modulation_date=form.coordinator_modulation_date.data if form.coordinator_modulation_date.data else None,
             classification_id=form.classification_id.data if form.classification_id.data != 0 else None,
             energy_source_id=form.energy_source_id.data if form.energy_source_id.data != 0 else None,
             region_id=form.region_id.data if form.region_id.data != 0 else None,
@@ -230,6 +238,10 @@ def edit_unit(id):
         unit.differentiated_location = form.differentiated_location.data if form.differentiated_location.data else None
         unit.latitude = form.latitude.data.strip() if form.latitude.data else None
         unit.longitude = form.longitude.data.strip() if form.longitude.data else None
+        unit.director_name = form.director_name.data.strip() if form.director_name.data else None
+        unit.modulation_start_date = form.modulation_start_date.data if form.modulation_start_date.data else None
+        unit.coordinator_name = form.coordinator_name.data.strip() if form.coordinator_name.data else None
+        unit.coordinator_modulation_date = form.coordinator_modulation_date.data if form.coordinator_modulation_date.data else None
         unit.classification_id = form.classification_id.data if form.classification_id.data != 0 else None
         unit.energy_source_id = form.energy_source_id.data if form.energy_source_id.data != 0 else None
         unit.region_id = form.region_id.data if form.region_id.data != 0 else None

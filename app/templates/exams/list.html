@@ -33,7 +33,7 @@
             {% for item in exams_with_stats %}
             {% set exam = item.exam %}
             <tr>
-                <td>{{ exam.title }}</td>
+                <td>{{ exam.title }}{% if exam.school_year %} - {{ exam.school_year.name }}{% endif %}</td>
                 <td>{{ exam.subject.name if exam.subject else ('Múltiplos' if exam.evaluation and exam.evaluation.multiple_components else 'N/A') }}</td>
                 <td>{{ exam.academic_year }}</td>
                 <td>{{ exam.application_date.strftime('%d/%m/%Y') }}</td>
