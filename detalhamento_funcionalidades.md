@@ -163,3 +163,26 @@ Uma interface dedicada e aprofundada, permitindo que o professor e a coordenaç�
     *   **Plano de Intervenção Automático:** A partir dos resultados consolidados da avaliação, o sistema deverá formular e propor um plano de intervenção direcionado, focado especificamente nos descritores e habilidades com menor desempenho da turma.
     *   **Sugestão de Prova de Reforço:** Integrado ao plano de intervenção, o sistema deverá sugerir (e permitir a geração com um clique de) uma nova avaliação de reforço. Essa prova será montada automaticamente buscando no Banco de Questões itens associados aos descritores mapeados como deficientes na análise da turma.
     *   **Exportação do Diagnóstico:** Geração de um "Boletim da Turma" em PDF para reuniões de conselho de classe ou conselho de pais e mestres.
+
+## 8. Resumo de Avaliações
+
+Interface de visão consolidada e de listagem das métricas gerais de proficiência e frequência das escolas a partir das avaliações aplicadas na rede.
+
+*   **Filtros de Processamento (Obrigatórios):**
+    *   **Avaliação / Ano Escolar / Ano Letivo:** Um filtro unificado que lista de forma inteligente todas as combinações existentes de avaliações, anos escolares e anos letivos aplicados no sistema (pertencentes ao cliente/tenant logado). Exibido no formato: Nome da Avaliação (Tipo) - Ano Escolar - Ano Letivo.
+*   **Filtros Avançados (Opcionais):**
+    *   Filtros inteligentes baseados nos dados das escolas: Localização (Urbana/Rural), Localização Diferenciada (Terra Indígena, etc.), Regional, Região, Sub Região e Município (apenas para redes do tipo "Estadual").
+*   **Listagem e Paginação:**
+    *   A tela exibe os dados limitados a paginação fixa de **30 registros por página**.
+    *   **Ordenação:** A listagem é automaticamente ordenada (de forma decrescente) pela escola que possui o maior percentual médio geral de proficiência (Média Geral).
+*   **Estrutura de Colunas:**
+    *   **Classificação:** Exibe a posição da escola (1ª, 2ª, etc.) no ranking geral de proficiência, considerando a paginação de forma contínua.
+    *   **Regional:** Nome da Regional (entidade pai) vinculada à escola.
+    *   **Escola:** Nome da Unidade de Ensino. Para escolas que possuam código INEP, este é exibido antes do nome. Caso a rede seja "Estadual", o Município é concatenado ao final do nome.
+    *   **Proficiência Média:** Percentual consolidado calculando a média geral de desempenho entre todos os componentes curriculares da avaliação.
+    *   **Frequência Média:** O percentual médio global de presença/frequência dos alunos daquela escola na avaliação selecionada.
+    *   **Componentes Curriculares (Dinâmicas):** O sistema exibe colunas exclusivas para cada componente contido na avaliação (ex: Língua Portuguesa, Matemática).
+        *   Em cada célula de componente é obrigatoriamente exibido o **Percentual Médio de Proficiência** destacado em um selo de cor.
+        *   Logo abaixo do percentual de proficiência, é exibido o **Percentual Médio de Frequência** individualizado e calculado especificamente para aquele componente e escola.
+*   **Exportação de Dados:**
+    *   **Exportar Excel:** Recurso focado em performance (processamento em massa bypassando paginação) que exporta todas as colunas da tela. Na planilha exportada, cada componente curricular deve ser desmembrado em colunas separadas para "Proficiência" e "Frequência" garantindo fácil formatação em tabelas dinâmicas.

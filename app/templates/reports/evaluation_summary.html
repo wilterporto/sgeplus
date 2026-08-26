@@ -1,0 +1,208 @@
+{% extends 'base.html' %}
+
+{% block title %}Resumo de Avaliações - {{ super() }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="mb-0">Resumo de Avaliações</h4>
+    </div>
+
+    <!-- Filter Form -->
+    <div class="card mb-4 shadow-sm border-0">
+        <div class="card-header bg-white border-bottom pb-0">
+            <h5 class="card-title text-primary"><i class="bi bi-funnel"></i> Filtros de Processamento</h5>
+        </div>
+        <div class="card-body bg-light">
+            <form method="GET" action="{{ url_for('reports.evaluation_summary') }}">
+                <div class="row align-items-end">
+                    <div class="col-md-9 mb-3">
+                        <label for="evaluation_group" class="form-label">Avaliação / Ano Escolar / Ano Letivo <span class="text-danger">*</span></label>
+                        <select class="form-select" id="evaluation_group" name="evaluation_group" required>
+                            <option value="">Selecione a Avaliação...</option>
+                            {% for val, display in evaluation_group_options %}
+                            <option value="{{ val }}" {% if evaluation_group == val %}selected{% endif %}>{{ display }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="regional_id" class="form-label">Regional</label>
+                        <select class="form-select" id="regional_id" name="regional_id">
+                            <option value="">Todas...</option>
+                            {% for r in regionals %}
+                            <option value="{{ r.id }}" {% if f_regional_id == r.id %}selected{% endif %}>{{ r.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="row align-items-end">
+                    <div class="col-md-3 mb-3">
+                        <label for="region_id" class="form-label">Região</label>
+                        <select class="form-select" id="region_id" name="region_id">
+                            <option value="">Todas...</option>
+                            {% for r in regions %}
+                            <option value="{{ r.id }}" {% if f_region_id == r.id %}selected{% endif %}>{{ r.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="sub_region_id" class="form-label">Sub Região</label>
+                        <select class="form-select" id="sub_region_id" name="sub_region_id">
+                            <option value="">Todas...</option>
+                            {% for sr in sub_regions %}
+                            <option value="{{ sr.id }}" {% if f_sub_region_id == sr.id %}selected{% endif %}>{{ sr.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="residential_zone" class="form-label">Localização</label>
+                        <select class="form-select" id="residential_zone" name="residential_zone">
+                            <option value="">Todas...</option>
+                            {% for rz in residential_zones %}
+                            <option value="{{ rz }}" {% if f_residential_zone == rz %}selected{% endif %}>{{ rz }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="differentiated_location" class="form-label">Loc. Diferenciada</label>
+                        <select class="form-select" id="differentiated_location" name="differentiated_location">
+                            <option value="">Todas...</option>
+                            {% for dl in diff_locations %}
+                            <option value="{{ dl }}" {% if f_differentiated_location == dl %}selected{% endif %}>{{ dl }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="row align-items-end">
+                    {% if tenant_type and tenant_type|lower == 'estadual' %}
+                    <div class="col-md-3 mb-3">
+                        <label for="municipio" class="form-label">Município</label>
+                        <select class="form-select" id="municipio" name="municipio">
+                            <option value="">Todos...</option>
+                            {% for m in municipios %}
+                            <option value="{{ m }}" {% if f_municipio == m %}selected{% endif %}>{{ m }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="col-md-12 mb-3 text-end">
+                        <button type="submit" name="export" value="excel" class="btn btn-outline-success me-2">
+                            <i class="bi bi-file-earmark-excel-fill me-1"></i> Exportar Excel
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-gear-fill me-1"></i> Processar
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {% if evaluation_group %}
+    <!-- Data Table -->
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white border-bottom">
+            <h5 class="card-title text-secondary mb-0">Percentual de Proficiência Alcançado por Escola</h5>
+        </div>
+        <div class="card-body p-0">
+            {% if results_by_school %}
+            <div class="table-responsive">
+                <table class="table table-hover table-striped align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col" class="text-center">Classificação</th>
+                            <th scope="col" class="ps-4">Regional</th>
+                            <th scope="col">Escola</th>
+                            <th scope="col" class="text-center" title="Percentual médio de proficiência entre os componentes">Proficiência Média</th>
+                            <th scope="col" class="text-center" title="Percentual médio de frequência">Frequência Média</th>
+                            {% for subj_id in active_subject_ids %}
+                            <th scope="col" class="text-center">{{ subjects_map.get(subj_id, 'Componente ' ~ subj_id) }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for unit_name, data in results_by_school %}
+                        <tr>
+                            <td class="text-center fw-bold">{{ ((page - 1) * 30) + loop.index }}ª</td>
+                            <td class="ps-4 text-secondary"><small>{{ data.regional_name }}</small></td>
+                            <td class="fw-medium text-dark">
+                                {% if data.inep %}<span class="badge bg-secondary me-1" title="Código INEP">{{ data.inep }}</span>{% endif %}
+                                {{ unit_name }}
+                                {% if data.tenant_type and data.tenant_type|lower == 'estadual' and data.municipio %}
+                                <small class="text-muted ms-1">- {{ data.municipio }}</small>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                <span class="badge {% if data.overall_avg >= 70 %}bg-success{% elif data.overall_avg >= 50 %}bg-warning text-dark{% else %}bg-danger{% endif %} rounded-pill px-3 py-2" style="font-size: 0.9em;">
+                                    {{ "%.1f"|format(data.overall_avg) }}%
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge bg-info text-dark rounded-pill px-3 py-2" style="font-size: 0.9em;">
+                                    {{ "%.1f"|format(data.attendance_avg) }}%
+                                </span>
+                            </td>
+                            {% for subj_id in active_subject_ids %}
+                            <td class="text-center align-middle">
+                                {% if subj_id in data.subjects %}
+                                    {% set score = data.subjects[subj_id].avg %}
+                                    {% set att = data.subjects[subj_id].att_avg %}
+                                    <div class="d-flex flex-column align-items-center justify-content-center">
+                                        <span class="badge {% if score >= 70 %}bg-success{% elif score >= 50 %}bg-warning text-dark{% else %}bg-danger{% endif %} rounded-pill px-3 py-1 mb-1 shadow-sm" style="font-size: 0.85em;" title="Proficiência Média: {{ "%.1f"|format(score) }}%">
+                                            {{ "%.1f"|format(score) }}%
+                                        </span>
+                                        <span class="badge bg-light text-secondary border px-2 py-1" style="font-size: 0.75em;" title="Frequência Média: {{ "%.1f"|format(att) }}%">
+                                            <i class="bi bi-people-fill me-1"></i>{{ "%.1f"|format(att) }}%
+                                        </span>
+                                    </div>
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            {% if total_pages > 1 %}
+            <div class="d-flex justify-content-between align-items-center mt-3 px-4 pb-3">
+                <span class="text-muted small">Página {{ page }} de {{ total_pages }}</span>
+                <nav aria-label="Page navigation">
+                    <ul class="pagination pagination-sm mb-0">
+                        <li class="page-item {% if page == 1 %}disabled{% endif %}">
+                            <a class="page-link" href="{{ url_for('reports.evaluation_summary', page=page-1, evaluation_id=evaluation_id, school_year_id=school_year_id, academic_year=academic_year) }}">Anterior</a>
+                        </li>
+                        
+                        {% for p in range(1, total_pages + 1) %}
+                            {% if p == 1 or p == total_pages or (p >= page - 2 and p <= page + 2) %}
+                                <li class="page-item {% if p == page %}active{% endif %}">
+                                    <a class="page-link" href="{{ url_for('reports.evaluation_summary', page=p, evaluation_id=evaluation_id, school_year_id=school_year_id, academic_year=academic_year) }}">{{ p }}</a>
+                                </li>
+                            {% elif p == page - 3 or p == page + 3 %}
+                                <li class="page-item disabled"><span class="page-link">...</span></li>
+                            {% endif %}
+                        {% endfor %}
+
+                        <li class="page-item {% if page == total_pages %}disabled{% endif %}">
+                            <a class="page-link" href="{{ url_for('reports.evaluation_summary', page=page+1, evaluation_id=evaluation_id, school_year_id=school_year_id, academic_year=academic_year) }}">Próxima</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+            {% endif %}
+
+            {% else %}
+            <div class="p-5 text-center text-muted">
+                <i class="bi bi-inbox fs-1 d-block mb-3"></i>
+                <p class="mb-0">Nenhum resultado encontrado para os filtros selecionados.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

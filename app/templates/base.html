@@ -447,6 +447,12 @@
                     </a>
                 </li>
                 <li>
+                    <a href="{{ url_for('reports.evaluation_summary') }}"
+                        class="nav-link {% if request.endpoint == 'reports.evaluation_summary' %}active{% endif %}">
+                        <i class="bi bi-file-earmark-bar-graph me-2"></i> <span class="sidebar-text">Resumo de avaliações</span>
+                    </a>
+                </li>
+                <li>
                     <a href="{{ url_for('matrices.list_descriptors') }}"
                         class="nav-link {% if 'descriptors' in request.endpoint %}active{% endif %}">
                         <i class="bi bi-hash me-2"></i> <span class="sidebar-text">Descritores/Habilidades</span>
