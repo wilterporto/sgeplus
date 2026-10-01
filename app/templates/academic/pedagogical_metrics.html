@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Métricas Pedagógicas</h1>
+    <div class="btn-toolbar mb-2 mb-md-0 gap-2">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#importMetricsModal">
+            <i class="bi bi-upload"></i> Importar Métricas
+        </button>
+    </div>
+</div>
+
+<!-- Import Modal -->
+<div class="modal fade" id="importMetricsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Importar Métricas Pedagógicas</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="importMetricsForm" action="{{ url_for('academic.import_pedagogical_metrics') }}" method="POST" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                    <div class="mb-3">
+                        <label for="file" class="form-label mb-0">Arquivo Excel (.xlsx)</label>
+                        <input class="form-control" type="file" id="file" name="file" required accept=".xlsx,.xls">
+                    </div>
+                    <div class="alert alert-info small">
+                        <strong>Colunas Obrigatórias:</strong><br>
+                        - INEP_ESCOLA<br>
+                        - AVALIACAO<br>
+                        - DISCIPLINA<br>
+                        - ANO<br>
+                        - NOTA
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Importar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0 align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Escola</th>
+                        <th>Avaliação</th>
+                        <th>Disciplina</th>
+                        <th>Ano Letivo</th>
+                        <th>Nota</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for metric in metrics.items %}
+                    <tr>
+                        <td>{{ metric.teaching_unit.name if metric.teaching_unit else '-' }}</td>
+                        <td class="fw-bold">{{ metric.evaluation_name }}</td>
+                        <td>{{ metric.subject or '-' }}</td>
+                        <td>{{ metric.academic_year or '-' }}</td>
+                        <td>{{ "%.2f"|format(metric.score) if metric.score is not none else '-' }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center text-muted p-4">Nenhuma métrica encontrada.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if metrics.pages > 1 %}
+        <nav aria-label="Page navigation" class="mt-4">
+            <ul class="pagination justify-content-center">
+                <li class="page-item {{ 'disabled' if metrics.page == 1 }}">
+                    <a class="page-link" href="{{ url_for('academic.list_pedagogical_metrics', page=1) }}">
+                        <i class="bi bi-chevron-double-left"></i>
+                    </a>
+                </li>
+                {% if metrics.has_prev %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('academic.list_pedagogical_metrics', page=metrics.prev_num) }}">Anterior</a>
+                </li>
+                {% endif %}
+                <li class="page-item disabled d-none d-md-block">
+                    <span class="page-link">Página {{ metrics.page }} de {{ metrics.pages }}</span>
+                </li>
+                {% if metrics.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('academic.list_pedagogical_metrics', page=metrics.next_num) }}">Próxima</a>
+                </li>
+                {% endif %}
+                <li class="page-item {{ 'disabled' if metrics.page == metrics.pages }}">
+                    <a class="page-link" href="{{ url_for('academic.list_pedagogical_metrics', page=metrics.pages) }}">
+                        <i class="bi bi-chevron-double-right"></i>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        if(typeof setupImportProgress === 'function'){
+            setupImportProgress('importMetricsForm');
+        }
+    });
+</script>
+{% endblock %}

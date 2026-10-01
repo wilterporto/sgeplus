@@ -214,6 +214,18 @@ class Question(db.Model):
         import json
         self.alternatives = json.dumps(alts_dict)
 
+class EvaluationTypeEnum(enum.Enum):
+    DIAGNOSTICA = 'Diagnóstica'
+    FORMATIVA = 'Formativa'
+    SOMATIVA = 'Somativa'
+    PROCESSUAL = 'Processual'
+    SAIDA = 'Saída'
+    INDIFERENTE = 'Indiferente'
+
+class EvaluationOriginEnum(enum.Enum):
+    INTERNA = 'Interna'
+    EXTERNA = 'Externa'
+
 class Evaluation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     tenant_id = db.Column(db.Integer, db.ForeignKey('tenant.id'), nullable=True)
@@ -224,9 +236,25 @@ class Evaluation(db.Model):
     scoring_type = db.Column(db.String(20), default='none')
     question_values = db.Column(db.Text)
     multiple_components = db.Column(db.Boolean, default=False)
+    origin = db.Column(db.String(20), default='Interna', nullable=False)
+    partner_institution_id = db.Column(db.Integer, db.ForeignKey('partner_institution.id'), nullable=True)
     
     tenant = db.relationship('Tenant')
     exams = db.relationship('Exam', backref='evaluation', lazy='dynamic')
+    partner_institution = db.relationship('PartnerInstitution')
+
+class PedagogicalMetric(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    tenant_id = db.Column(db.Integer, db.ForeignKey('tenant.id'), nullable=True)
+    teaching_unit_id = db.Column(db.Integer, db.ForeignKey('teaching_unit.id'), nullable=True)
+    evaluation_name = db.Column(db.String(128), nullable=False)
+    subject = db.Column(db.String(128))
+    academic_year = db.Column(db.String(20))
+    score = db.Column(db.Float)
+    created_at = db.Column(db.DateTime, default=get_brasilia_time)
+    
+    tenant = db.relationship('Tenant')
+    teaching_unit = db.relationship('TeachingUnit')
 
 class Exam(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -1344,3 +1372,90 @@ class LMSImportJob(db.Model):
 
     tenant = db.relationship('Tenant')
     evaluation = db.relationship('LMSEvaluation')
+
+class PartnerInstitution(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    tenant_id = db.Column(db.Integer, db.ForeignKey('tenant.id'), nullable=True)
+    name = db.Column(db.String(255), nullable=False)
+    active = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=get_brasilia_time)
+    
+    tenant = db.relationship('Tenant')
+
+class ExternalEvaluationStudent(db.Model):
+    __tablename__ = 'external_evaluation_student'
+    id = db.Column(db.Integer, primary_key=True)
+    tenant_id = db.Column(db.Integer, db.ForeignKey('tenant.id'), nullable=True)
+    evaluation_id = db.Column(db.Integer, db.ForeignKey('evaluation.id', ondelete='CASCADE'), nullable=False)
+    
+    mun_id = db.Column(db.String(50))
+    mun_nome = db.Column(db.String(255))
+    esc_id = db.Column(db.String(50))
+    esc_nome = db.Column(db.String(255))
+    esc_inep = db.Column(db.String(50))
+    ser_number = db.Column(db.String(50))
+    ser_nome = db.Column(db.String(255))
+    tur_id = db.Column(db.String(50))
+    tur_nome = db.Column(db.String(255))
+    tur_periodo = db.Column(db.String(100))
+    alu_id = db.Column(db.String(50))
+    alu_inep = db.Column(db.String(50))
+    alu_nome = db.Column(db.String(255))
+    alu_nome_mae = db.Column(db.String(255))
+    alu_nome_pai = db.Column(db.String(255))
+    alu_nome_resp = db.Column(db.String(255))
+    alu_dt_nasc = db.Column(db.String(50))
+    alu_tel1 = db.Column(db.String(50))
+    alu_tel2 = db.Column(db.String(50))
+    alu_email = db.Column(db.String(255))
+    alu_uf = db.Column(db.String(10))
+    alu_endereco = db.Column(db.String(255))
+    alu_cidade = db.Column(db.String(255))
+    alu_numero = db.Column(db.String(50))
+    alu_complemento = db.Column(db.String(255))
+    alu_bairro = db.Column(db.String(255))
+    alu_cep = db.Column(db.String(50))
+    alu_ativo = db.Column(db.String(20))
+    alu_status = db.Column(db.String(50))
+    alu_cpf = db.Column(db.String(20))
+    pel_nome = db.Column(db.String(100))
+    gen_nome = db.Column(db.String(50))
+    
+    created_at = db.Column(db.DateTime, default=get_brasilia_time)
+    
+    tenant = db.relationship('Tenant')
+    evaluation = db.relationship('Evaluation', backref=db.backref('external_students', lazy='dynamic', cascade='all, delete-orphan'))
+
+class ExternalEvaluationResult(db.Model):
+    __tablename__ = 'external_evaluation_result'
+    id = db.Column(db.Integer, primary_key=True)
+    tenant_id = db.Column(db.Integer, db.ForeignKey('tenant.id'), nullable=True)
+    evaluation_id = db.Column(db.Integer, db.ForeignKey('evaluation.id', ondelete='CASCADE'), nullable=False)
+    
+    external_evaluation_student_id = db.Column(db.Integer, db.ForeignKey('external_evaluation_student.id', ondelete='CASCADE'), nullable=True)
+    alu_id = db.Column(db.String(50))
+
+    mun_uf = db.Column(db.String(50))
+    mun_ibge = db.Column(db.String(50))
+    esc_inep = db.Column(db.String(50))
+    ser_number = db.Column(db.String(50))
+    ser_nome = db.Column(db.String(255))
+    tur_periodo = db.Column(db.String(100))
+    tur_nome = db.Column(db.String(255))
+    ava_nome = db.Column(db.String(255))
+    ava_ano = db.Column(db.String(50))
+    tes_id = db.Column(db.String(50))
+    dis_nome = db.Column(db.String(255))
+    alt_finalizado = db.Column(db.String(50))
+    alt_justificativa = db.Column(db.String(255))
+    nr_questao = db.Column(db.String(50))
+    teg_ordem = db.Column(db.String(50))
+    atr_resposta = db.Column(db.String(50))
+    atr_certo = db.Column(db.String(50))
+    mti_codigo = db.Column(db.String(50))
+
+    created_at = db.Column(db.DateTime, default=get_brasilia_time)
+    
+    tenant = db.relationship('Tenant')
+    evaluation = db.relationship('Evaluation', backref=db.backref('external_results', lazy='dynamic', cascade='all, delete-orphan'))
+    student = db.relationship('ExternalEvaluationStudent', backref=db.backref('results', lazy='dynamic', cascade='all, delete-orphan'))

@@ -130,6 +130,7 @@ def generate_exam():
     from app.models import Evaluation
     evaluation_query = Evaluation.query
     evaluation_query = filter_by_tenant(evaluation_query, Evaluation)
+    evaluation_query = evaluation_query.filter_by(origin='Interna')
     form.evaluation_id.choices = [(0, 'Selecione...')] + [(e.id, e.name) for e in evaluation_query.order_by(Evaluation.name).all()]
     matrix_query = filter_by_tenant(ReferenceMatrix.query, ReferenceMatrix)
     form.matrix_id.choices = [(0, 'Selecione...')] + [(m.id, m.name) for m in matrix_query.order_by(ReferenceMatrix.name).all()]

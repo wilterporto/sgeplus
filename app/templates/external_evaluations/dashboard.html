@@ -1,0 +1,628 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<!-- AI Progress Modal -->
+<div class="modal fade" id="aiProgressModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-body p-5 text-center">
+        <div class="spinner-border text-primary mb-4" role="status" style="width: 4rem; height: 4rem;">
+            <span class="visually-hidden">Processando...</span>
+        </div>
+        <h5 id="aiStatusText" class="text-primary fw-bold mb-4">Iniciando análise inteligente dos dados...</h5>
+        <div class="progress" style="height: 12px; border-radius: 6px;">
+            <div id="aiProgressBar" class="progress-bar progress-bar-striped progress-bar-animated bg-primary" role="progressbar" style="width: 0%"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="mb-1">Dashboard de Avaliação: {{ evaluation.name }}</h4>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="{{ url_for('main.index') }}" class="text-decoration-none">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('external_evaluations.list_evaluations') }}" class="text-decoration-none">Avaliações Externas</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Análise de Dados</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-body bg-light">
+        <form id="filterForm" class="row g-3">
+            <div class="col-md-3">
+                <label class="form-label text-danger">Disciplina *</label>
+                <select class="form-select border-danger" id="filterDisciplina" onchange="updateFilters()">
+                    <option value="">Selecione a Disciplina...</option>
+                    {% for dis in available_disciplines %}
+                    <option value="{{ dis }}">{{ dis }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Ano Escolar (Série)</label>
+                <select class="form-select" id="filterYear">
+                    <option value="">Todos</option>
+                    
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Turno (Período)</label>
+                <select class="form-select" id="filterShift">
+                    <option value="">Todos</option>
+                    
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Ordenação</label>
+                <select class="form-select" id="filterSort">
+                    <option value="alpha">Ordem Alfabética</option>
+                    <option value="desc">Maior Desempenho (Decrescente)</option>
+                    <option value="asc">Menor Desempenho (Crescente)</option>
+                </select>
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
+                <button type="button" class="btn btn-primary w-100" onclick="loadDashboard()">
+                    <i class="bi bi-funnel"></i> Aplicar Filtros
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="dashboardContent" class="d-none">
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card shadow h-100">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 text-primary" id="drilldownTitle">Desempenho Geral - Rede</h5>
+                <button class="btn btn-sm btn-outline-secondary d-none" id="btnBackDrilldown" onclick="goBackDrilldown()">
+                    <i class="bi bi-arrow-left"></i> Voltar Nível
+                </button>
+            </div>
+            <div class="card-body">
+                <div style="height: 400px; position: relative;">
+                    <canvas id="drilldownChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card shadow h-100">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Desempenho por Cor/Raça</h5>
+            </div>
+            <div class="card-body">
+                <div style="height: 300px; position: relative;">
+                    <canvas id="raceChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 mb-4">
+        <div class="card shadow h-100">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Desempenho por Sexo</h5>
+            </div>
+            <div class="card-body">
+                <div style="height: 300px; position: relative;">
+                    <canvas id="genderChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card shadow h-100">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">10 Melhores Competências</h5>
+            </div>
+            <div class="card-body">
+                <div style="height: 400px; position: relative;">
+                    <canvas id="topCompetencesChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 mb-4">
+        <div class="card shadow h-100">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">10 Piores Competências</h5>
+            </div>
+            <div class="card-body">
+                <div style="height: 400px; position: relative;">
+                    <canvas id="bottomCompetencesChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-12 mb-4">
+        <div class="card shadow h-100">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Justificativas de Ausência (Alunos que não realizaram a prova)</h5>
+            </div>
+            <div class="card-body">
+                <div style="height: 350px; position: relative;">
+                    <canvas id="justificationsChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    let drilldownLevel = 'rede';
+    let currentRegionalId = null;
+    let currentSchoolInep = null;
+    let currentYear = null;
+    let currentClass = null;
+    
+    let drilldownChartObj = null;
+    let raceChartObj = null;
+    let genderChartObj = null;
+    let topCompChartObj = null;
+    let bottomCompChartObj = null;
+    let justChartObj = null;
+    
+    const evaluationId = {{ evaluation.id }};
+    function updateFilters() {
+        const disNome = document.getElementById('filterDisciplina').value;
+        const yearSelect = document.getElementById('filterYear');
+        const shiftSelect = document.getElementById('filterShift');
+        
+        yearSelect.innerHTML = '<option value="">Todos</option>';
+        shiftSelect.innerHTML = '<option value="">Todos</option>';
+        
+        if (!disNome) return;
+        
+        fetch(`/external_evaluations/evaluations/${evaluationId}/dashboard_filters_api?dis_nome=${encodeURIComponent(disNome)}`)
+            .then(res => res.json())
+            .then(data => {
+                data.years.forEach(y => {
+                    const opt = document.createElement('option');
+                    opt.value = y; opt.textContent = y;
+                    yearSelect.appendChild(opt);
+                });
+                data.shifts.forEach(s => {
+                    const opt = document.createElement('option');
+                    opt.value = s; opt.textContent = s;
+                    shiftSelect.appendChild(opt);
+                });
+            });
+    }
+
+    const aiPhrases = [
+        "Iniciando análise inteligente dos dados...",
+        "Processando matriz de resultados...",
+        "Cruzando dados demográficos e de desempenho...",
+        "Calculando percentuais por competência...",
+        "Organizando estrutura de drill-down da rede...",
+        "Finalizando a renderização do dashboard..."
+    ];
+
+    let aiModalInstance = null;
+
+    function startAiSimulation(callback) {
+        if (!aiModalInstance) {
+            aiModalInstance = new bootstrap.Modal(document.getElementById('aiProgressModal'));
+        }
+        
+        const statusText = document.getElementById('aiStatusText');
+        const progressBar = document.getElementById('aiProgressBar');
+        
+        progressBar.style.width = '0%';
+        aiModalInstance.show();
+        
+        let step = 0;
+        const totalSteps = aiPhrases.length;
+        
+        const interval = setInterval(() => {
+            statusText.textContent = aiPhrases[step];
+            progressBar.style.width = `${((step + 1) / totalSteps) * 100}%`;
+            step++;
+            
+            if (step >= totalSteps) {
+                clearInterval(interval);
+                setTimeout(() => {
+                    aiModalInstance.hide();
+                    document.getElementById('dashboardContent').classList.remove('d-none');
+                    callback();
+                }, 1000);
+            }
+        }, 1500); // 1.5s per phrase
+    }
+
+
+    function goBackDrilldown() {
+        if (drilldownLevel === 'student') {
+            drilldownLevel = 'class';
+            currentClass = null;
+        } else if (drilldownLevel === 'class') {
+            drilldownLevel = 'year';
+            currentYear = null;
+        } else if (drilldownLevel === 'year') {
+            drilldownLevel = 'school';
+            currentSchoolInep = null;
+        } else if (drilldownLevel === 'school') {
+            drilldownLevel = 'regionals';
+            currentRegionalId = null;
+        } else if (drilldownLevel === 'regionals') {
+            drilldownLevel = 'rede';
+        }
+        loadDashboard(false);
+    }
+
+    function buildApiUrl() {
+        let url = `/external_evaluations/evaluations/${evaluationId}/dashboard_api?level=${drilldownLevel}&dis_nome=${encodeURIComponent(document.getElementById("filterDisciplina").value)}`;
+        
+        const filterYear = document.getElementById('filterYear').value;
+        const filterShift = document.getElementById('filterShift').value;
+        
+        if (filterYear) url += `&filter_year=${encodeURIComponent(filterYear)}`;
+        if (filterShift) url += `&filter_shift=${encodeURIComponent(filterShift)}`;
+        
+        if (currentRegionalId) url += `&regional_id=${encodeURIComponent(currentRegionalId)}`;
+        if (currentSchoolInep) url += `&school_inep=${encodeURIComponent(currentSchoolInep)}`;
+        if (currentYear) url += `&ser_nome=${encodeURIComponent(currentYear)}`;
+        if (currentClass) url += `&tur_nome=${encodeURIComponent(currentClass)}`;
+        
+        return url;
+    }
+
+    function loadDashboard(simulate = true) {
+        const disNome = document.getElementById('filterDisciplina').value;
+        if (!disNome) {
+            alert('Por favor, informe a Disciplina para carregar os dados.');
+            return;
+        }
+        
+        if (simulate) {
+            startAiSimulation(() => fetchDashboardData());
+        } else {
+            fetchDashboardData();
+        }
+    }
+    
+    function fetchDashboardData() {
+        // Update Title and Back Button
+        const titleMap = {
+            'rede': 'Desempenho Geral - Rede (Clique na barra para Regionais)',
+            'regionals': 'Desempenho por Regional (Clique na barra para Escolas)',
+            'school': 'Desempenho por Escola (Clique na barra para Anos Escolares)',
+            'year': 'Desempenho por Ano Escolar (Clique na barra para Turmas)',
+            'class': 'Desempenho por Turma (Clique na barra para Alunos)',
+            'student': 'Desempenho por Aluno'
+        };
+        document.getElementById('drilldownTitle').innerText = titleMap[drilldownLevel];
+        
+        const btnBack = document.getElementById('btnBackDrilldown');
+        if (drilldownLevel === 'rede') {
+            btnBack.classList.add('d-none');
+        } else {
+            btnBack.classList.remove('d-none');
+        }
+
+        fetch(buildApiUrl())
+            .then(response => response.json())
+            .then(data => {
+                updateDrilldownChart(data.drilldown);
+                updateRaceChart(data.race);
+                updateGenderChart(data.gender);
+                updateCompetencesCharts(data.radar);
+                updateJustificationsChart(data.justifications);
+            });
+    }
+
+    function updateDrilldownChart(data) {
+        const ctx = document.getElementById('drilldownChart').getContext('2d');
+        
+        if (drilldownChartObj) {
+            drilldownChartObj.destroy();
+        }
+
+        const filterSort = document.getElementById('filterSort').value;
+        if (filterSort === 'desc') {
+            data.sort((a, b) => b.value - a.value);
+        } else if (filterSort === 'asc') {
+            data.sort((a, b) => a.value - b.value);
+        } else {
+            // alpha (default from api is already alpha, but re-sorting just in case)
+            data.sort((a, b) => a.label.localeCompare(b.label));
+        }
+
+        const labels = data.map(item => item.label);
+        const values = data.map(item => item.value); // Percentage
+        const ids = data.map(item => item.id);
+
+        drilldownChartObj = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: '% de Acerto',
+                        data: values,
+                        backgroundColor: '#0d6efd',
+                        borderRadius: 4
+                    },
+                    {
+                        label: '% de Erro',
+                        data: data.map(item => (100 - (item.value + (item.absent || 0))).toFixed(2)),
+                        backgroundColor: '#fd7e14',
+                        borderRadius: 4
+                    },
+                    {
+                        label: '% Não Fizeram',
+                        data: data.map(item => (item.absent || 0).toFixed(2)),
+                        backgroundColor: '#dc3545',
+                        borderRadius: 4
+                    }
+                ]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: true, position: 'bottom' },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ' + context.parsed.x + '%';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        max: 100,
+                        title: { display: true, text: 'Percentual (%)' }
+                    }
+                },
+                onClick: (event, elements) => {
+                    if (elements.length > 0) {
+                        const index = elements[0].index;
+                        const clickedId = ids[index];
+                        const clickedLabel = labels[index];
+                        
+                        // Drill-down logic
+                        if (drilldownLevel === 'rede') {
+                            drilldownLevel = 'regionals';
+                        } else if (drilldownLevel === 'regionals') {
+                            drilldownLevel = 'school';
+                            currentRegionalId = clickedId;
+                        } else if (drilldownLevel === 'school') {
+                            drilldownLevel = 'year';
+                            currentYear = clickedLabel; // Using label as ID
+                        } else if (drilldownLevel === 'year') {
+                            drilldownLevel = 'class';
+                            currentClass = clickedLabel;
+                        } else if (drilldownLevel === 'class') {
+                            drilldownLevel = 'student';
+                        }
+                        
+                        if (drilldownLevel !== 'student' || elements[0].datasetIndex !== undefined) {
+                            loadDashboard(false);
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    function updateRaceChart(data) {
+        const ctx = document.getElementById('raceChart').getContext('2d');
+        if (raceChartObj) raceChartObj.destroy();
+
+        raceChartObj = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: data.map(item => item.label || 'Não Informado'),
+                datasets: [
+                    {
+                        label: '% de Acerto',
+                        data: data.map(item => item.value),
+                        backgroundColor: '#0d6efd',
+                        borderRadius: 4
+                    },
+                    {
+                        label: '% de Erro',
+                        data: data.map(item => (100 - (item.value + (item.absent || 0))).toFixed(2)),
+                        backgroundColor: '#fd7e14',
+                        borderRadius: 4
+                    },
+                    {
+                        label: '% Não Fizeram',
+                        data: data.map(item => (item.absent || 0).toFixed(2)),
+                        backgroundColor: '#dc3545',
+                        borderRadius: 4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: true, position: 'bottom' },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ' + context.parsed.y + '%';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        title: { display: true, text: 'Percentual (%)' }
+                    }
+                }
+            }
+        });
+    }
+
+    function updateGenderChart(data) {
+        const ctx = document.getElementById('genderChart').getContext('2d');
+        if (genderChartObj) genderChartObj.destroy();
+
+        genderChartObj = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: data.map(item => item.label || 'Não Informado'),
+                datasets: [
+                    {
+                        label: '% de Acerto',
+                        data: data.map(item => item.value),
+                        backgroundColor: '#0dcaf0',
+                        borderRadius: 4
+                    },
+                    {
+                        label: '% de Erro',
+                        data: data.map(item => (100 - (item.value + (item.absent || 0))).toFixed(2)),
+                        backgroundColor: '#fd7e14',
+                        borderRadius: 4
+                    },
+                    {
+                        label: '% Não Fizeram',
+                        data: data.map(item => (item.absent || 0).toFixed(2)),
+                        backgroundColor: '#dc3545',
+                        borderRadius: 4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: true, position: 'bottom' },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ' + context.parsed.y + '%';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        title: { display: true, text: 'Percentual (%)' }
+                    }
+                }
+            }
+        });
+    }
+
+    function updateCompetencesCharts(data) {
+        if (topCompChartObj) topCompChartObj.destroy();
+        if (bottomCompChartObj) bottomCompChartObj.destroy();
+
+        // Sort data descending
+        const sortedData = [...data].sort((a, b) => b.value - a.value);
+        
+        const top10 = sortedData.slice(0, 10);
+        // For worst 10, slice from end and sort ascending to show worst first
+        const bottom10 = sortedData.slice(-10).sort((a, b) => a.value - b.value);
+
+        const ctxTop = document.getElementById('topCompetencesChart').getContext('2d');
+        topCompChartObj = new Chart(ctxTop, {
+            type: 'bar',
+            data: {
+                labels: top10.map(item => item.label || 'Não Informado'),
+                datasets: [{
+                    label: '% de Acerto',
+                    data: top10.map(item => item.value),
+                    backgroundColor: '#198754', // Green for best
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { beginAtZero: true, max: 100, title: { display: true, text: 'Percentual (%)' } }
+                }
+            }
+        });
+
+        const ctxBottom = document.getElementById('bottomCompetencesChart').getContext('2d');
+        bottomCompChartObj = new Chart(ctxBottom, {
+            type: 'bar',
+            data: {
+                labels: bottom10.map(item => item.label || 'Não Informado'),
+                datasets: [{
+                    label: '% de Acerto',
+                    data: bottom10.map(item => item.value),
+                    backgroundColor: '#dc3545', // Red for worst
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { beginAtZero: true, max: 100, title: { display: true, text: 'Percentual (%)' } }
+                }
+            }
+        });
+    }
+
+
+    function updateJustificationsChart(data) {
+        const ctx = document.getElementById('justificationsChart').getContext('2d');
+        if (justChartObj) justChartObj.destroy();
+        
+        // Data contains quantity (value), sort descending
+        const sortedData = [...data].sort((a, b) => b.value - a.value);
+
+        justChartObj = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: sortedData.map(item => item.label),
+                datasets: [{
+                    label: 'Quantidade de Alunos',
+                    data: sortedData.map(item => item.value),
+                    backgroundColor: '#6c757d',
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, title: { display: true, text: 'Quantidade de Alunos' } }
+                }
+            }
+        });
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+        // Esperar clique no botão para carregar
+    });
+</script>
+{% endblock %}

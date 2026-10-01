@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Instituições Parceiras</h1>
+    <div class="btn-toolbar mb-2 mb-md-0 gap-2">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newInstitutionModal">
+            <i class="bi bi-plus-lg"></i> Nova Instituição
+        </button>
+    </div>
+</div>
+
+<!-- New/Edit Modal -->
+<div class="modal fade" id="newInstitutionModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Nova Instituição Parceira</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ url_for('academic.list_partner_institutions') }}">
+                <div class="modal-body">
+                    {{ form.hidden_tag() }}
+                    <div class="mb-3">
+                        {{ form.name.label(class="form-label required") }}
+                        {{ form.name(class="form-control") }}
+                    </div>
+                    <div class="mb-3 form-check">
+                        {{ form.active(class="form-check-input") }}
+                        {{ form.active.label(class="form-check-label") }}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow mb-4">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0 align-middle">
+                        <thead class="table-light small">
+                            <tr>
+                                <th>Nome da Instituição</th>
+                                <th>Status</th>
+                                <th class="text-end px-4">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for inst in institutions.items %}
+                            <tr class="small">
+                                <td class="fw-bold">{{ inst.name }}</td>
+                                <td>
+                                    {% if inst.active %}
+                                    <span class="badge bg-success">Ativo</span>
+                                    {% else %}
+                                    <span class="badge bg-danger">Inativo</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end px-4">
+                                    <button type="button" class="btn btn-sm btn-outline-primary me-1"
+                                        onclick='editInstitution({{ {"id": inst.id, "name": inst.name, "active": inst.active}|tojson|safe }})'>
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-danger"
+                                        onclick="handleDelete('delete-form-{{ inst.id }}', 'Tem certeza que deseja excluir esta instituição logicamente?')">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                    <form id="delete-form-{{ inst.id }}"
+                                        action="{{ url_for('academic.delete_partner_institution', id=inst.id) }}" method="POST"
+                                        style="display:none;">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    </form>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="3" class="text-center py-4 text-muted">
+                                    Nenhuma instituição cadastrada.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Pagination -->
+                {% if institutions.pages > 1 %}
+                <div class="card-footer bg-white border-top-0 pt-3 pb-3">
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center mb-0 pagination-sm">
+                            <li class="page-item {% if not institutions.has_prev %}disabled{% endif %}">
+                                <a class="page-link" href="{{ url_for('academic.list_partner_institutions', page=institutions.prev_num) if institutions.has_prev else '#' }}" tabindex="-1">Anterior</a>
+                            </li>
+                            {% for page_num in institutions.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+                                {% if page_num %}
+                                    {% if institutions.page == page_num %}
+                                    <li class="page-item active"><a class="page-link" href="#">{{ page_num }}</a></li>
+                                    {% else %}
+                                    <li class="page-item"><a class="page-link" href="{{ url_for('academic.list_partner_institutions', page=page_num) }}">{{ page_num }}</a></li>
+                                    {% endif %}
+                                {% else %}
+                                    <li class="page-item disabled"><a class="page-link" href="#">...</a></li>
+                                {% endif %}
+                            {% endfor %}
+                            <li class="page-item {% if not institutions.has_next %}disabled{% endif %}">
+                                <a class="page-link" href="{{ url_for('academic.list_partner_institutions', page=institutions.next_num) if institutions.has_next else '#' }}">Próxima</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+                {% endif %}
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const form = document.querySelector('#newInstitutionModal form');
+    const modalTitle = document.querySelector('#newInstitutionModal .modal-title');
+
+    function editInstitution(data) {
+        modalTitle.textContent = 'Editar Instituição Parceira';
+        form.action = `/academic/partner_institutions/${data.id}/edit`;
+
+        form.querySelector('[name="name"]').value = data.name;
+        form.querySelector('[name="active"]').checked = data.active;
+
+        const modal = new bootstrap.Modal(document.getElementById('newInstitutionModal'));
+        modal.show();
+    }
+
+    document.getElementById('newInstitutionModal').addEventListener('hidden.bs.modal', function () {
+        modalTitle.textContent = 'Nova Instituição Parceira';
+        form.action = "{{ url_for('academic.list_partner_institutions') }}";
+        form.reset();
+        form.querySelector('[name="active"]').checked = true;
+    });
+</script>
+{% endblock %}

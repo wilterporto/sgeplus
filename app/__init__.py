@@ -100,6 +100,9 @@ def create_app(config_class=Config):
     from app.routes.academic import academic_bp
     app.register_blueprint(academic_bp, url_prefix='/academic')
 
+    from app.routes.external_evaluations import external_evaluations_bp
+    app.register_blueprint(external_evaluations_bp, url_prefix='/external_evaluations')
+
     from app.routes.students import students_bp
     app.register_blueprint(students_bp, url_prefix='/students')
 

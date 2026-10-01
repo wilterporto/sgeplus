@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import FloatField, DateField, StringField, TextAreaField, SelectField, BooleanField, SubmitField, FormField, FieldList, DateField, SelectMultipleField, PasswordField, IntegerField, HiddenField, MultipleFileField
 from flask_wtf.file import FileField, FileRequired, FileAllowed
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError, Optional
-from app.models import User, Subject, TeachingUnit, Class, OmbudsmanNatureEnum, OmbudsmanStatusEnum, OmbudsmanRequesterTypeEnum, OmbudsmanEntryModeEnum, ContractPurposeEnum, ContractModalityEnum
+from app.models import User, Subject, TeachingUnit, Class, OmbudsmanNatureEnum, OmbudsmanStatusEnum, OmbudsmanRequesterTypeEnum, OmbudsmanEntryModeEnum, ContractPurposeEnum, ContractModalityEnum, EvaluationTypeEnum, EvaluationOriginEnum, EvaluationTypeEnum
 import re
 
 def validate_cpf(form, field):
@@ -55,13 +55,8 @@ from datetime import date
 
 class EvaluationForm(FlaskForm):
     name = StringField('Nome da Avaliação', validators=[DataRequired()])
-    type = SelectField('Tipo de Avaliação', choices=[
-        ('', 'Selecione...'),
-        ('Diagnostica', 'Diagnóstica'),
-        ('Processual', 'Processual'),
-        ('Saida', 'Saída'),
-        ('Indiferente', 'Indiferente')
-    ], validators=[DataRequired()])
+    type = SelectField('Tipo de Avaliação', choices=[('', 'Selecione...')] + [(e.value, e.value) for e in EvaluationTypeEnum], validators=[DataRequired()])
+    origin = SelectField('Origem', choices=[(e.value, e.value) for e in EvaluationOriginEnum], validators=[DataRequired()])
     multiple_components = SelectField('Múltiplos componentes', choices=[
         ('0', 'Não'),
         ('1', 'Sim')
@@ -69,7 +64,12 @@ class EvaluationForm(FlaskForm):
     logo = FileField('Logo da Avaliação', validators=[
         FileAllowed(['jpg', 'png', 'jpeg'], 'Apenas imagens (JPG, PNG)!')
     ])
+    partner_institution_id = SelectField('Instituição Parceira', coerce=int, choices=[(0, 'Selecione...')], validators=[Optional()])
     submit = SubmitField('Salvar Avaliação')
+
+    def validate_partner_institution_id(self, field):
+        if self.origin.data == 'Externa' and (not field.data or field.data == 0):
+            raise ValidationError('A instituição parceira é obrigatória quando a origem é Externa.')
 
 class ExamGeneratorForm(FlaskForm):
     evaluation_id = SelectField('Avaliação', coerce=int, validators=[Optional()], choices=[])
@@ -764,3 +764,8 @@ class ParticipantForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(message="Campo obrigatório."), Email(message="E-mail inválido.")])
     phone = StringField('Telefone', validators=[DataRequired(message="Campo obrigatório."), Length(max=20)])
     submit = SubmitField('Salvar Participante')
+
+class PartnerInstitutionForm(FlaskForm):
+    name = StringField('Nome da Instituição', validators=[DataRequired(), Length(max=255)])
+    active = BooleanField('Ativo', default=True)
+    submit = SubmitField('Salvar Instituição')

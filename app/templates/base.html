@@ -430,7 +430,7 @@
                     <ul class="nav flex-column ms-2">
                 <li>
                     <a href="{{ url_for('academic.list_evaluations') }}"
-                        class="nav-link {% if 'evaluations' in request.endpoint %}active{% endif %}">
+                        class="nav-link {% if request.endpoint and 'evaluations' in request.endpoint and 'external' not in request.endpoint %}active{% endif %}">
                         <i class="bi bi-award me-2"></i> <span class="sidebar-text">Avaliações</span>
                     </a>
                 </li>
@@ -489,6 +489,29 @@
                     </a>
                 </li>
 
+                    </ul>
+                </div>
+
+                <li class="nav-item mt-3">
+                    <a class="nav-link text-uppercase text-secondary small fw-bold d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#collapseExtEval" role="button" aria-expanded="false" aria-controls="collapseExtEval">
+                        <span class="sidebar-text">Avaliações Externas</span>
+                        <i class="bi bi-chevron-down sidebar-text"></i>
+                    </a>
+                </li>
+                <div class="collapse" id="collapseExtEval">
+                    <ul class="nav flex-column ms-2">
+                        <li>
+                            <a href="{{ url_for('external_evaluations.list_evaluations') }}"
+                                class="nav-link {% if 'external_evaluations.list_evaluations' in request.endpoint %}active{% endif %}">
+                                <i class="bi bi-award me-2"></i> <span class="sidebar-text">Avaliações</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ url_for('external_evaluations.list_partner_institutions') }}"
+                                class="nav-link {% if 'partner_institutions' in request.endpoint %}active{% endif %}">
+                                <i class="bi bi-building me-2"></i> <span class="sidebar-text">Instituições Parceiras</span>
+                            </a>
+                        </li>
                     </ul>
                 </div>
 
