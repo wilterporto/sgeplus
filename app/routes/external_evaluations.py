@@ -45,6 +45,12 @@ def list_partner_institutions():
     form = PartnerInstitutionForm()
     
     if form.validate_on_submit():
+        if form.school_year.data is None or form.school_year.data == '':
+            flash("O Ano Letivo é obrigatório para Avaliações Externas.", "danger")
+            return redirect(request.url)
+        if form.cycle.data is None or form.cycle.data == '':
+            flash("O Ciclo é obrigatório para Avaliações Externas.", "danger")
+            return redirect(request.url)
         institution = PartnerInstitution(
             tenant_id=tenant_id,
             name=form.name.data,
@@ -69,6 +75,12 @@ def edit_partner_institution(id):
     
     form = PartnerInstitutionForm()
     if form.validate_on_submit():
+        if form.school_year.data is None or form.school_year.data == '':
+            flash("O Ano Letivo é obrigatório para Avaliações Externas.", "danger")
+            return redirect(request.url)
+        if form.cycle.data is None or form.cycle.data == '':
+            flash("O Ciclo é obrigatório para Avaliações Externas.", "danger")
+            return redirect(request.url)
         institution.name = form.name.data
         institution.active = form.active.data
         db.session.commit()
@@ -112,6 +124,12 @@ def list_evaluations():
     evaluations = query.order_by(Evaluation.name).paginate(page=page, per_page=30)
     
     if form.validate_on_submit():
+        if form.school_year.data is None or form.school_year.data == '':
+            flash("O Ano Letivo é obrigatório para Avaliações Externas.", "danger")
+            return redirect(request.url)
+        if form.cycle.data is None or form.cycle.data == '':
+            flash("O Ciclo é obrigatório para Avaliações Externas.", "danger")
+            return redirect(request.url)
         logo_path = None
         if form.logo.data:
             if not allowed_file(form.logo.data.filename, ALLOWED_IMAGE_EXTENSIONS):
@@ -133,6 +151,8 @@ def list_evaluations():
             scoring_type='none',
             question_values=None,
             multiple_components=(form.multiple_components.data == '1'),
+            school_year=form.school_year.data,
+            cycle=int(form.cycle.data) if form.cycle.data is not None and form.cycle.data != '' else None,
             tenant_id=get_tenant_id()
         )
         
@@ -152,17 +172,37 @@ def edit_evaluation(id):
     
     form = EvaluationForm()
     
-    name = request.form.get('name', '').strip()
     type_val = request.form.get('type')
     origin_val = 'Externa'
     multiple_components = request.form.get('multiple_components') == '1'
     partner_institution_id = request.form.get('partner_institution_id', type=int)
+    school_year = request.form.get('school_year', type=int)
+    cycle = request.form.get('cycle', type=int)
     
-    if name and type_val:
-        evaluation.name = name
+    if type_val and school_year and cycle is not None:
+        partner = filter_by_tenant(PartnerInstitution.query, PartnerInstitution).filter_by(id=partner_institution_id).first() if partner_institution_id else None
+        partner_name = partner.name if partner else "Sem Instituição"
+        eval_name = f"{type_val} - {partner_name} - {school_year} - Ciclo {cycle}"
+        
+        existing = filter_by_tenant(Evaluation.query, Evaluation).filter(
+            Evaluation.id != id,
+            Evaluation.origin == 'Externa',
+            Evaluation.type == type_val,
+            Evaluation.partner_institution_id == (partner_institution_id if partner_institution_id else None),
+            Evaluation.school_year == school_year,
+            Evaluation.cycle == cycle
+        ).first()
+        
+        if existing:
+            flash("Já existe uma avaliação externa cadastrada com este Tipo, Instituição Parceira, Ano Letivo e Ciclo.", "danger")
+            return redirect(url_for('external_evaluations.list_evaluations'))
+            
+        evaluation.name = eval_name
         evaluation.type = type_val
         evaluation.origin = origin_val
         evaluation.multiple_components = multiple_components
+        evaluation.school_year = school_year
+        evaluation.cycle = cycle
         
         if partner_institution_id:
             evaluation.partner_institution_id = partner_institution_id
@@ -225,6 +265,12 @@ def import_students(id):
     form = ImportExternalStudentForm()
     
     if form.validate_on_submit():
+        if form.school_year.data is None or form.school_year.data == '':
+            flash("O Ano Letivo é obrigatório para Avaliações Externas.", "danger")
+            return redirect(request.url)
+        if form.cycle.data is None or form.cycle.data == '':
+            flash("O Ciclo é obrigatório para Avaliações Externas.", "danger")
+            return redirect(request.url)
         file = form.file.data
         filename = secure_filename(file.filename)
         ext = filename.rsplit('.', 1)[1].lower()
@@ -406,6 +452,12 @@ def import_results(id):
     form = ImportExternalResultForm()
     
     if form.validate_on_submit():
+        if form.school_year.data is None or form.school_year.data == '':
+            flash("O Ano Letivo é obrigatório para Avaliações Externas.", "danger")
+            return redirect(request.url)
+        if form.cycle.data is None or form.cycle.data == '':
+            flash("O Ciclo é obrigatório para Avaliações Externas.", "danger")
+            return redirect(request.url)
         file = form.file.data
         filename = secure_filename(file.filename)
         ext = filename.rsplit('.', 1)[1].lower()
@@ -517,15 +569,21 @@ def process_result_import(task_id, file_content, ext, evaluation_id, tenant_id):
 from sqlalchemy import func
 from app.models import TeachingUnit
 
-@external_evaluations_bp.route('/evaluations/<int:id>/dashboard')
+@external_evaluations_bp.route('/dashboard')
 @login_required
-def dashboard_view(id):
-    evaluation = filter_by_tenant(Evaluation.query, Evaluation).filter_by(id=id, origin='Externa').first_or_404()
+def dashboard():
+    evaluations = filter_by_tenant(Evaluation.query, Evaluation).filter_by(origin='Externa').order_by(Evaluation.name).all()
+    selected_id = request.args.get('evaluation_id', type=int)
     
-    # Get filters
-    available_disciplines = [r[0] for r in db.session.query(ExternalEvaluationResult.dis_nome).filter_by(evaluation_id=id).distinct().all() if r[0]]
+    evaluation = None
+    available_disciplines = []
     
-    return render_template('external_evaluations/dashboard.html', evaluation=evaluation, available_disciplines=available_disciplines, active_page='external_evaluations')
+    if selected_id:
+        evaluation = filter_by_tenant(Evaluation.query, Evaluation).filter_by(id=selected_id, origin='Externa').first()
+        if evaluation:
+            available_disciplines = [r[0] for r in db.session.query(ExternalEvaluationResult.dis_nome).filter_by(evaluation_id=selected_id).distinct().all() if r[0]]
+                
+    return render_template('external_evaluations/dashboard.html', evaluations=evaluations, evaluation=evaluation, available_disciplines=available_disciplines, active_page='external_evaluations')
 
 @external_evaluations_bp.route('/evaluations/<int:id>/dashboard_filters_api')
 @login_required
@@ -726,9 +784,11 @@ def dashboard_api(id):
             func.sum(absent_cases).label('absent')
         ).select_from(ExternalEvaluationResult).join(
             ExternalEvaluationStudent, ExternalEvaluationResult.external_evaluation_student_id == ExternalEvaluationStudent.id
-        ).outerjoin(SchoolAlias, db.and_(SchoolAlias.inep_code == ExternalEvaluationResult.esc_inep, SchoolAlias.tenant_id == tenant_id, SchoolAlias.type == 'Escola'))\
-         .outerjoin(RegionalAlias, RegionalAlias.id == SchoolAlias.parent_id)\
-         .filter(ExternalEvaluationResult.evaluation_id == id, ExternalEvaluationResult.dis_nome == dis_nome)
+        ).filter(ExternalEvaluationResult.evaluation_id == id, ExternalEvaluationResult.dis_nome == dis_nome)
+
+        if regional_id or school_inep:
+            q = q.outerjoin(SchoolAlias, db.and_(SchoolAlias.inep_code == ExternalEvaluationResult.esc_inep, SchoolAlias.tenant_id == tenant_id, SchoolAlias.type == 'Escola'))\
+                 .outerjoin(RegionalAlias, RegionalAlias.id == SchoolAlias.parent_id)
          
         if filter_year: q = q.filter(ExternalEvaluationStudent.ser_nome == filter_year)
         if filter_shift: q = q.filter(ExternalEvaluationStudent.tur_periodo == filter_shift)
@@ -772,10 +832,85 @@ def dashboard_api(id):
     for row in res_just:
         justifications_data.append({'label': row.label or 'Sem Justificativa', 'value': row.total})
         
+
+    # Summary and Donut Stats (Optimized)
+    q_student = db.session.query(
+        ExternalEvaluationResult.external_evaluation_student_id,
+        func.count(ExternalEvaluationResult.id).label('total_q'),
+        func.sum(correct_cases).label('correct_q'),
+        func.max(ExternalEvaluationResult.alt_finalizado).label('finalizado')
+    ).filter(ExternalEvaluationResult.evaluation_id == id, ExternalEvaluationResult.dis_nome == dis_nome)
+    
+    if filter_year: q_student = q_student.filter(ExternalEvaluationResult.ser_nome == filter_year)
+    if filter_shift: q_student = q_student.filter(ExternalEvaluationResult.tur_periodo == filter_shift)
+    if school_inep: q_student = q_student.filter(ExternalEvaluationResult.esc_inep == school_inep)
+    if ser_nome: q_student = q_student.filter(ExternalEvaluationResult.ser_nome == ser_nome)
+    if tur_nome: q_student = q_student.filter(ExternalEvaluationResult.tur_nome == tur_nome)
+
+    if regional_id:
+        q_student = q_student.outerjoin(SchoolAlias, db.and_(SchoolAlias.inep_code == ExternalEvaluationResult.esc_inep, SchoolAlias.tenant_id == tenant_id, SchoolAlias.type == 'Escola'))\
+            .outerjoin(RegionalAlias, RegionalAlias.id == SchoolAlias.parent_id)\
+            .filter(RegionalAlias.id == regional_id)
+            
+    student_results = q_student.group_by(ExternalEvaluationResult.external_evaluation_student_id).all()
+    
+    total_participants = 0
+    total_completed = 0
+    total_absent = 0
+    total_correct_q = 0
+    total_answered_q = 0
+    
+    level_counts = {'Abaixo do básico': 0, 'Básico': 0, 'Proficiente': 0, 'Avançado': 0}
+    
+    for r in student_results:
+        total_participants += 1
+        if r.finalizado == '1':
+            total_completed += 1
+            if r.total_q > 0:
+                total_correct_q += (r.correct_q or 0)
+                total_answered_q += r.total_q
+                pct = ((r.correct_q or 0) / r.total_q) * 100
+                if pct < 25: level_counts['Abaixo do básico'] += 1
+                elif pct < 50: level_counts['Básico'] += 1
+                elif pct < 75: level_counts['Proficiente'] += 1
+                else: level_counts['Avançado'] += 1
+        else:
+            total_absent += 1
+            
+    avg_proficiency = (total_correct_q / total_answered_q * 100) if total_answered_q > 0 else 0
+    part_pct = (total_completed / total_participants * 100) if total_participants > 0 else 0
+    absent_pct = (total_absent / total_participants * 100) if total_participants > 0 else 0
+    alerta_pct = (level_counts['Abaixo do básico'] / total_completed * 100) if total_completed > 0 else 0
+    
+    if avg_proficiency < 50: status_rede = 'Crítico'
+    elif avg_proficiency < 70: status_rede = 'Em evolução'
+    else: status_rede = 'Excelente'
+        
+    summary_data = {
+        'total_participants': total_participants,
+        'total_completed': total_completed,
+        'part_pct': round(part_pct, 1),
+        'total_absent': total_absent,
+        'absent_pct': round(absent_pct, 1),
+        'avg_proficiency': round(avg_proficiency, 1),
+        'alerta_qtd': level_counts['Abaixo do básico'],
+        'alerta_pct': round(alerta_pct, 1),
+        'status_rede': status_rede
+    }
+    
+    donut_data = [
+        {'label': 'Abaixo do básico', 'value': level_counts['Abaixo do básico']},
+        {'label': 'Básico', 'value': level_counts['Básico']},
+        {'label': 'Proficiente', 'value': level_counts['Proficiente']},
+        {'label': 'Avançado', 'value': level_counts['Avançado']}
+    ]
+
     return jsonify({
         'drilldown': drilldown_data,
         'race': race_data,
         'gender': gender_data,
         'radar': radar_data,
-        'justifications': justifications_data
+        'justifications': justifications_data,
+        'summary': summary_data,
+        'donut': donut_data
     })

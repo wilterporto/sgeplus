@@ -507,6 +507,12 @@
                             </a>
                         </li>
                         <li>
+                            <a href="{{ url_for('external_evaluations.dashboard') }}"
+                                class="nav-link {% if 'external_evaluations.dashboard' in request.endpoint %}active{% endif %}">
+                                <i class="bi bi-pie-chart me-2"></i> <span class="sidebar-text">Dashboard</span>
+                            </a>
+                        </li>
+                        <li>
                             <a href="{{ url_for('external_evaluations.list_partner_institutions') }}"
                                 class="nav-link {% if 'partner_institutions' in request.endpoint %}active{% endif %}">
                                 <i class="bi bi-building me-2"></i> <span class="sidebar-text">Instituições Parceiras</span>
@@ -756,7 +762,7 @@
                         </li>
                         <li>
                             <a href="{{ url_for('contracts.list_evaluations') }}"
-                                class="nav-link {% if 'evaluations' in request.endpoint or 'evaluate' in request.endpoint %}active{% endif %}">
+                                class="nav-link {% if request.endpoint and ('contracts.list_evaluations' in request.endpoint or 'contracts.evaluate' in request.endpoint) %}active{% endif %}">
                                 <i class="bi bi-star-fill me-2"></i> <span class="sidebar-text">Avaliações</span>
                             </a>
                         </li>

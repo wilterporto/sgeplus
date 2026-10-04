@@ -9,8 +9,8 @@ from flask import Blueprint, render_template, redirect, url_for, flash, jsonify,
 from flask_login import login_required, current_user
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileRequired, FileAllowed
-from wtforms import StringField, SelectField, SelectMultipleField, SubmitField, DateField
-from wtforms.validators import DataRequired, Optional, Length, ValidationError
+from wtforms import StringField, SelectField, SelectMultipleField, SubmitField, DateField, IntegerField
+from wtforms.validators import DataRequired, Optional, NumberRange, Length, ValidationError
 from werkzeug.utils import secure_filename
 from sqlalchemy import func
 from markupsafe import Markup
@@ -108,6 +108,8 @@ class EvaluationForm(FlaskForm):
     logo = FileField('Logomarca (opcional)', validators=[FileAllowed(['jpg', 'jpeg', 'png', 'svg'], 'Apenas imagens são permitidas!')])
     multiple_components = SelectField('Múltiplos Componentes', choices=[('0', 'Não'), ('1', 'Sim')], default='0')
     partner_institution_id = SelectField('Instituição Parceira', coerce=int, choices=[(0, 'Selecione...')], validators=[Optional()])
+    school_year = IntegerField('Ano Letivo', validators=[Optional(), NumberRange(min=2000, max=2100)])
+    cycle = SelectField('Ciclo', choices=[('', 'Selecione...'), ('0', 'Único'), ('1', '1'), ('2', '2'), ('3', '3'), ('4', '4')], validators=[Optional()])
     submit = SubmitField('Salvar')
 
     def validate_partner_institution_id(self, field):

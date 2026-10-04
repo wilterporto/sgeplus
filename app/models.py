@@ -238,6 +238,8 @@ class Evaluation(db.Model):
     multiple_components = db.Column(db.Boolean, default=False)
     origin = db.Column(db.String(20), default='Interna', nullable=False)
     partner_institution_id = db.Column(db.Integer, db.ForeignKey('partner_institution.id'), nullable=True)
+    school_year = db.Column(db.Integer, nullable=True)
+    cycle = db.Column(db.Integer, nullable=True)
     
     tenant = db.relationship('Tenant')
     exams = db.relationship('Exam', backref='evaluation', lazy='dynamic')

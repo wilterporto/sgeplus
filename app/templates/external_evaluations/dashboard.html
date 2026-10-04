@@ -21,16 +21,41 @@
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-        <h4 class="mb-1">Dashboard de Avaliação: {{ evaluation.name }}</h4>
+        <h4 class="mb-1">Dashboard de Avaliações Externas</h4>
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-0">
                 <li class="breadcrumb-item"><a href="{{ url_for('main.index') }}" class="text-decoration-none">Dashboard</a></li>
-                <li class="breadcrumb-item"><a href="{{ url_for('external_evaluations.list_evaluations') }}" class="text-decoration-none">Avaliações Externas</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Análise de Dados</li>
+                <li class="breadcrumb-item active" aria-current="page">Dashboard de Avaliações</li>
             </ol>
         </nav>
     </div>
 </div>
+
+<div class="card shadow mb-4">
+    <div class="card-body">
+        <form method="GET" action="{{ url_for('external_evaluations.dashboard') }}" class="row g-3 align-items-center">
+            <div class="col-auto">
+                <label for="evaluation_id" class="col-form-label fw-bold">Selecione a Avaliação:</label>
+            </div>
+            <div class="col-md-6">
+                <select name="evaluation_id" id="evaluation_id" class="form-select" onchange="this.form.submit()">
+                    <option value="">Selecione...</option>
+                    {% for eval_opt in evaluations %}
+                    <option value="{{ eval_opt.id }}" {% if evaluation and evaluation.id == eval_opt.id %}selected{% endif %}>{{ eval_opt.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% if not evaluation %}
+<div class="alert alert-info shadow-sm text-center py-5">
+    <i class="bi bi-info-circle display-4 d-block mb-3"></i>
+    <h5>Selecione uma avaliação acima para visualizar o dashboard</h5>
+</div>
+{% else %}
+
 
 <div class="card shadow mb-4">
     <div class="card-body bg-light">
@@ -58,12 +83,16 @@
                     
                 </select>
             </div>
-            <div class="col-md-2">
+            <div class="col-md-3">
                 <label class="form-label">Ordenação</label>
                 <select class="form-select" id="filterSort">
                     <option value="alpha">Ordem Alfabética</option>
-                    <option value="desc">Maior Desempenho (Decrescente)</option>
-                    <option value="asc">Menor Desempenho (Crescente)</option>
+                    <option value="acerto_desc">Maior Desempenho (Acertos)</option>
+                    <option value="acerto_asc">Menor Desempenho (Acertos)</option>
+                    <option value="erro_desc">Maior % de Erros</option>
+                    <option value="erro_asc">Menor % de Erros</option>
+                    <option value="ausencia_desc">Maior % Não Fizeram</option>
+                    <option value="ausencia_asc">Menor % Não Fizeram</option>
                 </select>
             </div>
             <div class="col-md-3 d-flex align-items-end">
@@ -76,8 +105,61 @@
 </div>
 
 <div id="dashboardContent" class="d-none">
-<div class="row mb-4">
-    <div class="col-12">
+
+    <!-- Cards de Resumo -->
+    <div class="row mb-4" id="summaryCards">
+        <div class="col-md-4 mb-3">
+            <div class="card bg-primary text-white h-100 shadow-sm border-0">
+                <div class="card-body">
+                    <h6 class="card-title opacity-75">Total de Participantes</h6>
+                    <h3 class="fw-bold mb-0" id="cardTotalParticipantes">-</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card bg-success text-white h-100 shadow-sm border-0">
+                <div class="card-body">
+                    <h6 class="card-title opacity-75">Participação</h6>
+                    <h3 class="fw-bold mb-0" id="cardParticipacao">-</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card bg-danger text-white h-100 shadow-sm border-0">
+                <div class="card-body">
+                    <h6 class="card-title opacity-75">Ausências Registradas</h6>
+                    <h3 class="fw-bold mb-0" id="cardAusencias">-</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card bg-info text-white h-100 shadow-sm border-0">
+                <div class="card-body">
+                    <h6 class="card-title opacity-75">Proficiência Média</h6>
+                    <h3 class="fw-bold mb-0" id="cardProficiencia">-</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card bg-warning text-dark h-100 shadow-sm border-0">
+                <div class="card-body">
+                    <h6 class="card-title opacity-75">Alunos em Alerta</h6>
+                    <h3 class="fw-bold mb-0" id="cardAlerta">-</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card bg-secondary text-white h-100 shadow-sm border-0" id="cardStatusWrapper">
+                <div class="card-body">
+                    <h6 class="card-title opacity-75">Status Rede</h6>
+                    <h3 class="fw-bold mb-0" id="cardStatus">-</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+    <div class="col-md-12 mb-4">
         <div class="card shadow h-100">
             <div class="card-header bg-white d-flex justify-content-between align-items-center">
                 <h5 class="mb-0 text-primary" id="drilldownTitle">Desempenho Geral - Rede</h5>
@@ -88,6 +170,19 @@
             <div class="card-body">
                 <div style="height: 400px; position: relative;">
                     <canvas id="drilldownChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 mx-auto">
+        <div class="card shadow h-100">
+            <div class="card-header bg-white border-0 pt-4 pb-0 text-center">
+                <h5 class="fw-bold text-secondary mb-0">Distribuição de Proficiência</h5>
+            </div>
+            <div class="card-body d-flex justify-content-center">
+                <div style="width: 100%; max-width: 400px; position: relative;">
+                    <canvas id="donutChart"></canvas>
                 </div>
             </div>
         </div>
@@ -122,10 +217,10 @@
 </div>
 
 <div class="row">
-    <div class="col-md-6 mb-4">
+    <div class="col-md-4 mb-4">
         <div class="card shadow h-100">
             <div class="card-header bg-white">
-                <h5 class="mb-0">10 Melhores Competências</h5>
+                <h5 class="mb-0" style="font-size: 1.1rem;">10 Melhores Competências</h5>
             </div>
             <div class="card-body">
                 <div style="height: 400px; position: relative;">
@@ -134,14 +229,26 @@
             </div>
         </div>
     </div>
-    <div class="col-md-6 mb-4">
+    <div class="col-md-4 mb-4">
         <div class="card shadow h-100">
             <div class="card-header bg-white">
-                <h5 class="mb-0">10 Piores Competências</h5>
+                <h5 class="mb-0" style="font-size: 1.1rem;">10 Piores Competências</h5>
             </div>
             <div class="card-body">
                 <div style="height: 400px; position: relative;">
                     <canvas id="bottomCompetencesChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card shadow h-100">
+            <div class="card-header bg-white">
+                <h5 class="mb-0" style="font-size: 1.1rem;">Competências sem acertos</h5>
+            </div>
+            <div class="card-body">
+                <div style="height: 400px; position: relative;">
+                    <canvas id="zeroCompetencesChart"></canvas>
                 </div>
             </div>
         </div>
@@ -177,9 +284,10 @@
     let genderChartObj = null;
     let topCompChartObj = null;
     let bottomCompChartObj = null;
+    let zeroCompChartObj = null;
     let justChartObj = null;
     
-    const evaluationId = {{ evaluation.id }};
+    const evaluationId = {% if evaluation %}{{ evaluation.id }}{% else %}null{% endif %};
     function updateFilters() {
         const disNome = document.getElementById('filterDisciplina').value;
         const yearSelect = document.getElementById('filterYear');
@@ -216,8 +324,9 @@
     ];
 
     let aiModalInstance = null;
+    let aiInterval = null;
 
-    function startAiSimulation(callback) {
+    function startAiSimulation() {
         if (!aiModalInstance) {
             aiModalInstance = new bootstrap.Modal(document.getElementById('aiProgressModal'));
         }
@@ -231,20 +340,37 @@
         let step = 0;
         const totalSteps = aiPhrases.length;
         
-        const interval = setInterval(() => {
-            statusText.textContent = aiPhrases[step];
-            progressBar.style.width = `${((step + 1) / totalSteps) * 100}%`;
-            step++;
+        if (aiInterval) clearInterval(aiInterval);
+        
+        aiInterval = setInterval(() => {
+            // Keep cycling phrases until data is ready, cap progress at 95%
+            const currentPhrase = aiPhrases[step % totalSteps];
+            statusText.textContent = currentPhrase;
             
-            if (step >= totalSteps) {
-                clearInterval(interval);
-                setTimeout(() => {
-                    aiModalInstance.hide();
-                    document.getElementById('dashboardContent').classList.remove('d-none');
-                    callback();
-                }, 1000);
+            // Increment progress, but never reach 100% until stopAiSimulation is called
+            const currentWidth = parseFloat(progressBar.style.width) || 0;
+            if (currentWidth < 95) {
+                progressBar.style.width = `${currentWidth + 15}%`;
             }
-        }, 1500); // 1.5s per phrase
+            
+            step++;
+        }, 1200); 
+    }
+    
+    function stopAiSimulation() {
+        if (aiInterval) clearInterval(aiInterval);
+        const statusText = document.getElementById('aiStatusText');
+        const progressBar = document.getElementById('aiProgressBar');
+        
+        statusText.textContent = "Finalizando renderização do dashboard...";
+        progressBar.style.width = '100%';
+        
+        setTimeout(() => {
+            if (aiModalInstance) {
+                aiModalInstance.hide();
+            }
+            document.getElementById('dashboardContent').classList.remove('d-none');
+        }, 800);
     }
 
 
@@ -264,7 +390,7 @@
         } else if (drilldownLevel === 'regionals') {
             drilldownLevel = 'rede';
         }
-        loadDashboard(false);
+        loadDashboard();
     }
 
     function buildApiUrl() {
@@ -292,13 +418,21 @@
         }
         
         if (simulate) {
-            startAiSimulation(() => fetchDashboardData());
+            startAiSimulation();
+            fetchDashboardData().then(() => {
+                stopAiSimulation();
+            }).catch(err => {
+                console.error(err);
+                stopAiSimulation();
+                alert('Erro ao carregar os dados. Tente novamente mais tarde.');
+            });
         } else {
             fetchDashboardData();
         }
     }
     
     function fetchDashboardData() {
+        return new Promise((resolve, reject) => {
         // Update Title and Back Button
         const titleMap = {
             'rede': 'Desempenho Geral - Rede (Clique na barra para Regionais)',
@@ -325,7 +459,79 @@
                 updateGenderChart(data.gender);
                 updateCompetencesCharts(data.radar);
                 updateJustificationsChart(data.justifications);
+                updateSummaryCards(data.summary);
+                updateDonutChart(data.donut);
+                resolve();
+            }).catch(err => {
+                console.error(err);
+                reject(err);
             });
+        });
+    }
+
+    
+    let donutChartObj = null;
+
+    function updateSummaryCards(summary) {
+        document.getElementById('cardTotalParticipantes').textContent = summary.total_participants;
+        document.getElementById('cardParticipacao').textContent = `${summary.total_completed} (${summary.part_pct}%)`;
+        document.getElementById('cardAusencias').textContent = `${summary.total_absent} (${summary.absent_pct}%)`;
+        document.getElementById('cardProficiencia').textContent = `${summary.avg_proficiency}%`;
+        document.getElementById('cardAlerta').textContent = `${summary.alerta_qtd} (${summary.alerta_pct}%)`;
+        
+        const statusEl = document.getElementById('cardStatus');
+        const statusWrap = document.getElementById('cardStatusWrapper');
+        statusEl.textContent = summary.status_rede;
+        
+        statusWrap.classList.remove('bg-danger', 'bg-warning', 'bg-success', 'bg-secondary');
+        if (summary.status_rede === 'Crítico') {
+            statusWrap.classList.add('bg-danger');
+            statusWrap.classList.remove('text-dark');
+            statusWrap.classList.add('text-white');
+        } else if (summary.status_rede === 'Em evolução') {
+            statusWrap.classList.add('bg-warning', 'text-dark');
+            statusWrap.classList.remove('text-white');
+        } else if (summary.status_rede === 'Excelente') {
+            statusWrap.classList.add('bg-success');
+            statusWrap.classList.remove('text-dark');
+            statusWrap.classList.add('text-white');
+        } else {
+            statusWrap.classList.add('bg-secondary');
+        }
+    }
+
+    function updateDonutChart(data) {
+        const ctx = document.getElementById('donutChart').getContext('2d');
+        if (donutChartObj) {
+            donutChartObj.destroy();
+        }
+
+        const labels = data.map(d => d.label);
+        const values = data.map(d => d.value);
+
+        donutChartObj = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: values,
+                    backgroundColor: [
+                        '#dc3545', // Abaixo do básico
+                        '#fd7e14', // Básico
+                        '#ffc107', // Proficiente
+                        '#198754'  // Avançado
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
     }
 
     function updateDrilldownChart(data) {
@@ -336,13 +542,29 @@
         }
 
         const filterSort = document.getElementById('filterSort').value;
-        if (filterSort === 'desc') {
+        if (filterSort === 'acerto_desc') {
             data.sort((a, b) => b.value - a.value);
-        } else if (filterSort === 'asc') {
+        } else if (filterSort === 'acerto_asc') {
             data.sort((a, b) => a.value - b.value);
+        } else if (filterSort === 'erro_desc') {
+            data.sort((a, b) => {
+                const aError = 100 - (a.value + (a.absent || 0));
+                const bError = 100 - (b.value + (b.absent || 0));
+                return bError - aError;
+            });
+        } else if (filterSort === 'erro_asc') {
+            data.sort((a, b) => {
+                const aError = 100 - (a.value + (a.absent || 0));
+                const bError = 100 - (b.value + (b.absent || 0));
+                return aError - bError;
+            });
+        } else if (filterSort === 'ausencia_desc') {
+            data.sort((a, b) => (b.absent || 0) - (a.absent || 0));
+        } else if (filterSort === 'ausencia_asc') {
+            data.sort((a, b) => (a.absent || 0) - (b.absent || 0));
         } else {
             // alpha (default from api is already alpha, but re-sorting just in case)
-            data.sort((a, b) => a.label.localeCompare(b.label));
+            data.sort((a, b) => String(a.label).localeCompare(String(b.label)));
         }
 
         const labels = data.map(item => item.label);
@@ -418,7 +640,7 @@
                         }
                         
                         if (drilldownLevel !== 'student' || elements[0].datasetIndex !== undefined) {
-                            loadDashboard(false);
+                            loadDashboard();
                         }
                     }
                 }
@@ -535,13 +757,22 @@
     function updateCompetencesCharts(data) {
         if (topCompChartObj) topCompChartObj.destroy();
         if (bottomCompChartObj) bottomCompChartObj.destroy();
+        if (zeroCompChartObj) zeroCompChartObj.destroy();
 
+        // Filtrar 'Não informado' ou valores vazios/nulos
+        const validData = data.filter(item => item.label && item.label.trim() !== '' && item.label.toLowerCase() !== 'não informado');
+        
         // Sort data descending
-        const sortedData = [...data].sort((a, b) => b.value - a.value);
+        const sortedData = [...validData].sort((a, b) => b.value - a.value);
         
         const top10 = sortedData.slice(0, 10);
-        // For worst 10, slice from end and sort ascending to show worst first
+        
+        // Piores competências (excluindo os que têm 0% de acerto para não ficar redundante? Ou mantendo? O usuário disse: "um novo gráfico chamado Competências sem acertos". Vamos manter as piores gerais incluindo os zeros se houver, ou apenas os não-zeros? Vamos fazer as piores sem filtrar os zeros, pois os 0s também são piores)
+        // Wait, to make it more useful, let's just do standard slice
         const bottom10 = sortedData.slice(-10).sort((a, b) => a.value - b.value);
+        
+        // Competências sem acertos (valor == 0)
+        const zeroAcertos = sortedData.filter(item => item.value === 0).slice(0, 10);
 
         const ctxTop = document.getElementById('topCompetencesChart').getContext('2d');
         topCompChartObj = new Chart(ctxTop, {
@@ -574,7 +805,30 @@
                 datasets: [{
                     label: '% de Acerto',
                     data: bottom10.map(item => item.value),
-                    backgroundColor: '#dc3545', // Red for worst
+                    backgroundColor: '#fd7e14', // Orange for worst
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { beginAtZero: true, max: 100, title: { display: true, text: 'Percentual (%)' } }
+                }
+            }
+        });
+        
+        const ctxZero = document.getElementById('zeroCompetencesChart').getContext('2d');
+        zeroCompChartObj = new Chart(ctxZero, {
+            type: 'bar',
+            data: {
+                labels: zeroAcertos.length > 0 ? zeroAcertos.map(item => item.label || 'Não Informado') : ['Nenhuma'],
+                datasets: [{
+                    label: '% de Acerto',
+                    data: zeroAcertos.length > 0 ? zeroAcertos.map(item => item.value) : [0],
+                    backgroundColor: '#dc3545', // Red for zeros
                     borderRadius: 4
                 }]
             },
@@ -625,4 +879,5 @@
         // Esperar clique no botão para carregar
     });
 </script>
+{% endif %}
 {% endblock %}

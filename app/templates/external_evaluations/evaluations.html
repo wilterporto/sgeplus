@@ -24,8 +24,7 @@
                     <div class="row">
                         <div class="col-md-12 mb-3">
                             {{ form.name.label(class="form-label required") }}
-                            {{ form.name(class="form-control") }}
-                            <div class="form-text">Ex: Simulado SAEB, Avaliação Mensal.</div>
+                            {{ form.name(class="form-control bg-light", value="O nome será gerado automaticamente", readonly=True) }}
                         </div>
                         <div class="col-md-4 mb-3">
                             {{ form.type.label(class="form-label required") }}
@@ -34,6 +33,14 @@
                         <div class="col-md-12 mb-3">
                             {{ form.partner_institution_id.label(class="form-label required") }}
                             {{ form.partner_institution_id(class="form-select") }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="school_year" class="form-label required">Ano Letivo</label>
+                            {{ form.school_year(class="form-control", type="number", min="2000", max="2100", required=True) }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="cycle" class="form-label required">Ciclo</label>
+                            {{ form.cycle(class="form-select", required=True) }}
                         </div>
                         <input type="hidden" name="origin" value="Externa">
                         <input type="hidden" name="multiple_components" value="0">
@@ -78,11 +85,9 @@
                                     <a href="{{ url_for('external_evaluations.list_results', id=eval.id) }}" class="btn btn-sm btn-outline-success me-1" title="Gerenciar Resultados">
                                         <i class="bi bi-clipboard-data"></i> Resultados
                                     </a>
-                                    <a href="{{ url_for('external_evaluations.dashboard_view', id=eval.id) }}" class="btn btn-sm btn-outline-info me-1" title="Dashboard">
-                                        <i class="bi bi-pie-chart"></i> Dashboard
-                                    </a>
+
                                     <button type="button" class="btn btn-sm btn-outline-primary me-1"
-                                        onclick='editEvaluation({{ {"id": eval.id, "name": eval.name, "type": eval.type, "scoring_type": eval.scoring_type, "question_values": eval.question_values, "partner_institution_id": eval.partner_institution_id}|tojson|safe }})' title="Editar">
+                                        onclick='editEvaluation({{ {"id": eval.id, "name": eval.name, "type": eval.type, "scoring_type": eval.scoring_type, "question_values": eval.question_values, "partner_institution_id": eval.partner_institution_id, "school_year": eval.school_year, "cycle": eval.cycle}|tojson|safe }})' title="Editar">
                                         <i class="bi bi-pencil"></i>
                                     </button>
                                     <button type="button" class="btn btn-sm btn-outline-danger"
@@ -125,6 +130,12 @@
         evalForm.querySelector('[name="type"]').value = evalData.type;
         if (partnerInstitutionSelect) {
             partnerInstitutionSelect.value = evalData.partner_institution_id || '0';
+        }
+        if (evalForm.querySelector('[name="school_year"]')) {
+            evalForm.querySelector('[name="school_year"]').value = evalData.school_year || '';
+        }
+        if (evalForm.querySelector('[name="cycle"]')) {
+            evalForm.querySelector('[name="cycle"]').value = evalData.cycle || '';
         }
 
         const modal = new bootstrap.Modal(document.getElementById('newEvaluationModal'));
