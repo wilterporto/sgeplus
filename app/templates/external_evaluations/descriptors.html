@@ -1,0 +1,261 @@
+{% extends "base.html" %}
+{% block title %}SGE+ | Avaliações Externas - Descritores{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="mb-1 text-primary">
+                <i class="bi bi-list-check me-2"></i>Descritores
+            </h4>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="{{ url_for('main.index') }}" class="text-decoration-none">Início</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Avaliações Externas</li>
+                    <li class="breadcrumb-item active" aria-current="page">Descritores</li>
+                </ol>
+            </nav>
+        </div>
+        <div class="d-flex gap-2">
+            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#importDescriptorsModal">
+                <i class="bi bi-file-earmark-excel me-2"></i>Importar
+            </button>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+            <form method="GET" action="{{ url_for('external_evaluations.list_descriptors') }}" class="row g-3">
+                <div class="col-md-10">
+                    <input type="text" class="form-control" name="search" value="{{ search }}" placeholder="Buscar por código ou descrição...">
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-search me-2"></i>Buscar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tabela -->
+    <div class="card shadow border-0">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Cód. Descritor</th>
+                            <th>Descrição</th>
+                            <th>Tópico</th>
+                            <th>Matriz</th>
+                            <th class="text-end">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for desc in descriptors %}
+                        <tr>
+                            <td class="fw-bold">{{ desc.mti_codigo }}</td>
+                            <td>{{ desc.mti_descritor[:100] }}{% if desc.mti_descritor|length > 100 %}...{% endif %}</td>
+                            <td>{{ desc.mto_nome }}</td>
+                            <td>{{ desc.mar_nome }}</td>
+                            <td class="text-end">
+                                <form action="{{ url_for('external_evaluations.delete_descriptor', id=desc.id) }}" method="POST" class="d-inline" onsubmit="return confirm('Tem certeza que deseja excluir este descritor?');">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Excluir">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center py-4 text-muted">
+                                Nenhum descritor encontrado.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% if pagination.pages > 1 %}
+        <div class="card-footer bg-white border-0 py-3">
+            <nav>
+                <ul class="pagination justify-content-center mb-0">
+                    <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}">
+                        <a class="page-link" href="{{ url_for('external_evaluations.list_descriptors', page=pagination.prev_num, search=search) }}">Anterior</a>
+                    </li>
+                    {% for page_num in pagination.iter_pages(left_edge=1, left_current=2, right_current=3, right_edge=1) %}
+                        {% if page_num %}
+                            <li class="page-item {% if page_num == pagination.page %}active{% endif %}">
+                                <a class="page-link" href="{{ url_for('external_evaluations.list_descriptors', page=page_num, search=search) }}">{{ page_num }}</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled"><span class="page-link">...</span></li>
+                        {% endif %}
+                    {% endfor %}
+                    <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
+                        <a class="page-link" href="{{ url_for('external_evaluations.list_descriptors', page=pagination.next_num, search=search) }}">Próxima</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Modal de Importação -->
+<div class="modal fade" id="importDescriptorsModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content border-0 shadow">
+            <form id="importForm" action="{{ url_for('external_evaluations.import_descriptors') }}" method="POST" enctype="multipart/form-data">
+                {{ import_form.csrf_token }}
+                <div class="modal-header">
+                    <h5 class="modal-title">Importar Descritores</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info small">
+                        O arquivo deve ser Excel (.xlsx/.xls) ou CSV (separado por ;) e conter as colunas: <strong>MTI_ID;MTI_CODIGO;MTI_DESCRITOR;MTO_ID;MTO_NOME;MAR_ID;MAR_NOME</strong>.
+                        <br><br>
+                        <strong>Importante:</strong> Se um descritor já existir com o mesmo MTI_CODIGO, ele será atualizado. O processo é otimizado e inserções/atualizações ocorrerão em massa.
+                    </div>
+                    <div class="mb-3">
+                        {{ import_form.file.label(class="form-label required") }}
+                        {{ import_form.file(class="form-control", accept=".xlsx,.xls,.csv") }}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    {{ import_form.submit(class="btn btn-primary", id="btnSubmitImport") }}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Progress Modal -->
+<div class="modal fade" id="progressModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body text-center p-4">
+                <h5 class="mb-3">Importando Descritores...</h5>
+                <p id="progressText" class="text-muted small mb-3">Iniciando importação...</p>
+                <div class="progress mb-3" style="height: 25px;">
+                    <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated bg-primary" 
+                         role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                        0%
+                    </div>
+                </div>
+                <p id="progressCount" class="small fw-bold text-primary">0 / 0 registros processados</p>
+                <div id="progressError" class="alert alert-danger mt-3 d-none small text-start"></div>
+                <button type="button" id="btnFinishProgress" class="btn btn-primary mt-3 d-none" onclick="window.location.reload();">Concluir</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const importForm = document.getElementById('importForm');
+    
+    if (importForm) {
+        importForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const submitBtn = document.getElementById('btnSubmitImport');
+            
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Enviando...';
+            
+            fetch(this.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const importModal = bootstrap.Modal.getInstance(document.getElementById('importDescriptorsModal'));
+                    if (importModal) importModal.hide();
+                    
+                    this.reset();
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Importar';
+                    
+                    const progressModal = new bootstrap.Modal(document.getElementById('progressModal'));
+                    progressModal.show();
+                    
+                    pollImportStatus(data.task_id);
+                } else {
+                    alert('Erro: ' + data.message);
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Importar';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Ocorreu um erro ao enviar o arquivo.');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Importar';
+            });
+        });
+    }
+    
+    let pollInterval;
+    
+    function pollImportStatus(taskId) {
+        const progressBar = document.getElementById('progressBar');
+        const progressText = document.getElementById('progressText');
+        const progressCount = document.getElementById('progressCount');
+        const progressError = document.getElementById('progressError');
+        const btnFinishProgress = document.getElementById('btnFinishProgress');
+        
+        pollInterval = setInterval(() => {
+            fetch(`/import-status/${taskId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'processing' || data.status === 'completed') {
+                        const total = data.total || 1;
+                        const processed = data.current || 0;
+                        const percent = Math.round((processed / total) * 100);
+                        
+                        progressBar.style.width = percent + '%';
+                        progressBar.setAttribute('aria-valuenow', percent);
+                        progressBar.textContent = percent + '%';
+                        
+                        progressCount.textContent = `${processed} / ${total} registros processados`;
+                        
+                        if (data.status === 'completed') {
+                            clearInterval(pollInterval);
+                            progressText.textContent = 'Importação concluída com sucesso!';
+                            progressText.className = 'text-success small mb-3 fw-bold';
+                            progressBar.classList.remove('progress-bar-animated');
+                            progressBar.classList.add('bg-success');
+                            btnFinishProgress.classList.remove('d-none');
+                        }
+                    } else if (data.status === 'failed') {
+                        clearInterval(pollInterval);
+                        progressText.textContent = 'Falha na importação.';
+                        progressText.className = 'text-danger small mb-3 fw-bold';
+                        progressBar.classList.remove('progress-bar-animated');
+                        progressBar.classList.add('bg-danger');
+                        
+                        progressError.textContent = 'Erro: ' + (data.details || 'Erro desconhecido');
+                        progressError.classList.remove('d-none');
+                        btnFinishProgress.classList.remove('d-none');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error polling status:', error);
+                });
+        }, 2000);
+    }
+});
+</script>
+{% endblock %}

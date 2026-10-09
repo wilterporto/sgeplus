@@ -1387,16 +1387,16 @@ class PartnerInstitution(db.Model):
 class ExternalEvaluationStudent(db.Model):
     __tablename__ = 'external_evaluation_student'
     id = db.Column(db.Integer, primary_key=True)
-    tenant_id = db.Column(db.Integer, db.ForeignKey('tenant.id'), nullable=True)
-    evaluation_id = db.Column(db.Integer, db.ForeignKey('evaluation.id', ondelete='CASCADE'), nullable=False)
+    tenant_id = db.Column(db.Integer, db.ForeignKey('tenant.id'), nullable=True, index=True)
+    evaluation_id = db.Column(db.Integer, db.ForeignKey('evaluation.id', ondelete='CASCADE'), nullable=False, index=True)
     
     mun_id = db.Column(db.String(50))
     mun_nome = db.Column(db.String(255))
     esc_id = db.Column(db.String(50))
     esc_nome = db.Column(db.String(255))
-    esc_inep = db.Column(db.String(50))
+    esc_inep = db.Column(db.String(50), index=True)
     ser_number = db.Column(db.String(50))
-    ser_nome = db.Column(db.String(255))
+    ser_nome = db.Column(db.String(255), index=True)
     tur_id = db.Column(db.String(50))
     tur_nome = db.Column(db.String(255))
     tur_periodo = db.Column(db.String(100))
@@ -1422,6 +1422,7 @@ class ExternalEvaluationStudent(db.Model):
     alu_cpf = db.Column(db.String(20))
     pel_nome = db.Column(db.String(100))
     gen_nome = db.Column(db.String(50))
+    alu_frequencia = db.Column(db.Float, nullable=True)
     
     created_at = db.Column(db.DateTime, default=get_brasilia_time)
     
@@ -1431,15 +1432,15 @@ class ExternalEvaluationStudent(db.Model):
 class ExternalEvaluationResult(db.Model):
     __tablename__ = 'external_evaluation_result'
     id = db.Column(db.Integer, primary_key=True)
-    tenant_id = db.Column(db.Integer, db.ForeignKey('tenant.id'), nullable=True)
-    evaluation_id = db.Column(db.Integer, db.ForeignKey('evaluation.id', ondelete='CASCADE'), nullable=False)
+    tenant_id = db.Column(db.Integer, db.ForeignKey('tenant.id'), nullable=True, index=True)
+    evaluation_id = db.Column(db.Integer, db.ForeignKey('evaluation.id', ondelete='CASCADE'), nullable=False, index=True)
     
-    external_evaluation_student_id = db.Column(db.Integer, db.ForeignKey('external_evaluation_student.id', ondelete='CASCADE'), nullable=True)
+    external_evaluation_student_id = db.Column(db.Integer, db.ForeignKey('external_evaluation_student.id', ondelete='CASCADE'), nullable=True, index=True)
     alu_id = db.Column(db.String(50))
 
     mun_uf = db.Column(db.String(50))
     mun_ibge = db.Column(db.String(50))
-    esc_inep = db.Column(db.String(50))
+    esc_inep = db.Column(db.String(50), index=True)
     ser_number = db.Column(db.String(50))
     ser_nome = db.Column(db.String(255))
     tur_periodo = db.Column(db.String(100))
@@ -1447,7 +1448,7 @@ class ExternalEvaluationResult(db.Model):
     ava_nome = db.Column(db.String(255))
     ava_ano = db.Column(db.String(50))
     tes_id = db.Column(db.String(50))
-    dis_nome = db.Column(db.String(255))
+    dis_nome = db.Column(db.String(255), index=True)
     alt_finalizado = db.Column(db.String(50))
     alt_justificativa = db.Column(db.String(255))
     nr_questao = db.Column(db.String(50))
@@ -1461,3 +1462,21 @@ class ExternalEvaluationResult(db.Model):
     tenant = db.relationship('Tenant')
     evaluation = db.relationship('Evaluation', backref=db.backref('external_results', lazy='dynamic', cascade='all, delete-orphan'))
     student = db.relationship('ExternalEvaluationStudent', backref=db.backref('results', lazy='dynamic', cascade='all, delete-orphan'))
+
+class ExternalEvaluationDescriptor(db.Model):
+    __tablename__ = 'external_evaluation_descriptor'
+    id = db.Column(db.Integer, primary_key=True)
+    tenant_id = db.Column(db.Integer, db.ForeignKey('tenant.id'), nullable=True, index=True)
+    
+    mti_id = db.Column(db.String(50))
+    mti_codigo = db.Column(db.String(50))
+    mti_descritor = db.Column(db.Text)
+    mto_id = db.Column(db.String(50))
+    mto_nome = db.Column(db.String(255))
+    mar_id = db.Column(db.String(50))
+    mar_nome = db.Column(db.String(255))
+    
+    active = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=get_brasilia_time)
+    
+    tenant = db.relationship('Tenant')

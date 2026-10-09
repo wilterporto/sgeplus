@@ -1,0 +1,413 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="mb-1">Resultados por Escola</h4>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="{{ url_for('main.index') }}" class="text-decoration-none">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('external_evaluations.list_evaluations') }}" class="text-decoration-none">Avaliações Externas</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Resultados</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-body">
+        <div class="mb-3 text-muted small border-bottom pb-2">
+            <strong>Legenda de Níveis de Proficiência:</strong> 
+            <span class="badge bg-secondary ms-1">AB</span> Abaixo do Básico &nbsp;|&nbsp; 
+            <span class="badge bg-secondary">Ba</span> Básico &nbsp;|&nbsp; 
+            <span class="badge bg-secondary">Pr</span> Proficiente &nbsp;|&nbsp; 
+            <span class="badge bg-secondary">Av</span> Avançado
+        </div>
+        <form method="GET" action="{{ url_for('external_evaluations.school_results') }}" class="row g-3 align-items-center">
+            <div class="col-md-5">
+                <label for="evaluation_id" class="form-label fw-bold">Avaliação <span class="text-danger">*</span></label>
+                <select name="evaluation_id" id="evaluation_id" class="form-select" required onchange="this.form.submit()">
+                    <option value="">Selecione uma avaliação...</option>
+                    {% for ev in evaluations %}
+                    <option value="{{ ev.id }}" {% if evaluation_id == ev.id %}selected{% endif %}>{{ ev.name }} ({{ ev.year }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="year" class="form-label fw-bold">Ano Escolar <span class="text-danger">*</span></label>
+                <select name="year" id="year" class="form-select" required onchange="this.form.submit()">
+                    <option value="">Selecione o ano...</option>
+                    {% for y in years %}
+                    <option value="{{ y }}" {% if year == y %}selected{% endif %}>{{ y }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4 d-flex align-items-end gap-2 mt-4 pt-2">
+                <a href="{{ url_for('external_evaluations.school_results') }}" class="btn btn-outline-secondary">Limpar Filtros</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% if evaluation_id and year %}
+    {% if not results_data %}
+    <div class="alert alert-info shadow-sm">
+        <i class="bi bi-info-circle me-2"></i> Nenhum resultado encontrado para os filtros selecionados.
+    </div>
+    {% else %}
+    <ul class="nav nav-tabs mb-4" id="mainTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active fw-bold" id="escolas-tab" data-bs-toggle="tab" data-bs-target="#escolas" type="button" role="tab" aria-controls="escolas" aria-selected="true">
+                <i class="bi bi-building me-1"></i> Escolas
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link fw-bold" id="escola-detalhe-tab" data-bs-toggle="tab" data-bs-target="#escola-detalhe" type="button" role="tab" aria-controls="escola-detalhe" aria-selected="false" disabled>
+                <i class="bi bi-door-open me-1"></i> Escola
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="mainTabsContent">
+        <!-- Guia Escolas -->
+        <div class="tab-pane fade show active" id="escolas" role="tabpanel" aria-labelledby="escolas-tab">
+            <div class="mb-3">
+                <ul class="nav nav-pills" id="disciplineTabs" role="tablist">
+            {% for dis in disciplines %}
+            <li class="nav-item" role="presentation">
+                <button class="nav-link fw-bold {% if loop.first %}active{% endif %}" id="tab-{{ loop.index }}" data-bs-toggle="pill" data-bs-target="#pane-{{ loop.index }}" type="button" role="tab" aria-controls="pane-{{ loop.index }}" aria-selected="{% if loop.first %}true{% else %}false{% endif %}">
+                    {{ dis }}
+                </button>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="tab-content" id="disciplineTabsContent">
+        {% for dis in disciplines %}
+        <div class="tab-pane fade {% if loop.first %}show active{% endif %}" id="pane-{{ loop.index }}" role="tabpanel" aria-labelledby="tab-{{ loop.index }}">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0 datatable-results">
+                            <thead class="table-light small">
+                                <tr>
+                                    <th>Escola</th>
+                                    <th class="text-center">Proficiência Média</th>
+                                    <th class="text-center">AB<br><span class="text-muted fw-normal">(Alunos / %)</span></th>
+                                    <th class="text-center">Ba<br><span class="text-muted fw-normal">(Alunos / %)</span></th>
+                                    <th class="text-center">Pr<br><span class="text-muted fw-normal">(Alunos / %)</span></th>
+                                    <th class="text-center">Av<br><span class="text-muted fw-normal">(Alunos / %)</span></th>
+                                    <th class="text-center">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for inep, sdata in results_data.items() %}
+                                {% if dis in sdata['disciplines'] %}
+                                {% set stats = sdata['disciplines'][dis] %}
+                                <tr>
+                                    <td class="fw-bold">{{ sdata.name }}</td>
+                                    <td class="text-center">
+                                        <span class="badge {% if stats.avg_prof < 50 %}bg-danger{% elif stats.avg_prof < 70 %}bg-warning text-dark{% else %}bg-success{% endif %} fs-6 px-3 py-2 rounded-pill shadow-sm">
+                                            {{ "%.1f"|format(stats.avg_prof) }}%
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="fw-bold">{{ stats.levels['Abaixo do básico'] }}</div>
+                                        <small class="text-muted">{{ "%.1f"|format(stats.level_pcts['Abaixo do básico']) }}%</small>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="fw-bold">{{ stats.levels['Básico'] }}</div>
+                                        <small class="text-muted">{{ "%.1f"|format(stats.level_pcts['Básico']) }}%</small>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="fw-bold">{{ stats.levels['Proficiente'] }}</div>
+                                        <small class="text-muted">{{ "%.1f"|format(stats.level_pcts['Proficiente']) }}%</small>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="fw-bold">{{ stats.levels['Avançado'] }}</div>
+                                        <small class="text-muted">{{ "%.1f"|format(stats.level_pcts['Avançado']) }}%</small>
+                                    </td>
+                                    <td class="text-center">
+                                        <button class="btn btn-sm btn-outline-primary shadow-sm" onclick="showSchoolDetails('{{ inep }}')">
+                                            <i class="bi bi-search me-1"></i> Detalhar
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endif %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        </div>
+        </div> <!-- Fechamento da guia #escolas -->
+
+        <!-- Guia Escola -->
+        <div class="tab-pane fade" id="escola-detalhe" role="tabpanel" aria-labelledby="escola-detalhe-tab">
+            <div id="school-detail-container">
+                <div class="alert alert-info shadow-sm">
+                    <i class="bi bi-info-circle me-2"></i> Selecione uma escola na guia "Escolas" clicando em "Detalhar" para ver os resultados por turma.
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            $('.datatable-results').DataTable({
+                "pageLength": 30,
+                "lengthChange": false,
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json",
+                    "search": "Pesquisar:"
+                }
+            });
+            
+            // Adjust table columns when switching tabs
+            $('button[data-bs-toggle="pill"], button[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+                $.fn.dataTable.tables({ visible: true, api: true }).columns.adjust();
+            });
+        });
+        
+        const resultsData = {{ results_data | tojson | safe }};
+        
+        function getBadgeClass(prof) {
+            if (prof < 50) return 'bg-danger';
+            if (prof < 70) return 'bg-warning text-dark';
+            return 'bg-success';
+        }
+        
+        function showSchoolDetails(inep) {
+            try {
+                const school = resultsData[inep];
+                if (!school) {
+                    console.error("School not found in resultsData:", inep);
+                    return;
+                }
+                
+                // Ativar a guia "Escola"
+                const tabEl = document.getElementById('escola-detalhe-tab');
+                tabEl.disabled = false;
+                const tab = new bootstrap.Tab(tabEl);
+                tab.show();
+                
+                tabEl.innerText = school.name;
+                
+                let html = `
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="text-primary mb-0"><i class="bi bi-building me-2"></i>${school.name} - Detalhamento por Turma</h5>
+                    <a href="{{ url_for('external_evaluations.print_school_report') }}?evaluation_id={{ evaluation_id }}&year={{ year }}&esc_inep=${inep}" target="_blank" class="btn btn-primary d-print-none">
+                        <i class="bi bi-printer me-2"></i> Imprimir Relatório
+                    </a>
+                </div>
+                `;
+                
+                // Para cada disciplina
+                for (const [disName, stats] of Object.entries(school.disciplines)) {
+                    html += `
+                    <div class="card shadow-sm border-0 mb-4">
+                        <div class="card-header bg-white border-bottom-0 pt-3 pb-0">
+                            <h6 class="fw-bold mb-0">${disName}</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0 table-turmas">
+                                    <thead class="table-light small">
+                                        <tr>
+                                            <th>Turma</th>
+                                            <th class="text-center">Proficiência Média</th>
+                                            <th class="text-center">AB<br><span class="text-muted fw-normal">(Alunos / %)</span></th>
+                                            <th class="text-center">Ba<br><span class="text-muted fw-normal">(Alunos / %)</span></th>
+                                            <th class="text-center">Pr<br><span class="text-muted fw-normal">(Alunos / %)</span></th>
+                                            <th class="text-center">Av<br><span class="text-muted fw-normal">(Alunos / %)</span></th>
+                                            <th class="text-center d-print-none">Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                    `;
+                    
+                    // Iterar nas turmas, verificando se stats.turmas existe
+                    if (!stats.turmas) {
+                        console.warn("Nenhuma turma encontrada para:", disName);
+                        continue;
+                    }
+                    
+                    const sortedTurmas = Object.values(stats.turmas).sort((a, b) => String(a.name || '').localeCompare(String(b.name || '')));
+                    
+                    for (const t of sortedTurmas) {
+                        html += `
+                                        <tr>
+                                            <td class="fw-bold">${t.name || 'Turma Desconhecida'}</td>
+                                            <td class="text-center">
+                                                <span class="badge ${getBadgeClass(t.avg_prof || 0)} fs-6 px-3 py-2 rounded-pill shadow-sm">
+                                                    ${(t.avg_prof || 0).toFixed(1)}%
+                                                </span>
+                                            </td>
+                                            <td class="text-center">
+                                                <div class="fw-bold">${t.levels ? t.levels['Abaixo do básico'] : 0}</div>
+                                                <small class="text-muted">${t.level_pcts ? t.level_pcts['Abaixo do básico'].toFixed(1) : '0.0'}%</small>
+                                            </td>
+                                            <td class="text-center">
+                                                <div class="fw-bold">${t.levels ? t.levels['Básico'] : 0}</div>
+                                                <small class="text-muted">${t.level_pcts ? t.level_pcts['Básico'].toFixed(1) : '0.0'}%</small>
+                                            </td>
+                                            <td class="text-center">
+                                                <div class="fw-bold">${t.levels ? t.levels['Proficiente'] : 0}</div>
+                                                <small class="text-muted">${t.level_pcts ? t.level_pcts['Proficiente'].toFixed(1) : '0.0'}%</small>
+                                            </td>
+                                            <td class="text-center">
+                                                <div class="fw-bold">${t.levels ? t.levels['Avançado'] : 0}</div>
+                                                <small class="text-muted">${t.level_pcts ? t.level_pcts['Avançado'].toFixed(1) : '0.0'}%</small>
+                                            </td>
+                                            <td class="text-center d-print-none">
+                                                <button class="btn btn-sm btn-outline-info shadow-sm" onclick="showTurmaStudents('${inep}', '${disName}', '${t.name}')">
+                                                    <i class="bi bi-people me-1"></i> Alunos
+                                                </button>
+                                            </td>
+                                        </tr>
+                        `;
+                    }
+                    
+                    html += `
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    `;
+                }
+                
+                document.getElementById('school-detail-container').innerHTML = html;
+                
+                // Iniciar DataTables para as novas tabelas
+                setTimeout(() => {
+                    $('.table-turmas').DataTable({
+                        "pageLength": 30,
+                        "lengthChange": false,
+                        "language": {
+                            "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
+                        }
+                    });
+                }, 100);
+            } catch (err) {
+                console.error("Erro ao detalhar escola:", err);
+                alert("Ocorreu um erro ao carregar os detalhes da escola. Verifique o console.");
+            }
+        }
+        
+        function showTurmaStudents(inep, disName, turName) {
+            const evaluationId = "{{ evaluation_id }}";
+            
+            // Show loading in modal
+            const modalBody = document.getElementById('studentsModalBody');
+            modalBody.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Carregando...</span></div></div>';
+            
+            const modal = new bootstrap.Modal(document.getElementById('studentsModal'));
+            modal.show();
+            
+            document.getElementById('studentsModalTitle').innerText = `Alunos - ${turName} (${disName})`;
+            
+            // Atualizar o href do botão de imprimir alunos
+            const printBtn = document.getElementById('btnPrintStudents');
+            printBtn.href = `{{ url_for('external_evaluations.print_turma_students_report') }}?evaluation_id=${evaluationId}&esc_inep=${encodeURIComponent(inep)}&dis_nome=${encodeURIComponent(disName)}&tur_nome=${encodeURIComponent(turName)}`;
+            
+            fetch(`{{ url_for('external_evaluations.turma_students_api') }}?evaluation_id=${evaluationId}&esc_inep=${encodeURIComponent(inep)}&dis_nome=${encodeURIComponent(disName)}&tur_nome=${encodeURIComponent(turName)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        modalBody.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
+                        return;
+                    }
+                    
+                    if (!data.students || data.students.length === 0) {
+                        modalBody.innerHTML = '<div class="alert alert-warning">Nenhum aluno encontrado.</div>';
+                        return;
+                    }
+                    
+                    let html = `
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0" id="studentsTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Nome do Aluno</th>
+                                    <th class="text-center">Questões (Acertos / Total)</th>
+                                    <th class="text-center">Proficiência (%)</th>
+                                    <th class="text-center">Nível</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                    `;
+                    
+                    data.students.forEach(student => {
+                        let levelBadge = '';
+                        if (student.level === 'Abaixo do básico') levelBadge = 'bg-danger';
+                        else if (student.level === 'Básico') levelBadge = 'bg-warning text-dark';
+                        else if (student.level === 'Proficiente') levelBadge = 'bg-info text-dark';
+                        else levelBadge = 'bg-success';
+                        
+                        html += `
+                                <tr>
+                                    <td class="fw-bold">${student.name}</td>
+                                    <td class="text-center">${student.correct} / ${student.total}</td>
+                                    <td class="text-center fw-bold">${student.prof}%</td>
+                                    <td class="text-center"><span class="badge ${levelBadge}">${student.level}</span></td>
+                                </tr>
+                        `;
+                    });
+                    
+                    html += `
+                            </tbody>
+                        </table>
+                    </div>
+                    `;
+                    modalBody.innerHTML = html;
+                    
+                    // Inicializa DataTables para a lista de alunos
+                    $('#studentsTable').DataTable({
+                        "pageLength": 15,
+                        "lengthChange": false,
+                        "language": {
+                            "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json",
+                            "search": "Pesquisar Aluno:"
+                        }
+                    });
+                })
+                .catch(err => {
+                    console.error("Erro ao buscar alunos:", err);
+                    modalBody.innerHTML = '<div class="alert alert-danger">Erro de conexão ao buscar alunos.</div>';
+                });
+        }
+    </script>
+    
+    <!-- Modal para Alunos -->
+    <div class="modal fade" id="studentsModal" tabindex="-1" aria-labelledby="studentsModalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title fw-bold" id="studentsModalTitle">Alunos</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="studentsModalBody">
+                    <!-- Conteúdo dinâmico aqui -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                    <a href="#" target="_blank" id="btnPrintStudents" class="btn btn-primary"><i class="bi bi-printer me-1"></i> Imprimir</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    {% endif %}
+{% endif %}
+
+{% endblock %}

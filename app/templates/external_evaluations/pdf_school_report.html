@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Relatório da Escola</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 1cm;
+        }
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+            font-size: 12px;
+            color: #333;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #0d6efd;
+            padding-bottom: 10px;
+        }
+        .header h2 {
+            margin: 0;
+            color: #0d6efd;
+            font-size: 18px;
+        }
+        .header p {
+            margin: 5px 0 0 0;
+            font-size: 14px;
+        }
+        h3 {
+            font-size: 14px;
+            color: #444;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 5px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 6px;
+            text-align: center;
+        }
+        th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+        .text-left {
+            text-align: left;
+        }
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 10px;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>Relatório de Resultados por Escola</h2>
+        <p><strong>Escola:</strong> {{ school_name }}</p>
+        <p><strong>Avaliação:</strong> {{ evaluation_name }} | <strong>Ano Escolar:</strong> {{ year }}</p>
+    </div>
+
+    {% for dis_nome, stats in disciplines_data.items() %}
+    <h3>Componente Curricular: {{ dis_nome }}</h3>
+    <table>
+        <thead>
+            <tr>
+                <th class="text-left">Turma</th>
+                <th>Proficiência Média</th>
+                <th>Abaixo do Básico (Alunos / %)</th>
+                <th>Básico (Alunos / %)</th>
+                <th>Proficiente (Alunos / %)</th>
+                <th>Avançado (Alunos / %)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for t_name, t_stats in stats['turmas'].items() %}
+            <tr>
+                <td class="text-left">{{ t_name }}</td>
+                <td>{{ "%.1f"|format(t_stats.avg_prof) }}%</td>
+                <td>{{ t_stats.levels.get('Abaixo do básico', 0) }} / {{ "%.1f"|format(t_stats.level_pcts.get('Abaixo do básico', 0)) }}%</td>
+                <td>{{ t_stats.levels.get('Básico', 0) }} / {{ "%.1f"|format(t_stats.level_pcts.get('Básico', 0)) }}%</td>
+                <td>{{ t_stats.levels.get('Proficiente', 0) }} / {{ "%.1f"|format(t_stats.level_pcts.get('Proficiente', 0)) }}%</td>
+                <td>{{ t_stats.levels.get('Avançado', 0) }} / {{ "%.1f"|format(t_stats.level_pcts.get('Avançado', 0)) }}%</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>Nenhum dado encontrado.</p>
+    {% endfor %}
+
+    <div class="footer">
+        Gerado pelo SGE Plus
+        <br>Documento gerado eletronicamente.
+    </div>
+</body>
+</html>

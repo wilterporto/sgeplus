@@ -1,22 +1,34 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+    #schoolMap {
+        height: 600px;
+        width: 100%;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+</style>
 
 <!-- AI Progress Modal -->
-<div class="modal fade" id="aiProgressModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content border-0 shadow-lg">
-      <div class="modal-body p-5 text-center">
-        <div class="spinner-border text-primary mb-4" role="status" style="width: 4rem; height: 4rem;">
-            <span class="visually-hidden">Processando...</span>
+<div class="modal fade" id="aiProgressModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-body p-5 text-center">
+                <div class="spinner-border text-primary mb-4" role="status" style="width: 4rem; height: 4rem;">
+                    <span class="visually-hidden">Processando...</span>
+                </div>
+                <h5 id="aiStatusText" class="text-primary fw-bold mb-4">Iniciando análise inteligente dos dados...</h5>
+                <div class="progress" style="height: 12px; border-radius: 6px;">
+                    <div id="aiProgressBar" class="progress-bar progress-bar-striped progress-bar-animated bg-primary"
+                        role="progressbar" style="width: 0%"></div>
+                </div>
+            </div>
         </div>
-        <h5 id="aiStatusText" class="text-primary fw-bold mb-4">Iniciando análise inteligente dos dados...</h5>
-        <div class="progress" style="height: 12px; border-radius: 6px;">
-            <div id="aiProgressBar" class="progress-bar progress-bar-striped progress-bar-animated bg-primary" role="progressbar" style="width: 0%"></div>
-        </div>
-      </div>
     </div>
-  </div>
 </div>
 
 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -24,7 +36,8 @@
         <h4 class="mb-1">Dashboard de Avaliações Externas</h4>
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item"><a href="{{ url_for('main.index') }}" class="text-decoration-none">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('main.index') }}"
+                        class="text-decoration-none">Dashboard</a></li>
                 <li class="breadcrumb-item active" aria-current="page">Dashboard de Avaliações</li>
             </ol>
         </nav>
@@ -41,7 +54,8 @@
                 <select name="evaluation_id" id="evaluation_id" class="form-select" onchange="this.form.submit()">
                     <option value="">Selecione...</option>
                     {% for eval_opt in evaluations %}
-                    <option value="{{ eval_opt.id }}" {% if evaluation and evaluation.id == eval_opt.id %}selected{% endif %}>{{ eval_opt.name }}</option>
+                    <option value="{{ eval_opt.id }}" {% if evaluation and evaluation.id==eval_opt.id %}selected{% endif
+                        %}>{{ eval_opt.name }}</option>
                     {% endfor %}
                 </select>
             </div>
@@ -61,26 +75,25 @@
     <div class="card-body bg-light">
         <form id="filterForm" class="row g-3">
             <div class="col-md-3">
-                <label class="form-label text-danger">Disciplina *</label>
-                <select class="form-select border-danger" id="filterDisciplina" onchange="updateFilters()">
-                    <option value="">Selecione a Disciplina...</option>
-                    {% for dis in available_disciplines %}
-                    <option value="{{ dis }}">{{ dis }}</option>
+                <label class="form-label text-danger">Ano Escolar (Série) *</label>
+                <select class="form-select border-danger" id="filterYear" onchange="updateFilters()">
+                    <option value="">Selecione o Ano Escolar...</option>
+                    {% for year in available_years %}
+                    <option value="{{ year }}">{{ year }}</option>
                     {% endfor %}
                 </select>
             </div>
             <div class="col-md-2">
-                <label class="form-label">Ano Escolar (Série)</label>
-                <select class="form-select" id="filterYear">
-                    <option value="">Todos</option>
-                    
+                <label class="form-label">Disciplina</label>
+                <select class="form-select" id="filterDisciplina">
+                    <option value="">Todas</option>
                 </select>
             </div>
             <div class="col-md-2">
                 <label class="form-label">Turno (Período)</label>
                 <select class="form-select" id="filterShift">
                     <option value="">Todos</option>
-                    
+
                 </select>
             </div>
             <div class="col-md-3">
@@ -106,25 +119,44 @@
 
 <div id="dashboardContent" class="d-none">
 
+    <ul class="nav nav-tabs mb-4" id="dashboardTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview" type="button" role="tab" aria-controls="overview" aria-selected="true">Visão Geral</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="questions-tab" data-bs-toggle="tab" data-bs-target="#questions" type="button" role="tab" aria-controls="questions" aria-selected="false">Análise de Questões</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="rankings-tab" data-bs-toggle="tab" data-bs-target="#rankings" type="button" role="tab" aria-controls="rankings" aria-selected="false">Rankings</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="map-tab" data-bs-toggle="tab" data-bs-target="#map-pane" type="button" role="tab" aria-controls="map-pane" aria-selected="false">Mapa das Escolas</button>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="dashboardTabsContent">
+        <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview-tab">
+
     <!-- Cards de Resumo -->
     <div class="row mb-4" id="summaryCards">
-        <div class="col-md-4 mb-3">
+        <!-- Linha 1 -->
+        <div class="col-md-3 mb-3">
             <div class="card bg-primary text-white h-100 shadow-sm border-0">
                 <div class="card-body">
-                    <h6 class="card-title opacity-75">Total de Participantes</h6>
+                    <h6 class="card-title opacity-75">Participação prevista</h6>
                     <h3 class="fw-bold mb-0" id="cardTotalParticipantes">-</h3>
                 </div>
             </div>
         </div>
-        <div class="col-md-4 mb-3">
+        <div class="col-md-3 mb-3">
             <div class="card bg-success text-white h-100 shadow-sm border-0">
                 <div class="card-body">
-                    <h6 class="card-title opacity-75">Participação</h6>
+                    <h6 class="card-title opacity-75">Participação efetiva</h6>
                     <h3 class="fw-bold mb-0" id="cardParticipacao">-</h3>
                 </div>
             </div>
         </div>
-        <div class="col-md-4 mb-3">
+        <div class="col-md-3 mb-3">
             <div class="card bg-danger text-white h-100 shadow-sm border-0">
                 <div class="card-body">
                     <h6 class="card-title opacity-75">Ausências Registradas</h6>
@@ -132,15 +164,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-4 mb-3">
-            <div class="card bg-info text-white h-100 shadow-sm border-0">
-                <div class="card-body">
-                    <h6 class="card-title opacity-75">Proficiência Média</h6>
-                    <h3 class="fw-bold mb-0" id="cardProficiencia">-</h3>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4 mb-3">
+        <div class="col-md-3 mb-3">
             <div class="card bg-warning text-dark h-100 shadow-sm border-0">
                 <div class="card-body">
                     <h6 class="card-title opacity-75">Alunos em Alerta</h6>
@@ -148,128 +172,322 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-4 mb-3">
+
+        <!-- Linha 2 -->
+        <div class="col-md-3 mb-3">
+            <div class="card bg-info text-white h-100 shadow-sm border-0">
+                <div class="card-body">
+                    <h6 class="card-title opacity-75">Proficiência Média</h6>
+                    <h3 class="fw-bold mb-0" id="cardProficiencia">-</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
             <div class="card bg-secondary text-white h-100 shadow-sm border-0" id="cardStatusWrapper">
                 <div class="card-body">
-                    <h6 class="card-title opacity-75">Status Rede</h6>
+                    <h6 class="card-title opacity-75">
+                        Status Rede 
+                        <i class="bi bi-info-circle ms-1" tabindex="0" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-content="Crítico (< 50%), Em evolução (50% a 70%), Excelente (> 70%)" style="cursor: pointer;"></i>
+                    </h6>
                     <h3 class="fw-bold mb-0" id="cardStatus">-</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card bg-dark text-white h-100 shadow-sm border-0">
+                <div class="card-body">
+                    <h6 class="card-title opacity-75">Turmas Participantes</h6>
+                    <h3 class="fw-bold mb-0" id="cardTurmasParticipantes">-</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card bg-dark text-white h-100 shadow-sm border-0 opacity-75">
+                <div class="card-body">
+                    <h6 class="card-title opacity-75">Part. Média/Turma</h6>
+                    <h3 class="fw-bold mb-0" id="cardAvgClassPart">-</h3>
                 </div>
             </div>
         </div>
     </div>
 
     <div class="row mb-4">
-    <div class="col-md-12 mb-4">
-        <div class="card shadow h-100">
-            <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                <h5 class="mb-0 text-primary" id="drilldownTitle">Desempenho Geral - Rede</h5>
-                <button class="btn btn-sm btn-outline-secondary d-none" id="btnBackDrilldown" onclick="goBackDrilldown()">
-                    <i class="bi bi-arrow-left"></i> Voltar Nível
-                </button>
+        <div class="col-md-12 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 text-primary" id="drilldownTitle">Desempenho Geral - Rede</h5>
+                    <div class="d-flex align-items-center gap-2">
+                        <span id="drilldownPaginationInfo" class="text-muted small"></span>
+                        <button class="btn btn-sm btn-outline-primary d-none" id="btnPrevDrilldown"
+                            onclick="prevDrilldownPage()">
+                            <i class="bi bi-chevron-left"></i> Anterior
+                        </button>
+                        <button class="btn btn-sm btn-outline-primary d-none" id="btnNextDrilldown"
+                            onclick="nextDrilldownPage()">
+                            Próxima <i class="bi bi-chevron-right"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-secondary d-none" id="btnBackDrilldown"
+                            onclick="goBackDrilldown()">
+                            <i class="bi bi-arrow-left"></i> Voltar Nível
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div style="height: 400px; position: relative;">
+                        <canvas id="drilldownChart"></canvas>
+                    </div>
+                </div>
             </div>
-            <div class="card-body">
-                <div style="height: 400px; position: relative;">
-                    <canvas id="drilldownChart"></canvas>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-header bg-white border-0 pt-4 pb-0 text-center">
+                    <h5 class="fw-bold text-secondary mb-0">Distribuição de Proficiência</h5>
+                </div>
+                <div class="card-body d-flex justify-content-center">
+                    <div style="width: 100%; max-width: 400px; position: relative;">
+                        <canvas id="donutChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-header bg-white border-0 pt-4 pb-0 text-center">
+                    <h5 class="fw-bold text-secondary mb-0">Frequência vs Desempenho</h5>
+                </div>
+                <div class="card-body d-flex justify-content-center align-items-center">
+                    <div style="width: 100%; height: 300px; position: relative;">
+                        <canvas id="scatterChart"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Desempenho por Cor/Raça</h5>
+                </div>
+                <div class="card-body">
+                    <div style="height: 300px; position: relative;">
+                        <canvas id="raceChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Desempenho por Sexo</h5>
+                </div>
+                <div class="card-body">
+                    <div style="height: 300px; position: relative;">
+                        <canvas id="genderChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0" style="font-size: 1.1rem;">10 Melhores Competências</h5>
+                </div>
+                <div class="card-body">
+                    <div style="height: 400px; position: relative;">
+                        <canvas id="topCompetencesChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0" style="font-size: 1.1rem;">10 Piores Competências</h5>
+                </div>
+                <div class="card-body">
+                    <div style="height: 400px; position: relative;">
+                        <canvas id="bottomCompetencesChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0" style="font-size: 1.1rem;">Competências sem acertos</h5>
+                </div>
+                <div class="card-body">
+                    <div style="height: 400px; position: relative;">
+                        <canvas id="zeroCompetencesChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col-12 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Justificativas de Ausência (Alunos que não realizaram a prova)</h5>
+                </div>
+                <div class="card-body">
+                    <div style="height: 350px; position: relative;">
+                        <canvas id="justificationsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    <!-- Fim Tab Visão Geral -->
     
-    <div class="col-md-6 mx-auto">
-        <div class="card shadow h-100">
-            <div class="card-header bg-white border-0 pt-4 pb-0 text-center">
-                <h5 class="fw-bold text-secondary mb-0">Distribuição de Proficiência</h5>
-            </div>
-            <div class="card-body d-flex justify-content-center">
-                <div style="width: 100%; max-width: 400px; position: relative;">
-                    <canvas id="donutChart"></canvas>
+    <!-- Tab Análise de Questões -->
+    <div class="tab-pane fade" id="questions" role="tabpanel" aria-labelledby="questions-tab">
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow h-100">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">Análise de Itens (Percentual de Performance)</h5>
+                    </div>
+                    <div class="card-body">
+                        <div style="height: 400px; position: relative;">
+                            <canvas id="questionsChart"></canvas>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</div>
 
-<div class="row">
-    <div class="col-md-6 mb-4">
-        <div class="card shadow h-100">
-            <div class="card-header bg-white">
-                <h5 class="mb-0">Desempenho por Cor/Raça</h5>
-            </div>
-            <div class="card-body">
-                <div style="height: 300px; position: relative;">
-                    <canvas id="raceChart"></canvas>
+        <div class="row">
+            <div class="col-12 mb-4">
+                <div class="card shadow">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">Detalhamento da Performance por Questão</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped mb-0 text-center">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Questão</th>
+                                        <th class="text-start">Habilidade (Código/Desc.)</th>
+                                        <th>Acertos</th>
+                                        <th>Erros</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="questionsTableBody">
+                                    <!-- Populated via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-md-6 mb-4">
-        <div class="card shadow h-100">
-            <div class="card-header bg-white">
-                <h5 class="mb-0">Desempenho por Sexo</h5>
-            </div>
-            <div class="card-body">
-                <div style="height: 300px; position: relative;">
-                    <canvas id="genderChart"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+    <!-- Fim Tab Análise de Questões -->
 
-<div class="row">
-    <div class="col-md-4 mb-4">
-        <div class="card shadow h-100">
-            <div class="card-header bg-white">
-                <h5 class="mb-0" style="font-size: 1.1rem;">10 Melhores Competências</h5>
-            </div>
-            <div class="card-body">
-                <div style="height: 400px; position: relative;">
-                    <canvas id="topCompetencesChart"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4 mb-4">
-        <div class="card shadow h-100">
-            <div class="card-header bg-white">
-                <h5 class="mb-0" style="font-size: 1.1rem;">10 Piores Competências</h5>
-            </div>
-            <div class="card-body">
-                <div style="height: 400px; position: relative;">
-                    <canvas id="bottomCompetencesChart"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4 mb-4">
-        <div class="card shadow h-100">
-            <div class="card-header bg-white">
-                <h5 class="mb-0" style="font-size: 1.1rem;">Competências sem acertos</h5>
-            </div>
-            <div class="card-body">
-                <div style="height: 400px; position: relative;">
-                    <canvas id="zeroCompetencesChart"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+    <!-- Tab Rankings -->
+    <div class="tab-pane fade" id="rankings" role="tabpanel" aria-labelledby="rankings-tab">
+        <ul class="nav nav-pills mb-4" id="rankingSubTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active fw-bold" id="ranking-top-tab" data-bs-toggle="pill" data-bs-target="#ranking-top" type="button" role="tab" aria-controls="ranking-top" aria-selected="true">15 Melhores Escolas</button>
+            </li>
+            <li class="nav-item ms-2" role="presentation">
+                <button class="nav-link fw-bold" id="ranking-bottom-tab" data-bs-toggle="pill" data-bs-target="#ranking-bottom" type="button" role="tab" aria-controls="ranking-bottom" aria-selected="false">15 Piores Escolas</button>
+            </li>
+            <li class="nav-item ms-2" role="presentation">
+                <button class="nav-link fw-bold" id="ranking-classes-top-tab" data-bs-toggle="pill" data-bs-target="#ranking-classes-top" type="button" role="tab" aria-controls="ranking-classes-top" aria-selected="false">15 Melhores Turmas</button>
+            </li>
+            <li class="nav-item ms-2" role="presentation">
+                <button class="nav-link fw-bold" id="ranking-classes-bottom-tab" data-bs-toggle="pill" data-bs-target="#ranking-classes-bottom" type="button" role="tab" aria-controls="ranking-classes-bottom" aria-selected="false">15 Piores Turmas</button>
+            </li>
+        </ul>
 
-
-<div class="row">
-    <div class="col-12 mb-4">
-        <div class="card shadow h-100">
-            <div class="card-header bg-white">
-                <h5 class="mb-0">Justificativas de Ausência (Alunos que não realizaram a prova)</h5>
+        <div class="tab-content" id="rankingSubTabsContent">
+            <div class="tab-pane fade show active" id="ranking-top" role="tabpanel" aria-labelledby="ranking-top-tab">
+                <div class="row" id="rankingTopList">
+                    <!-- Populated by JS -->
+                </div>
             </div>
-            <div class="card-body">
-                <div style="height: 350px; position: relative;">
-                    <canvas id="justificationsChart"></canvas>
+            <div class="tab-pane fade" id="ranking-bottom" role="tabpanel" aria-labelledby="ranking-bottom-tab">
+                <div class="row" id="rankingBottomList">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+            <div class="tab-pane fade" id="ranking-classes-top" role="tabpanel" aria-labelledby="ranking-classes-top-tab">
+                <div class="row" id="rankingClassesTopList">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+            <div class="tab-pane fade" id="ranking-classes-bottom" role="tabpanel" aria-labelledby="ranking-classes-bottom-tab">
+                <div class="row" id="rankingClassesBottomList">
+                    <!-- Populated by JS -->
                 </div>
             </div>
         </div>
     </div>
-</div>
+    <!-- Fim Tab Rankings -->
+    </div>
+    <!-- Fim Tab Rankings -->
+    
+    <!-- Tab Mapa -->
+    <div class="tab-pane fade" id="map-pane" role="tabpanel" aria-labelledby="map-tab">
+        
+        <div class="row mb-3 mt-2">
+            <div class="col-md-6 mb-3">
+                <label class="fw-bold mb-1 text-primary">Nível de proficiência dos alunos</label>
+                <div class="input-group shadow-sm">
+                    <select class="form-select" id="mapFilterStudentLevel" onchange="applyMapFilters()">
+                        <option value="">Todos os Níveis</option>
+                        <option value="Abaixo do básico">Abaixo do básico</option>
+                        <option value="Básico">Básico</option>
+                        <option value="Proficiente">Proficiente</option>
+                        <option value="Avançado">Avançado</option>
+                    </select>
+                    <button class="btn btn-primary" onclick="printStudentLevelReport()"><i class="bi bi-printer me-1"></i> Imprimir Relação</button>
+                </div>
+                <small class="text-muted d-block mt-1">Gera um relatório impresso com os alunos neste nível (respeitando os filtros do topo da página).</small>
+            </div>
+            
+            <div class="col-md-6 mb-3">
+                <label class="fw-bold mb-1 text-primary">Proficiência da escola</label>
+                <div class="input-group shadow-sm">
+                    <select class="form-select" id="mapFilterSchoolProficiencyOperator" onchange="toggleSchoolProficiencyInput()">
+                        <option value="">Nenhum Filtro</option>
+                        <option value="acima">Acima de</option>
+                        <option value="abaixo">Abaixo de</option>
+                    </select>
+                    <input type="number" class="form-control d-none" id="mapFilterSchoolProficiencyValue" placeholder="Valor %" style="max-width: 100px;">
+                    <button class="btn btn-secondary d-none" id="btnApplySchoolFilter" onclick="applyMapFilters()"><i class="bi bi-funnel"></i> Filtrar Mapa</button>
+                    <button class="btn btn-primary" onclick="printSchoolProficiencyReport()"><i class="bi bi-printer me-1"></i> Imprimir Relatório</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-12">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body p-0">
+                        <div id="schoolMap"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Fim Tab Mapa -->
+    </div>
+
 </div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
@@ -278,7 +496,7 @@
     let currentSchoolInep = null;
     let currentYear = null;
     let currentClass = null;
-    
+
     let drilldownChartObj = null;
     let raceChartObj = null;
     let genderChartObj = null;
@@ -286,25 +504,26 @@
     let bottomCompChartObj = null;
     let zeroCompChartObj = null;
     let justChartObj = null;
-    
+    let questionsChartObj = null;
+
     const evaluationId = {% if evaluation %}{{ evaluation.id }}{% else %}null{% endif %};
     function updateFilters() {
-        const disNome = document.getElementById('filterDisciplina').value;
-        const yearSelect = document.getElementById('filterYear');
+        const filterYear = document.getElementById('filterYear').value;
         const shiftSelect = document.getElementById('filterShift');
-        
-        yearSelect.innerHTML = '<option value="">Todos</option>';
+        const discSelect = document.getElementById('filterDisciplina');
+
         shiftSelect.innerHTML = '<option value="">Todos</option>';
-        
-        if (!disNome) return;
-        
-        fetch(`/external_evaluations/evaluations/${evaluationId}/dashboard_filters_api?dis_nome=${encodeURIComponent(disNome)}`)
+        discSelect.innerHTML = '<option value="">Todas</option>';
+
+        if (!filterYear) return;
+
+        fetch(`/external_evaluations/evaluations/${evaluationId}/dashboard_filters_api?year=${encodeURIComponent(filterYear)}`)
             .then(res => res.json())
             .then(data => {
-                data.years.forEach(y => {
+                data.disciplines.forEach(d => {
                     const opt = document.createElement('option');
-                    opt.value = y; opt.textContent = y;
-                    yearSelect.appendChild(opt);
+                    opt.value = d; opt.textContent = d;
+                    discSelect.appendChild(opt);
                 });
                 data.shifts.forEach(s => {
                     const opt = document.createElement('option');
@@ -330,41 +549,41 @@
         if (!aiModalInstance) {
             aiModalInstance = new bootstrap.Modal(document.getElementById('aiProgressModal'));
         }
-        
+
         const statusText = document.getElementById('aiStatusText');
         const progressBar = document.getElementById('aiProgressBar');
-        
+
         progressBar.style.width = '0%';
         aiModalInstance.show();
-        
+
         let step = 0;
         const totalSteps = aiPhrases.length;
-        
+
         if (aiInterval) clearInterval(aiInterval);
-        
+
         aiInterval = setInterval(() => {
             // Keep cycling phrases until data is ready, cap progress at 95%
             const currentPhrase = aiPhrases[step % totalSteps];
             statusText.textContent = currentPhrase;
-            
+
             // Increment progress, but never reach 100% until stopAiSimulation is called
             const currentWidth = parseFloat(progressBar.style.width) || 0;
             if (currentWidth < 95) {
                 progressBar.style.width = `${currentWidth + 15}%`;
             }
-            
+
             step++;
-        }, 1200); 
+        }, 1200);
     }
-    
+
     function stopAiSimulation() {
         if (aiInterval) clearInterval(aiInterval);
         const statusText = document.getElementById('aiStatusText');
         const progressBar = document.getElementById('aiProgressBar');
-        
+
         statusText.textContent = "Finalizando renderização do dashboard...";
         progressBar.style.width = '100%';
-        
+
         setTimeout(() => {
             if (aiModalInstance) {
                 aiModalInstance.hide();
@@ -394,29 +613,29 @@
     }
 
     function buildApiUrl() {
-        let url = `/external_evaluations/evaluations/${evaluationId}/dashboard_api?level=${drilldownLevel}&dis_nome=${encodeURIComponent(document.getElementById("filterDisciplina").value)}`;
-        
-        const filterYear = document.getElementById('filterYear').value;
+        let url = `/external_evaluations/evaluations/${evaluationId}/dashboard_api?level=${drilldownLevel}&year=${encodeURIComponent(document.getElementById("filterYear").value)}`;
+
+        const filterDisNome = document.getElementById('filterDisciplina').value;
         const filterShift = document.getElementById('filterShift').value;
-        
-        if (filterYear) url += `&filter_year=${encodeURIComponent(filterYear)}`;
+
+        if (filterDisNome) url += `&filter_dis_nome=${encodeURIComponent(filterDisNome)}`;
         if (filterShift) url += `&filter_shift=${encodeURIComponent(filterShift)}`;
-        
+
         if (currentRegionalId) url += `&regional_id=${encodeURIComponent(currentRegionalId)}`;
         if (currentSchoolInep) url += `&school_inep=${encodeURIComponent(currentSchoolInep)}`;
         if (currentYear) url += `&ser_nome=${encodeURIComponent(currentYear)}`;
         if (currentClass) url += `&tur_nome=${encodeURIComponent(currentClass)}`;
-        
+
         return url;
     }
 
     function loadDashboard(simulate = true) {
-        const disNome = document.getElementById('filterDisciplina').value;
-        if (!disNome) {
-            alert('Por favor, informe a Disciplina para carregar os dados.');
+        const year = document.getElementById('filterYear').value;
+        if (!year) {
+            alert('Por favor, informe o Ano Escolar (Série) para carregar os dados.');
             return;
         }
-        
+
         if (simulate) {
             startAiSimulation();
             fetchDashboardData().then(() => {
@@ -430,46 +649,56 @@
             fetchDashboardData();
         }
     }
-    
+
     function fetchDashboardData() {
         return new Promise((resolve, reject) => {
-        // Update Title and Back Button
-        const titleMap = {
-            'rede': 'Desempenho Geral - Rede (Clique na barra para Regionais)',
-            'regionals': 'Desempenho por Regional (Clique na barra para Escolas)',
-            'school': 'Desempenho por Escola (Clique na barra para Anos Escolares)',
-            'year': 'Desempenho por Ano Escolar (Clique na barra para Turmas)',
-            'class': 'Desempenho por Turma (Clique na barra para Alunos)',
-            'student': 'Desempenho por Aluno'
-        };
-        document.getElementById('drilldownTitle').innerText = titleMap[drilldownLevel];
-        
-        const btnBack = document.getElementById('btnBackDrilldown');
-        if (drilldownLevel === 'rede') {
-            btnBack.classList.add('d-none');
-        } else {
-            btnBack.classList.remove('d-none');
-        }
+            // Update Title and Back Button
+            const titleMap = {
+                'rede': 'Desempenho Geral - Rede (Clique na barra para Regionais)',
+                'regionals': 'Desempenho por Regional (Clique na barra para Escolas)',
+                'school': 'Desempenho por Escola (Clique na barra para Anos Escolares)',
+                'year': 'Desempenho por Ano Escolar (Clique na barra para Turmas)',
+                'class': 'Desempenho por Turma (Clique na barra para Alunos)',
+                'student': 'Desempenho por Aluno'
+            };
+            document.getElementById('drilldownTitle').innerText = titleMap[drilldownLevel];
 
-        fetch(buildApiUrl())
-            .then(response => response.json())
-            .then(data => {
-                updateDrilldownChart(data.drilldown);
-                updateRaceChart(data.race);
-                updateGenderChart(data.gender);
-                updateCompetencesCharts(data.radar);
-                updateJustificationsChart(data.justifications);
-                updateSummaryCards(data.summary);
-                updateDonutChart(data.donut);
-                resolve();
-            }).catch(err => {
-                console.error(err);
-                reject(err);
-            });
+            const btnBack = document.getElementById('btnBackDrilldown');
+            if (drilldownLevel === 'rede') {
+                btnBack.classList.add('d-none');
+            } else {
+                btnBack.classList.remove('d-none');
+            }
+
+            fetch(buildApiUrl())
+                .then(response => response.json())
+                .then(data => {
+                    updateDrilldownChart(data.drilldown);
+                    updateRaceChart(data.race);
+                    updateGenderChart(data.gender);
+                    updateCompetencesCharts(data.radar);
+                    updateJustificationsChart(data.justifications);
+                    updateSummaryCards(data.summary);
+                    updateDonutChart(data.donut);
+                    updateScatterChart(data.scatter);
+                    if (data.questions) {
+                        updateQuestionsAnalysis(data.questions);
+                    }
+                    if (data.ranking) {
+                        updateRankingData(data.ranking);
+                    }
+                    if (data.map) {
+                        updateMapData(data.map);
+                    }
+                    resolve();
+                }).catch(err => {
+                    console.error(err);
+                    reject(err);
+                });
         });
     }
 
-    
+
     let donutChartObj = null;
 
     function updateSummaryCards(summary) {
@@ -478,11 +707,14 @@
         document.getElementById('cardAusencias').textContent = `${summary.total_absent} (${summary.absent_pct}%)`;
         document.getElementById('cardProficiencia').textContent = `${summary.avg_proficiency}%`;
         document.getElementById('cardAlerta').textContent = `${summary.alerta_qtd} (${summary.alerta_pct}%)`;
-        
+
+        document.getElementById('cardTurmasParticipantes').textContent = summary.total_turmas;
+        document.getElementById('cardAvgClassPart').textContent = summary.avg_class_part_pct + '%';
+
         const statusEl = document.getElementById('cardStatus');
         const statusWrap = document.getElementById('cardStatusWrapper');
         statusEl.textContent = summary.status_rede;
-        
+
         statusWrap.classList.remove('bg-danger', 'bg-warning', 'bg-success', 'bg-secondary');
         if (summary.status_rede === 'Crítico') {
             statusWrap.classList.add('bg-danger');
@@ -534,13 +766,80 @@
         });
     }
 
-    function updateDrilldownChart(data) {
-        const ctx = document.getElementById('drilldownChart').getContext('2d');
-        
-        if (drilldownChartObj) {
-            drilldownChartObj.destroy();
-        }
+    let scatterChartObj = null;
 
+    function updateScatterChart(data) {
+        const ctx = document.getElementById('scatterChart').getContext('2d');
+        if (scatterChartObj) scatterChartObj.destroy();
+
+        scatterChartObj = new Chart(ctx, {
+            type: 'scatter',
+            data: {
+                datasets: [{
+                    label: 'Alunos',
+                    data: data,
+                    backgroundColor: 'rgba(13, 110, 253, 0.6)',
+                    borderColor: '#0d6efd',
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Frequência (%)'
+                        },
+                        min: 0,
+                        max: 100
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Acertos (%)'
+                        },
+                        min: 0,
+                        max: 100
+                    }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                const itemLabel = context.raw.label || '';
+                                return `${itemLabel ? itemLabel + ' - ' : ''}Frequência: ${context.parsed.x}% | Acertos: ${context.parsed.y}%`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    let currentDrilldownData = [];
+    let drilldownCurrentPage = 1;
+    const drilldownItemsPerPage = 10;
+
+    function prevDrilldownPage() {
+        if (drilldownCurrentPage > 1) {
+            drilldownCurrentPage--;
+            renderDrilldownChart();
+        }
+    }
+
+    function nextDrilldownPage() {
+        const totalPages = Math.ceil(currentDrilldownData.length / drilldownItemsPerPage);
+        if (drilldownCurrentPage < totalPages) {
+            drilldownCurrentPage++;
+            renderDrilldownChart();
+        }
+    }
+
+    function updateDrilldownChart(data) {
         const filterSort = document.getElementById('filterSort').value;
         if (filterSort === 'acerto_desc') {
             data.sort((a, b) => b.value - a.value);
@@ -567,9 +866,50 @@
             data.sort((a, b) => String(a.label).localeCompare(String(b.label)));
         }
 
-        const labels = data.map(item => item.label);
-        const values = data.map(item => item.value); // Percentage
-        const ids = data.map(item => item.id);
+        currentDrilldownData = data;
+        drilldownCurrentPage = 1;
+        renderDrilldownChart();
+    }
+
+    function renderDrilldownChart() {
+        const data = currentDrilldownData;
+        const totalItems = data.length;
+        const totalPages = Math.ceil(totalItems / drilldownItemsPerPage) || 1;
+
+        const startIndex = (drilldownCurrentPage - 1) * drilldownItemsPerPage;
+        const endIndex = startIndex + drilldownItemsPerPage;
+        const paginatedData = data.slice(startIndex, endIndex);
+
+        const pageInfo = document.getElementById('drilldownPaginationInfo');
+        const btnPrev = document.getElementById('btnPrevDrilldown');
+        const btnNext = document.getElementById('btnNextDrilldown');
+
+        if (pageInfo) {
+            if (totalItems > drilldownItemsPerPage) {
+                pageInfo.textContent = `Pág. ${drilldownCurrentPage} de ${totalPages} (Total: ${totalItems})`;
+            } else {
+                pageInfo.textContent = '';
+            }
+        }
+
+        if (btnPrev) {
+            if (drilldownCurrentPage > 1) btnPrev.classList.remove('d-none');
+            else btnPrev.classList.add('d-none');
+        }
+
+        if (btnNext) {
+            if (drilldownCurrentPage < totalPages) btnNext.classList.remove('d-none');
+            else btnNext.classList.add('d-none');
+        }
+
+        const ctx = document.getElementById('drilldownChart').getContext('2d');
+        if (drilldownChartObj) {
+            drilldownChartObj.destroy();
+        }
+
+        const labels = paginatedData.map(item => item.label);
+        const values = paginatedData.map(item => item.value); // Percentage
+        const ids = paginatedData.map(item => item.id);
 
         drilldownChartObj = new Chart(ctx, {
             type: 'bar',
@@ -584,13 +924,13 @@
                     },
                     {
                         label: '% de Erro',
-                        data: data.map(item => (100 - (item.value + (item.absent || 0))).toFixed(2)),
+                        data: paginatedData.map(item => (100 - (item.value + (item.absent || 0))).toFixed(2)),
                         backgroundColor: '#fd7e14',
                         borderRadius: 4
                     },
                     {
                         label: '% Não Fizeram',
-                        data: data.map(item => (item.absent || 0).toFixed(2)),
+                        data: paginatedData.map(item => (item.absent || 0).toFixed(2)),
                         backgroundColor: '#dc3545',
                         borderRadius: 4
                     }
@@ -604,7 +944,7 @@
                     legend: { display: true, position: 'bottom' },
                     tooltip: {
                         callbacks: {
-                            label: function(context) {
+                            label: function (context) {
                                 return context.dataset.label + ': ' + context.parsed.x + '%';
                             }
                         }
@@ -622,7 +962,7 @@
                         const index = elements[0].index;
                         const clickedId = ids[index];
                         const clickedLabel = labels[index];
-                        
+
                         // Drill-down logic
                         if (drilldownLevel === 'rede') {
                             drilldownLevel = 'regionals';
@@ -631,14 +971,15 @@
                             currentRegionalId = clickedId;
                         } else if (drilldownLevel === 'school') {
                             drilldownLevel = 'year';
-                            currentYear = clickedLabel; // Using label as ID
+                            currentSchoolInep = clickedId;
                         } else if (drilldownLevel === 'year') {
                             drilldownLevel = 'class';
-                            currentClass = clickedLabel;
+                            currentYear = clickedId;
                         } else if (drilldownLevel === 'class') {
                             drilldownLevel = 'student';
+                            currentClass = clickedId;
                         }
-                        
+
                         if (drilldownLevel !== 'student' || elements[0].datasetIndex !== undefined) {
                             loadDashboard();
                         }
@@ -684,7 +1025,7 @@
                     legend: { display: true, position: 'bottom' },
                     tooltip: {
                         callbacks: {
-                            label: function(context) {
+                            label: function (context) {
                                 return context.dataset.label + ': ' + context.parsed.y + '%';
                             }
                         }
@@ -737,7 +1078,7 @@
                     legend: { display: true, position: 'bottom' },
                     tooltip: {
                         callbacks: {
-                            label: function(context) {
+                            label: function (context) {
                                 return context.dataset.label + ': ' + context.parsed.y + '%';
                             }
                         }
@@ -761,16 +1102,16 @@
 
         // Filtrar 'Não informado' ou valores vazios/nulos
         const validData = data.filter(item => item.label && item.label.trim() !== '' && item.label.toLowerCase() !== 'não informado');
-        
+
         // Sort data descending
         const sortedData = [...validData].sort((a, b) => b.value - a.value);
-        
+
         const top10 = sortedData.slice(0, 10);
-        
+
         // Piores competências (excluindo os que têm 0% de acerto para não ficar redundante? Ou mantendo? O usuário disse: "um novo gráfico chamado Competências sem acertos". Vamos manter as piores gerais incluindo os zeros se houver, ou apenas os não-zeros? Vamos fazer as piores sem filtrar os zeros, pois os 0s também são piores)
         // Wait, to make it more useful, let's just do standard slice
         const bottom10 = sortedData.slice(-10).sort((a, b) => a.value - b.value);
-        
+
         // Competências sem acertos (valor == 0)
         const zeroAcertos = sortedData.filter(item => item.value === 0).slice(0, 10);
 
@@ -819,7 +1160,7 @@
                 }
             }
         });
-        
+
         const ctxZero = document.getElementById('zeroCompetencesChart').getContext('2d');
         zeroCompChartObj = new Chart(ctxZero, {
             type: 'bar',
@@ -848,7 +1189,7 @@
     function updateJustificationsChart(data) {
         const ctx = document.getElementById('justificationsChart').getContext('2d');
         if (justChartObj) justChartObj.destroy();
-        
+
         // Data contains quantity (value), sort descending
         const sortedData = [...data].sort((a, b) => b.value - a.value);
 
@@ -876,8 +1217,411 @@
 
     // Initialize
     document.addEventListener('DOMContentLoaded', () => {
-        // Esperar clique no botão para carregar
+        // Initialize Popovers
+        const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]');
+        const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl));
     });
+
+    function updateQuestionsAnalysis(questions) {
+        // Prepare questions with display_ordem (+1) and sigla
+        questions.forEach(q => {
+            q.display_ordem = (parseInt(q.teg_ordem) || 0) + 1;
+            let sigla = (q.dis_nome || 'N/A').substring(0, 3).toUpperCase();
+            if (q.dis_nome && q.dis_nome.toLowerCase().includes('portugu')) sigla = 'LP';
+            else if (q.dis_nome && q.dis_nome.toLowerCase().includes('matem')) sigla = 'MT';
+            q.sigla = sigla;
+        });
+
+        // Unique X axis labels based on display_ordem
+        const uniqueOrdems = [...new Set(questions.map(q => q.display_ordem))].sort((a,b) => a - b);
+        const labels = uniqueOrdems.map(o => `Q${o}`);
+
+        // Unique disciplines to group in the chart (LP first, MT second)
+        const disciplines = [...new Set(questions.map(q => q.dis_nome))].sort((a, b) => {
+            const isPtA = a && a.toLowerCase().includes('portugu');
+            const isPtB = b && b.toLowerCase().includes('portugu');
+            if (isPtA && !isPtB) return -1;
+            if (!isPtA && isPtB) return 1;
+            return 0;
+        });
+
+        const colorMap = {
+            'LP': { correct: '#198754', wrong: '#fd7e14' }, // Green / Orange
+            'MT': { correct: '#0d6efd', wrong: '#dc3545' }, // Blue / Red
+            'DEFAULT': { correct: '#20c997', wrong: '#6c757d' }
+        };
+
+        let datasets = [];
+
+        disciplines.forEach(disc => {
+            let sigla = (disc || 'N/A').substring(0, 3).toUpperCase();
+            if (disc && disc.toLowerCase().includes('portugu')) sigla = 'LP';
+            else if (disc && disc.toLowerCase().includes('matem')) sigla = 'MT';
+            
+            const colors = colorMap[sigla] || colorMap['DEFAULT'];
+
+            let correctData = [];
+            let wrongData = [];
+
+            uniqueOrdems.forEach(ordem => {
+                const q = questions.find(x => x.display_ordem === ordem && x.dis_nome === disc);
+                if (q) {
+                    correctData.push(q.correct_pct);
+                    wrongData.push(q.wrong_pct);
+                } else {
+                    correctData.push(0);
+                    wrongData.push(0);
+                }
+            });
+
+            datasets.push({
+                label: `${sigla} - Acerto`,
+                data: correctData,
+                backgroundColor: colors.correct,
+                stack: sigla,
+                borderRadius: 4,
+                categoryPercentage: 0.7,
+                barPercentage: 0.9
+            });
+
+            datasets.push({
+                label: `${sigla} - Erro`,
+                data: wrongData,
+                backgroundColor: colors.wrong,
+                stack: sigla,
+                borderRadius: 4,
+                categoryPercentage: 0.7,
+                barPercentage: 0.9
+            });
+        });
+
+        // Update Chart
+        const ctx = document.getElementById('questionsChart').getContext('2d');
+        if (questionsChartObj) questionsChartObj.destroy();
+
+        questionsChartObj = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: datasets
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        stacked: true,
+                    },
+                    y: {
+                        stacked: true,
+                        beginAtZero: true,
+                        max: 100,
+                        title: { display: true, text: 'Percentual (%)' }
+                    }
+                },
+                plugins: {
+                    legend: { position: 'bottom' },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ' + context.parsed.y + '%';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Table Data (Group by discipline - PT first, then MT - then by display_ordem)
+        let tableQuestions = [...questions].sort((a, b) => {
+            const isPtA = a.dis_nome && a.dis_nome.toLowerCase().includes('portugu');
+            const isPtB = b.dis_nome && b.dis_nome.toLowerCase().includes('portugu');
+            if (isPtA && !isPtB) return -1;
+            if (!isPtA && isPtB) return 1;
+            return a.display_ordem - b.display_ordem;
+        });
+
+        // Update Table
+        const tbody = document.getElementById('questionsTableBody');
+        tbody.innerHTML = '';
+        let currentDiscipline = null;
+        
+        tableQuestions.forEach(q => {
+            if (q.dis_nome !== currentDiscipline) {
+                currentDiscipline = q.dis_nome;
+                const headerTr = document.createElement('tr');
+                headerTr.innerHTML = `<td colspan="4" class="text-start bg-light fw-bold text-uppercase text-secondary" style="border-top: 2px solid #dee2e6;">${currentDiscipline || 'Sem Disciplina'}</td>`;
+                tbody.appendChild(headerTr);
+            }
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td class="fw-bold">${q.display_ordem}</td>
+                <td class="text-start">
+                    <div class="fw-bold text-primary">${q.skill}</div>
+                    <div class="small text-muted" style="max-width: 300px; white-space: normal;">${q.skill_desc}</div>
+                </td>
+                <td class="text-success fw-bold">${q.correct_pct}% <span class="text-muted small">(${q.correct})</span></td>
+                <td class="text-warning fw-bold">${q.wrong_pct}% <span class="text-muted small">(${q.wrong})</span></td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function updateRankingData(ranking) {
+        if (!ranking) return;
+        
+        function renderList(containerId, list, isTop, isClass) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            
+            if (!list || list.length === 0) {
+                container.innerHTML = '<div class="col-12"><div class="alert alert-info">Sem dados para exibir no ranking.</div></div>';
+                return;
+            }
+
+            list.forEach((item, index) => {
+                const medalIcon = (isTop && index === 0) ? '🥇' : (isTop && index === 1) ? '🥈' : (isTop && index === 2) ? '🥉' : `#${index + 1}`;
+                const badgeClass = isTop ? 'bg-success' : 'bg-danger';
+                
+                const titleText = isClass ? item.tur_nome : item.name;
+                const schoolHtml = isClass ? `<h6 class="card-subtitle mb-2 mt-2 text-dark"><i class="bi bi-building me-1 text-secondary"></i> Escola: ${item.school_name}</h6>` : '';
+
+                const cardHtml = `
+                    <div class="col-md-12 mb-3">
+                        <div class="card shadow-sm border-0 border-start border-4 border-${isTop ? 'success' : 'danger'}">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h5 class="card-title fw-bold text-primary mb-0">
+                                        <span class="fs-5 me-2">${medalIcon}</span>
+                                        ${titleText}
+                                    </h5>
+                                    <span class="badge ${badgeClass} fs-6 rounded-pill px-3 py-2">${item.proficiency_round}% de Proficiência</span>
+                                </div>
+                                ${schoolHtml}
+                                <h6 class="card-subtitle mb-3 text-muted">
+                                    <i class="bi bi-geo-alt-fill me-1 text-secondary"></i> Regional: ${item.regional}
+                                </h6>
+                                <div class="row small text-muted">
+                                    <div class="col-md-6 border-end">
+                                        <div class="fw-bold text-dark mb-1"><i class="bi bi-person-badge me-1"></i> Diretor(a)</div>
+                                        <div>Nome: ${item.director_name}</div>
+                                        <div>Tempo de trabalho: ${item.director_time}</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="fw-bold text-dark mb-1"><i class="bi bi-person-video3 me-1"></i> Coordenador(a) Pedagógico(a)</div>
+                                        <div>Nome: ${item.coordinator_name}</div>
+                                        <div>Tempo de trabalho: ${item.coordinator_time}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', cardHtml);
+            });
+        }
+        
+        renderList('rankingTopList', ranking.top, true, false);
+        renderList('rankingBottomList', ranking.bottom, false, false);
+        renderList('rankingClassesTopList', ranking.top_classes, true, true);
+        renderList('rankingClassesBottomList', ranking.bottom_classes, false, true);
+    }
+
+    let mapInstance = null;
+    let markersLayer = null;
+    window.currentMapData = [];
+
+    function updateMapData(mapData) {
+        if (!mapData || mapData.length === 0) return;
+        window.currentMapData = mapData;
+        
+        if (!mapInstance) {
+            mapInstance = L.map('schoolMap').setView([mapData[0].latitude, mapData[0].longitude], 12);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(mapInstance);
+
+            document.getElementById('map-tab').addEventListener('shown.bs.tab', function() {
+                mapInstance.invalidateSize();
+            });
+        }
+        
+        renderMapMarkers(mapData);
+    }
+    
+    function renderMapMarkers(dataToRender) {
+        if (markersLayer) {
+            mapInstance.removeLayer(markersLayer);
+        }
+        markersLayer = L.layerGroup().addTo(mapInstance);
+
+        const bounds = [];
+
+        dataToRender.forEach(school => {
+            if (school.latitude && school.longitude) {
+                let color = 'gray';
+                if (school.proficiency < 50) color = 'red';
+                else if (school.proficiency < 70) color = 'orange';
+                else color = 'green';
+
+                const markerHtmlStyles = `
+                    background-color: ${color};
+                    width: 2rem;
+                    height: 2rem;
+                    display: block;
+                    left: -1rem;
+                    top: -1rem;
+                    position: relative;
+                    border-radius: 3rem 3rem 0;
+                    transform: rotate(45deg);
+                    border: 1px solid #FFFFFF;
+                    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+                `;
+
+                const icon = L.divIcon({
+                    className: 'my-custom-pin',
+                    iconAnchor: [0, 24],
+                    labelAnchor: [-6, 0],
+                    popupAnchor: [0, -36],
+                    html: `<span style="${markerHtmlStyles}"></span>`
+                });
+
+                let classesHtml = '';
+                if (school.classes && school.classes.length > 0) {
+                    const sortedClasses = [...school.classes].sort((a,b) => b.proficiency - a.proficiency);
+                    classesHtml = `
+                        <div class="mt-2 pt-2 border-top">
+                            <div class="fw-bold text-dark mb-1" style="font-size: 0.85rem;">Proficiência por Turma:</div>
+                            <ul class="list-unstyled mb-0" style="max-height: 100px; overflow-y: auto; font-size: 0.8rem;">
+                                ${sortedClasses.map(c => `
+                                    <li class="d-flex justify-content-between mb-1">
+                                        <span>${c.tur_nome}</span>
+                                        <span class="badge ${c.proficiency < 50 ? 'bg-danger' : c.proficiency < 70 ? 'bg-warning text-dark' : 'bg-success'}">${c.proficiency}%</span>
+                                    </li>
+                                `).join('')}
+                            </ul>
+                        </div>
+                    `;
+                }
+
+                const popupContent = `
+                    <div style="min-width: 250px;">
+                        <div class="fw-bold text-primary mb-1">${school.name}</div>
+                        <div class="badge ${school.proficiency < 50 ? 'bg-danger' : school.proficiency < 70 ? 'bg-warning text-dark' : 'bg-success'} mb-2">
+                            Proficiência Geral: ${school.proficiency}%
+                        </div>
+                        <div class="small text-muted mb-2"><i class="bi bi-geo-alt-fill"></i> Regional: ${school.regional}</div>
+                        <div class="row g-1 small mb-2 text-muted">
+                            <div class="col-12 border-bottom pb-1 mb-1">
+                                <div class="fw-bold"><i class="bi bi-person-badge"></i> Diretor(a): ${school.director_name}</div>
+                                <div>Tempo: ${school.director_time}</div>
+                            </div>
+                            <div class="col-12">
+                                <div class="fw-bold"><i class="bi bi-person-video3"></i> Coordenador(a): ${school.coordinator_name}</div>
+                                <div>Tempo: ${school.coordinator_time}</div>
+                            </div>
+                        </div>
+                        ${classesHtml}
+                    </div>
+                `;
+
+                const marker = L.marker([school.latitude, school.longitude], {icon: icon})
+                    .bindPopup(popupContent, {maxWidth: 300});
+                
+                markersLayer.addLayer(marker);
+                bounds.push([school.latitude, school.longitude]);
+            }
+        });
+
+        if (bounds.length > 0) {
+            mapInstance.fitBounds(bounds, {padding: [50, 50]});
+        }
+    }
+    
+    function toggleSchoolProficiencyInput() {
+        const op = document.getElementById('mapFilterSchoolProficiencyOperator').value;
+        const valInput = document.getElementById('mapFilterSchoolProficiencyValue');
+        const btnApply = document.getElementById('btnApplySchoolFilter');
+        
+        if (op) {
+            valInput.classList.remove('d-none');
+            btnApply.classList.remove('d-none');
+        } else {
+            valInput.classList.add('d-none');
+            btnApply.classList.add('d-none');
+            applyMapFilters(); // reset filter
+        }
+    }
+    
+    function applyMapFilters() {
+        const studentLevel = document.getElementById('mapFilterStudentLevel').value;
+        const op = document.getElementById('mapFilterSchoolProficiencyOperator').value;
+        const val = parseFloat(document.getElementById('mapFilterSchoolProficiencyValue').value);
+        
+        let filtered = window.currentMapData;
+        
+        if (op && !isNaN(val)) {
+            filtered = filtered.filter(s => op === 'acima' ? s.proficiency > val : s.proficiency < val);
+        }
+        
+        if (studentLevel) {
+            filtered = filtered.filter(s => s.levels && s.levels.includes(studentLevel));
+        }
+        
+        renderMapMarkers(filtered);
+    }
+    
+    function printSchoolProficiencyReport() {
+        const op = document.getElementById('mapFilterSchoolProficiencyOperator').value;
+        const val = parseFloat(document.getElementById('mapFilterSchoolProficiencyValue').value);
+        
+        let filtered = window.currentMapData;
+        let titleComplement = "(Todas as Escolas)";
+        
+        if (op && !isNaN(val)) {
+            filtered = window.currentMapData.filter(s => op === 'acima' ? s.proficiency > val : s.proficiency < val);
+            titleComplement = `(${op === 'acima' ? 'Acima de' : 'Abaixo de'} ${val}%)`;
+        }
+        
+        let html = `<html><head><title>Relatório de Escolas</title>
+            <style>
+                body { font-family: sans-serif; }
+                table { width:100%; border-collapse: collapse; margin-top: 20px;} 
+                th, td { border:1px solid #ccc; padding:8px; text-align:left; }
+                th { background-color: #f8f9fa; }
+            </style>
+            </head><body onload="window.print()">
+            <h2>Relatório de Proficiência das Escolas ${titleComplement}</h2>
+            <table><tr><th>Regional</th><th>Escola</th><th>Percentual Alcançado</th></tr>`;
+        
+        filtered.forEach(s => {
+            html += `<tr><td>${s.regional}</td><td>${s.name}</td><td>${s.proficiency}%</td></tr>`;
+        });
+        html += `</table></body></html>`;
+
+        const win = window.open('', '_blank');
+        win.document.write(html);
+        win.document.close();
+    }
+    
+    function printStudentLevelReport() {
+        const level = document.getElementById('mapFilterStudentLevel').value;
+        
+        // Build URL parameters mirroring the current dashboard filters
+        const urlParams = new URLSearchParams(window.location.search);
+        
+        // Add map level filter
+        if (level) {
+            urlParams.set('level_filter', level);
+        }
+        
+        // Open the print endpoint in a new tab
+        const evaluationId = "{{ evaluation.id if evaluation else '' }}";
+        if (evaluationId) {
+            window.open(`/external_evaluations/evaluations/${evaluationId}/print_students?${urlParams.toString()}`, '_blank');
+        }
+    }
 </script>
 {% endif %}
 {% endblock %}

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Relatório de Alunos - Turma</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 1cm;
+        }
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+            font-size: 12px;
+            color: #333;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #0d6efd;
+            padding-bottom: 10px;
+        }
+        .header h2 {
+            margin: 0;
+            color: #0d6efd;
+            font-size: 18px;
+        }
+        .header p {
+            margin: 5px 0 0 0;
+            font-size: 14px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 6px;
+            text-align: center;
+        }
+        th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+        .text-left {
+            text-align: left;
+        }
+        .badge {
+            padding: 2px 5px;
+            border: 1px solid #000;
+            background-color: transparent;
+            font-weight: bold;
+        }
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 10px;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>Detalhamento de Alunos por Turma</h2>
+        <p><strong>Escola:</strong> {{ school_name }}</p>
+        <p><strong>Turma:</strong> {{ tur_nome }} | <strong>Componente Curricular:</strong> {{ dis_nome }}</p>
+        <p><strong>Avaliação:</strong> {{ evaluation_name }}</p>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th class="text-left">Nome do Aluno</th>
+                <th>Questões (Acertos / Total)</th>
+                <th>Proficiência (%)</th>
+                <th>Nível</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in students %}
+            <tr>
+                <td class="text-left">{{ student.name }}</td>
+                <td>{{ student.correct }} / {{ student.total }}</td>
+                <td>{{ student.prof }}%</td>
+                <td><span class="badge">{{ student.level }}</span></td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="4">Nenhum aluno encontrado.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="footer">
+        Gerado pelo SGE Plus
+        <br>Documento gerado eletronicamente.
+    </div>
+</body>
+</html>
